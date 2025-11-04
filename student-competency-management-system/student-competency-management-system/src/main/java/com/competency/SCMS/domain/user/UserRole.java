@@ -6,13 +6,13 @@ public enum UserRole {
     ADMIN("관리자"),
     OPERATOR("운영자");
 
-    private final String description;
+    private final String descrition;
 
-    UserRole(String description) {
-        this.description = description;
+    UserRole(String descrition) {
+        this.descrition = descrition;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescrition() {
+        return descrition;
     }
 }
