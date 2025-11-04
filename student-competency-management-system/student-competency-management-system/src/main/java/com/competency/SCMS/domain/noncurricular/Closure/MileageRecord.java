@@ -4,7 +4,7 @@ package com.competency.SCMS.domain.noncurricular.Closure;
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.MileageReason;
 import com.competency.SCMS.domain.noncurricular.MileageType;
-import com.competency.SCMS.domain.noncurricular.Program;
+import com.competency.SCMS.domain.noncurricular.Core.Program;
 import jakarta.persistence.*;
 import lombok.*;
 

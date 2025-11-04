@@ -1,7 +1,7 @@
 package com.competency.SCMS.domain.noncurricular.Closure;
 
 import com.competency.SCMS.domain.BaseEntity;
-import com.competency.SCMS.domain.noncurricular.Program;
+import com.competency.SCMS.domain.noncurricular.Core.Program;
 import com.competency.SCMS.domain.noncurricular.ReportStatus;
 import com.competency.SCMS.domain.noncurricular.ReportType;
 import jakarta.persistence.*;
