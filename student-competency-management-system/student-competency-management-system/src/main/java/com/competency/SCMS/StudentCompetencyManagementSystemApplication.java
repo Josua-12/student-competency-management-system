@@ -1,4 +1,4 @@
-package com.competency.student_competency_management_system;
+package com.competency.SCMS;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
