@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담 예약 목록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>내 상담 예약 목록</h3>
+            <a href="/counseling/reservation-form" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 새 예약
+            </a>
+        </div>
+
+        <!-- 필터 -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="">전체 상태</option>
+                            <option value="PENDING">대기중</option>
+                            <option value="CONFIRMED">승인됨</option>
+                            <option value="COMPLETED">완료됨</option>
+                            <option value="CANCELLED">취소됨</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="fieldFilter">
+                            <option value="">전체 분야</option>
+                            <option value="academic">학업 상담</option>
+                            <option value="career">진로 상담</option>
+                            <option value="personal">개인 상담</option>
+                            <option value="psychological">심리 상담</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="상담사명 또는 내용으로 검색">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 예약 목록 -->
+        <div class="row" id="reservationList">
+            <!-- 예약 카드 1 -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title">학업 상담 - 수강신청 관련</h6>
+                            <span class="badge bg-warning">대기중</span>
+                        </div>
+                        <p class="card-text text-muted mb-2">
+                            <i class="bi bi-calendar3"></i> 2024-01-15 14:00<br>
+                            <i class="bi bi-person"></i> 김상담 상담사
+                        </p>
+                        <p class="card-text">다음 학기 수강신청에 대해 상담받고 싶습니다...</p>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-reservation-id="1">
+                                <i class="bi bi-eye"></i> 상세
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelModal" data-reservation-id="1">
+                                <i class="bi bi-x-circle"></i> 취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예약 카드 2 -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title">진로 상담 - 취업 준비</h6>
+                            <span class="badge bg-success">완료됨</span>
+                        </div>
+                        <p class="card-text text-muted mb-2">
+                            <i class="bi bi-calendar3"></i> 2024-01-10 10:00<br>
+                            <i class="bi bi-person"></i> 이진로 상담사
+                        </p>
+                        <p class="card-text">취업 준비 방향에 대해 상담받았습니다...</p>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-reservation-id="2">
+                                <i class="bi bi-eye"></i> 상세
+                            </button>
+                            <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#satisfactionModal" data-reservation-id="2">
+                                <i class="bi bi-star"></i> 만족도
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예약 카드 3 -->
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title">심리 상담 - 스트레스 관리</h6>
+                            <span class="badge bg-danger">취소됨</span>
+                        </div>
+                        <p class="card-text text-muted mb-2">
+                            <i class="bi bi-calendar3"></i> 2024-01-08 15:30<br>
+                            <i class="bi bi-person"></i> 박심리 상담사
+                        </p>
+                        <p class="card-text">학업 스트레스 관리 방법에 대해...</p>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-reservation-id="3">
+                                <i class="bi bi-eye"></i> 상세
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">이전</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- 상세 조회 모달 (CNSL-003) -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 예약 상세 정보</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>예약 번호:</strong></div>
+                        <div class="col-sm-9" id="detailReservationId">CNSL-2024-001</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담 분야:</strong></div>
+                        <div class="col-sm-9" id="detailField">학업 상담</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담 유형:</strong></div>
+                        <div class="col-sm-9" id="detailCategory">수강신청 관련</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담 일시:</strong></div>
+                        <div class="col-sm-9" id="detailDateTime">2024년 1월 15일 14:00</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담사:</strong></div>
+                        <div class="col-sm-9" id="detailCounselor">김상담 상담사</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상태:</strong></div>
+                        <div class="col-sm-9">
+                            <span class="badge bg-warning" id="detailStatus">대기중</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담 내용:</strong></div>
+                        <div class="col-sm-9" id="detailContent">
+                            다음 학기 수강신청에 대해 상담받고 싶습니다. 전공 선택과 관련하여 조언을 구하고자 합니다.
+                        </div>
+                    </div>
+                    <div class="row mb-3" id="detailMemoSection" style="display: none;">
+                        <div class="col-sm-3"><strong>관련 메모:</strong></div>
+                        <div class="col-sm-9" id="detailMemo"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 취소 모달 (CNSL-004) -->
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 예약 취소</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        정말로 이 상담 예약을 취소하시겠습니까?
+                    </div>
+                    <div class="mb-3">
+                        <label for="cancelReason" class="form-label">취소 사유 <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="cancelReason" rows="3" placeholder="취소 사유를 입력해주세요" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-danger">취소 확정</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 만족도 조사 모달 (CNSL-005) -->
+    <div class="modal fade" id="satisfactionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 만족도 조사</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="satisfactionForm">
+                        <!-- 전반적 만족도 -->
+                        <div class="mb-4">
+                            <label class="form-label"><strong>1. 전반적인 상담 만족도는 어떠셨나요?</strong></label>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>매우 불만족</span>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="overall" id="overall1" value="1">
+                                    <label class="btn btn-outline-primary" for="overall1">1</label>
+                                    <input type="radio" class="btn-check" name="overall" id="overall2" value="2">
+                                    <label class="btn btn-outline-primary" for="overall2">2</label>
+                                    <input type="radio" class="btn-check" name="overall" id="overall3" value="3">
+                                    <label class="btn btn-outline-primary" for="overall3">3</label>
+                                    <input type="radio" class="btn-check" name="overall" id="overall4" value="4">
+                                    <label class="btn btn-outline-primary" for="overall4">4</label>
+                                    <input type="radio" class="btn-check" name="overall" id="overall5" value="5">
+                                    <label class="btn btn-outline-primary" for="overall5">5</label>
+                                </div>
+                                <span>매우 만족</span>
+                            </div>
+                        </div>
+
+                        <!-- 상담사 전문성 -->
+                        <div class="mb-4">
+                            <label class="form-label"><strong>2. 상담사의 전문성은 어떠셨나요?</strong></label>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>매우 부족</span>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="expertise" id="expertise1" value="1">
+                                    <label class="btn btn-outline-primary" for="expertise1">1</label>
+                                    <input type="radio" class="btn-check" name="expertise" id="expertise2" value="2">
+                                    <label class="btn btn-outline-primary" for="expertise2">2</label>
+                                    <input type="radio" class="btn-check" name="expertise" id="expertise3" value="3">
+                                    <label class="btn btn-outline-primary" for="expertise3">3</label>
+                                    <input type="radio" class="btn-check" name="expertise" id="expertise4" value="4">
+                                    <label class="btn btn-outline-primary" for="expertise4">4</label>
+                                    <input type="radio" class="btn-check" name="expertise" id="expertise5" value="5">
+                                    <label class="btn btn-outline-primary" for="expertise5">5</label>
+                                </div>
+                                <span>매우 우수</span>
+                            </div>
+                        </div>
+
+                        <!-- 문제 해결 도움 정도 -->
+                        <div class="mb-4">
+                            <label class="form-label"><strong>3. 상담이 문제 해결에 도움이 되었나요?</strong></label>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>전혀 도움 안됨</span>
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="helpfulness" id="help1" value="1">
+                                    <label class="btn btn-outline-primary" for="help1">1</label>
+                                    <input type="radio" class="btn-check" name="helpfulness" id="help2" value="2">
+                                    <label class="btn btn-outline-primary" for="help2">2</label>
+                                    <input type="radio" class="btn-check" name="helpfulness" id="help3" value="3">
+                                    <label class="btn btn-outline-primary" for="help3">3</label>
+                                    <input type="radio" class="btn-check" name="helpfulness" id="help4" value="4">
+                                    <label class="btn btn-outline-primary" for="help4">4</label>
+                                    <input type="radio" class="btn-check" name="helpfulness" id="help5" value="5">
+                                    <label class="btn btn-outline-primary" for="help5">5</label>
+                                </div>
+                                <span>매우 도움됨</span>
+                            </div>
+                        </div>
+
+                        <!-- 재이용 의향 -->
+                        <div class="mb-4">
+                            <label class="form-label"><strong>4. 향후 상담 서비스를 다시 이용하실 의향이 있나요?</strong></label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reuse" id="reuse1" value="yes">
+                                <label class="form-check-label" for="reuse1">예, 다시 이용하겠습니다</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reuse" id="reuse2" value="no">
+                                <label class="form-check-label" for="reuse2">아니오, 이용하지 않겠습니다</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="reuse" id="reuse3" value="maybe">
+                                <label class="form-check-label" for="reuse3">잘 모르겠습니다</label>
+                            </div>
+                        </div>
+
+                        <!-- 추가 의견 -->
+                        <div class="mb-3">
+                            <label for="additionalFeedback" class="form-label"><strong>5. 추가 의견이나 개선사항이 있다면 자유롭게 작성해주세요</strong></label>
+                            <textarea class="form-control" id="additionalFeedback" rows="4" placeholder="상담 서비스 개선을 위한 의견을 남겨주세요"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary">만족도 제출</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
