@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.mileage;
 
 /** 마일리지 발생 사유 */
 public enum MileageReason {

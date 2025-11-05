@@ -1,9 +1,7 @@
-package com.competency.SCMS.domain.noncurricular.LinkCompetency;
+package com.competency.SCMS.domain.noncurricular.linkCompetency;
 
 import com.competency.SCMS.domain.BaseEntity;
-import com.competency.SCMS.domain.noncurricular.AlignmentStrength;
-import com.competency.SCMS.domain.noncurricular.ProficiencyLevel;
-import com.competency.SCMS.domain.noncurricular.Core.Program;
+import com.competency.SCMS.domain.noncurricular.program.Program;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

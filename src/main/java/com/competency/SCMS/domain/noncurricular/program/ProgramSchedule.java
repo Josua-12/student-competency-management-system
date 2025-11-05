@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular.Core;
+package com.competency.SCMS.domain.noncurricular.program;
 
 import com.competency.SCMS.domain.BaseEntity;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.linkCompetency;
 
 /** 숙련(목표) 단계 — 필요 시 개수/명칭 변경 가능 */
 public enum ProficiencyLevel {
