@@ -1,0 +1,30 @@
+# Build directories
+/build/
+/.gradle/
+/bin/
+
+# IDE
+/.idea/
+/*.iml
+/.vscode/
+*.swp
+*.swo
+
+# Gradle
+gradle/
+gradlew
+gradlew.bat
+gradle.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+/node_modules/
+
+# Logs
+*.log
+
+# Target directory (Maven)
+/target/
