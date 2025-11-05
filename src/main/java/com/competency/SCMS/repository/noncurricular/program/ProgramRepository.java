@@ -8,7 +8,7 @@ import org.springframework.data.domain.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface ProgramRepo extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program> {
+public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program> {
 
     Optional<Program> findByCode(String code);
 

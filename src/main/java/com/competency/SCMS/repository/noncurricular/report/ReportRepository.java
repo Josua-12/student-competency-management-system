@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
 
-public interface ReportRepo extends JpaRepository<Report, Long>, JpaSpecificationExecutor<Report> {
+public interface ReportRepository extends JpaRepository<Report, Long>, JpaSpecificationExecutor<Report> {
 
     List<Report> findByProgramIdAndType(Long programId, ReportType type);
 

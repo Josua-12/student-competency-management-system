@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
 
-public interface AttendanceRepo extends JpaRepository<Attendance, Long>, JpaSpecificationExecutor<Attendance> {
+public interface AttendanceRepository extends JpaRepository<Attendance, Long>, JpaSpecificationExecutor<Attendance> {
 
     Optional<Attendance> findByScheduleIdAndStudentId(Long scheduleId, Long studentId);
     List<Attendance> findByScheduleIdOrderByStudentIdAsc(Long scheduleId);

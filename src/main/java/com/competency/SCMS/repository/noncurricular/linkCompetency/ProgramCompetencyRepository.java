@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
 
-public interface ProgramCompetencyRepo extends JpaRepository<Competency, Long>, JpaSpecificationExecutor<Competency> {
+public interface ProgramCompetencyRepository extends JpaRepository<Competency, Long>, JpaSpecificationExecutor<Competency> {
 
     boolean existsByProgramIdAndCompetencyId(Long programId, Long competencyId);
     Optional<Competency> findByProgramIdAndCompetencyId(Long programId, Long competencyId);

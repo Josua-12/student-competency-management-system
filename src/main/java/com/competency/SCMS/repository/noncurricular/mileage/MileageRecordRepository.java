@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
 
-public interface MileageRecordRepo extends JpaRepository<MileageRecord, Long>, JpaSpecificationExecutor<MileageRecord> {
+public interface MileageRecordRepository extends JpaRepository<MileageRecord, Long>, JpaSpecificationExecutor<MileageRecord> {
 
     List<MileageRecord> findByStudentIdOrderByCreatedAtDesc(Long studentId);
 

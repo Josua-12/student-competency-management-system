@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
 
-public interface SatisfactionRepo extends JpaRepository<Satisfaction, Long>, JpaSpecificationExecutor<Satisfaction> {
+public interface SatisfactionRepository extends JpaRepository<Satisfaction, Long>, JpaSpecificationExecutor<Satisfaction> {
 
     Optional<Satisfaction> findByProgramIdAndScheduleIdAndStudentId(Long programId, Long scheduleId, Long studentId);
 

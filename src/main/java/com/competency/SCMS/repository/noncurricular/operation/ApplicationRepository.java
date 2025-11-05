@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
 import java.util.*;
 
-public interface ApplicationRepo extends JpaRepository<Application, Long>, JpaSpecificationExecutor<Application> {
+public interface ApplicationRepository extends JpaRepository<Application, Long>, JpaSpecificationExecutor<Application> {
 
     Optional<Application> findByProgramIdAndScheduleIdAndStudentId(Long programId, Long scheduleId, Long studentId);
     boolean existsByProgramIdAndScheduleIdAndStudentId(Long programId, Long scheduleId, Long studentId);
