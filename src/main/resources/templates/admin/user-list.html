@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout (title, content, css, scripts)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSRF 토큰 메타 태그(Spring Security)
+       JavaScript에서 CSRF 토큰을 읽을 수 있도록 메타 태그로 제공
+       Spring Security가 자동으로 _csrf 객체를 생성
+  -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <title th:text="${title} + ' - 학생역량관리시스템'">학생역량관리시스템</title>
+
+  <!--Bootstrap CSS-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!--Font Awesome-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!--Custom CSS-->
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+
+  <!--페이지별 추가 css-->
+  <th:block th:replace="${css}"></th:block>
+</head>
+<body>
+<div class="container my-4">
+  <h2>사용자 관리</h2>
+  <!-- 검색 바/필터 -->
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+      <input type="text" name="search" class="form-control" placeholder="이름, 학번 검색"
+             th:value="${param.search}">
+    </div>
+    <div class="col-md-3">
+      <select name="locked" class="form-select">
+        <option value="" th:selected="${param.locked == null or param.locked == ''}">전체</option>
+        <option value="false" th:selected="${param.locked == 'false'}">활성화</option>
+        <option value="true" th:selected="${param.locked == 'true'}">비활성화</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary">검색</button>
+    </div>
+  </form>
+  <!-- 사용자 목록 테이블 -->
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <th>이름</th>
+      <th>이메일</th>
+      <th>학번</th>
+      <th>상태</th>
+      <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${userList.content}">
+      <td th:text="${user.name}">이름</td>
+      <td th:text="${user.email}">이메일</td>
+      <td th:text="${user.studentNum}">학번</td>
+      <td>
+        <span th:if="${user.locked}" class="badge bg-danger">비활성화</span>
+        <span th:unless="${user.locked}" class="badge bg-success">활성화</span>
+      </td>
+      <td>
+        <a th:href="@{/admin/user/{id}(id=${user.id})}"
+           class="btn btn-sm btn-secondary">상세보기</a>
+      </td>
+    </tr>
+    <tr th:if="${userList.content == null or #lists.isEmpty(userList.content)}">
+      <td colspan="5" class="text-center">사용자가 없습니다.</td>
+    </tr>
+    </tbody>
+  </table>
+  <!-- 페이징 -->
+  <nav>
+    <ul class="pagination justify-content-center">
+      <!-- 이전 버튼 -->
+      <li class="page-item" th:classappend="${!userList.hasPrevious} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{?page=${userList.number - 1}, search=${param.search}, locked=${param.locked}}"
+           th:attr="aria-disabled=${!userList.hasPrevious}"
+           th:tabindex="${!userList.hasPrevious} ? -1 : 0">
+          이전
+        </a>
+      </li>
+
+      <!-- 현재 페이지/전체 페이지 -->
+      <li class="page-item disabled">
+        <span class="page-link"
+              th:text="|Page ${userList.number + 1} / ${userList.totalPages}|">
+            Page 1 / 1
+        </span>
+      </li>
+
+      <!-- 다음 버튼 -->
+      <li class="page-item" th:classappend="${!userList.hasNext} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{?page=${userList.number + 1}, search=${param.search}, locked=${param.locked}}"
+           th:attr="aria-disabled=${!userList.hasNext}"
+           th:tabindex="${!userList.hasNext} ? -1 : 0">
+          다음
+        </a>
+      </li>
+    </ul>
+
+  </nav>
+</div>
+<!-- 페이지별 추가 script -->
+<th:block th:replace="${scripts}"></th:block>
+</body>
+</html>
