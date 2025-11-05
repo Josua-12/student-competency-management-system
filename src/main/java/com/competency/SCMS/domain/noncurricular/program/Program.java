@@ -1,6 +1,9 @@
 package com.competency.SCMS.domain.noncurricular.program;
 
 import com.competency.SCMS.domain.BaseEntity;
+import com.competency.SCMS.domain.noncurricular.linkCompetency.LinkCompetency;
+import com.competency.SCMS.domain.noncurricular.operation.ProgramApplication;
+import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +27,16 @@ public class Program extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prog_id")
-    private Long id;
+    private Long programId;
+
+    // 개설자(운영자/부서관리자 등)
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="owner_id", nullable=false)
+    private User owner;
+
+    @Column(nullable=false) private Integer maxParticipants;
+    private Integer minParticipants;
+    @Column(nullable=false) private Integer currentParticipants = 0;
+    private String location;
 
     @Column(name = "prog_code", length = 50, nullable = false)
     private String code;
@@ -75,9 +87,15 @@ public class Program extends BaseEntity {
     @Column(nullable = false)
     private boolean deleted = false;
 
-    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
+    // 운영/성과 연관 (핵심만 양방향)
+    @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProgramSchedule> schedules = new ArrayList<>();
+
+    @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProgramApplication> programApplications = new ArrayList<>();
+
+    @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LinkCompetency> linkCompetencies = new ArrayList<>();
 
     public void addSchedule(ProgramSchedule s) {
         s.setProgram(this);

@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-public interface LoginHistoryRepository extends JpaRepository<LoginHistory, Integer> {
-    // 월별 접속자 통계
-    @Query("SELECT MONTH(l.login_at) AS month, COUNT(DISTINCT l.user_id) AS visitorCount FROM LoginHistory l GROUP BY MONTH(l.login_at)")
-    List<Object[]> getMonthlyUserStats();
-
-    long countByLoginAtAfter(LocalDateTime localDateTime);
-}
+//@Repository
+//public interface LoginHistoryRepository extends JpaRepository<LoginHistory, Integer> {
+//    // 월별 접속자 통계
+//    @Query("SELECT MONTH(l.login_at) AS month, COUNT(DISTINCT l.user_id) AS visitorCount FROM LoginHistory l GROUP BY MONTH(l.login_at)")
+//    List<Object[]> getMonthlyUserStats();
+//
+//    long countByLoginAtAfter(LocalDateTime localDateTime);
+//}

@@ -5,6 +5,9 @@ import com.competency.SCMS.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "program_categories",
         indexes = {
@@ -18,7 +21,7 @@ public class ProgramCategory extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "catg_id")
-    private Long id;
+    private Long catgId;
 
     @Column(name = "catg_code", length = 50, nullable = false)
     private String code;
@@ -38,5 +41,12 @@ public class ProgramCategory extends BaseEntity {
 
     @Column(length = 255)
     private String description;
+
+    @Column(nullable=false)
+    private boolean active = true;
+    private Integer displayOrder;
+
+    @OneToMany(mappedBy="category", cascade=CascadeType.ALL, orphanRemoval=false)
+    private List<Program> programs = new ArrayList<>();
 }
 
