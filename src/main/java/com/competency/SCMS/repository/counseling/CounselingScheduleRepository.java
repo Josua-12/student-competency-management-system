@@ -1,6 +1,8 @@
 package com.competency.SCMS.repository.counseling;
 
 import com.competency.SCMS.domain.counseling.CounselingSchedule;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,16 +17,16 @@ import java.util.Optional;
 public interface CounselingScheduleRepository extends JpaRepository<CounselingSchedule, Long> {
 
     // CNSL-006: 상담사별 일정 조회
-    List<CounselingSchedule> findByCounselorOrderByScheduleDateAsc(User counselor);
+    Page<CounselingSchedule> findByCounselorOrderByScheduleDateAsc(User counselor, Pageable pageable);
 
     // CNSL-007: 특정 날짜의 상담사 일정 조회
-    Optional<CounselingSchedule> findByCounselorAndScheduleDate(User counselor, LocalDate scheduleDate);
+    Page<CounselingSchedule> findByCounselorAndScheduleDate(User counselor, LocalDate scheduleDate, Pageable pageable);
 
     // 기간별 상담사 일정 조회
     @Query("SELECT cs FROM CounselingSchedule cs WHERE cs.counselor = :counselor AND cs.scheduleDate BETWEEN :startDate AND :endDate ORDER BY cs.scheduleDate ASC")
-    List<CounselingSchedule> findByCounselorAndScheduleDateBetween(@Param("counselor") User counselor, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    Page<CounselingSchedule> findByCounselorAndScheduleDateBetween(@Param("counselor") User counselor, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 
     // 특정 날짜에 예약 가능한 상담사들 조회
     @Query("SELECT cs FROM CounselingSchedule cs WHERE cs.scheduleDate = :date AND (cs.slot0910 = true OR cs.slot1011 = true OR cs.slot1112 = true OR cs.slot1213 = true OR cs.slot1314 = true OR cs.slot1415 = true OR cs.slot1516 = true OR cs.slot1617 = true OR cs.slot1718 = true)")
-    List<CounselingSchedule> findAvailableCounselorsOnDate(@Param("date") LocalDate date);
+    Page<CounselingSchedule> findAvailableCounselorsOnDate(@Param("date") LocalDate date, Pageable pageable);
 }

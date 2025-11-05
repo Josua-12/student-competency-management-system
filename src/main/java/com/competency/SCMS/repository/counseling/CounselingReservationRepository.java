@@ -16,28 +16,34 @@ import java.util.List;
 @Repository
 public interface CounselingReservationRepository extends JpaRepository<CounselingReservation, Long> {
 
-    // CNSL-002, CNSL-016: 학생별 상담 예약 목록 조회
-    List<CounselingReservation> findByStudentOrderByCreatedAtDesc(User student);
+    // CNSL-002: (학생) 학생별 상담 예약 목록 조회
+    Page<CounselingReservation> findByStudentOrderByCreatedAtDesc(User student, Pageable pageable);
 
-    // 학생별 + 상담 분야별 예약 조회
-    List<CounselingReservation> findByStudentAndCounselingFieldOrderByCreatedAtDesc(User student, CounselingField counselingField);
+    // CNSL-002, CNSL-016: 학생별 + 상담 분야별 예약 조회
+    Page<CounselingReservation> findByStudentAndCounselingFieldOrderByCreatedAtDesc(User student, CounselingField counselingField, Pageable pageable);
 
-    // CNSL-008, CNSL-009: 상담 승인 관리 - 대기 중인 예약 조회
-    List<CounselingReservation> findByStatusOrderByCreatedAtAsc(CounselingReservation.ReservationStatus status);
+    // CNSL-008 : (관리자) 상담 승인 관리 - 모든 대기 중인 예약 조회
+    Page<CounselingReservation> findByStatusOrderByCreatedAtAsc(CounselingReservation.ReservationStatus status, Pageable pageable);
 
-    // CNSL-011: 배정된 상담 일정 조회 (상담사별)
-    List<CounselingReservation> findByCounselorAndStatusOrderByConfirmedDateTimeAsc(User counselor, CounselingReservation.ReservationStatus status);
+    // CNSL-009: (상담사) 상담 승인 관리 - 본인에게 배정된 대기 중인 예약 조회
+    Page<CounselingReservation> findByCounselorAndStatusOrderByCreatedAtAsc(User counselor, CounselingReservation.ReservationStatus status, Pageable pageable);
 
-    // CNSL-015: 전체 상담 이력 조회 (페이징)
-    Page<CounselingReservation> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    // CNSL-011: 상담사별 특정상태의 상담 일정 조회 (배정된 상태:APPROVED)
+    Page<CounselingReservation> findByCounselorAndStatusOrderByConfirmedDateTimeAsc(User counselor, CounselingReservation.ReservationStatus status, Pageable pageable);
 
+    // CNSL-015: 전체 상담 이력 조회 (검색 기능 포함)
+    @Query("SELECT cr FROM CounselingReservation cr " +
+            "WHERE (:keyword IS NULL OR :keyword = '' " +   // 키워드 미입력시 전체 조회
+            "OR cr.student.name LIKE %:keyword% " +
+            "OR cr.counselor.name LIKE %:keyword%)")
+    Page<CounselingReservation> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    // CNSL-016: 상담사별 상담 이력 조회
-    List<CounselingReservation> findByCounselorOrderByCreatedAtDesc(User counselor);
+    // CNSL-016: 상담사별 전체 상담 이력 조회
+    Page<CounselingReservation> findByCounselorOrderByCreatedAtDesc(User counselor, Pageable pageable);
 
     // CNSL-017: 상담사 본인 담당 상담 현황
     @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status IN :statuses ORDER BY cr.confirmedDateTime ASC")
-    List<CounselingReservation> findByCounselorAndStatusIn(@Param("counselor") User counselor, @Param("statuses") List<CounselingReservation.ReservationStatus> statuses);
+    Page<CounselingReservation> findByCounselorAndStatusIn(@Param("counselor") User counselor, @Param("statuses") List<CounselingReservation.ReservationStatus> statuses, Pageable pageable);
 
     // CNSL-018: 상담 유형별 통계
     @Query("SELECT cr.counselingField, COUNT(cr) FROM CounselingReservation cr WHERE cr.status = :status GROUP BY cr.counselingField")
@@ -49,9 +55,9 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
 
     // CNSL-021: 상담원별 현황
     @Query("SELECT cr.counselor, cr.status, COUNT(cr) FROM CounselingReservation cr WHERE cr.counselor IS NOT NULL GROUP BY cr.counselor, cr.status")
-    List<Object[]> countByCounselorGroupByStatus();
+    Page<Object[]> countByCounselorGroupByStatus(Pageable pageable);
 
     // 기간별 조회 (통계용)
     @Query("SELECT cr FROM CounselingReservation cr WHERE cr.createdAt BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
-    List<CounselingReservation> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    Page<CounselingReservation> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 }

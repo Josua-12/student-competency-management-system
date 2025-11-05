@@ -43,7 +43,6 @@ public class CounselingReservation {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id")
-    @Column(nullable = true)
     private User counselor;
     
     @ManyToOne(fetch = FetchType.LAZY)

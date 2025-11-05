@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface CounselingSatisfactionRepository extends JpaRepository<CounselingSatisfaction, Long> {
 
-    // 예약별 만족도 조회
+    // 만족도 조회 (예약아이디별)
     Optional<CounselingSatisfaction> findByReservationId(Long reservationId);
 
     // CNSL-020: 상담사별 만족도 결과 조회
