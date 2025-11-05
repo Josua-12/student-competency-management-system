@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.operation;
 
 public enum ApplicationStatus {
     PENDING,       // 승인요청(대기)

@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.operation;
 
 public enum AttendanceStatus {
     PRESENT,       // 출석

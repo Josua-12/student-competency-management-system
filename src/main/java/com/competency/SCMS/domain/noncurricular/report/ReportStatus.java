@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.report;
 
 /** 보고서 상태 */
 public enum ReportStatus {

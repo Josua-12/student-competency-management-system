@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.mileage;
 
 /** 마일리지 거래유형 */
 public enum MileageType {

@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.linkCompetency;
 
 /** 프로그램-역량 연계 강도 표현 */
 public enum AlignmentStrength {

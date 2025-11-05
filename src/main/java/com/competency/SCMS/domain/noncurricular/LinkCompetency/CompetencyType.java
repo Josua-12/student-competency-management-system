@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.linkCompetency;
 
 /** 역량의 성격/분류 */
 public enum CompetencyType {

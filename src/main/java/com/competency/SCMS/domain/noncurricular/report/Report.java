@@ -1,9 +1,7 @@
-package com.competency.SCMS.domain.noncurricular.Closure;
+package com.competency.SCMS.domain.noncurricular.report;
 
 import com.competency.SCMS.domain.BaseEntity;
-import com.competency.SCMS.domain.noncurricular.Core.Program;
-import com.competency.SCMS.domain.noncurricular.ReportStatus;
-import com.competency.SCMS.domain.noncurricular.ReportType;
+import com.competency.SCMS.domain.noncurricular.program.Program;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +14,7 @@ import lombok.*;
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class ProgramReport extends BaseEntity {
+public class Report extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

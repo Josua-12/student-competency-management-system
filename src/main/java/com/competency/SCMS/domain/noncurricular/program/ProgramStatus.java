@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular;
+package com.competency.SCMS.domain.noncurricular.program;
 
 public enum ProgramStatus {
     DRAFT,        // 임시저장
