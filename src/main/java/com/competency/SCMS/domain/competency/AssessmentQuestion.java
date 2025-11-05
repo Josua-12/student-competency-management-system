@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"competency", "options"})
+@ToString(exclude = {"competency", "options", "responses"})
 @Table(name = "assessment_questions")
 @SQLDelete(sql = "UPDATE assessment_questions SET deleted_at = CURRENT_TIMESTAMP, " +
         "is_active = false WHERE qstn_id = ?")
@@ -79,6 +79,11 @@ public class AssessmentQuestion extends CompetencyBaseEntity {
             cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AssessmentOption> options = new ArrayList<>();
+
+    @OneToMany(mappedBy = "question") // cascade 없음 (문항 삭제되도 답변은 남아야 함)
+    @Builder.Default
+    @ToString.Exclude // ❗️ 무한루프 방지
+    private List<AssessmentResponse> responses = new ArrayList<>();
 
     // ------ 편의 메서드 -------- //
 

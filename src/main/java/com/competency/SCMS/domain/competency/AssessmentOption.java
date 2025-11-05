@@ -12,8 +12,8 @@ import org.hibernate.annotations.SQLDelete;
 @AllArgsConstructor
 @Builder
 @Table(name = "assessment_options")
-@SQLDelete(sql = "UPDATE assessment_question_items SET deleted_at = CURRENT_TIMESTAMP " +
-        "WHERE item_id = ?")
+@SQLDelete(sql = "UPDATE assessment_options SET deleted_at = CURRENT_TIMESTAMP " +
+        "WHERE option_id = ?")
 public class AssessmentOption extends CompetencyBaseEntity {
 
     @Id
