@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content, css, scripts)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--CSRF 토큰 메타 태그(Spring Security)
+      - JavaScript에서 CSRF 토큰을 읽을 수 있도록 메타 태그로 제공
+      - Spring Security가 자동으로 _csrf 객체를 생성
+   -->
+  <meta name="_csrf" th:content="${_csrf.token}" >
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <title th:replace="${title} + ' - 학생역량관리시스템'">학생역량관리시스템</title>  <!--프래그먼트로 전달받은 title요소를 이 위치에 삽입-->
+
+  <!--Bootstrap CSS-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!--Font Awesome-->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!--Custom CSS-->
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+
+  <!--페이지별 추가 css-->
+  <th:block th:replace="${css}"></th:block>
+</head>
+<body>
+{% extends "layout.html" %}
+{% block content %}
+<div class="container my-4">
+  <h2>사용자 관리</h2>
+  <!-- 검색 바/필터 -->
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+      <input type="text" name="search" class="form-control" placeholder="이름, 학번 검색" value="{{ param.search }}">
+    </div>
+    <div class="col-md-3">
+      <select name="locked" class="form-select">
+        <option value="">전체</option>
+        <option value="false" {% if param.locked == 'false' %}selected{% endif %}>활성화</option>
+        <option value="true" {% if param.locked == 'true' %}selected{% endif %}>비활성화</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary">검색</button>
+    </div>
+  </form>
+  <!-- 사용자 목록 테이블 -->
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <th>이름</th>
+      <th>이메일</th>
+      <th>학번</th>
+      <th>상태</th>
+      <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for user in userList %}
+    <tr>
+      <td>{{ user.name }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.studentNum }}</td>
+      <td>
+        {% if user.locked %}
+        <span class="badge bg-danger">비활성화</span>
+        {% else %}
+        <span class="badge bg-success">활성화</span>
+        {% endif %}
+      </td>
+      <td>
+        <a href="/admin/user/{{ user.id }}" class="btn btn-sm btn-secondary">상세보기</a>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <!-- 페이징 -->
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if userList.hasPrevious %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ userList.pageNumber - 1 }}&search={{ param.search }}&locked={{ param.locked }}">이전</a>
+      </li>
+      {% endif %}
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ userList.pageNumber + 1 }} / {{ userList.totalPages }}</span>
+      </li>
+      {% if userList.hasNext %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ userList.pageNumber + 1 }}&search={{ param.search }}&locked={{ param.locked }}">다음</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}
+</body>
+</html>
