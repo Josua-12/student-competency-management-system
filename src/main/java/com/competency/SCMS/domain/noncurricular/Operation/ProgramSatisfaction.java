@@ -20,7 +20,7 @@ import lombok.*;
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Satisfaction extends BaseEntity {
+public class ProgramSatisfaction extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "satis_id")

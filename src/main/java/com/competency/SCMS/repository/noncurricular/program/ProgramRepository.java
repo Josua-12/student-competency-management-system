@@ -10,10 +10,27 @@ import java.util.Optional;
 
 public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program> {
 
-    Optional<Program> findByCode(String code);
+    // 목록/검색
+    Page<Program> findByStatus(ProgramStatus status, Pageable pageable);
+    Page<Program> findByCategory_CatgId(Long catgId, Pageable pageable);
+    Page<Program> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
 
+    // 기간 교집합(운영중 판별 등에 활용)
+    @Query("""
+       select p from Program p
+       where p.startDate <= :to and p.endDate >= :from
+    """)
+    Page<Program> findActiveInPeriod(LocalDateTime from, LocalDateTime to, Pageable pageable);
+
+    // 권한별: 내가 개설한 프로그램
+    Page<Program> findByOwner_UserIdOrderByProgramIdDesc(Long ownerId, Pageable pageable);
+
+    // 상태 전환 보조
+    long countByStatus(ProgramStatus status);
+
+    // 상세 조회 시 즉시 로딩 최적화(필요 시)
     @EntityGraph(attributePaths = {"category"})
-    Page<Program> findByStatusAndDeletedFalse(ProgramStatus status, Pageable pageable);
+    Optional<Program> findWithCategoryByProgramId(Long programId);
 
     @Query("select p from Program p where p.deleted=false and (:catgId is null or p.category.id=:catgId) " +
             "and (:kw is null or (lower(p.title) like lower(concat('%',:kw,'%')) or lower(p.summary) like lower(concat('%',:kw,'%'))))")

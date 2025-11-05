@@ -1,7 +1,7 @@
 package com.competency.SCMS.domain.noncurricular.program;
 
 import com.competency.SCMS.domain.BaseEntity;
-import com.competency.SCMS.domain.noncurricular.operation.Attendance;
+import com.competency.SCMS.domain.noncurricular.operation.ProgramAttendance;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,6 +47,6 @@ public class ProgramSchedule extends BaseEntity {
     private String remarks;
 
     @OneToMany(mappedBy="schedule", cascade=CascadeType.ALL, orphanRemoval=true)
-    private List<Attendance> attendanceList = new ArrayList<>();
+    private List<ProgramAttendance> programAttendanceList = new ArrayList<>();
 }
 

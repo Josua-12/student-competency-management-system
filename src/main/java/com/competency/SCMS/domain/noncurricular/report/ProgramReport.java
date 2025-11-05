@@ -15,7 +15,7 @@ import lombok.*;
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Report extends BaseEntity {
+public class ProgramReport extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

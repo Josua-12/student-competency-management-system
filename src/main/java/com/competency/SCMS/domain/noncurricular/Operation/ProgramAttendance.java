@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Attendance extends BaseEntity {
+public class ProgramAttendance extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "attend_id")
@@ -30,7 +30,7 @@ public class Attendance extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_id")
-    private Application application;   // 신청 없이 현장등록이면 null 가능
+    private ProgramApplication programApplication;   // 신청 없이 현장등록이면 null 가능
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "prog_id", nullable = false)

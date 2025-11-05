@@ -2,7 +2,7 @@ package com.competency.SCMS.domain.noncurricular.program;
 
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.linkCompetency.LinkCompetency;
-import com.competency.SCMS.domain.noncurricular.operation.Application;
+import com.competency.SCMS.domain.noncurricular.operation.ProgramApplication;
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -92,7 +92,7 @@ public class Program extends BaseEntity {
     private List<ProgramSchedule> schedules = new ArrayList<>();
 
     @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Application> applications = new ArrayList<>();
+    private List<ProgramApplication> programApplications = new ArrayList<>();
 
     @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LinkCompetency> linkCompetencies = new ArrayList<>();

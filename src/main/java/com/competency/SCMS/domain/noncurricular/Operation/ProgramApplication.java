@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Application extends BaseEntity {
+public class ProgramApplication extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "app_id")
