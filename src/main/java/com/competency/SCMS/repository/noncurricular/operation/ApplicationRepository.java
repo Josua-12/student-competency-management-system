@@ -8,18 +8,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
 import java.util.*;
 
-public interface ApplicationRepository extends JpaRepository<Application, Long>, JpaSpecificationExecutor<Application> {
+public interface ApplicationRepository
+        extends JpaRepository<Application, Long>, JpaSpecificationExecutor<Application> {
 
-    Optional<Application> findByProgramIdAndScheduleIdAndStudentId(Long programId, Long scheduleId, Long studentId);
-    boolean existsByProgramIdAndScheduleIdAndStudentId(Long programId, Long scheduleId, Long studentId);
-
-    Page<Application> findByProgramIdAndStatus(Long programId, ApplicationStatus status, Pageable pageable);
-
-    @Query("select a from ProgramApplication a " +
-            "where a.studentId=:studentId and (:status is null or a.status=:status) " +
-            "order by a.createdAt desc")
+    @Query(
+            value = """
+        select a
+        from Application a
+        where a.studentId = :studentId
+          and (:status is null or a.status = :status)
+        order by a.createdAt desc
+      """,
+            countQuery = """
+        select count(a)
+        from Application a
+        where a.studentId = :studentId
+          and (:status is null or a.status = :status)
+      """
+    )
     Page<Application> findMyApplications(@Param("studentId") Long studentId,
-                                                @Param("status") ApplicationStatus status,
-                                                Pageable pageable);
+                                         @Param("status") ApplicationStatus status,
+                                         Pageable pageable);
 }
 

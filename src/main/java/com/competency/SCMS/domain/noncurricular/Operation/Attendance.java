@@ -3,6 +3,7 @@ package com.competency.SCMS.domain.noncurricular.operation;
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
+import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ public class Attendance extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "attend_id")
-    private Long id;
+    private Long attendanceId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_id")
@@ -39,8 +40,9 @@ public class Attendance extends BaseEntity {
     @JoinColumn(name = "schd_id", nullable = false)
     private ProgramSchedule schedule;
 
-    @Column(name = "student_id", nullable = false)
-    private Long studentId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id")
+    private User student;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 15, nullable = false)

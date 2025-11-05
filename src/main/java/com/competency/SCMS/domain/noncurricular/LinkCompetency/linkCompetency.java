@@ -1,6 +1,7 @@
 package com.competency.SCMS.domain.noncurricular.linkCompetency;
 
 import com.competency.SCMS.domain.BaseEntity;
+import com.competency.SCMS.domain.competency.Competency;
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -22,11 +23,11 @@ import lombok.*;
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Competency extends BaseEntity {
+public class LinkCompetency extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "prog_comp_id")
-    private Long id;
+    private Long compId;
 
     /** 대상 프로그램 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

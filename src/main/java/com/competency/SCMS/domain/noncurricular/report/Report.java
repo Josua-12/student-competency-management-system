@@ -2,6 +2,7 @@ package com.competency.SCMS.domain.noncurricular.report;
 
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.program.Program;
+import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,7 @@ public class Report extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
-    private Long id;
+    private Long reportId;
 
     /** 대상 프로그램 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -27,8 +28,8 @@ public class Report extends BaseEntity {
     private Program program;
 
     /** 작성자 */
-    @Column(name = "writer_user_id", nullable = false)
-    private Long writerUserId;
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="writer_id", nullable=false)
+    private User writer;
 
     /** 보고서 유형 (학생 or 운영자) */
     @Enumerated(EnumType.STRING)

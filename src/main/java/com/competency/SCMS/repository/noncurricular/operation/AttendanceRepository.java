@@ -2,19 +2,18 @@ package com.competency.SCMS.repository.noncurricular.operation;
 
 import com.competency.SCMS.domain.noncurricular.operation.Attendance;
 import com.competency.SCMS.domain.noncurricular.operation.AttendanceStatus;
+import com.competency.SCMS.domain.user.User;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import java.util.*;
 
-public interface AttendanceRepository extends JpaRepository<Attendance, Long>, JpaSpecificationExecutor<Attendance> {
+public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    Optional<Attendance> findByScheduleIdAndStudentId(Long scheduleId, Long studentId);
-    List<Attendance> findByScheduleIdOrderByStudentIdAsc(Long scheduleId);
+    List<Attendance> findAllBySchedule_IdAndStudentIdAndStatus(Long scheduleId,
+                                                               Long studentId,
+                                                               AttendanceStatus status);
 
-    @Query("select a from ProgramAttendance a where a.program.id=:programId and a.status=:status")
-    List<Attendance> findAllByProgramAndStatus(@Param("programId") Long programId,
-                                                      @Param("status") AttendanceStatus status);
+    Optional<Attendance> findBySchedule_IdAndStudentId(Long scheduleId, Long studentId);
 
-    @Query("select count(a) from ProgramAttendance a where a.schedule.id=:scheduleId and a.status='PRESENT'")
-    long countPresentBySchedule(@Param("scheduleId") Long scheduleId);
+    List<Attendance> findAllBySchedule_IdOrderByStudentIdAsc(Long scheduleId);
 }

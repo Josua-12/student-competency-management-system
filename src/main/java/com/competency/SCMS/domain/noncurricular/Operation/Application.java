@@ -3,6 +3,7 @@ package com.competency.SCMS.domain.noncurricular.operation;
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
+import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -25,18 +26,22 @@ public class Application extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "app_id")
-    private Long id;
+    private Long applicationId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "prog_id", nullable = false)
     private Program program;
 
+    // 회차별 신청인 경우 선택
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schd_id")
-    private ProgramSchedule schedule;   // nullable
+    private ProgramSchedule schedule;
 
-    @Column(name = "student_id", nullable = false)
-    private Long studentId;             // 추후 User 엔티티로 교체 가능
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id")
+    private User student;
+
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
@@ -50,5 +55,13 @@ public class Application extends BaseEntity {
 
     @Column(name = "applied_at", nullable = false)
     private LocalDateTime appliedAt = LocalDateTime.now();
+
+    private LocalDateTime approvedAt;
+    private LocalDateTime rejectedAt;
+    private LocalDateTime cancelledAt;
+
+    @Column(nullable=false)
+    private boolean fromWaitlist = false;
+
 }
 
