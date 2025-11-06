@@ -1,5 +1,6 @@
 package com.competency.SCMS.domain.competency;
 
+import com.competency.SCMS.dto.competency.CompetencyFormDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -135,16 +136,37 @@ public class Competency extends CompetencyBaseEntity {
     }
 
     /**
+     * 생성용 편의 메서드
+     */
+    public static Competency createCompetency(CompetencyFormDto dto, Competency parent) {
+        Competency competency = Competency.builder()
+                .name(dto.getName())
+                .compCode(dto.getCompCode())
+                .description(dto.getDescription())
+                .displayOrder(dto.getDisplayOrder())
+                .isActive(dto.isActive())
+                .adviceHigh(dto.getAdviceHigh())
+                .adviceLow(dto.getAdviceLow())
+                .build();
+
+        // (선택) 부모 설정
+        if (parent != null) {
+            competency.setParentCompetency(parent);
+        }
+
+        return competency;
+    }
+
+    /**
      * 역량 정보 수정 메서드
      */
-    public void updateInfo(String name, String description, int displayOrder, boolean isActive,
-                           String adviceLow, String adviceHigh) {
-        this.name = name;
-        this.description = description;
-        this.displayOrder = displayOrder;
-        this.isActive = isActive;
-        this.adviceLow = adviceLow;
-        this.adviceHigh = adviceHigh;
+    public void updateInfo(CompetencyFormDto dto) {
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.displayOrder = dto.getDisplayOrder();
+        this.isActive = dto.isActive();
+        this.adviceLow = dto.getAdviceLow();
+        this.adviceHigh = dto.getAdviceHigh();
     }
 
     /**

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(
+                    title='역량 관리',
+                    content=~{::main},
+                    css=~{::#page-css},
+                    scripts=~{::#page-scripts}
+                  )}">
+
+<th:block th:fragment="css" id="page-css">
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-tree/latest/tui-tree.css" />
+    <link th:href="@{/css/competency/admin-competency.css}" rel="stylesheet">
+</th:block>
+
+<main th:fragment="content" class="container-xl my-5">
+
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-title">역량 관리</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item">관리자</li>
+                <li class="breadcrumb-item active" aria-current="page">역량 관리</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm competency-tree-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0"><i class="fas fa-sitemap me-2"></i>역량 계층 구조</h5>
+                    <button type="button" class="btn btn-primary btn-sm" id="addNewRootCompetency">
+                        <i class="fas fa-plus me-1"></i> 최상위 추가
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="competencyTree"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+
+            <div id="detailPlaceholder" class="card shadow-sm placeholder-card">
+                <div class="card-body text-center">
+                    <i class="fas fa-mouse-pointer fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">항목 선택</h5>
+                    <p class="text-muted">왼쪽 트리에서 역량을 선택하거나, <br> '최상위 추가' 버튼을 눌러 새 역량을 등록하세요.</p>
+                </div>
+            </div>
+
+            <div id="detailView" class="card shadow-sm" style="display: none;">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="competencyTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#tab-info" type="button" role="tab">
+                                <i class="fas fa-edit me-1"></i> 기본 정보
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="questions-tab" data-bs-toggle="tab" data-bs-target="#tab-questions" type="button" role="tab">
+                                <i class="fas fa-list-ol me-1"></i> 진단 문항 관리
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <form id="competencyForm">
+                    <input type="hidden" id="competencyId" name="id">
+                    <input type="hidden" id="parentId" name="parentId">
+
+                    <div class="card-body tab-content p-4">
+
+                        <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
+                            <h5 class="card-title mb-3" id="formTitle">역량 정보 수정</h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <label for="compName" class="form-label">역량명 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="compName" name="name" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="compCode" class="form-label">역량 코드 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="compCode" name="compCode" required>
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="compDescription" class="form-label">설명</label>
+                                    <textarea class="form-control" id="compDescription" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="compOrder" class="form-label">표시 순서 <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="compOrder" name="displayOrder" value="1" required>
+
+                                    <label class="form-label mt-3">활성 여부</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="compActive" name="isActive" checked>
+                                        <label class="form-check-label" for="compActive">활성화</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="compAdviceHigh" class="form-label">강점 설명</label>
+                                    <textarea class="form-control" id="compAdviceHigh" name="adviceHigh" rows="4"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="compAdviceLow" class="form-label">약점 조언 (성장 Tip)</label>
+                                    <textarea class="form-control" id="compAdviceLow" name="adviceLow" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="tab-questions" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">연결된 진단 문항</h5>
+                                <button type="button" class="btn btn-success btn-sm" id="addNewQuestion">
+                                    <i class="fas fa-plus me-1"></i> 새 문항 추가
+                                </button>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table admin-table text-center">
+                                    <thead>
+                                    <tr>
+                                        <th>문항 코드</th>
+                                        <th>문항 내용</th>
+                                        <th>유형</th>
+                                        <th>순서</th>
+                                        <th>활성</th>
+                                        <th>관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="questionListBody">
+                                    <tr>
+                                        <td>Q_C1_01</td>
+                                        <td class="text-start">나는 팀 프로젝트에서 리더 역할을 선호한다.</td>
+                                        <td>LIKERT_5</td>
+                                        <td>1</td>
+                                        <td><span class="badge bg-success">활성</span></td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm">수정</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">연결된 문항이 없습니다.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div> <div class="card-footer d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-outline-danger" id="deleteButton">
+                        <i class="fas fa-trash me-1"></i> 역량 삭제
+                    </button>
+                    <div>
+                        <button type="button" class="btn btn-info me-2" id="addChildButton">
+                            <i class="fas fa-plus me-1"></i> 하위 역량 추가
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveButton">
+                            <i class="fas fa-save me-1"></i> 변경사항 저장
+                        </button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="questionModalLabel">
+                        <i class="fas fa-list-ol me-1"></i> 새 문항 등록
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="questionForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="modalQuestionId" name="id">
+                        <input type="hidden" id="modalCompetencyId" name="competencyId">
+
+                        <h6 class="form-section-title">1. 문항 정보</h6>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <label for="modalQuestionText" class="form-label">문항 내용 <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="modalQuestionText" name="questionText" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalQuestionCode" class="form-label">문항 코드 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="modalQuestionCode" name="questionCode" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalQuestionType" class="form-label">문항 유형</label>
+                                <select class="form-select" id="modalQuestionType" name="questionType">
+                                    <option value="LIKERT_5">5점 척도</option>
+                                    <option value="YES_NO">예/아니오</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="modalQuestionOrder" class="form-label">표시 순서 <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="modalQuestionOrder" name="displayOrder" value="1" required>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="modalQuestionActive" name="isActive" checked>
+                                    <label class="form-check-label" for="modalQuestionActive">활성화</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h6 class="form-section-title">2. 문항 항목 (보기)</h6>
+                        <p class="text-muted small">문항 유형에 맞는 항목을 추가하세요. (예: 5점 척도는 5개)</p>
+
+                        <div id="optionListContainer">
+                        </div>
+
+                        <button type="button" class="btn btn-outline-success btn-sm mt-2" id="addOptionButton">
+                            <i class="fas fa-plus me-1"></i> 보기 항목 추가
+                        </button>
+
+                    </div> <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" id="saveQuestionButton">
+                        <i class="fas fa-save me-1"></i> 문항 저장
+                    </button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <template id="optionRowTemplate">
+        <div class="row g-2 mb-2 option-row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" name="optionText" placeholder="항목 내용 (예: 매우 그렇다)" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" name="score" placeholder="점수" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" name="displayOrder" placeholder="순서" required>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="button" class="btn btn-outline-danger btn-delete-option">삭제</button>
+            </div>
+            <input type="hidden" name="optionId" value="">
+        </div>
+    </template>
+</main>
+
+<th:block th:fragment="scripts" id="page-scripts">
+    <script src="https://uicdn.toast.com/tui-code-snippet/latest/tui-code-snippet.js"></script>
+    <script src="https://uicdn.toast.com/tui-tree/latest/tui-tree.js"></script>
+
+    <script th:src="@{/js/competency/admin-competency.js}"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // 컨트롤러에서 'treeData' 이름으로 JSON 문자열을 넘겨주면 됩니다.
+        // const initialTreeData = /*[[${treeData}]]*/ [];
+
+        // (뷰 우선 작업을 위한 예시 데이터)
+        const initialTreeData = [
+            {
+                text: '핵심역량 1: 통합적 사고', id: 1,
+                data: { compCode: 'C1', desc: '설명...', ... },
+                children: [
+                    { text: '분석적 사고 (C1-1)', id: 11, data: { ... } },
+                    { text: '창의적 사고 (C1-2)', id: 12, data: { ... } }
+                ]
+            },
+            {
+                text: '핵심역량 2: 실무활용', id: 2,
+                data: { compCode: 'C2', ... },
+                children: [
+                    { text: '정보 수집 (C2-1)', id: 21, data: { ... } }
+                ]
+            }
+        ];
+        /*]]>*/
+    </script>
+</th:block>
+</html>
