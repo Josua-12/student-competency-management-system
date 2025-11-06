@@ -82,7 +82,6 @@ public class AssessmentQuestion extends CompetencyBaseEntity {
 
     @OneToMany(mappedBy = "question") // cascade 없음 (문항 삭제되도 답변은 남아야 함)
     @Builder.Default
-    @ToString.Exclude // ❗️ 무한루프 방지
     private List<AssessmentResponse> responses = new ArrayList<>();
 
     // ------ 편의 메서드 -------- //
