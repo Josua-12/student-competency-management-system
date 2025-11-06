@@ -49,10 +49,6 @@
                         <span class="stat-value" th:text="${userInfo.programCount} + '건'">00건</span>
                     </div>
                     <div class="stat-divider"></div>
-                    <div class="stat-item">
-                        <span class="stat-label">상담이력</span>
-                        <span class="stat-value" th:text="${userInfo.consultationCount} + '회'">00회</span>
-                    </div>
                 </div>
             </div>
         </section>
@@ -104,7 +100,7 @@
 
                 <div class="consultation-actions">
                     <a href="/consultation/reserve" class="action-btn primary-btn">
-                        <i class="fas fa-calendar-plus"></i> 상담 예약하기
+                        <i class="fas fa-calendar-plus"></i> 상담 예약 및 안내
                     </a>
                     <a href="/consultation/history" class="action-btn secondary-btn">
                         <i class="fas fa-history"></i> 내 예약 조회
@@ -114,21 +110,6 @@
                 <div class="consultation-history">
                     <th:block th:if="${consultations.isEmpty()}">
                         <p class="no-data">상담 이력이 없습니다.</p>
-                    </th:block>
-                    <th:block th:unless="${consultations.isEmpty()}">
-                        <div th:each="consultation : ${consultations}" class="history-item">
-                            <div class="history-header">
-                                <span class="counselor-name" th:text="${consultation.counselorName}">상담사명</span>
-                                <span class="consultation-date"
-                                      th:text="${#dates.format(consultation.consultationDate, 'yyyy-MM-dd')}">
-                      2025-01-01
-                </span>
-                            </div>
-                            <div class="history-content">
-                                <p class="topic" th:text="${consultation.topic}">상담 주제</p>
-                                <p class="notes" th:text="${consultation.notes}">상담 내용</p>
-                            </div>
-                        </div>
                     </th:block>
                 </div>
             </section>

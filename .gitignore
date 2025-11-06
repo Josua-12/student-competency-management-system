@@ -32,3 +32,5 @@ Thumbs.db
 # Binary and lock files
 *.bin
 *.lock
+
+problems-report.html
