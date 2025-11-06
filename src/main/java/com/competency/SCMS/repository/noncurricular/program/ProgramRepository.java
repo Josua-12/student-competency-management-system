@@ -46,7 +46,12 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
             "((:from is null or p.recruitStartAt <= :to) and (:to is null or p.recruitEndAt >= :from))")
     Page<Program> findRecruitingBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to, Pageable pageable);
 
+    // 부서/카테고리만 즉시 로딩(프로젝션용)
+    @EntityGraph(attributePaths = {"department", "category"})
+    Optional<Program> findWithDeptAndCategoryById(Long id);
 
+    // 소유/권한 체크용 (exists)
+    boolean existsByIdAndCreatedBy(Long id, Long operatorId);
 }
 
 interface ProgramRepositoryCustom {

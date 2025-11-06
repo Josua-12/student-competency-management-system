@@ -11,7 +11,7 @@ import java.util.*;
 public interface ProgramScheduleRepository extends JpaRepository<ProgramSchedule, Long> {
     List<ProgramSchedule> findByProgram_ProgramIdOrderByStartDateTimeAsc(Long programId);
     Page<ProgramSchedule> findByProgram_ProgramId(Long programId, Pageable pageable);
-
+    List<ProgramSchedule> findAllByProgram_IdOrderByRoundNoAsc(Long programId);
     // 특정 기간 내 회차
     List<ProgramSchedule> findByStartDateTimeBetween(LocalDateTime from, LocalDateTime to);
 }

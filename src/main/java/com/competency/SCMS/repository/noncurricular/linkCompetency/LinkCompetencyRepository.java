@@ -8,6 +8,7 @@ public interface LinkCompetencyRepository extends JpaRepository<LinkCompetency, 
 
     List<LinkCompetency> findAllByProgram_IdAndCompetency_ActiveTrueOrderByCompetency_NameAsc(Long programId);
     boolean existsByCode(String code);
+    List<LinkCompetency> findAllByProgram_Id(Long programId);
 }
 
 

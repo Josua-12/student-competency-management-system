@@ -7,5 +7,8 @@ public interface ProgramCommandService {
     void requestApproval(List<Long> programIds);
     void delete(Long programId);
     void delete(List<Long> programIds);
+    void update(Long programId, Object updateCommand, Long operatorId); // 필요 시 커맨드 DTO 정의
+    void requestApproval(Long programId, Long operatorId);
+    void delete(Long programId, Long operatorId);
 }
 
