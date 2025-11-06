@@ -41,7 +41,7 @@ public class SatisfactionQuestion {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private CounselingCategory category;
+    private CounselingSubField category;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
