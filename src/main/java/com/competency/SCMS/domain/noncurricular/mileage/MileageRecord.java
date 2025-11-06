@@ -3,6 +3,7 @@ package com.competency.SCMS.domain.noncurricular.mileage;
 
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.program.Program;
+import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,11 +21,11 @@ public class MileageRecord extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mileage_id")
-    private Long id;
+    private Long mileageId;
 
     /** 학생 ID */
     @Column(name = "student_id", nullable = false)
-    private Long studentId;
+    private Long student;
 
     /** 관련 프로그램 (없을 수도 있음) */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,4 +49,7 @@ public class MileageRecord extends BaseEntity {
     /** 비고 / 상세 사유 */
     @Column(name = "remarks", length = 255)
     private String remarks;
+
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="created_by_id")
+    private User createdBy;
 }

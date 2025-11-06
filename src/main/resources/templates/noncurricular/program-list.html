@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>비교과 프로그램 목록</title>
+
+    <!-- Bootstrap -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Toast UI -->
+    <link rel="stylesheet" th:href="@{/toastui/toastui.css}" />
+    <!-- Custom CSS -->
+    <link th:href="@{/css/noncurricular.css}" rel="stylesheet">
+</head>
+<body>
+
+<header class="container py-3">
+    <h3 class="fw-bold">CHAMP 비교과 프로그램</h3>
+</header>
+
+<main class="container">
+    <!-- 🔍 검색 및 필터 영역 -->
+    <section class="search-filter card p-4 mb-4 shadow-sm">
+        <form th:action="@{/programs}" method="get" class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <label for="keyword" class="form-label">검색어</label>
+                <input id="keyword" type="text" name="keyword" th:value="${param.keyword}" class="form-control" placeholder="검색어를 입력하세요.">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">운영부서</label>
+                <select name="department" class="form-select">
+                    <option value="">전체</option>
+                    <option th:each="dept : ${departments}"
+                            th:value="${dept.id}"
+                            th:text="${dept.name}"></option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">운영유형</label>
+                <select name="type" class="form-select">
+                    <option value="">전체</option>
+                    <option value="온라인">온라인</option>
+                    <option value="오프라인">오프라인</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex justify-content-end align-items-end">
+                <button type="submit" class="btn btn-primary w-100">검색</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- 📋 카드 리스트 영역 -->
+    <section class="program-list row g-4">
+        <div class="col-md-3 col-sm-6" th:each="program : ${programList}">
+            <div class="card h-100 shadow-sm">
+                <img th:src="${program.thumbnail != null ? program.thumbnail : '/img/no-image.png'}"
+                     class="card-img-top" alt="thumbnail">
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title text-primary fw-bold"
+                        th:text="${program.title}">프로그램 제목</h6>
+                    <p class="text-muted small mb-1"
+                       th:text="'운영기간: ' + ${program.startDate} + ' ~ ' + ${program.endDate}"></p>
+                    <p class="text-muted small mb-1"
+                       th:text="'신청기간: ' + ${program.applyStartDate} + ' ~ ' + ${program.applyEndDate}"></p>
+
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <span class="badge bg-info" th:text="${program.departmentName}">운영부서</span>
+                        <a th:href="@{|/programs/${program.id}|}" class="btn btn-outline-primary btn-sm">상세보기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🔢 페이지네이션 -->
+    <nav class="pagination-wrap my-4 d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${page.number == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{|/programs?page=${page.number - 1}|}">&laquo;</a>
+            </li>
+            <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                th:classappend="${i == page.number} ? 'active'">
+                <a class="page-link" th:href="@{|/programs?page=${i}|}"
+                   th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${page.number + 1 >= page.totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{|/programs?page=${page.number + 1}|}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+</main>
+
+<!-- Toast 알림 -->
+<script th:src="@{/toastui/toastui.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const message = /*[[${toastMessage}]]*/ '';
+        if (message) {
+            toastui.showToast({ message });
+        }
+    });
+</script>
+
+</body>
+</html>
