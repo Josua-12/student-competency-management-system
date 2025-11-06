@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(
+                    title='진단 결과',
+                    content=~{::main},
+                    css=~{::#page-css},
+                    scripts=~{::#page-scripts}
+                  )}">
+
+<th:block th:fragment="css" id="page-css">
+    <link th:href="@{/css/competency/assessment-result.css}" rel="stylesheet">
+</th:block>
+
+<main th:fragment="content" class="container-lg my-5">
+    <div class="assessment-result-container">
+        <div class="result-header">
+            <h2 class="main-title" th:text="${result.title}">2025년 역량진단 결과</h2>
+            <p class="sub-title">
+                <span th:text="${user.name}">홍길동</span> 님의 진단 결과입니다.
+                (진단 완료일: <span th:text="${#temporals.format(result.submittedAt, 'yyyy.MM.dd')}">2025.03.14</span>)
+            </p>
+        </div>
+
+        <div class="result-card mb-4">
+            <h5 class="card-title">1. 전체 요약</h5>
+            <div class="chart-container">
+                <canvas id="competencyRadarChart"></canvas>
+            </div>
+        </div>
+
+        <div class="result-card mb-4">
+            <h5 class="card-title">2. 상세 점수 분석</h5>
+            <div class="detail-scores-container">
+                <div class="parent-competency-group" th:each="parentResult : ${parentCompetencyResults}">
+
+                    <h6 class="parent-title">
+                        [<span th:text="${parentResult.parentName}">핵심역량 1</span>]
+                        <span th:text="${parentResult.parentCompetencyName}">통합적 사고</span>
+                        (평균 점수: <span th:text="${#numbers.formatDecimal(parentResult.parentAverageScore, 1, 2)}">4.5</span>점)
+                    </h6>
+
+                    <div class="child-competency-list">
+                        <div class="child-score-item" th:each="child : ${parentResult.children}">
+                            <span class="child-name" th:text="${child.childName}">분석적 사고</span>
+                            <div class="score-bar-container">
+                                <div class="score-bar"
+                                     th:style="'width: ' + (${child.childScore} / 5 * 100) + '%;'">
+                                </div>
+                            </div>
+                            <span class="child-score" th:text="${#numbers.formatDecimal(child.childScore, 1, 2)} + '점'">xx점</span>
+                        </div>
+                    </div>
+
+                </div> </div>
+        </div>
+
+        <div class="result-card">
+            <h5 class="card-title">3. 종합 피드백</h5>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="feedback-box strength">
+                        <h6 class="feedback-title">강점 (Top 2)</h6>
+                        <ul class="feedback-list">
+                            <li th:each="item : ${feedbackData.topStrengths}">
+                                <strong th:text="${item.name}">분석적 사고</strong>:
+                                <span th:text="${item.description}">예) 분석적 사고 잘함</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="feedback-box weakness">
+                        <h6 class="feedback-title">성장 제안 (Bottom 2)</h6>
+                        <ul class="feedback-list">
+                            <li th:each="item : ${feedbackData.bottomWeaknesses}">
+                                <strong th:text="${item.name}">협업 능력</strong>
+                                (<span th:text="${#numbers.formatDecimal(item.score, 1, 2)} + '점'">30점</span>)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="advice-section">
+                <h6 class="advice-title">성장을 위한 맞춤 조언</h6>
+                <p>
+                    <strong th:text="'\'\'' + ${feedbackData.weakestCompetencyName} + '\' 역량 향상을 위한 Tip!'">
+                        '협업 능력' 향상을 위한 Tip!
+                    </strong>
+                </p>
+                <p class="advice-content" th:text="${feedbackData.growthAdvice}">
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                </p>
+            </div>
+
+        </div> </div>
+</main>
+
+<th:block th:fragment="scripts" id="page-scripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        const chartData = /*[[${chartData}]]*/ {
+            labels: ["창의성", "대인관계", "실무활용", "통합적 사고"],
+            myScores: [4.2, 3.8, 5.0, 4.0],
+            deptScores: [3.5, 4.0, 4.2, 3.8],
+            univScores: [3.3, 3.8, 4.0, 3.5]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('competencyRadarChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        {
+                            label: '내 점수',
+                            data: chartData.myScores,
+                            fill: true,
+                            backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                        },
+                        {
+                            label: '학과 평균',
+                            data: chartData.deptScores,
+                            fill: false,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                        },
+                        {
+                            label: '학교 평균',
+                            data: chartData.univScores,
+                            fill: false,
+                            borderColor: 'rgba(153, 153, 153, 1)',
+                            pointBackgroundColor: 'rgba(153, 153, 153, 1)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            // ⭐️ [핵심 수정] 0점 ~ 5점 척도로 변경
+                            min: 0,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1, // 1점 단위로 눈금 표시
+                                backdropColor: 'white',
+                                color: '#777'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 13,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        });
+
+        /*]]>*/
+    </script>
+</th:block>
+</html>

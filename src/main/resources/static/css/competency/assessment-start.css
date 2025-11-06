@@ -1,0 +1,118 @@
+.assessment-start-container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.assessment-header {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.main-title { font-size: 2rem; font-weight: 700; }
+.sub-title { font-size: 1.1rem; color: #666; margin-top: 10px; }
+.progress { height: 10px; margin-top: 20px; }
+
+.question-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 150px; /* 푸터 높이만큼 여백 */
+}
+
+.question-card {
+    background-color: #fff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+}
+
+.question-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+.question-number {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-color, #667eea);
+    display: block;
+    margin-bottom: 5px;
+}
+.question-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.options-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.option-item:hover {
+    background-color: #f8f9fa;
+}
+
+.option-item input[type="radio"] {
+    margin: 15px;
+    width: 18px;
+    height: 18px;
+}
+
+.option-item label.option-label {
+    flex: 1;
+    padding: 15px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+}
+.option-item input[type="radio"]:checked + label.option-label {
+    color: var(--primary-color, #667eea);
+    font-weight: 700;
+}
+
+.option-score {
+    color: #999;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* 하단 제출 바 */
+.submission-footer {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+}
+.submission-footer p {
+    margin: 0;
+    font-weight: 600;
+}
+.submission-footer button {
+    padding: 10px 20px;
+    font-weight: 600;
+}
