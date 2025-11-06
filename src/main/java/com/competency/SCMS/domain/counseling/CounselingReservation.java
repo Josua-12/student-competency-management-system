@@ -47,7 +47,7 @@ public class CounselingReservation {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private CounselingCategory category;
+    private CounselingSubField category;
     
     private LocalDateTime confirmedDateTime;
     

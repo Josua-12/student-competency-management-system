@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class CounselingCategory { // 관리자가 하위 상담 분야 관리
+public class CounselingSubField { // 관리자가 하위 상담 분야 관리
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class CounselingCategory { // 관리자가 하위 상담 분야 관리
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull(message = "상담 분야는 필수입니다")
+    @NotNull(message = "상위 상담 분야는 필수입니다")
     private CounselingField counselingField;    // 상위 상담 분야
     
     @Column(nullable = false)
@@ -48,7 +48,7 @@ public class CounselingCategory { // 관리자가 하위 상담 분야 관리
     private LocalDateTime updatedAt;
 
     // 필수 필드 생성자
-    public CounselingCategory(CounselingField counselingField, String categoryName) {
+    public CounselingSubField(CounselingField counselingField, String categoryName) {
         this.counselingField = counselingField;
         this.categoryName = categoryName;
     }
