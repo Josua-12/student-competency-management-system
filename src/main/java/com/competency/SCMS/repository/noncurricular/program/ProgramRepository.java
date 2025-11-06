@@ -14,7 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program>, ProgramRepositoryCustom {
+public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program>,
+        ProgramRepositoryCustom {
 
     // 목록/검색
     Page<Program> findByStatus(ProgramStatus status, Pageable pageable);
@@ -52,8 +53,6 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
     // 소유/권한 체크용 (exists)
     boolean existsByIdAndCreatedBy(Long id, Long operatorId);
-}
 
-interface ProgramRepositoryCustom {
-    Page<ProgramListRow> searchForOperatorList(ProgramSearchCond cond, Pageable pageable);
+
 }

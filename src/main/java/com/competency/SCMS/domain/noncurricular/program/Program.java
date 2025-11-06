@@ -1,9 +1,12 @@
 package com.competency.SCMS.domain.noncurricular.program;
 
 import com.competency.SCMS.domain.BaseEntity;
+import com.competency.SCMS.domain.Department;
+import com.competency.SCMS.domain.File;
 import com.competency.SCMS.domain.noncurricular.linkCompetency.LinkCompetency;
 import com.competency.SCMS.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.SCMS.domain.noncurricular.operation.ProgramApplication;
+import com.competency.SCMS.domain.noncurricular.operation.ProgramApprovalHistory;
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +37,11 @@ public class Program extends BaseEntity {
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="owner_id", nullable=false)
     private User owner;
 
+    /** 운영부서 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_id")
+    private Department department;
+
     @Column(nullable=false) private Integer maxParticipants;
     private Integer minParticipants;
     @Column(nullable=false) private Integer currentParticipants = 0;
@@ -42,7 +50,8 @@ public class Program extends BaseEntity {
     @Column(name = "prog_code", length = 50, nullable = false)
     private String code;
 
-    @Column(length = 200, nullable = false)
+    /** 프로그램명 */
+    @Column(nullable = false, length = 200)
     private String title;
 
     @Column(length = 500)
@@ -51,6 +60,7 @@ public class Program extends BaseEntity {
     @Lob
     private String description;
 
+    /** 카테고리 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "catg_id", nullable = false)
     private ProgramCategory category;
@@ -71,6 +81,7 @@ public class Program extends BaseEntity {
     @Column(name = "recruit_end_at")
     private LocalDateTime recruitEndAt;
 
+    /** 운영 시작/종료일 */
     @Column(name = "program_start_at")
     private LocalDateTime programStartAt;
 
@@ -91,8 +102,20 @@ public class Program extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ApprovalStatus approvalStatus;
 
+    /** 마일리지 점수 */
+    private Integer mileage;
+
+    /** 대표 이미지 */
+    @Column(length = 500)
+    private String thumbnailUrl;
+
+    /** 작성자(운영자 ID) */
+    private Long createdBy;
+
     public void requestApproval() {
         this.approvalStatus = ApprovalStatus.REQ;
+
+
     }
 
     // 운영/성과 연관 (핵심만 양방향)
@@ -104,6 +127,12 @@ public class Program extends BaseEntity {
 
     @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LinkCompetency> linkCompetencies = new ArrayList<>();
+
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<File> files = new ArrayList<>();
+
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProgramApprovalHistory> approvalHistories = new ArrayList<>();
 
     public void addSchedule(ProgramSchedule s) {
         s.setProgram(this);
