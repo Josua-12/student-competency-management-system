@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -19,45 +20,45 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class CounselingSchedule {
+public class CounselingBaseSchedule { // 기본 근무 시간표
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id", nullable = false)
     private User counselor;
     
-    @Column(nullable = false)
-    private LocalDate scheduleDate;
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
     
     @Column(nullable = false)
-    private Boolean slot0910 = false;
+    private Boolean slot0910 = true;
     
     @Column(nullable = false)
-    private Boolean slot1011 = false;
+    private Boolean slot1011 = true;
     
     @Column(nullable = false)
-    private Boolean slot1112 = false;
+    private Boolean slot1112 = true;
     
     @Column(nullable = false)
-    private Boolean slot1213 = false;
+    private Boolean slot1213 = false;   //점심시간
     
     @Column(nullable = false)
-    private Boolean slot1314 = false;
+    private Boolean slot1314 = true;    
     
     @Column(nullable = false)
-    private Boolean slot1415 = false;
+    private Boolean slot1415 = true;
 
     @Column(nullable = false)
-    private Boolean slot1516 = false;
+    private Boolean slot1516 = true;
 
     @Column(nullable = false)
-    private Boolean slot1617 = false;
+    private Boolean slot1617 = true;
 
     @Column(nullable = false)
-    private Boolean slot1718 = false;
+    private Boolean slot1718 = true;
 
     @Column(nullable = false)
     @CreatedDate
