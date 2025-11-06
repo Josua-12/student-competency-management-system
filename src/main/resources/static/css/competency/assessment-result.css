@@ -1,0 +1,138 @@
+.assessment-result-container {
+    max-width: 960px; /* 너비를 살짝 줄여 가독성 확보 */
+    margin: 0 auto;
+}
+
+.result-header {
+    margin-bottom: 30px;
+}
+.main-title { font-size: 2rem; font-weight: 700; }
+.sub-title { font-size: 1.1rem; color: #666; margin-top: 10px; }
+
+.result-card {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    height: 100%;
+}
+
+.result-card .card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 25px;
+}
+
+/* 1. 레이더 차트 컨테이너 */
+.chart-container {
+    position: relative;
+    height: 400px; /* 높이 조절 (이전 450px) */
+}
+
+/* 2. 상세 점수 분석 (막대 바) */
+.detail-scores-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.parent-competency-group .parent-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.child-competency-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-left: 15px;
+    border-left: 3px solid #f0f0f0;
+}
+
+.child-score-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.child-score-item .child-name {
+    flex-basis: 120px; /* 하위 역량 이름 너비 고정 */
+    font-weight: 500;
+    color: #555;
+}
+
+.score-bar-container {
+    flex: 1;
+    height: 18px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.score-bar {
+    height: 100%;
+    background-color: var(--primary-color, #667eea);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    /* (width는 인라인 스타일로 0-100% 설정) */
+}
+
+.child-score-item .child-score {
+    flex-basis: 50px;
+    text-align: right;
+    font-weight: 700;
+    color: var(--primary-color, #667eea);
+}
+
+
+/* 3. 종합 피드백 */
+.feedback-box {
+    padding: 20px;
+    border-radius: 8px;
+    height: 100%;
+}
+.feedback-box.strength {
+    background-color: #f0f8ff; /* (예: 연한 파랑) */
+    border: 1px solid #bde0ff;
+}
+.feedback-box.weakness {
+    background-color: #fff8f8; /* (예: 연한 빨강) */
+    border: 1px solid #ffdbe0;
+}
+
+.feedback-title {
+    font-weight: 700;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.feedback-box.strength .feedback-title { color: #007bff; }
+.feedback-box.weakness .feedback-title { color: #dc3545; }
+
+.feedback-list {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+.feedback-list li {
+    margin-bottom: 8px;
+}
+
+.advice-section {
+    margin-top: 10px;
+}
+.advice-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.advice-content {
+    color: #555;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    line-height: 1.7;
+}

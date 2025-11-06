@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(
+                    title='역량 진단하기',
+                    content=~{::main},
+                    css=~{::#page-css},
+                    scripts=~{::#page-scripts}
+                  )}">
+
+<th:block th:fragment="css" id="page-css">
+    <link th:href="@{/css/competency/assessment-start.css}" rel="stylesheet">
+</th:block>
+
+<main th:fragment="content" class="container-lg my-5">
+    <div class="assessment-start-container">
+        <div class="assessment-header">
+            <h2 class="main-title" th:text="${section.title}">2025학년도 1학기 핵심역량 진단</h2>
+            <p class="sub-title" th:text="${section.description}">
+                학생 여러분의 핵심역량 수준을 점검합니다. 각 문항을 읽고 자신에게 가장 가깝다고 생각하는 항목을 선택해 주세요.
+            </p>
+            <div class="progress" role="progressbar" aria-label="진행도">
+                <div class="progress-bar" style="width: 0%" id="progressBar">0%</div>
+            </div>
+        </div>
+
+        <form th:action="@{/assessment/submit}" th:object="${diagnosisForm}" method="post" id="diagnosisForm">
+            <input type="hidden" th:field="*{assessmentResultId}" />
+
+            <div class="question-list">
+                <div class="question-card" th:each="question, qStat : *{questions}">
+                    <div class="question-header">
+                        <span class="question-number" th:text="'Question ' + ${qStat.count}">Q. 01</span>
+                        <h5 class="question-text" th:text="${question.questionText}">
+                            나는 팀 프로젝트에서 리더 역할을 맡는 것을 선호한다.
+                        </h5>
+                    </div>
+                    <div class="options-group">
+                        <div class="option-item" th:each="option : ${question.options}">
+                            <input type="radio"
+                                   th:field="*{responses[__${question.id}__]}"
+                                   th:value="${option.id}"
+                                   th:id="'option_' + ${option.id}"
+                                   class="form-check-input"
+                                   required> <label th:for="'option_' + ${option.id}" class="option-label">
+                            <span class="option-text" th:text="${option.optionText}">매우 그렇지 않다</span>
+                            <span class="option-score" th:text="'(' + ${option.score} + '점)'">(1점)</span>
+                        </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="submission-footer sticky-bottom">
+                <p>총 <span th:text="${#lists.size(questions)}">25</span>개 문항 중 <span id="answeredCount">0</span>개 응답</p>
+                <div>
+                    <button type="submit" class="btn btn-secondary"
+                            formaction="@{/assessment/draft}"
+                            id="draftButton">
+                        <i class="fas fa-save me-1"></i> 임시저장
+                    </button>
+                    <button type="submit" class="btn btn-primary"
+                            formaction="@{/assessment/submit}"
+                            id="submitButton">
+                        <i class="fas fa-check-circle me-1"></i> 최종제출
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</main>
+
+<th:block th:fragment="scripts" id="page-scripts">
+    <script th:src="@{/js/competency/assessment-start.js}"></script>
+</th:block>
+</html>

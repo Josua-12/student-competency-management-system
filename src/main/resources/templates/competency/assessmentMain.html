@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(
+                    title='진단하기',
+                    content=~{::main},
+                    css=~{::#page-css},
+                    scripts=~{::#page-scripts}
+                  )}">
+
+<th:block th:fragment="css" id="page-css">
+    <link th:href="@{/css/competency/assessment.css}" rel="stylesheet">
+</th:block>
+
+<main th:fragment="content" class="main-content-wrapper">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-title">진단하기</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">역량진단</li>
+                <li class="breadcrumb-item active" aria-current="page">진단하기</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="assessment-section-container">
+        <div class="assessment-tabs">
+            <button type="button" class="tab-button active" data-tab="participate">진단목록</button>
+            <button type="button" class="tab-button" data-tab="results">진단결과</button>
+        </div>
+
+        <div class="tab-content-wrapper">
+            <div id="participate" class="tab-pane active">
+                <table class="table assessment-table">
+                    <colgroup>
+                        <col style="width: 10%;">
+                        <col style="width: 40%;">
+                        <col style="width: 30%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">진단명</th>
+                        <th scope="col">진단기간</th>
+                        <th scope="col">진단하기</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(assessmentSections)}">
+                        <td colspan="4" class="text-center py-4">현재 진행 중인 진단 목록이 없습니다.</td>
+                    </tr>
+                    <tr th:each="section, stat : ${assessmentSections}">
+                        <td th:text="${stat.count}">1</td>
+                        <td>
+                            <a th:href="${section.status == 'AVAILABLE' ? '/assessment/start/' + section.id : (section.status == 'COMPLETED' ? '/assessment/result/' + section.resultId : '#')}"
+                               th:classappend="${section.status == 'EXPIRED' ? 'text-muted' : ''}"
+                               th:text="${section.title}">
+                                2025학년도 1학기 핵심역량 진단
+                            </a>
+                        </td>
+                        <td>
+                            <span th:text="${#temporals.format(section.startDate, 'yyyy.MM.dd')}">2025.03.01</span>
+                            ~
+                            <span th:text="${#temporals.format(section.endDate, 'yyyy.MM.dd')}">2025.03.15</span>
+                        </td>
+                        <td>
+                            <a th:if="${section.status == 'AVAILABLE'}"
+                               th:href="@{/assessment/start/{id}(id=${section.id})}"
+                               class="btn btn-primary btn-sm">진단하기</a>
+                            <a th:if="${section.status == 'COMPLETED'}"
+                               th:href="@{/assessment/result/{id}(id=${section.resultId})}"
+                               class="btn btn-secondary btn-sm">결과보기</a>
+                            <button th:if="${section.status == 'EXPIRED'}" type="button" class="btn btn-outline-secondary btn-sm" disabled>기간종료</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="results" class="tab-pane">
+                <table class="table assessment-table">
+                    <colgroup>
+                        <col style="width: 10%;">
+                        <col style="width: 40%;">
+                        <col style="width: 30%;">
+                        <col style="width: 20%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">진단명</th>
+                        <th scope="col">진단완료일</th>
+                        <th scope="col">결과보기</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(completedResults)}">
+                        <td colspan="4" class="text-center py-4">진단 결과가 없습니다.</td>
+                    </tr>
+                    <tr th:each="result, stat : ${completedResults}">
+                        <td th:text="${stat.count}">1</td>
+                        <td th:text="${result.title}">2024학년도 2학기 핵심역량 진단 (결과)</td>
+                        <td th:text="${#temporals.format(result.submittedAt, 'yyyy.MM.dd')}">2024.09.05</td>
+                        <td>
+                            <a th:href="@{/assessment/result/{id}(id=${result.id})}"
+                               class="btn btn-info btn-sm">결과보기</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</main>
+
+<th:block th:fragment="scripts" id="page-scripts">
+    <script th:src="@{/js/competency/assessment.js}"></script>
+</th:block>
+</html>
