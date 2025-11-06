@@ -1,14 +1,20 @@
 package com.competency.SCMS.repository.noncurricular.program;
+
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import com.competency.SCMS.domain.noncurricular.program.ProgramStatus;
+import com.competency.SCMS.dto.noncurricular.program.ProgramListRow;
+import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCond;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program> {
+public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpecificationExecutor<Program>, ProgramRepositoryCustom {
 
     // 목록/검색
     Page<Program> findByStatus(ProgramStatus status, Pageable pageable);
@@ -39,4 +45,15 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
     @Query("select p from Program p where p.deleted=false and " +
             "((:from is null or p.recruitStartAt <= :to) and (:to is null or p.recruitEndAt >= :from))")
     Page<Program> findRecruitingBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to, Pageable pageable);
+
+    // 부서/카테고리만 즉시 로딩(프로젝션용)
+    @EntityGraph(attributePaths = {"department", "category"})
+    Optional<Program> findWithDeptAndCategoryById(Long id);
+
+    // 소유/권한 체크용 (exists)
+    boolean existsByIdAndCreatedBy(Long id, Long operatorId);
+}
+
+interface ProgramRepositoryCustom {
+    Page<ProgramListRow> searchForOperatorList(ProgramSearchCond cond, Pageable pageable);
 }

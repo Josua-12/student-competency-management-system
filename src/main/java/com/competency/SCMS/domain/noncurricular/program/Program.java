@@ -2,6 +2,7 @@ package com.competency.SCMS.domain.noncurricular.program;
 
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.noncurricular.linkCompetency.LinkCompetency;
+import com.competency.SCMS.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.SCMS.domain.noncurricular.operation.ProgramApplication;
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
@@ -86,6 +87,13 @@ public class Program extends BaseEntity {
 
     @Column(nullable = false)
     private boolean deleted = false;
+
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus;
+
+    public void requestApproval() {
+        this.approvalStatus = ApprovalStatus.REQ;
+    }
 
     // 운영/성과 연관 (핵심만 양방향)
     @OneToMany(mappedBy="program", cascade = CascadeType.ALL, orphanRemoval = true)

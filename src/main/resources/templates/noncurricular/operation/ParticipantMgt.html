@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>[운영자] 참가자 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root{
+            --bg:#f7f8fa; --card:#fff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+            --brand:#2563eb; --brand-weak:#dbeafe; --danger:#ef4444; --warning:#f59e0b; --success:#10b981;
+            --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto}
+        .wrap{max-width:1200px;margin:24px auto;padding:0 16px}
+        .title{display:flex;align-items:center;gap:10px;margin:8px 0 16px}
+        .title h1{font-size:20px;margin:0}
+        .title .sub{color:var(--muted)}
+        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+        .section{padding:16px}
+        .grid{display:grid;gap:12px}
+        .filters{grid-template-columns:repeat(12,1fr);align-items:end}
+        .fld{display:flex;flex-direction:column;gap:6px}
+        .fld label{font-weight:600;font-size:12px;color:#374151}
+        .fld input,.fld select{height:36px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff}
+        .fld input::placeholder{color:#9ca3af}
+        .btn{height:36px;border:1px solid transparent;border-radius:10px;background:var(--brand);color:#fff;padding:0 12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+        .btn.secondary{background:#fff;border-color:var(--line);color:#374151}
+        .btn.danger{background:var(--danger)}
+        .btn.warning{background:var(--warning)}
+        .btn.success{background:var(--success)}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
+        .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+        .stats{display:flex;flex-wrap:wrap;gap:8px}
+        .chip{background:var(--brand-weak);color:#1e40af;border-radius:999px;padding:6px 10px;font-weight:700;font-size:12px}
+        .chip.gray{background:#f3f4f6;color:#374151}
+        .chip.green{background:#dcfce7;color:#166534}
+        .chip.red{background:#fee2e2;color:#991b1b}
+        .chip.yellow{background:#fef3c7;color:#92400e}
+        .table-wrap{overflow:auto;border-top:1px solid var(--line)}
+        table{width:100%;border-collapse:separate;border-spacing:0}
+        thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid var(--line);text-align:left;font-size:12px;color:#374151;padding:10px}
+        tbody td{border-bottom:1px solid var(--line);padding:10px;vertical-align:middle}
+        tbody tr:hover{background:#fafafa}
+        .status{font-weight:700;font-size:12px;padding:4px 8px;border-radius:999px;display:inline-block}
+        .status.PENDING{background:#fef3c7;color:#92400e}
+        .status.APPROVED{background:#dcfce7;color:#166534}
+        .status.REJECTED{background:#fee2e2;color:#991b1b}
+        .status.CANCELLED{background:#e5e7eb;color:#374151}
+        .row-actions{display:flex;gap:6px;flex-wrap:wrap}
+        .pagination{display:flex;justify-content:center;gap:6px;padding:12px}
+        .page{min-width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+        .page.active{background:var(--brand);border-color:var(--brand);color:#fff}
+        .page:disabled{opacity:.5;cursor:not-allowed}
+        .muted{color:var(--muted)}
+        .divider{height:1px;background:var(--line);margin:8px 0}
+        /* modal */
+        .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+        .modal{max-width:520px;width:100%;background:#fff;border-radius:16px;border:1px solid var(--line)}
+        .modal .hd{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
+        .modal .bd{padding:16px}
+        .modal .ft{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+        /* responsive */
+        @media (max-width:960px){
+            .filters{grid-template-columns:1fr 1fr}
+            .hide-sm{display:none}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap" data-program-id="123"> <!-- programId 주입 -->
+    <div class="title">
+        <h1>참가자 관리</h1>
+        <span class="sub">프로그램 ID: <span id="programIdLabel">123</span></span>
+    </div>
+
+    <!-- 검색/필터 영역 -->
+    <div class="card section grid filters" id="filterBox">
+        <div class="fld" style="grid-column:span 3;">
+            <label>상태</label>
+            <select id="status">
+                <option value="">전체</option>
+                <option value="PENDING">대기(PENDING)</option>
+                <option value="APPROVED">승인(APPROVED)</option>
+                <option value="REJECTED">반려(REJECTED)</option>
+                <option value="CANCELLED">취소(CANCELLED)</option>
+            </select>
+        </div>
+        <div class="fld" style="grid-column:span 3;">
+            <label>회차(일정)</label>
+            <select id="scheduleId">
+                <option value="">전체</option>
+                <!-- 동적 옵션 -->
+            </select>
+        </div>
+        <div class="fld" style="grid-column:span 4;">
+            <label>검색어 (이름/학번/학과/연락처)</label>
+            <input id="keyword" type="text" placeholder="예) 김하은 / 20231234 / 산업경영공학" />
+        </div>
+        <div class="fld" style="grid-column:span 2;">
+            <button class="btn" id="btnSearch">검색</button>
+        </div>
+        <div class="divider" style="grid-column:1/-1"></div>
+
+        <!-- 통계/툴바 -->
+        <div class="toolbar" style="grid-column:1/-1;justify-content:space-between;gap:10px">
+            <div class="stats">
+                <span class="chip gray">총 <b id="statTotal">0</b>명</span>
+                <span class="chip yellow">대기 <b id="statPending">0</b></span>
+                <span class="chip green">승인 <b id="statApproved">0</b></span>
+                <span class="chip red">반려 <b id="statRejected">0</b></span>
+                <span class="chip gray">취소 <b id="statCancelled">0</b></span>
+            </div>
+            <div class="toolbar">
+                <button class="btn secondary" id="btnExport">엑셀다운</button>
+                <button class="btn secondary" id="btnNotify">알림발송(이메일/SMS)</button>
+                <button class="btn success" id="btnBulkApprove" disabled>일괄 승인</button>
+                <button class="btn warning" id="btnBulkReject" disabled>일괄 반려</button>
+                <button class="btn danger" id="btnBulkCancel" disabled>일괄 취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 표 -->
+    <div class="card">
+        <div class="table-wrap">
+            <table id="grid">
+                <thead>
+                <tr>
+                    <th style="width:42px"><input type="checkbox" id="chkAll"/></th>
+                    <th style="width:70px">No</th>
+                    <th>학생</th>
+                    <th class="hide-sm">학과/학년</th>
+                    <th>연락처</th>
+                    <th class="hide-sm">신청유형</th>
+                    <th>회차</th>
+                    <th>상태</th>
+                    <th style="width:360px">행동</th>
+                </tr>
+                </thead>
+                <tbody id="gridBody">
+                <!-- 동적 행 -->
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination" id="pager"></div>
+    </div>
+</div>
+
+<!-- 승인/반려/취소 모달 -->
+<div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+        <div class="hd" id="modalTitle">처리</div>
+        <div class="bd">
+            <div class="fld">
+                <label id="modalLabel">사유(선택)</label>
+                <textarea id="modalReason" style="width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:8px;"></textarea>
+            </div>
+        </div>
+        <div class="ft">
+            <button class="btn secondary" id="modalClose">닫기</button>
+            <button class="btn" id="modalConfirm">확인</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /** ====== 설정 ====== */
+    const USE_MOCK = true; // 서버 연동 전이면 true로 두고 화면 검증
+    const PAGE_SIZE = 10;
+
+    // REST 엔드포인트 (백엔드 붙일 때 여기만 맞추면 됨)
+    const API = {
+        list:(programId,{status, scheduleId, keyword, page, size}) =>
+        `/ops/programs/${programId}/participants?status=${encodeURIComponent(status||'')}&scheduleId=${encodeURIComponent(scheduleId||'')}&q=${encodeURIComponent(keyword||'')}&page=${page||0}&size=${size||PAGE_SIZE}`,
+        approve:(programId, applicationId) => `/ops/programs/${programId}/participants/${applicationId}/approve`,
+        reject:(programId, applicationId) => `/ops/programs/${programId}/participants/${applicationId}/reject`,
+        cancel:(programId, applicationId) => `/ops/programs/${programId}/participants/${applicationId}`,
+        notify:(programId) => `/ops/programs/${programId}/participants/notify`,
+        export:(programId, params) => `/ops/programs/${programId}/participants/export?${new URLSearchParams(params)}`
+    };
+    // 출석부 이동 URL
+    const attendanceUrl = (programId, scheduleId) => `/ops/programs/${programId}/attendance?scheduleId=${scheduleId||''}`;
+
+    /** ====== 간단 토스트 ====== */
+    function toast(msg, type='info'){
+        const div=document.createElement('div');
+        div.textContent=msg;
+        div.style.cssText=`position:fixed;right:16px;bottom:16px;background:${type==='error'?'#dc2626':type==='success'?'#16a34a':'#111827'};color:#fff;padding:10px 12px;border-radius:10px;z-index:60;box-shadow:0 6px 16px rgba(0,0,0,.2)`;
+        document.body.appendChild(div);
+        setTimeout(()=>{div.remove()}, 2400);
+    }
+
+    /** ====== 상태 ====== */
+    let programId = document.querySelector('.wrap').dataset.programId;
+    document.getElementById('programIdLabel').textContent = programId;
+    let store = {
+        page: 0,
+        total:0,
+        items:[],
+        schedules:[],
+        sel:new Set(),
+        lastQuery:{status:'', scheduleId:'', keyword:''}
+    };
+
+    /** ====== 목데이터 생성 ====== */
+    function mockSchedules(){
+        return [
+            {id: 0, name:'전체'},
+            {id: 101, name:'1회차(2025-11-10 10:00)'},
+            {id: 102, name:'2회차(2025-11-15 14:00)'},
+            {id: 103, name:'3회차(2025-11-20 10:00)'},
+        ];
+    }
+    function mockList({page,size,status,scheduleId,keyword}){
+        const names = ['김하은','박서준','이종원','최유나','정도현','한유림','문채원','오상훈','유지안','배소율','이서준','박민지','강서아'];
+        const dept = ['산업경영공학','컴퓨터공학','경영학','통계학','전자공학'];
+        const type = ['일반','대기','우선'];
+        const all = Array.from({length:58}, (_,i)=>({
+            no:i+1,
+            applicationId: 5000+i,
+            name: names[i%names.length],
+            studentNo: `2023${String(1000+i).slice(-4)}`,
+            dept: dept[i%dept.length],
+            grade: (i%4)+1,
+            phone: `010-${String(1000+i).slice(-4)}-${String(2000+i).slice(-4)}`,
+            appType: type[i%type.length],
+            scheduleId: [101,102,103][i%3],
+            scheduleName: ['1회차(2025-11-10 10:00)','2회차(2025-11-15 14:00)','3회차(2025-11-20 10:00)'][i%3],
+            status: ['PENDING','APPROVED','REJECTED','CANCELLED'][i%4]
+        }));
+        let list = all;
+        if(status) list = list.filter(it=>it.status===status);
+        if(scheduleId) list = list.filter(it=>String(it.scheduleId)===String(scheduleId));
+        if(keyword){
+            const k = keyword.toLowerCase();
+            list = list.filter(it =>
+            it.name.toLowerCase().includes(k) ||
+            it.studentNo.toLowerCase().includes(k) ||
+            it.dept.toLowerCase().includes(k) ||
+            it.phone.toLowerCase().includes(k)
+            );
+        }
+        const total = list.length;
+        const from = page*size;
+        const to = from + size;
+        const pageItems = list.slice(from, to);
+        const stats = {
+            total: all.length,
+            PENDING: all.filter(it=>it.status==='PENDING').length,
+            APPROVED: all.filter(it=>it.status==='APPROVED').length,
+            REJECTED: all.filter(it=>it.status==='REJECTED').length,
+            CANCELLED: all.filter(it=>it.status==='CANCELLED').length
+        };
+        return Promise.resolve({content:pageItems,total,stats});
+    }
+
+    /** ====== API 호출 래퍼 ====== */
+    async function apiList(params){
+        if(USE_MOCK) return mockList(params);
+        const url = API.list(programId, {...params,page:store.page,size:PAGE_SIZE});
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('조회 실패');
+        return res.json();
+    }
+    async function apiAction(url, method='PUT', body){
+        if(USE_MOCK){ await new Promise(r=>setTimeout(r,300)); return {ok:true} }
+        const res = await fetch(url,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
+        if(!res.ok) throw new Error('처리 실패');
+        return res.json();
+    }
+
+    /** ====== 렌더 ====== */
+    function renderSchedules(){
+        const sel = document.getElementById('scheduleId');
+        sel.innerHTML = '';
+        const add=(v,t)=>{const o=document.createElement('option');o.value=v;o.textContent=t;sel.appendChild(o)}
+        add('','전체');
+        store.schedules.forEach(s=>add(s.id, s.name));
+    }
+    function renderStats(stats){
+        document.getElementById('statTotal').textContent = stats.total ?? 0;
+        document.getElementById('statPending').textContent = stats.PENDING ?? 0;
+        document.getElementById('statApproved').textContent = stats.APPROVED ?? 0;
+        document.getElementById('statRejected').textContent = stats.REJECTED ?? 0;
+        document.getElementById('statCancelled').textContent = stats.CANCELLED ?? 0;
+    }
+    function renderGrid(items, total){
+        const tb = document.getElementById('gridBody');
+        tb.innerHTML = '';
+        items.forEach((it, idx)=>{
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+      <td><input type="checkbox" class="rowChk" data-id="${it.applicationId}"/></td>
+      <td>${it.no}</td>
+      <td><div style="display:flex;flex-direction:column">
+            <strong>${it.name}</strong>
+            <span class="muted">${it.studentNo}</span>
+          </div></td>
+      <td class="hide-sm">${it.dept} / ${it.grade}학년</td>
+      <td>${it.phone}</td>
+      <td class="hide-sm">${it.appType}</td>
+      <td>${it.scheduleName}</td>
+      <td><span class="status ${it.status}">${it.status}</span></td>
+      <td>
+        <div class="row-actions">
+          <button class="btn secondary btn-view" data-id="${it.applicationId}">상세</button>
+          <button class="btn success btn-approve" data-id="${it.applicationId}" ${it.status!=='PENDING'?'disabled':''}>승인</button>
+          <button class="btn warning btn-reject" data-id="${it.applicationId}" ${it.status!=='PENDING'?'disabled':''}>반려</button>
+          <button class="btn danger btn-cancel" data-id="${it.applicationId}" ${it.status==='CANCELLED'?'disabled':''}>취소</button>
+          <a class="btn secondary" href="${attendanceUrl(programId, it.scheduleId)}">출석부</a>
+        </div>
+      </td>
+    `;
+            tb.appendChild(tr);
+        });
+        bindRowEvents();
+        renderPager(total);
+        updateBulkButtons();
+    }
+    function renderPager(total){
+        const pages = Math.ceil(total / PAGE_SIZE);
+        const pg = document.getElementById('pager');
+        pg.innerHTML = '';
+        const add=(i, label=i+1, disabled=false, active=false)=>{
+            const b=document.createElement('button');
+            b.className='page'+(active?' active':'');
+            b.textContent=label;
+            b.disabled=disabled;
+            b.addEventListener('click', ()=>{ store.page=i; search(); window.scrollTo({top:0,behavior:'smooth'})});
+            pg.appendChild(b);
+        };
+        add(Math.max(0,store.page-1),'‹', store.page===0, false);
+        for(let i=0;i<pages;i++) add(i, i+1, false, i===store.page);
+        add(Math.min(pages-1,store.page+1),'›', store.page>=pages-1, false);
+    }
+
+    /** ====== 이벤트 ====== */
+    function bindRowEvents(){
+        document.querySelectorAll('.rowChk').forEach(chk=>{
+            chk.addEventListener('change', e=>{
+                const id = e.target.dataset.id;
+                e.target.checked ? store.sel.add(id) : store.sel.delete(id);
+                updateBulkButtons();
+            });
+        });
+        document.getElementById('chkAll').checked = false;
+        document.getElementById('chkAll').onclick = (e)=>{
+            const on = e.target.checked;
+            document.querySelectorAll('.rowChk').forEach(ch=>{ch.checked=on; on?store.sel.add(ch.dataset.id):store.sel.delete(ch.dataset.id)});
+            updateBulkButtons();
+        };
+
+        document.querySelectorAll('.btn-view').forEach(btn=>{
+            btn.addEventListener('click', (e)=>{
+                const id = e.target.dataset.id;
+                toast(`상세보기로 이동: applicationId=${id}`);
+                // 실제 상세 URL 예: /ops/programs/{programId}/participants/{applicationId}
+                location.href = `/ops/programs/${programId}/participants/${id}`;
+            });
+        });
+        document.querySelectorAll('.btn-approve').forEach(btn=>{
+            btn.addEventListener('click', ()=>openModal('approve',[btn.dataset.id]));
+        });
+        document.querySelectorAll('.btn-reject').forEach(btn=>{
+            btn.addEventListener('click', ()=>openModal('reject',[btn.dataset.id]));
+        });
+        document.querySelectorAll('.btn-cancel').forEach(btn=>{
+            btn.addEventListener('click', ()=>openModal('cancel',[btn.dataset.id]));
+        });
+    }
+    function updateBulkButtons(){
+        const cnt = store.sel.size;
+        document.getElementById('btnBulkApprove').disabled = cnt===0;
+        document.getElementById('btnBulkReject').disabled = cnt===0;
+        document.getElementById('btnBulkCancel').disabled = cnt===0;
+    }
+
+    document.getElementById('btnSearch').addEventListener('click', ()=>{
+        store.page=0;
+        search();
+    });
+    document.getElementById('btnExport').addEventListener('click', ()=>{
+        const params = {...store.lastQuery, page:store.page, size:PAGE_SIZE};
+        const url = API.export(programId, params);
+        // 실제 다운로드
+        if(USE_MOCK){ toast('엑셀 다운로드(모의)'); return; }
+        location.href = url;
+    });
+    document.getElementById('btnNotify').addEventListener('click', async ()=>{
+        const selected = [...store.sel];
+        if(selected.length===0){ toast('선택된 참가자가 없습니다','error'); return; }
+        if(!confirm(`선택한 ${selected.length}명에게 알림을 발송할까요?`)) return;
+        try{
+            await apiAction(API.notify(programId), 'POST', {applicationIds:selected, channel:['EMAIL','SMS']});
+            toast('알림을 발송했어요','success');
+        }catch(e){ toast(e.message,'error');}
+    });
+
+    document.getElementById('btnBulkApprove').addEventListener('click', ()=>openModal('approve',[...store.sel]));
+    document.getElementById('btnBulkReject').addEventListener('click', ()=>openModal('reject',[...store.sel]));
+    document.getElementById('btnBulkCancel').addEventListener('click', ()=>openModal('cancel',[...store.sel]));
+
+    /** ====== 모달 처리 ====== */
+    const $backdrop = document.getElementById('modalBackdrop');
+    const $title = document.getElementById('modalTitle');
+    const $reason = document.getElementById('modalReason');
+    const $confirm = document.getElementById('modalConfirm');
+    const $close = document.getElementById('modalClose');
+
+    let modalState = { mode:'approve', ids:[] };
+
+    function openModal(mode, ids){
+        modalState = {mode, ids};
+        $title.textContent = mode==='approve'?'승인 처리': mode==='reject'?'반려 처리':'취소 처리';
+        $reason.value = '';
+        $confirm.className = 'btn ' + (mode==='approve'?'success':mode==='reject'?'warning':'danger');
+        $backdrop.style.display='flex';
+    }
+    function closeModal(){ $backdrop.style.display='none'; }
+
+    $close.addEventListener('click', closeModal);
+    $backdrop.addEventListener('click', (e)=>{ if(e.target===e.currentTarget) closeModal(); });
+    $confirm.addEventListener('click', async ()=>{
+        const r = $reason.value?.trim();
+        const ids = modalState.ids;
+        try{
+            for(const id of ids){
+                if(modalState.mode==='approve') await apiAction(API.approve(programId, id),'PUT',{reason:r||null});
+                if(modalState.mode==='reject')  await apiAction(API.reject(programId, id),'PUT',{reason:r||null});
+                if(modalState.mode==='cancel')  await apiAction(API.cancel(programId, id),'DELETE',{reason:r||null});
+            }
+            toast(`${ids.length}건 ${modalState.mode==='approve'?'승인':modalState.mode==='reject'?'반려':'취소'} 완료`,`success`);
+            closeModal();
+            store.sel.clear();
+            search();
+        }catch(e){ toast(e.message,'error'); }
+    });
+
+    /** ====== 조회 ====== */
+    async function search(){
+        const status = document.getElementById('status').value;
+        const scheduleId = document.getElementById('scheduleId').value;
+        const keyword = document.getElementById('keyword').value.trim();
+        store.lastQuery = {status, scheduleId, keyword};
+
+        const {content,total,stats} = await apiList({page:store.page,size:PAGE_SIZE,status,scheduleId,keyword});
+        store.total = total;
+        store.items = content;
+        renderStats(stats||{});
+        renderGrid(store.items, store.total);
+    }
+
+    /** ====== 초기화 ====== */
+    (function init(){
+        // schedules
+        if(USE_MOCK) store.schedules = mockSchedules();
+        renderSchedules();
+        search();
+    })();
+</script>
+</body>
+</html>
