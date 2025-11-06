@@ -1,0 +1,29 @@
+package com.competency.SCMS.dto.noncurricular.program;
+
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
+
+@Data
+public class ProgramSearchCond {
+    private String q;           // 프로그램명/코드 검색어
+    private String dept;        // 운영부서명 (예: 취업진로처)
+    private String recruit;     // READY / OPEN / CLOSED
+    private String approval;    // REQ / WAIT / DONE / REJ
+    private String status;      // DRAFT / PENDING / APPROVED / ONGOING / COMPLETED / REJECTED
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate appStartFrom;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate appStartTo;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate runStartFrom;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate runStartTo;
+
+    private Integer mileMin;    // 포인트 최소
+    private Integer mileMax;    // 포인트 최대
+
+    private ProgramSort sort = ProgramSort.CREATED_DESC; // 정렬
+}
