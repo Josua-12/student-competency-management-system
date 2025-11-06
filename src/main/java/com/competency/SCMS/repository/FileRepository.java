@@ -1,10 +1,10 @@
 package com.competency.SCMS.repository;
 
-import com.competency.SCMS.domain.noncurricular.ProgramFile;
+import com.competency.SCMS.domain.File;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface FileRepository extends JpaRepository<ProgramFile, Long> {
-    List<ProgramFile> findAllByProgram_IdOrderByCreatedAtAsc(Long programId);
+public interface FileRepository extends JpaRepository<File, Long> {
+    List<File> findAllByProgram_IdOrderByCreatedAtAsc(Long programId);
 }

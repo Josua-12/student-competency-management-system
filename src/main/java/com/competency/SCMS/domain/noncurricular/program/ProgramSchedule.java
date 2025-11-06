@@ -5,7 +5,9 @@ import com.competency.SCMS.domain.noncurricular.operation.ProgramAttendance;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,18 +26,21 @@ public class ProgramSchedule extends BaseEntity {
     @Column(name = "schd_id")
     private Long scheduleId;
 
+    /** 소속 프로그램 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "prog_id", nullable = false)
     private Program program;
 
+    /** 회차 번호 (1, 2, 3...) */
     @Column(name = "session_no", nullable = false)
     private Integer sessionNo;
 
-    @Column(name = "start_at", nullable = false)
-    private LocalDateTime startAt;
+    /** 일자 */
+    private LocalDate date;
 
-    @Column(name = "end_at", nullable = false)
-    private LocalDateTime endAt;
+    /** 시작/종료 시간 */
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     @Column(name = "place_text", length = 200)
     private String placeText;
@@ -43,6 +48,7 @@ public class ProgramSchedule extends BaseEntity {
     @Column(name = "capacity_ovr")
     private Integer capacityOverride;
 
+    /** 세부내용 */
     @Column(length = 255)
     private String remarks;
 
