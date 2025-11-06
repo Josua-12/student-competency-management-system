@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FileRepository extends JpaRepository<File, Long> {
     List<File> findAllByProgram_IdOrderByCreatedAtAsc(Long programId);
+    List<File> findAllByProgram_Id(Long programId);
 }
