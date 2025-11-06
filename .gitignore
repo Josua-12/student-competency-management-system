@@ -28,3 +28,7 @@ Thumbs.db
 
 # Target directory (Maven)
 /target/
+
+# Binary and lock files
+*.bin
+*.lock
