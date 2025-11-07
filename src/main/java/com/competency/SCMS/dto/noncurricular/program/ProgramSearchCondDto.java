@@ -6,7 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
-public class ProgramSearchCond {
+public class ProgramSearchCondDto {
 
     private String q;           // 프로그램명/코드 검색어
     private Long deptId;           // 부서 필터

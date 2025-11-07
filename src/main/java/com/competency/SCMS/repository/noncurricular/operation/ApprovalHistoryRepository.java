@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ApprovalHistoryRepository extends JpaRepository<ProgramApprovalHistory, Long> {
-    List<ProgramApprovalHistory> findAllByProgram_IdOrderByCreatedAtDesc(Long programId);
+    List<ProgramApprovalHistory> findAllByProgram_ProgramIdOrderByCreatedAtDesc(Long programId);
 }

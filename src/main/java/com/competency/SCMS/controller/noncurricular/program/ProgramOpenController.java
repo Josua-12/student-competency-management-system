@@ -2,7 +2,7 @@ package com.competency.SCMS.controller.noncurricular.program;
 
 
 import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.dto.noncurricular.program.ProgramOpenRequest;
+import com.competency.SCMS.dto.noncurricular.program.ProgramOpenRequestDto;
 import com.competency.SCMS.service.noncurricular.program.ProgramOpenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ProgramOpenController {
 
     @PostMapping(value = "/save", consumes = {"multipart/form-data"})
     public ResponseEntity<?> saveDraft(@PathVariable(required = false) Long programId,
-                                       @Valid @RequestPart("payload") ProgramOpenRequest payload,
+                                       @Valid @RequestPart("payload") ProgramOpenRequestDto payload,
                                        @RequestPart(value = "poster", required = false) MultipartFile poster,
                                        @RequestPart(value = "guides", required = false) List<MultipartFile> guides,
                                        @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {
@@ -37,7 +37,7 @@ public class ProgramOpenController {
 
     @PostMapping(value = "/submit", consumes = {"multipart/form-data"})
     public ResponseEntity<?> submit(@PathVariable(required = false) Long programId,
-                                    @Valid @RequestPart("payload") ProgramOpenRequest payload,
+                                    @Valid @RequestPart("payload") ProgramOpenRequestDto payload,
                                     @RequestPart(value = "poster", required = false) MultipartFile poster,
                                     @RequestPart(value = "guides", required = false) List<MultipartFile> guides,
                                     @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments) {

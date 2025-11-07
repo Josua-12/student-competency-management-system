@@ -15,18 +15,18 @@ import java.util.*;
 public interface ProgramAttendanceRepository extends JpaRepository<ProgramAttendance, Long> {
 
 
-    List<ProgramAttendance> findAllBySchedule_ScheduleIdAndStudent_UserIdAndStatus(
+    List<ProgramAttendance> findAllBySchedule_ScheduleIdAndStudent_IdAndStatus(
             Long scheduleId, Long studentId, AttendanceStatus status);
 
 
-    Optional<ProgramAttendance> findBySchedule_ScheduleIdAndStudent_UserId(
+    Optional<ProgramAttendance> findBySchedule_ScheduleIdAndStudent_Id(
             Long scheduleId, Long studentId);
 
 
-    List<ProgramAttendance> findAllBySchedule_ScheduleIdOrderByStudent_UserIdAsc(Long scheduleId);
+    List<ProgramAttendance> findAllBySchedule_ScheduleIdOrderByStudent_IdAsc(Long scheduleId);
 
     //  학생별 출석 이력
-    Page<ProgramAttendance> findByStudent_UserId(Long studentId, Pageable pageable);
+    Page<ProgramAttendance> findByStudent_Id(Long studentId, Pageable pageable);
 
     // 특정 일자/상태(당일 00:00~23:59 범위)
     @Query("""
@@ -45,7 +45,7 @@ public interface ProgramAttendanceRepository extends JpaRepository<ProgramAttend
 
 
     // 중복 방지 (회차+학생+시간대 겹침 확인)
-    boolean existsBySchedule_ScheduleIdAndStudent_UserIdAndAttendedAtBetween(
+    boolean existsBySchedule_ScheduleIdAndStudent_IdAndAttendedAtBetween(
             Long scheduleId, Long studentId,
             java.time.LocalDateTime from, java.time.LocalDateTime to);
 }

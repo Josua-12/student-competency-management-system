@@ -9,7 +9,7 @@ public interface ProgramCompetencyRepository
         extends JpaRepository<LinkCompetency, Long>, JpaSpecificationExecutor<LinkCompetency> {
 
     List<LinkCompetency> findByProgram_ProgramId(Long programId);
-    boolean existsByProgram_ProgramIdAndCompetency_CompId(Long programId, Long compId);
+    boolean existsByProgram_ProgramIdAndCompetency_Id(Long programId, Long competencyId);
     void deleteByProgram_ProgramId(Long programId);
 }
 
