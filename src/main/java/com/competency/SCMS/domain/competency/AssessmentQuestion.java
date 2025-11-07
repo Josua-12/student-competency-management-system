@@ -1,5 +1,6 @@
 package com.competency.SCMS.domain.competency;
 
+import com.competency.SCMS.dto.competency.QuestionFormDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -98,11 +99,30 @@ public class AssessmentQuestion extends CompetencyBaseEntity {
         option.setQuestion(this);
     }
 
-    public void updateInfo(String questionText, int displayOrder, boolean isActive, QuestionType questionType) {
-        this.questionText = questionText;
-        this.displayOrder = displayOrder;
-        this.isActive = isActive;
-        this.questionType = questionType;
+    /**
+     * 생성용 편의 메서드
+     * @param dto
+     * @param competency
+     * @return
+     */
+    public static AssessmentQuestion createQuestion(QuestionFormDto dto, Competency competency) {
+        AssessmentQuestion question = AssessmentQuestion.builder()
+                .questionCode(dto.getQuestionCode())
+                .questionText(dto.getQuestionText())
+                .questionType(dto.getQuestionType())
+                .displayOrder(dto.getDisplayOrder())
+                .isActive(dto.isActive())
+                .build();
+
+        competency.addQuestion(question);
+        return question;
+    }
+
+    public void updateInfo(QuestionFormDto dto) {
+        this.questionText = dto.getQuestionText();
+        this.displayOrder = dto.getDisplayOrder();
+        this.isActive = dto.isActive();
+        this.questionType = dto.getQuestionType();
     }
 
     /**

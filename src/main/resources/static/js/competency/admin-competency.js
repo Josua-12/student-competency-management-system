@@ -1,219 +1,375 @@
-// (HTML의 <script th:inline="javascript">에서 'initialTreeData' 변수를 선언했다고 가정)
-
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ==================================================================
-    == 1. 역량 트리 및 상세 폼 (기본 로직)
+    == 1. 역량 트리 및 상세 폼 (기존 로직)
     ================================================================== */
 
-    // 1-1. 상세정보 뷰/플레이스홀더 DOM 캐시
+    // 1-1. DOM 요소 캐시
     const detailView = document.getElementById('detailView');
     const placeholder = document.getElementById('detailPlaceholder');
     const form = document.getElementById('competencyForm');
     const formTitle = document.getElementById('formTitle');
-
-    // 1-2. Toast UI Tree 초기화
     const treeContainer = document.getElementById('competencyTree');
-    const tree = new tui.Tree(treeContainer, {
-        // (위에서 선언한 예시 데이터 또는 서버 데이터)
-        data: initialTreeData,
-        // 모든 노드를 기본적으로 열린 상태로
-        nodeDefaultState: 'opened',
-        // Font Awesome 아이콘 사용을 위한 클래스 설정
-        nodeIconClass: 'tui-tree-ico-file',
-        nodeIconClassOpened: 'tui-tree-ico-opened',
-        nodeIconClassClosed: 'tui-tree-ico-closed',
-    });
+    const saveButton = document.getElementById('saveButton');
+    const deleteButton = document.getElementById('deleteButton');
 
-    // 1-3. 트리 노드 선택(클릭) 이벤트 리스너
-    tree.on('select', (event) => {
-        const nodeId = event.nodeId;
-        if (!nodeId) return;
+    // '문항 관리' 탭의 테이블 body 캐시
+    const questionListBody = document.getElementById('questionListBody');
 
-        // 선택된 노드의 전체 데이터 가져오기
-        const nodeData = tree.getNode(nodeId);
+    // 1-2. CSRF 토큰
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
-        // (가짜 데이터 예시. 실제로는 nodeData.data 객체 사용)
-        const competency = nodeData.data || {
-            name: nodeData.text,
-            compCode: `C-${nodeId}`,
-            description: `${nodeData.text}에 대한 설명입니다.`,
-            displayOrder: 1,
-            isActive: true,
-            adviceHigh: '강점 설명 예시...',
-            adviceLow: '약점 조언 예시...'
-        };
+    let tree;
 
-        // 폼 채우기 함수 호출
-        showDetailView(competency, nodeId, false);
-    });
+    // 1-3. 페이지 로드 시 트리 데이터 가져오기 (fetch)
+    fetch('/admin/competency/api/tree')
+        .then(response => response.json())
+        .then(treeData => {
+            initializeTree(treeData);
+        })
+        .catch(error => {
+            console.error(error);
+            treeContainer.innerHTML = `<div class="alert alert-danger">트리 로딩 실패</div>`;
+        });
 
-    // 1-4. '최상위 추가' 버튼 클릭 이벤트
+    /**
+     * 1-4. TUI-Tree 초기화 및 이벤트 바인딩
+     */
+    function initializeTree(treeData) {
+        tree = new tui.Tree(treeContainer, {
+            data: treeData,
+            nodeDefaultState: 'opened',
+            nodeIconClass: 'tui-tree-ico-file',
+            nodeIconClassOpened: 'tui-tree-ico-opened',
+            nodeIconClassClosed: 'tui-tree-ico-closed',
+        });
+
+        // 1-5. 트리 노드 선택(클릭) 이벤트
+        tree.on('select', (event) => {
+            const nodeId = event.nodeId;
+            if (!nodeId) return;
+
+            // (A) 역량 상세 정보 fetch (기존 로직)
+            fetch(`/admin/competency/api/competencies/${nodeId}`)
+                .then(response => response.json())
+                .then(competencyDto => {
+                    showDetailView(competencyDto, competencyDto.parentId || '', false);
+
+                    // (B) 역량 상세 정보 로딩 성공 시,
+                    //     이어서 '문항 목록'을 불러오는 함수 호출
+                    loadQuestions(nodeId);
+                })
+                .catch(error => alert('상세 정보 로딩 실패: ' + error.message));
+        });
+    }
+
+    // 1-6. '최상위 추가' 버튼
     document.getElementById('addNewRootCompetency').addEventListener('click', () => {
-        // 폼을 비우고 "새 역량 등록" 모드로 변경
         showDetailView(null, null, false);
     });
 
-    // 1-5. '하위 역량 추가' 버튼 클릭 이벤트
+    // 1-7. '하위 역량 추가' 버튼
     document.getElementById('addChildButton').addEventListener('click', () => {
         const selectedNodeId = tree.getSelectedNodeId();
         if (!selectedNodeId) {
             alert('하위 역량을 추가할 상위 역량을 왼쪽 트리에서 먼저 선택하세요.');
             return;
         }
-        // 폼을 비우고 "새 역량 등록" 모드 (단, parentId는 설정)
         showDetailView(null, selectedNodeId, true);
     });
 
+    // 1-8. '역량 저장' 버튼 (C/U)
+    saveButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const formData = {
+            id: document.getElementById('competencyId').value || null,
+            parentId: document.getElementById('parentId').value || null,
+            name: document.getElementById('compName').value,
+            compCode: document.getElementById('compCode').value,
+            description: document.getElementById('compDescription').value,
+            displayOrder: parseInt(document.getElementById('compOrder').value, 10),
+            isActive: document.getElementById('compActive').checked,
+            adviceHigh: document.getElementById('compAdviceHigh').value,
+            adviceLow: document.getElementById('compAdviceLow').value
+        };
+
+        fetch('/admin/competency/api/competencies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                alert(data.message || '저장되었습니다.');
+                window.location.reload();
+            })
+            .catch(error => alert('저장 실패: ' + error.message));
+    });
+
+    // 1-9. '역량 삭제' 버튼 (D)
+    deleteButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const competencyId = document.getElementById('competencyId').value;
+        const competencyName = document.getElementById('compName').value;
+
+        if (!competencyId) return alert('삭제할 역량이 선택되지 않았습니다.');
+        if (!confirm(`'${competencyName}' 역량을 정말 삭제하시겠습니까?`)) return;
+
+        fetch(`/admin/competency/api/competencies/${competencyId}`, {
+            method: 'DELETE',
+            headers: { [csrfHeader]: csrfToken }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                alert(data.message || '삭제되었습니다.');
+                window.location.reload();
+            })
+            .catch(error => alert('삭제 실패: ' + error.message));
+    });
 
     /**
-     * (Helper) 상세정보 뷰를 표시하고 폼 내용을 채우는 함수
-     * @param {object | null} competency - 채울 역량 데이터 (신규 등록 시 null)
-     * @param {string | null} parentId - 부모 노드 ID (신규 등록 시)
-     * @param {boolean} isChild - 하위 역량 추가인지 여부
+     * 1-10. (Helper) 상세정보 뷰 표시 함수
      */
     function showDetailView(competency, parentId, isChild) {
-        // 1. 뷰 전환
         placeholder.style.display = 'none';
         detailView.style.display = 'block';
-
-        // 2. 폼 리셋 (기존 값 초기화)
         form.reset();
-
-        // 3. 탭을 '기본 정보' 탭으로 강제 이동
         new bootstrap.Tab(document.getElementById('info-tab')).show();
 
+        // 폼을 채우거나 비울 때, 문항 목록도 비움
+        questionListBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">역량을 선택하세요.</td></tr>';
+
         if (competency) {
-            // ----- (A) 기존 역량 수정 -----
+            // (A) 기존 역량 수정
             formTitle.textContent = '역량 정보 수정';
-            document.getElementById('competencyId').value = competency.id || ''; // (hidden)
-            document.getElementById('parentId').value = competency.parentId || ''; // (hidden)
-            document.getElementById('compName').value = competency.name || '';
-            document.getElementById('compCode').value = competency.compCode || '';
-            document.getElementById('compDescription').value = competency.description || '';
-            document.getElementById('compOrder').value = competency.displayOrder || 1;
+            document.getElementById('competencyId').value = competency.id;
+            document.getElementById('parentId').value = competency.parentId || '';
+            document.getElementById('compName').value = competency.name;
+            document.getElementById('compCode').value = competency.compCode;
+            document.getElementById('compDescription').value = competency.description;
+            document.getElementById('compOrder').value = competency.displayOrder;
             document.getElementById('compActive').checked = competency.isActive;
-            document.getElementById('compAdviceHigh').value = competency.adviceHigh || '';
-            document.getElementById('compAdviceLow').value = competency.adviceLow || '';
-
-            // '삭제' 버튼 활성화
-            document.getElementById('deleteButton').style.display = 'block';
-            document.getElementById('compCode').readOnly = true; // (정책) 코드는 수정 불가
-
-            // TODO: (서버 연동) 이 역량(competency.id)에 해당하는 문항 목록 불러오기
-            // fetch(`/api/admin/competency/${competency.id}/questions`)
-            //     .then(response => response.json())
-            //     .then(questions => { /* ... questionListBody 채우기 ... */ });
-
+            document.getElementById('compAdviceHigh').value = competency.adviceHigh;
+            document.getElementById('compAdviceLow').value = competency.adviceLow;
+            deleteButton.style.display = 'block';
+            document.getElementById('compCode').readOnly = true;
         } else {
-            // ----- (B) 새 역량 등록 -----
+            // (B) 새 역량 등록
             formTitle.textContent = isChild ? '하위 역량 등록' : '최상위 역량 등록';
-            document.getElementById('competencyId').value = ''; // (hidden)
-            document.getElementById('parentId').value = isChild ? parentId : ''; // (hidden)
-            document.getElementById('compActive').checked = true; // 기본값
+            document.getElementById('competencyId').value = '';
+            document.getElementById('parentId').value = isChild ? parentId : '';
+            document.getElementById('compActive').checked = true;
             document.getElementById('compCode').readOnly = false;
-
-            // '삭제' 버튼 숨기기
-            document.getElementById('deleteButton').style.display = 'none';
-
-            // '문항 관리' 탭 비활성화 (역량이 먼저 생성되어야 함)
-            // (구현 방식에 따라 선택)
+            deleteButton.style.display = 'none';
         }
     }
 
+
     /* ==================================================================
-    == 2. 문항 관리 모달(Question Modal) 관련 JS
+    == 2. 문항 목록(R) 및 삭제(D) 로직
     ================================================================== */
 
-    // 2-1. 모달 DOM 요소 및 템플릿 캐시
-    const questionModalEl = document.getElementById('questionModal');
-    const questionModal = new bootstrap.Modal(questionModalEl); // Bootstrap 모달 인스턴스
+    /**
+     * 2-1. 특정 역량의 문항 목록을 fetch로 불러와 테이블(tbody)에 렌더링
+     * (JS의 'TODO' 주석 부분 구현)
+     * @param {Long} competencyId - 역량 ID
+     */
+    function loadQuestions(competencyId) {
+        questionListBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">문항 목록을 불러오는 중...</td></tr>';
 
+        fetch(`/admin/competency/api/competencies/${competencyId}/questions`)
+            .then(response => {
+                if (!response.ok) throw new Error('문항 목록 로딩 실패');
+                return response.json();
+            })
+            .then(questions => {
+                if (questions.length === 0) {
+                    questionListBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">연결된 문항이 없습니다.</td></tr>';
+                    return;
+                }
+
+                // ️ QuestionListDto(JSON)를 HTML(tr)로 변환
+                questionListBody.innerHTML = questions.map(q => `
+                    <tr>
+                        <td>${q.questionCode}</td>
+                        <td class="text-start">${q.questionText}</td>
+                        <td>${q.questionType}</td>
+                        <td>${q.displayOrder}</td>
+                        <td>${q.isActive ? '<span class="badge bg-success">활성</span>' : '<span class="badge bg-secondary">비활성</span>'}</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-secondary btn-sm btn-edit-question" 
+                                    data-question-id="${q.id}">
+                                수정
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-delete-question" 
+                                    data-question-id="${q.id}">
+                                삭제
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(error => {
+                console.error(error);
+                questionListBody.innerHTML = `<tr><td colspan="6" class="alert alert-danger">${error.message}</td></tr>`;
+            });
+    }
+
+    /**
+     * 2-2. 문항 목록 테이블에서 '삭제' 버튼 클릭 시 (이벤트 위임)
+     */
+    questionListBody.addEventListener('click', (e) => {
+        // (A) '삭제' 버튼을 클릭한 경우
+        if (e.target.classList.contains('btn-delete-question')) {
+            const button = e.target;
+            const questionId = button.dataset.questionId;
+            const row = button.closest('tr');
+            const questionText = row.cells[1].textContent; // 문항 내용
+
+            if (!confirm(`[${questionText}] 문항을 정말 삭제하시겠습니까?`)) {
+                return;
+            }
+
+            fetch(`/admin/competency/api/questions/${questionId}`, {
+                method: 'DELETE',
+                headers: { [csrfHeader]: csrfToken }
+            })
+                .then(response => {
+                    if (!response.ok) return response.json().then(err => { throw new Error(err.error) });
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message || '삭제되었습니다.');
+                    row.remove(); // ️ API 성공 시, 화면에서 해당 줄(tr) 즉시 삭제
+                })
+                .catch(error => alert('삭제 실패: ' + error.message));
+        }
+
+        // (B) '수정' 버튼을 클릭한 경우
+        if (e.target.classList.contains('btn-edit-question')) {
+            const questionId = e.target.dataset.questionId;
+            alert('(구현 필요) 문항 수정 기능 - ID: ' + questionId);
+            // TODO: (다음 단계)
+            // 1. fetch(`/api/admin/questions/${questionId}/details`) (새 API 필요)
+            // 2. 모달(questionModal)을 DTO 데이터로 채우기
+            // 3. questionModal.show()
+        }
+    });
+
+
+    /* ==================================================================
+    == 3. 문항 관리 모달(C/U) 로직
+    ================================================================== */
+
+    // 3-1. 모달 DOM 요소
+    const questionModalEl = document.getElementById('questionModal');
+    const questionModal = new bootstrap.Modal(questionModalEl);
     const questionForm = document.getElementById('questionForm');
     const modalTitle = document.getElementById('questionModalLabel');
     const optionListContainer = document.getElementById('optionListContainer');
     const optionTemplate = document.getElementById('optionRowTemplate');
+    const saveQuestionButton = document.getElementById('saveQuestionButton'); // 저장 버튼 캐시
 
-    // 2-2. '새 문항 추가' 버튼 클릭 시 모달 열기
-    // (이 버튼은 '진단 문항 관리' 탭 안에 있습니다)
+    // 3-2. '새 문항 추가' 버튼 클릭
     document.getElementById('addNewQuestion').addEventListener('click', () => {
-        // 폼을 초기화 (이전 값 제거)
         questionForm.reset();
-        optionListContainer.innerHTML = ''; // 기존 보기 목록 삭제
-
-        // 모달 제목 변경
+        optionListContainer.innerHTML = '';
         modalTitle.innerHTML = '<i class="fas fa-list-ol me-1"></i> 새 문항 등록';
 
-        // (숨김) 필드 값 설정
-        // 현재 선택된 역량의 ID를 가져와서 폼에 설정
         const selectedCompetencyId = document.getElementById('competencyId').value;
-        document.getElementById('modalQuestionId').value = ''; // 새 문항이므로 ID 비움
+        if (!selectedCompetencyId) {
+            alert("먼저 문항을 추가할 역량을 선택(저장)해야 합니다.");
+            return;
+        }
+
+        document.getElementById('modalQuestionId').value = '';
         document.getElementById('modalCompetencyId').value = selectedCompetencyId;
-
-        // (정책) 'LIKERT_5' 선택 시 자동으로 5개 항목 생성 (선택 사항)
         addDefaultOptions('LIKERT_5');
-
-        // 모달 표시
         questionModal.show();
     });
 
-    // 2-3. (구현 필요) '문항 수정' 버튼 클릭 시 모달 열기
-    // 예시: document.getElementById('questionListBody').addEventListener('click', (e) => {
-    //     if (e.target.classList.contains('btn-edit-question')) {
-    //         const questionId = e.target.dataset.id;
-    //         // (1) fetch(`/api/admin/questions/${questionId}`)로 문항 + 항목 데이터 가져오기
-    //         // (2) questionForm.reset() 및 optionListContainer.innerHTML = ''로 초기화
-    //         // (3) 가져온 데이터로 modalTitle, input 값 채우기
-    //         // (4) 가져온 '항목' 데이터로 optionListContainer 채우기 (addOptionRow 함수 사용)
-    //         // (5) questionModal.show();
-    //     }
-    // });
+    /**
+     * 3-3. 모달(modal)의 '문항 저장' 버튼 클릭 시 (C/U)
+     */
+    saveQuestionButton.addEventListener('click', (e) => {
+        e.preventDefault();
 
+        // 1. '보기' 항목들을 수집
+        const options = [];
+        const rows = optionListContainer.querySelectorAll('.option-row');
+        rows.forEach((row, index) => {
+            options.push({
+                id: row.querySelector('input[name="optionId"]').value || null,
+                optionText: row.querySelector('input[name="optionText"]').value,
+                score: parseInt(row.querySelector('input[name="score"]').value, 10),
+                displayOrder: parseInt(row.querySelector('input[name="displayOrder"]').value, 10)
+            });
+        });
 
-    // 2-4. 모달 내부: '보기 항목 추가' 버튼 클릭 이벤트
-    document.getElementById('addOptionButton').addEventListener('click', () => {
-        addOptionRow(); // 비어있는 새 항목 줄 추가
+        // 2. QuestionFormDto에 맞게 폼 데이터 수집
+        const formData = {
+            id: document.getElementById('modalQuestionId').value || null,
+            competencyId: document.getElementById('modalCompetencyId').value,
+            questionText: document.getElementById('modalQuestionText').value,
+            questionCode: document.getElementById('modalQuestionCode').value,
+            questionType: document.getElementById('modalQuestionType').value,
+            displayOrder: parseInt(document.getElementById('modalQuestionOrder').value, 10),
+            isActive: document.getElementById('modalQuestionActive').checked,
+            options: options //  1번에서 수집한 '보기' 목록
+        };
+
+        // 3. API 호출
+        fetch('/admin/competency/api/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message || '문항이 저장되었습니다.');
+                questionModal.hide(); //  모달 닫기
+
+                // (중요) 문항 목록(테이블)을 다시 로드
+                const competencyId = document.getElementById('competencyId').value;
+                if (competencyId) {
+                    loadQuestions(competencyId);
+                }
+            })
+            .catch(error => {
+                console.error('Question Save Error:', error);
+                alert('저장 실패: ' + error.message);
+            });
     });
 
-    // 2-5. 모달 내부: '보기 삭제' 버튼 클릭 이벤트 (이벤트 위임)
+    // 3-4. 모달 '보기 추가'/'보기 삭제' 버튼
+    document.getElementById('addOptionButton').addEventListener('click', () => addOptionRow());
     optionListContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-delete-option')) {
-            // 클릭된 버튼의 부모 .option-row를 찾아 삭제
             e.target.closest('.option-row').remove();
-
-            // 삭제 후 인덱스 재정렬 (서버 바인딩을 위해 중요)
-            updateOptionIndices();
+            // (참고) 삭제 시 updateOptionIndices는 필요 없음. 폼 전송 시점에 수집
         }
     });
 
-    /**
-     * (Helper) 새 '보기' 한 줄을 optionListContainer에 추가하는 함수
-     * @param {object | null} optionData - (수정 시) 채워넣을 데이터
-     */
+    // 3-5. (Helper) 함수들
     function addOptionRow(optionData = null) {
-        // 템플릿 복제
         const newRow = optionTemplate.content.cloneNode(true);
-        const inputs = newRow.querySelectorAll('input');
-
         if (optionData) {
-            // (수정) 데이터가 있으면 input 값 채우기
-            inputs[0].value = optionData.optionText;
-            inputs[1].value = optionData.score;
-            inputs[2].value = optionData.displayOrder;
-            inputs[3].value = optionData.id; // (숨김) 항목 ID
+            newRow.querySelector('input[name="optionId"]').value = optionData.id || '';
+            newRow.querySelector('input[name="optionText"]').value = optionData.optionText;
+            newRow.querySelector('input[name="score"]').value = optionData.score;
+            newRow.querySelector('input[name="displayOrder"]').value = optionData.displayOrder;
         }
-
-        // 컨테이너에 추가
         optionListContainer.appendChild(newRow);
-
-        // 인덱스 재정렬 (name 어트리뷰트 업데이트)
-        updateOptionIndices();
     }
 
-    /**
-     * (Helper) 5점 척도 기본값 추가 함수
-     * @param {string} type - 'LIKERT_5'
-     */
     function addDefaultOptions(type) {
         if (type === 'LIKERT_5') {
             const defaults = [
@@ -225,21 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ];
             defaults.forEach(addOptionRow);
         }
-        // (필요시) YES_NO 로직 추가
     }
 
-    /**
-     * (Helper) 서버 전송을 위해 '보기' 항목들의 name 인덱스를 재정렬합니다.
-     * (예: options[0].optionText, options[1].optionText ...)
-     */
-    function updateOptionIndices() {
-        const rows = optionListContainer.querySelectorAll('.option-row');
-        rows.forEach((row, index) => {
-            row.querySelector('input[name="optionText"]').name = `options[${index}].optionText`;
-            row.querySelector('input[name="score"]').name = `options[${index}].score`;
-            row.querySelector('input[name="displayOrder"]').name = `options[${index}].displayOrder`;
-            row.querySelector('input[name="optionId"]').name = `options[${index}].id`;
-        });
-    }
 
 }); // DOMContentLoaded End
