@@ -26,10 +26,23 @@ public interface ProgramApplicationRepository
         where a.studentId = :studentId
           and (:status is null or a.status = :status)
       """
+
     )
     Page<ProgramApplication> findMyApplications(@Param("studentId") Long studentId,
                                                 @Param("status") ApplicationStatus status,
                                                 Pageable pageable);
+    @Query("""
+        select count(pa) from ProgramApplication pa
+        where pa.program.id = :programId
+    """)
+    long countAllByProgramId(Long programId);
+
+    @Query("""
+        select count(pa) from ProgramApplication pa
+        where pa.program.id = :programId and pa.status = :status
+    """)
+    long countByProgramIdAndStatus(Long programId, ApplicationStatus status);
+
     // 중복 신청 방지용
     boolean existsByProgram_ProgramIdAndStudent_UserId(Long programId, Long studentId);
 

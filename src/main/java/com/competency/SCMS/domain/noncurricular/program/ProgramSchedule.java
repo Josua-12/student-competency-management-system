@@ -48,11 +48,18 @@ public class ProgramSchedule extends BaseEntity {
     @Column(name = "capacity_ovr")
     private Integer capacityOverride;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AttendanceType attendanceType;
+
+
     /** 세부내용 */
     @Column(length = 255)
     private String remarks;
 
     @OneToMany(mappedBy="schedule", cascade=CascadeType.ALL, orphanRemoval=true)
     private List<ProgramAttendance> programAttendanceList = new ArrayList<>();
+
+
 }
 
