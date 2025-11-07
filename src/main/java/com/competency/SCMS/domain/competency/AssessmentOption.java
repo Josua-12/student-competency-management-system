@@ -1,5 +1,6 @@
 package com.competency.SCMS.domain.competency;
 
+import com.competency.SCMS.dto.competency.OptionFormDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,10 +44,23 @@ public class AssessmentOption extends CompetencyBaseEntity {
         this.question = question;
     }
 
-    public void updateInfo(String optionText, Integer score, int displayOrder) {
-        this.optionText = optionText;
-        this.score = score;
-        this.displayOrder = displayOrder;
+    /**
+     * 생성 용 편의 메서드
+     * @param dto
+     * @return
+     */
+    public static AssessmentOption createOption(OptionFormDto dto) {
+        return AssessmentOption.builder()
+                .optionText(dto.getOptionText())
+                .score(dto.getScore())
+                .displayOrder(dto.getDisplayOrder())
+                .build();
+    }
+
+    public void updateInfo(OptionFormDto dto) {
+        this.optionText = dto.getOptionText();
+        this.score = dto.getScore();
+        this.displayOrder = dto.getDisplayOrder();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.competency.SCMS.repository.counseling;
 
-import com.competency.SCMS.domain.counseling.CounselingCategory;
+import com.competency.SCMS.domain.counseling.CounselingSubField;
 import com.competency.SCMS.domain.counseling.CounselingField;
 import com.competency.SCMS.domain.counseling.SatisfactionQuestion;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ public interface SatisfactionQuestionRepository extends JpaRepository<Satisfacti
     Page<SatisfactionQuestion> findByCounselingFieldAndIsActiveTrueOrderByDisplayOrderAsc(CounselingField counselingField, Pageable pageable);
 
     // 카테고리별 질문 조회
-    Page<SatisfactionQuestion> findByCategoryAndIsActiveTrueOrderByDisplayOrderAsc(CounselingCategory category, Pageable pageable);
+    Page<SatisfactionQuestion> findByCategoryAndIsActiveTrueOrderByDisplayOrderAsc(CounselingSubField category, Pageable pageable);
 
     // 시스템 기본 질문 조회
     List<SatisfactionQuestion> findByIsSystemDefaultTrueAndIsActiveTrueOrderByDisplayOrderAsc();
