@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담사 일정 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>관리자 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/approvals}">
+                                <i class="bi bi-check-circle"></i> 상담 승인 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/statistics}">
+                                <i class="bi bi-bar-chart"></i> 상담 통계
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/settings}">
+                                <i class="bi bi-gear"></i> 기초 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/admin/schedules}">
+                                <i class="bi bi-calendar-week"></i> 상담사 일정 관리
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">상담사 일정 관리</h1>
+                </div>
+
+                <!-- 상담분류 및 상담사 선택 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label">상담분류 선택</label>
+                                <select class="form-select" id="fieldSelect">
+                                    <option value="">상담분류를 선택하세요</option>
+                                    <option value="PSYCHOLOGICAL">심리상담</option>
+                                    <option value="CAREER">진로상담</option>
+                                    <option value="EMPLOYMENT">취업상담</option>
+                                    <option value="LEARNING">학습상담</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">상담사 선택</label>
+                                <select class="form-select" id="counselorSelect" disabled>
+                                    <option value="">상담사를 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" id="loadSchedule">조회</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 기본 근무시간표 설정 -->
+                <div class="card mb-4" id="scheduleSection" style="display: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">기본 근무시간표 설정</h5>
+                        <button class="btn btn-success" id="saveSchedule">저장</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">근무 가능 시간대를 선택하세요</label>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>시간</th>
+                                                <th>월요일</th>
+                                                <th>화요일</th>
+                                                <th>수요일</th>
+                                                <th>목요일</th>
+                                                <th>금요일</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>09:00-10:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot0910_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot0910_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot0910_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot0910_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot0910_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>10:00-11:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1011_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1011_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1011_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1011_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1011_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>11:00-12:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1112_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1112_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1112_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1112_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1112_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>13:00-14:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1314_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1314_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1314_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1314_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1314_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>14:00-15:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1415_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1415_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1415_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1415_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1415_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>15:00-16:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1516_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1516_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1516_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1516_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1516_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>16:00-17:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1617_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1617_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1617_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1617_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1617_fri"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>17:00-18:00</td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1718_mon"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1718_tue"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1718_wed"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1718_thu"></td>
+                                                <td><input type="checkbox" class="form-check-input" name="slot1718_fri"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 휴무 신청 승인 -->
+                <div class="card" id="offScheduleSection" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0">휴무 신청 승인</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>신청일</th>
+                                        <th>휴무 기간</th>
+                                        <th>휴무 사유</th>
+                                        <th>상세 사유</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2024-01-10</td>
+                                        <td>2024-01-16 ~ 2024-01-16</td>
+                                        <td>개인사정</td>
+                                        <td>가족 행사 참석</td>
+                                        <td><span class="badge bg-warning">대기중</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">승인</button>
+                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">거부</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024-01-08</td>
+                                        <td>2024-01-15 ~ 2024-01-17</td>
+                                        <td>병가</td>
+                                        <td>독감으로 인한 병가</td>
+                                        <td><span class="badge bg-success">승인됨</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">상세</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 승인 모달 -->
+    <div class="modal fade" id="approveModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">휴무 신청 승인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 휴무 신청을 승인하시겠습니까?
+                    </div>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">승인 메모</label>
+                            <textarea class="form-control" rows="3" placeholder="승인 관련 메모를 입력하세요"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success">승인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 거부 모달 -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">휴무 신청 거부</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 휴무 신청을 거부하시겠습니까?
+                    </div>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">거부 사유 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" rows="4" placeholder="거부 사유를 상세히 입력해주세요" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger">거부</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 상담분류 선택 시 상담사 목록 업데이트
+        document.getElementById('fieldSelect').addEventListener('change', function() {
+            const counselorSelect = document.getElementById('counselorSelect');
+            const selectedField = this.value;
+            
+            counselorSelect.innerHTML = '<option value="">상담사를 선택하세요</option>';
+            
+            if (selectedField) {
+                counselorSelect.disabled = false;
+                const counselors = {
+                    'PSYCHOLOGICAL': [{ id: '1', name: '박상담' }, { id: '2', name: '정상담' }],
+                    'CAREER': [{ id: '3', name: '김상담' }, { id: '4', name: '이상담' }],
+                    'EMPLOYMENT': [{ id: '5', name: '최상담' }, { id: '6', name: '강상담' }],
+                    'LEARNING': [{ id: '7', name: '조상담' }, { id: '8', name: '윤상담' }]
+                };
+                
+                counselors[selectedField].forEach(counselor => {
+                    const option = document.createElement('option');
+                    option.value = counselor.id;
+                    option.textContent = counselor.name;
+                    counselorSelect.appendChild(option);
+                });
+            } else {
+                counselorSelect.disabled = true;
+            }
+        });
+
+        // 상담사 선택 시 일정 섹션 표시
+        document.getElementById('loadSchedule').addEventListener('click', function() {
+            const fieldSelect = document.getElementById('fieldSelect');
+            const counselorSelect = document.getElementById('counselorSelect');
+            
+            if (!fieldSelect.value) {
+                alert('상담분류를 선택해주세요.');
+                return;
+            }
+            if (!counselorSelect.value) {
+                alert('상담사를 선택해주세요.');
+                return;
+            }
+            
+            document.getElementById('scheduleSection').style.display = 'block';
+            document.getElementById('offScheduleSection').style.display = 'block';
+            loadExistingSchedule(counselorSelect.value);
+        });
+
+        // 기존 일정 데이터 로드
+        function loadExistingSchedule(counselorId) {
+            // 예시 데이터 - 실제로는 서버에서 가져옴
+            const existingSchedule = {
+                'slot0910_mon': true,
+                'slot1112_mon': true,
+                'slot1415_mon': true,
+                'slot1011_tue': true,
+                'slot1112_tue': true,
+                'slot1415_tue': true
+            };
+            
+            // 체크박스 상태 설정
+            Object.keys(existingSchedule).forEach(key => {
+                const checkbox = document.querySelector(`input[name="${key}"]`);
+                if (checkbox) {
+                    checkbox.checked = existingSchedule[key];
+                }
+            });
+        }
+
+        // 일정 저장
+        document.getElementById('saveSchedule').addEventListener('click', function() {
+            const fieldId = document.getElementById('fieldSelect').value;
+            const counselorId = document.getElementById('counselorSelect').value;
+            
+            if (!fieldId || !counselorId) {
+                alert('상담분류와 상담사를 모두 선택해주세요.');
+                return;
+            }
+            
+            const scheduleData = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                scheduleData[checkbox.name] = checkbox.checked;
+            });
+            
+            console.log('저장할 일정 데이터:', scheduleData);
+            alert('일정이 저장되었습니다.');
+        });
+    </script>
+</body>
+</html>

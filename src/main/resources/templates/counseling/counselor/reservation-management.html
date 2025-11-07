@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 승인 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>상담사 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/schedule}">
+                                <i class="bi bi-calendar3"></i> 일정 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/counselor/reservations}">
+                                <i class="bi bi-check-circle"></i> 예약 승인
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/records}">
+                                <i class="bi bi-journal-text"></i> 상담일지
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/history}">
+                                <i class="bi bi-clock-history"></i> 상담 이력
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/satisfaction}">
+                                <i class="bi bi-star"></i> 만족도 결과
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">예약 승인 관리</h1>
+                </div>
+
+                <!-- 필터 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">상태</label>
+                                <select class="form-select">
+                                    <option value="">전체</option>
+                                    <option value="PENDING">대기중</option>
+                                    <option value="APPROVED">승인됨</option>
+                                    <option value="REJECTED">거부됨</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">상담 유형</label>
+                                <select class="form-select">
+                                    <option value="">전체</option>
+                                    <option value="CAREER">진로상담</option>
+                                    <option value="ACADEMIC">학업상담</option>
+                                    <option value="PSYCHOLOGICAL">심리상담</option>
+                                    <option value="EMPLOYMENT">취업상담</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">기간</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control">
+                                    <span class="input-group-text">~</span>
+                                    <input type="date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary w-100">검색</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예약 목록 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">상담 예약 목록 <span class="badge bg-primary">8건</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>예약번호</th>
+                                        <th>학생명</th>
+                                        <th>상담유형</th>
+                                        <th>희망일시</th>
+                                        <th>신청일</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>CNSL-2024-001</td>
+                                        <td>김학생</td>
+                                        <td>진로상담</td>
+                                        <td>2024-01-15 14:00</td>
+                                        <td>2024-01-10</td>
+                                        <td><span class="badge bg-warning">대기중</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal" data-id="1">승인</button>
+                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="1">거부</button>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="1">상세</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>CNSL-2024-002</td>
+                                        <td>이학생</td>
+                                        <td>학업상담</td>
+                                        <td>2024-01-16 10:00</td>
+                                        <td>2024-01-11</td>
+                                        <td><span class="badge bg-success">승인됨</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="2">상세</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>CNSL-2024-003</td>
+                                        <td>박학생</td>
+                                        <td>심리상담</td>
+                                        <td>2024-01-17 15:00</td>
+                                        <td>2024-01-12</td>
+                                        <td><span class="badge bg-danger">거부됨</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="3" data-status="REJECTED" data-reject-reason="일정 조정 불가로 인한 거절">상세</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 승인 모달 -->
+    <div class="modal fade" id="approveModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 예약 승인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 상담 예약을 승인하고 확정 일시를 설정해주세요.
+                    </div>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">확정 날짜</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">확정 시간</label>
+                            <input type="time" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">메모</label>
+                            <textarea class="form-control" rows="3" placeholder="상담 관련 메모사항을 입력하세요"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success">승인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 거부 모달 -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 예약 거부</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 상담 예약을 거부하시겠습니까?
+                    </div>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">거부 사유 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" rows="4" placeholder="거부 사유를 상세히 입력해주세요" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger">거부</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상세 조회 모달 -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">예약 상세 정보</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>예약번호:</strong></div>
+                        <div class="col-sm-9">CNSL-2024-001</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>학생명:</strong></div>
+                        <div class="col-sm-9">김학생 (202012345)</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담유형:</strong></div>
+                        <div class="col-sm-9">진로상담</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>희망일시:</strong></div>
+                        <div class="col-sm-9">2024년 1월 15일 14:00</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담내용:</strong></div>
+                        <div class="col-sm-9">진로 선택에 대한 고민이 있어 상담을 신청합니다. 전공과 관련된 진로 방향에 대해 조언을 구하고 싶습니다.</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>신청일:</strong></div>
+                        <div class="col-sm-9">2024년 1월 10일</div>
+                    </div>
+                    <div class="row mb-3" id="rejectReasonRow" style="display: none;">
+                        <div class="col-sm-3"><strong>거절사유:</strong></div>
+                        <div class="col-sm-9" id="rejectReasonText"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 상세 모달 열기 시 거절사유 표시
+        document.querySelectorAll('[data-bs-target="#detailModal"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const status = this.getAttribute('data-status');
+                const rejectReason = this.getAttribute('data-reject-reason');
+                const rejectReasonRow = document.getElementById('rejectReasonRow');
+                const rejectReasonText = document.getElementById('rejectReasonText');
+                
+                if (status === 'REJECTED' && rejectReason) {
+                    rejectReasonText.textContent = rejectReason;
+                    rejectReasonRow.style.display = 'flex';
+                } else {
+                    rejectReasonRow.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

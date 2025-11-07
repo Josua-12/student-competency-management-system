@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담사 메인</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 사이드바 -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>상담사 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/counselor}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/schedule}">
+                                <i class="bi bi-calendar3"></i> 일정 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/reservations}">
+                                <i class="bi bi-check-circle"></i> 예약 승인
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/records}">
+                                <i class="bi bi-journal-text"></i> 상담일지
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/history}">
+                                <i class="bi bi-clock-history"></i> 상담 이력
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/satisfaction}">
+                                <i class="bi bi-star"></i> 만족도 결과
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- 메인 콘텐츠 -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">상담사 대시보드</h1>
+                </div>
+
+                <!-- 통계 카드 -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            대기중인 예약</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">5건</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-clock text-primary" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            오늘 상담</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">3건</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            이번 달 상담</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">28건</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-bar-chart text-info" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            평균 만족도</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.2/5.0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 일별 일정 -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-4">
+                            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">상담 일정</h6>
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-sm btn-outline-primary me-2" id="prevDay">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </button>
+                                    <span class="mx-3" id="currentDate">2024년 1월 15일 (월)</span>
+                                    <button class="btn btn-sm btn-outline-primary ms-2" id="nextDay">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>시간</th>
+                                                <th>학생</th>
+                                                <th>상담 유형</th>
+                                                <th>상태</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>09:00</td>
+                                                <td>김학생</td>
+                                                <td>진로상담</td>
+                                                <td><span class="badge bg-success">확정</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>11:00</td>
+                                                <td>이학생</td>
+                                                <td>학업상담</td>
+                                                <td><span class="badge bg-success">확정</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>14:00</td>
+                                                <td>박학생</td>
+                                                <td>심리상담</td>
+                                                <td><span class="badge bg-warning">대기</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 날짜 네비게이션
+        let currentDate = new Date();
+        
+        function updateDateDisplay() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+            const dateStr = currentDate.toLocaleDateString('ko-KR', options);
+            document.getElementById('currentDate').textContent = dateStr;
+        }
+        
+        document.getElementById('prevDay').addEventListener('click', function() {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDateDisplay();
+            // 여기서 해당 날짜의 일정 데이터를 로드
+        });
+        
+        document.getElementById('nextDay').addEventListener('click', function() {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateDisplay();
+            // 여기서 해당 날짜의 일정 데이터를 로드
+        });
+        
+        // 초기 날짜 표시
+        updateDateDisplay();
+    </script>
+</body>
+</html>
