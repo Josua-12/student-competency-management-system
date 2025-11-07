@@ -1,5 +1,6 @@
 package com.competency.SCMS.domain;
 
+import com.competency.SCMS.domain.noncurricular.program.FileType;
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +20,10 @@ public class File {
     /** 파일 그룹 아이디(첨부 묶음 식별) */
     @Column(nullable = false)
     private Long groupId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private FileType fileType; // POSTER/GUIDE/ATTACHMENT
 
     /** 원본 파일명 */
     @Column(nullable = false, length = 255)
