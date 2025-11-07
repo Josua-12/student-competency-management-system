@@ -42,9 +42,4 @@ public class CounselingSubField { // 관리자가 하위 상담 분야 관리
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // 필수 필드 생성자
-    public CounselingSubField(CounselingField counselingField, String categoryName) {
-        this.counselingField = counselingField;
-        this.categoryName = categoryName;
-    }
 }

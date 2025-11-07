@@ -44,11 +44,6 @@ public class CounselingSatisfaction { // 상담별 만족도 설문 결과(통�
     @LastModifiedDate
     private LocalDateTime submittedAt = LocalDateTime.now();
 
-    // 필수 필드 생성자
-    public CounselingSatisfaction(CounselingReservation reservation, User student, User counselor) {
-        this.reservation = reservation;
-        this.student = student;
-        this.counselor = counselor;
-    }
+
 
 }

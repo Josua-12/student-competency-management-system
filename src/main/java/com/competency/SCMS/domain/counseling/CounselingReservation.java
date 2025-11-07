@@ -59,12 +59,8 @@ public class CounselingReservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.PENDING;
-//    오류로 인한 수정 - JHE
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "counselor_id")
-//    @Column(nullable = true)
-// (권장) 지연 로딩 + FK 컬럼 지정
-    @ManyToOne(fetch = FetchType.LAZY, optional = true) // 상담사 배정 전일 수 있으니 optional=true
+
+    @ManyToOne(fetch = FetchType.LAZY) // 상담사 배정 전일 수 있으니 optional=true
     @JoinColumn(name = "counselor_id")                  // FK 컬럼명 지정
     private User counselor;
 

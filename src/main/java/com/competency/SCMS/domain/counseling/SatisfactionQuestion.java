@@ -69,12 +69,6 @@ public class SatisfactionQuestion {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<QuestionOption> options = new ArrayList<>();
 
-    // 필수 필드 생성자
-    public SatisfactionQuestion(String questionText, QuestionType questionType, Integer displayOrder) {
-        this.questionText = questionText;
-        this.questionType = questionType;
-        this.displayOrder = displayOrder;
-    }
 
     public enum QuestionType {
         RATING, TEXT, MULTIPLE_CHOICE //평점형, 텍스트형, 객관식

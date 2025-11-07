@@ -17,6 +17,12 @@ public enum ErrorCode {
     INVALID_INPUT("VALID-001", "입력값이 올바르지 않습니다."),
     REQUIRED_FIELD_MISSING("VALID-002", "필수 입력값이 누락되었습니다."),
 
+    // ========== 권한 (AUTHORIZATION) ==========
+    FORBIDDEN("AUTH-001", "접근 권한이 없습니다."),
+    
+    // ========== 입력값 (INPUT) ==========
+    INVALID_INPUT_VALUE("INPUT-001", "잘못된 입력값입니다."),
+    
     // ========== 시스템 (SYSTEM) ==========
     INTERNAL_SERVER_ERROR("SYS-001", "서버 오류가 발생했습니다."),
     DATABASE_ERROR("SYS-002", "데이터베이스 오류가 발생했습니다.");

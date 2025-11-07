@@ -60,11 +60,4 @@ public class QuestionOption {
 
     private LocalDateTime deletedAt;
 
-    // 필수 필드 생성자
-    public QuestionOption(SatisfactionQuestion question, String optionText, Integer optionValue, Integer displayOrder) {
-        this.question = question;
-        this.optionText = optionText;
-        this.optionValue = optionValue;
-        this.displayOrder = displayOrder;
-    }
 }

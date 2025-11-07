@@ -1,4 +1,4 @@
-package com.competency.SCMS.controller;
+package com.competency.SCMS.controller.counsel;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
