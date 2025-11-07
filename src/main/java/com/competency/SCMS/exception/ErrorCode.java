@@ -1,9 +1,5 @@
 package com.competency.SCMS.exception;
 
-/**
- * 모든 에러 코드를 한곳에서 관리
- * 각 예외의 code와 message를 정의
- */
 public enum ErrorCode {
 
     // ========== 사용자 (USER) ==========
@@ -12,6 +8,26 @@ public enum ErrorCode {
     DUPLICATE_STUDENT_NUM("USER-003", "이미 존재하는 학번입니다."),
     INVALID_PASSWORD("USER-004", "비밀번호가 일치하지 않습니다."),
     USER_LOCKED("USER-005", "잠금 처리된 계정입니다."),
+
+    // ========== 본인인증 (VERIFICATION) ==========
+    MESSAGE_NOT_RECEIVED("VERIFY-001", "메시지가 수신되지 않았습니다."),
+    VERIFICATION_CODE_MISMATCH("VERIFY-002", "인증 코드가 일치하지 않습니다."),
+    VERIFICATION_EXPIRED("VERIFY-003", "인증 코드가 만료되었습니다."),
+    PHONE_NUMBER_MISMATCH("VERIFY-004", "휴대폰 번호가 일치하지 않습니다."),
+    VERIFICATION_BLOCKED("VERIFY-005", "인증 시도 횟수를 초과하여 차단되었습니다."),
+    PHONE_ALREADY_VERIFIED("VERIFY-006", "이미 인증된 휴대폰 번호입니다."),
+    PHONE_NOT_VERIFIED("VERIFY-007", "휴대폰 인증이 완료되지 않았습니다."),
+
+    // ========== 로그인 (LOGIN) ==========
+    INVALID_CREDENTIALS("LOGIN-001", "이메일 또는 비밀번호가 올바르지 않습니다."),
+    ACCOUNT_LOCKED("LOGIN-002", "계정이 잠금 상태입니다."),
+    TOKEN_EXPIRED("LOGIN-003", "토큰이 만료되었습니다."),
+    TOKEN_INVALID("LOGIN-004", "유효하지 않은 토큰입니다."),
+
+    // ========== 비밀번호 재설정 (PASSWORD RESET) ==========
+    PASSWORD_RESET_TOKEN_INVALID("PWD-001", "유효하지 않은 비밀번호 재설정 토큰입니다."),
+    PASSWORD_RESET_TOKEN_EXPIRED("PWD-002", "비밀번호 재설정 토큰이 만료되었습니다."),
+    PASSWORD_MISMATCH("PWD-003", "비밀번호가 일치하지 않습니다."),
 
     // ========== 검증 (VALIDATION) ==========
     INVALID_INPUT("VALID-001", "입력값이 올바르지 않습니다."),

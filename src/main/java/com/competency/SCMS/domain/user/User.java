@@ -65,6 +65,16 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    // ========== 비밀번호 재설정 관련 필드 추가 ==========
+    @Column(name = "password_reset_token", length = 255)
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expired_at")
+    private LocalDateTime passwordResetTokenExpiredAt;
+
+    @Column(name = "last_verification_phone_number", length = 20)
+    private String lastVerificationPhoneNumber;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -78,7 +88,7 @@ public class User {
     public void increaseFailCount() {
         this.failCnt++;
         if (this.failCnt >= 5) {
-            this.locked =true;
+            this.locked = true;
         }
     }
 
@@ -101,4 +111,19 @@ public class User {
         this.grade = grade;
     }
 
+    // ========== 비밀번호 재설정 관련 메서드 ==========
+    public void setPasswordResetToken(String token, int expiryMinutes) {
+        this.passwordResetToken = token;
+        this.passwordResetTokenExpiredAt = LocalDateTime.now().plusMinutes(expiryMinutes);
+    }
+
+    public boolean isPasswordResetTokenExpired() {
+        return this.passwordResetTokenExpiredAt != null
+                && LocalDateTime.now().isAfter(this.passwordResetTokenExpiredAt);
+    }
+
+    public void clearPasswordResetToken() {
+        this.passwordResetToken = null;
+        this.passwordResetTokenExpiredAt = null;
+    }
 }
