@@ -6,6 +6,10 @@ import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "program_satisfaction",
@@ -41,7 +45,17 @@ public class ProgramSatisfaction extends BaseEntity {
     @Column(nullable = false)
     private Integer rating;             // 1~5 (서비스/검증에서 범위 체크)
 
+    /** 서술형 피드백 */
     @Column(length = 500)
     private String comment;
+
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
 
