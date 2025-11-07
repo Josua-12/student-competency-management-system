@@ -1,10 +1,11 @@
 package com.competency.SCMS.service.noncurricular.operation;
 
-import com.competency.SCMS.domain.noncurricular.operation.Satisfaction;
+import com.competency.SCMS.domain.noncurricular.operation.ProgramSatisfaction;
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import com.competency.SCMS.domain.noncurricular.program.ProgramStatus;
 import com.competency.SCMS.dto.noncurricular.operation.*;
 import com.competency.SCMS.repository.noncurricular.operation.SatisfactionRepository;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -33,8 +34,8 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
         int size = cond.getSize() != null ? cond.getSize() : 10;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "submittedAt"));
 
-        Specification<Satisfaction> spec = buildSpec(cond);
-        Page<Satisfaction> paging = satisfactionRepository.findAll(spec, pageable);
+        Specification<ProgramSatisfaction> spec = buildSpec(cond);
+        Page<ProgramSatisfaction> paging = satisfactionRepository.findAll(spec, pageable);
 
         // 목록 DTO 매핑
         List<SatisfactionListItemDto> rows = paging.getContent().stream()
@@ -66,13 +67,13 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
 
     @Override
     public SatisfactionDetailDto getById(Long id) {
-        Satisfaction s = satisfactionRepository.findById(id)
+        ProgramSatisfaction s = satisfactionRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Satisfaction not found: " + id));
         return toDetail(s);
     }
 
     /* ---------- Spec(동적 where) ---------- */
-    private Specification<Satisfaction> buildSpec(SatisfactionSearchConditionDto c) {
+    private Specification<ProgramSatisfaction> buildSpec(SatisfactionSearchConditionDto c) {
         return (root, q, cb) -> {
             List<jakarta.persistence.criteria.Predicate> ps = new ArrayList<>();
 
@@ -117,37 +118,134 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
     }
 
     /* ---------- DTO 매핑 ---------- */
-    private SatisfactionListItemDto toListItem(Satisfaction s) {
-        String scheduleName = s.getSchedule() != null ? s.getSchedule().getName() : "-";
-        String title = s.getProgram() != null ? s.getProgram().getTitle() : "-";
+    private SatisfactionListItemDto toListItem(ProgramSatisfaction s) {
+        String scheduleName =
+                (s.getSchedule() != null && s.getSchedule().getName() != null)
+                        ? s.getSchedule().getName() : "-";
+        String title =
+                (s.getProgram() != null && s.getProgram().getTitle() != null)
+                        ? s.getProgram().getTitle() : "-";
+
         return SatisfactionListItemDto.builder()
-                .id(s.getId())
+                .id(s.getSatisfactionId())
                 .programId(s.getProgram() != null ? s.getProgram().getProgramId() : null)
                 .programTitle(title)
                 .scheduleId(s.getSchedule() != null ? s.getSchedule().getScheduleId() : null)
                 .scheduleName(scheduleName)
-                .studentNoMasked(maskStudentNo(s.getStudentId()))
-                .studentNameMasked("익명") // 필요 시 학생 조인/마스킹 로직 삽입
+                .studentNoMasked(maskStudentNo(
+                        s.getStudent().getId() != null ? s.getStudent().getId() : null
+                ))
+                .studentNameMasked("익명")
                 .rating(s.getRating())
-                .feedback(s.getFeedback())
-                .submittedAt(s.getSubmittedAt())
+                .feedback(s.getComment())
+                // 엔티티에 submittedAt이 없으므로 createdAt 사용
+                .submittedAt(s.getCreatedAt())
                 .build();
     }
 
-    private SatisfactionDetailDto toDetail(Satisfaction s) {
+    private SatisfactionDetailDto toDetail(ProgramSatisfaction s) {
+        String scheduleName =
+                (s.getSchedule() != null && s.getSchedule().getName() != null)
+                        ? s.getSchedule().getName() : "-";
+        String title =
+                (s.getProgram() != null && s.getProgram().getTitle() != null)
+                        ? s.getProgram().getTitle() : "-";
+
         return SatisfactionDetailDto.builder()
-                .id(s.getId())
+                .id(s.getSatisfactionId())
                 .programId(s.getProgram() != null ? s.getProgram().getProgramId() : null)
-                .programTitle(s.getProgram() != null ? s.getProgram().getTitle() : "-")
+                .programTitle(title)
                 .scheduleId(s.getSchedule() != null ? s.getSchedule().getScheduleId() : null)
-                .scheduleName(s.getSchedule() != null ? s.getSchedule().getName() : "-")
-                .studentNoMasked(maskStudentNo(s.getStudentId()))
+                .scheduleName(scheduleName)
+                .studentNoMasked(maskStudentNo(
+                        s.getStudent().getId() != null ? s.getStudent().getId() : null
+                ))
                 .studentNameMasked("익명")
                 .rating(s.getRating())
-                .feedback(s.getFeedback())
-                .submittedAt(s.getSubmittedAt())
+                .feedback(s.getComment())
+                .submittedAt(s.getCreatedAt())
                 .build();
     }
+
+    /* ---------- 유틸 : 리플렉션 기반 안전 접근자 ---------- */
+    @Nullable
+    private static Long tryGetLong(Object target, String getter) {
+        try {
+            if (target == null) return null;
+            var m = target.getClass().getMethod(getter);
+            var v = m.invoke(target);
+            return (v instanceof Number) ? ((Number) v).longValue() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static String tryGetString(Object target, String getter) {
+        try {
+            if (target == null) return null;
+            var m = target.getClass().getMethod(getter);
+            var v = m.invoke(target);
+            return (v != null) ? String.valueOf(v) : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    private static java.time.LocalDateTime tryGetLocalDateTime(Object target, String getter) {
+        try {
+            if (target == null) return null;
+            var m = target.getClass().getMethod(getter);
+            var v = m.invoke(target);
+            return (v instanceof java.time.LocalDateTime) ? (java.time.LocalDateTime) v : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @SafeVarargs
+    private static <T> T firstNonNull(T... values) {
+        for (T v : values) if (v != null) return v;
+        return null;
+    }
+
+    private static String firstNonBlank(String... values) {
+        for (String v : values) if (v != null && !v.isBlank()) return v;
+        return null;
+    }
+
+//    private SatisfactionListItemDto toListItem(ProgramSatisfaction s) {
+//        String scheduleName = s.getSchedule() != null ? s.getSchedule().getName() : "-";
+//        String title = s.getProgram() != null ? s.getProgram().getTitle() : "-";
+//        return SatisfactionListItemDto.builder()
+//                .id(s.getId())
+//                .programId(s.getProgram() != null ? s.getProgram().getProgramId() : null)
+//                .programTitle(title)
+//                .scheduleId(s.getSchedule() != null ? s.getSchedule().getScheduleId() : null)
+//                .scheduleName(scheduleName)
+//                .studentNoMasked(maskStudentNo(s.getStudentId()))
+//                .studentNameMasked("익명") // 필요 시 학생 조인/마스킹 로직 삽입
+//                .rating(s.getRating())
+//                .feedback(s.getFeedback())
+//                .submittedAt(s.getSubmittedAt())
+//                .build();
+//    }
+//
+//    private SatisfactionDetailDto toDetail(ProgramSatisfaction s) {
+//        return SatisfactionDetailDto.builder()
+//                .id(s.getId())
+//                .programId(s.getProgram() != null ? s.getProgram().getProgramId() : null)
+//                .programTitle(s.getProgram() != null ? s.getProgram().getTitle() : "-")
+//                .scheduleId(s.getSchedule() != null ? s.getSchedule().getScheduleId() : null)
+//                .scheduleName(s.getSchedule() != null ? s.getSchedule().getName() : "-")
+//                .studentNoMasked(maskStudentNo(s.getStudentId()))
+//                .studentNameMasked("익명")
+//                .rating(s.getRating())
+//                .feedback(s.getFeedback())
+//                .submittedAt(s.getSubmittedAt())
+//                .build();
+//    }
 
     private String maskStudentNo(Long studentId) {
         if (studentId == null) return "-";

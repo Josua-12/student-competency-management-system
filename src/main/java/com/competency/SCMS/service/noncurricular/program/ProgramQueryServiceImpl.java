@@ -116,7 +116,7 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .toList();
 
         List<CompetencyDto> competencies = competencyLinkRepository
-                .findAllByProgram_Id(programId).stream()
+                .findAllByProgram_programId(programId).stream()
                 .map(link -> CompetencyDto.builder()
                         .id(link.getCompetency().getId())
                         .name(n(link.getCompetency().getName()))
@@ -124,13 +124,13 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .toList();
 
         List<FileDto> files = programFileRepository
-                .findAllByProgram_IdOrderByCreatedAtAsc(programId).stream()
+                .findAllByProgram_programIdIdOrderByCreatedAtAsc(programId).stream()
                 .map(this::toFileDto)
                 .toList();
 
         DateTimeFormatter dt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         List<ApprovalHistoryDto> approvals = programApprovalHistoryRepository
-                .findAllByProgram_IdOrderByCreatedAtDesc(programId).stream()
+                .findAllByProgram_ProgramIdOrderByCreatedAtDesc(programId).stream()
                 .map(a -> ApprovalHistoryDto.builder()
                         .requestedAt(a.getCreatedAt()!=null ? a.getCreatedAt().format(dt) : "")
                         .status(a.getStatus()!=null ? a.getStatus().name() : "-")

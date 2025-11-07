@@ -25,10 +25,10 @@ public interface ProgramReportRepository
                                                   @Param("status") ReportStatus status);
 
     // 파생 쿼리(정확한 필드 경로 사용) — status가 필수일 때
-    List<ProgramReport> findAllByProgram_IdAndStatusOrderByCreatedAtDesc(Long programId, ReportStatus status);
+    List<ProgramReport> findAllByProgram_programIdAndStatusOrderByCreatedAtDesc(Long programId, ReportStatus status);
 
     // 파생 쿼리 — status 조건 없이 최신순
-    List<ProgramReport> findAllByProgram_IdOrderByCreatedAtDesc(Long programId);
+    List<ProgramReport> findAllByProgram_programIdOrderByCreatedAtDesc(Long programId);
 
     Page<ProgramReport> findByProgram_ProgramId(Long programId, Pageable pageable);
     Page<ProgramReport> findByProgram_ProgramIdAndWriterType(Long programId, ReportType reportType, Pageable pageable);

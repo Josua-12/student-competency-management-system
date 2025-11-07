@@ -11,51 +11,37 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+@Getter @Setter
 @Entity
 @Table(name = "program_satisfaction",
-        uniqueConstraints = @UniqueConstraint(
-                name="uq_satis_unique",
-                columnNames = {"prog_id","schd_id","student_id"}
-        ),
-        indexes = {
-                @Index(name="ix_satis_prog", columnList="prog_id"),
-                @Index(name="ix_satis_student", columnList="student_id"),
-                @Index(name="ix_satis_rating", columnList="rating")
-        }
-)
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+        uniqueConstraints = @UniqueConstraint(name="uq_satis_unique",
+                columnNames={"prog_id","schd_id","student_id"}))
 public class ProgramSatisfaction extends BaseEntity {
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "satis_id")
+    @Column(name="satisfaction_id")
     private Long satisfactionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "prog_id", nullable = false)
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="prog_id", nullable=false)
     private Program program;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schd_id")
-    private ProgramSchedule schedule;   // 프로그램 단위면 null
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="schd_id", nullable=false)
+    private ProgramSchedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "student_id")
+    // 학생을 키만 들고갈지, User 연관으로 들고갈지는 프로젝트 정책에 따라
+    // (지금 zip에는 User 연관으로 잡은 버전/키 보관 버전이 혼재)
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="student_id", nullable=false)
     private User student;
 
-    @Column(nullable = false)
-    private Integer rating;             // 1~5 (서비스/검증에서 범위 체크)
-
-    /** 서술형 피드백 */
-    @Column(length = 500)
-    private String comment;
-
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(nullable=false) private Integer rating;   // 1~5
+    @Column(length=500)     private String comment;
 }
+
+
+//        ),
+//        indexes = {
+//                @Index(name="ix_satis_prog", columnList="prog_id"),
+//                @Index(name="ix_satis_student", columnList="student_id"),
+//                @Index(name="ix_satis_rating", columnList="rating")
+//        }
+
 

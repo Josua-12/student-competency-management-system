@@ -8,17 +8,17 @@ import java.util.*;
 public interface ProgramSatisfactionRepository
         extends JpaRepository<ProgramSatisfaction, Long>, JpaSpecificationExecutor<ProgramSatisfaction> {
 
-    Optional<ProgramSatisfaction> findByProgram_IdAndSchedule_IdAndStudentId(Long programId, Long scheduleId, Long studentId);
+    Optional<ProgramSatisfaction> findByProgram_programIdAndSchedule_programIdAndStudentId(Long programId, Long scheduleId, Long studentId);
 
-    List<ProgramSatisfaction> findAllByProgram_IdAndSchedule_IdOrderByIdAsc(Long programId, Long scheduleId);
+    List<ProgramSatisfaction> findAllByProgram_programIdAndSchedule_programIdOrderByIdAsc(Long programId, Long scheduleId);
 
-    long countByProgram_IdAndSchedule_Id(Long programId, Long scheduleId);
+    long countByProgram_programIdAndSchedule_Id(Long programId, Long scheduleId);
 
     // 통계용 조회(평균, 분포는 Service에서 처리)
-    List<ProgramSatisfaction> findAllByProgram_IdAndSchedule_Id(Long programId, Long scheduleId);
+    List<ProgramSatisfaction> findAllByProgram_programIdAndSchedule_Id(Long programId, Long scheduleId);
 
     // 파생 메서드: 엔티티 경로를 명시적으로 풀어 Long 키들로 매칭
-    Optional<ProgramSatisfaction> findByProgram_ProgramIdAndSchedule_ScheduleIdAndStudent_UserId(
+    Optional<ProgramSatisfaction> findByProgram_ProgramIdAndSchedule_ScheduleIdAndStudent_Id(
             Long programId, Long scheduleId, Long studentId
     );
 

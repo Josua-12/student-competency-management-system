@@ -15,15 +15,15 @@ public interface ProgramApplicationRepository
     @Query(
             value = """
         select a
-        from Application a
-        where a.studentId = :studentId
+        from ProgramApplication a
+        where a.student.id = :studentId
           and (:status is null or a.status = :status)
         order by a.createdAt desc
       """,
             countQuery = """
         select count(a)
-        from Application a
-        where a.studentId = :studentId
+        from ProgramApplication a
+        where a.student.id = :studentId
           and (:status is null or a.status = :status)
       """
 
@@ -44,9 +44,9 @@ public interface ProgramApplicationRepository
     long countByProgramIdAndStatus(Long programId, ApplicationStatus status);
 
     // 중복 신청 방지용
-    boolean existsByProgram_ProgramIdAndStudent_UserId(Long programId, Long studentId);
+    boolean existsByProgram_ProgramIdAndStudent_Id(Long programId, Long studentId);
 
-    Optional<ProgramApplication> findByProgram_ProgramIdAndStudent_UserId(Long programId, Long studentId);
+    Optional<ProgramApplication> findByProgram_ProgramIdAndStudent_Id(Long programId, Long studentId);
 
     // 상태별 목록
     Page<ProgramApplication> findByProgram_ProgramIdAndStatus(Long programId, ApplicationStatus status, Pageable pageable);
@@ -55,7 +55,7 @@ public interface ProgramApplicationRepository
     Page<ProgramApplication> findByProgram_ProgramIdAndSchedule_ScheduleId(Long programId, Long scheduleId, Pageable pageable);
 
     // 학생의 신청 이력
-    Page<ProgramApplication> findByStudent_UserIdOrderByApplicationIdDesc(Long studentId, Pageable pageable);
+    Page<ProgramApplication> findByStudent_IdOrderByApplicationIdDesc(Long studentId, Pageable pageable);
 
     long countByProgram_ProgramIdAndStatus(Long programId, ApplicationStatus status);
 }

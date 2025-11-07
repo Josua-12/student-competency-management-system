@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "programs",
         indexes = {
-                @Index(name = "ix_programs_catg",          columnList = "catg_id"),
+                @Index(name = "ix_programs_category", columnList = "category"), // enum 저장 컬럼,
                 @Index(name = "ix_programs_status",        columnList = "status"),
                 @Index(name = "ix_programs_recruit_range", columnList = "recruit_start_at,recruit_end_at"),
                 @Index(name = "ix_programs_prog_range",    columnList = "program_start_at,program_end_at"),
@@ -65,7 +65,7 @@ public class Program extends BaseEntity {
     @Column(length = 500)
     private String summary;
 
-    @Lob
+    @Column(name = "description")
     private String description;
 
     /**
