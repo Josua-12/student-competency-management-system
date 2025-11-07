@@ -1,7 +1,6 @@
 package com.competency.SCMS.domain.counseling;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,8 +27,6 @@ public class SatisfactionQuestion {
     private Long id;
     
     @Column(nullable = false, columnDefinition = "TEXT")
-    @NotBlank(message = "질문 내용은 필수입니다")
-    @Size(max = 1000, message = "질문은 1000자를 초과할 수 없습니다")
     private String questionText;
     
     @Column(nullable = false)
@@ -45,12 +42,9 @@ public class SatisfactionQuestion {
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull(message = "질문 유형은 필수입니다")
     private QuestionType questionType;
     
     @Column(nullable = false)
-    @NotNull(message = "표시 순서는 필수입니다")
-    @Min(value = 1, message = "표시 순서는 1 이상이어야 합니다")
     private Integer displayOrder;
     
     @Column(nullable = false)
