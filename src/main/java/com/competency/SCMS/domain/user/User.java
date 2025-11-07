@@ -101,4 +101,8 @@ public class User {
         this.grade = grade;
     }
 
+    public String getUsername() {
+        return String.valueOf(this.studentNum);
+    }
+
 }

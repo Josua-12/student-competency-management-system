@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class CounselingReservationService {
     private final UserRepository userRepository;
     private final CounselingCategoryRepository categoryRepository;
 
+    // CNSL-001: 상담 예약 등록
     @Transactional
     public Long createReservation(CounselingReservationDto.CreateRequest request, User currentUser) {
         User student;
@@ -64,6 +67,81 @@ public class CounselingReservationService {
         return saved.getId();
     }
 
+    // CNSL-002: 상담 예약 목록 조회 (학생)
+    public Page<CounselingReservationDto.ListResponse> getMyReservations(User student, CounselingReservationDto.SearchCondition condition, Pageable pageable) {
+        Page<CounselingReservation> reservations = reservationRepository.findByStudentOrderByCreatedAtDesc(student, pageable);
+        return reservations.map(this::toListResponse);
+    }
+
+    // CNSL-003: 상담 예약 상세 조회
+    public CounselingReservationDto.DetailResponse getReservationDetail(Long reservationId, User currentUser) {
+        CounselingReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        
+        validateAccessPermission(reservation, currentUser);
+        return toDetailResponse(reservation);
+    }
+
+    // CNSL-004: 상담 예약 취소
+    @Transactional
+    public void cancelReservation(Long reservationId, CounselingReservationDto.CancelRequest request, User currentUser) {
+        CounselingReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        
+        if (!reservation.getStudent().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
+        if (reservation.getStatus() != ReservationStatus.PENDING && reservation.getStatus() != ReservationStatus.CONFIRMED) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
+        
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservation.setCancelReason(request.getCancelReason());
+        reservation.setCancelledAt(LocalDateTime.now());
+    }
+
+    // CNSL-008, CNSL-009: 상담 승인 (관리자/상담사)
+    @Transactional
+    public void approveReservation(Long reservationId, LocalDateTime confirmedDateTime, String memo, User currentUser) {
+        CounselingReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
+        
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setConfirmedAt(LocalDateTime.now());
+        reservation.setMemo(memo);
+        
+        if (currentUser.getRole() == UserRole.COUNSELOR) {
+            reservation.setCounselor(currentUser);
+        }
+    }
+
+    // CNSL-010: 상담 거부
+    @Transactional
+    public void rejectReservation(Long reservationId, String rejectReason, User currentUser) {
+        CounselingReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
+        
+        reservation.setStatus(ReservationStatus.REJECTED);
+        reservation.setRejectReason(rejectReason);
+        reservation.setRejectedAt(LocalDateTime.now());
+    }
+
+    // CNSL-011: 배정된 상담 일정 조회 (상담사)
+    public Page<CounselingReservationDto.ListResponse> getAssignedReservations(User counselor, Pageable pageable) {
+        Page<CounselingReservation> reservations = reservationRepository.findByCounselorAndStatusOrderByConfirmedDateTimeAsc(
+                counselor, ReservationStatus.CONFIRMED, pageable);
+        return reservations.map(this::toListResponse);
+    }
+
     private void validateCounselorOrAdminRole(User user) {
         if (user.getRole() != UserRole.COUNSELOR && user.getRole() != UserRole.ADMIN) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
@@ -90,5 +168,47 @@ public class CounselingReservationService {
     private CounselingSubField findSubFieldById(Long subFieldId) {
         return categoryRepository.findById(subFieldId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE));
+    }
+
+    private void validateAccessPermission(CounselingReservation reservation, User currentUser) {
+        boolean isStudent = currentUser.getId().equals(reservation.getStudent().getId());
+        boolean isCounselor = reservation.getCounselor() != null && currentUser.getId().equals(reservation.getCounselor().getId());
+        boolean isAdmin = currentUser.getRole() == UserRole.ADMIN;
+        
+        if (!isStudent && !isCounselor && !isAdmin) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+    }
+
+    private CounselingReservationDto.ListResponse toListResponse(CounselingReservation reservation) {
+        CounselingReservationDto.ListResponse response = new CounselingReservationDto.ListResponse();
+        response.setId(reservation.getId());
+        response.setStudentName(reservation.getStudent().getName());
+        response.setCounselingField(reservation.getCounselingField());
+        response.setSubFieldName(reservation.getSubField().getCategoryName());
+        response.setReservationDate(reservation.getReservationDate());
+        response.setStartTime(reservation.getStartTime());
+        response.setEndTime(reservation.getEndTime());
+        response.setStatus(reservation.getStatus());
+        response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
+        return response;
+    }
+
+    private CounselingReservationDto.DetailResponse toDetailResponse(CounselingReservation reservation) {
+        CounselingReservationDto.DetailResponse response = new CounselingReservationDto.DetailResponse();
+        response.setId(reservation.getId());
+        response.setStudentName(reservation.getStudent().getName());
+        response.setCounselingField(reservation.getCounselingField());
+        response.setSubFieldName(reservation.getSubField().getCategoryName());
+        response.setReservationDate(reservation.getReservationDate());
+        response.setStartTime(reservation.getStartTime());
+        response.setEndTime(reservation.getEndTime());
+        response.setRequestContent(reservation.getRequestContent());
+        response.setStatus(reservation.getStatus());
+        response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
+        response.setMemo(reservation.getMemo());
+        response.setRejectReason(reservation.getRejectReason());
+        response.setCancelReason(reservation.getCancelReason());
+        return response;
     }
 }

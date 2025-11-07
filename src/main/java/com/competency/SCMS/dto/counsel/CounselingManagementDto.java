@@ -49,7 +49,7 @@ public class CounselingManagementDto {
     @Data
     public static class CounselorResponse {
         private Long userId;
-        private String userName;
+        private String name;
         private String email;
         private CounselingField counselingField;
         private String specialization;
@@ -94,6 +94,7 @@ public class CounselingManagementDto {
         private String categoryName;
         private Integer displayOrder;
         private Boolean isRequired;
+        private Boolean isSystemDefault;
         private Boolean isActive;
         private List<OptionResponse> options;
         

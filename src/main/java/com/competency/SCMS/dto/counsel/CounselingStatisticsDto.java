@@ -18,6 +18,10 @@ public class CounselingStatisticsDto {
         private Long pendingCount;
         private Long cancelledCount;
         private Double completionRate;
+        private Long careerCount;
+        private Long academicCount;
+        private Long psychologicalCount;
+        private Long employmentCount;
     }
     
     // 전체 상담 현황 통계
@@ -29,6 +33,12 @@ public class CounselingStatisticsDto {
         private Long cancelledReservations;
         private Double completionRate;
         private Map<CounselingField, Long> typeDistribution;
+        private Long totalCount;
+        private Long pendingCount;
+        private Long confirmedCount;
+        private Long completedCount;
+        private Long cancelledCount;
+        private Long rejectedCount;
     }
     
     // 상담원별 현황
