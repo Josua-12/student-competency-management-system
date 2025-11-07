@@ -103,7 +103,7 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .build();
 
         List<ScheduleDto> schedules = scheduleRepository
-                .findAllByProgram_IdOrderByRoundNoAsc(programId).stream()
+                .findAllByProgram_ProgramIdOrderBySessionNoAsc(programId).stream()
                 .map(s -> ScheduleDto.builder()
                         .roundNo(s.getSessionNo())
                         .date(s.getDate()!=null ? s.getDate() : null)
@@ -116,7 +116,7 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .toList();
 
         List<CompetencyDto> competencies = competencyLinkRepository
-                .findAllByProgram_programId(programId).stream()
+                .findAllByProgram_ProgramIdAndCompetency_IsActiveTrueOrderByCompetency_NameAsc(programId).stream()
                 .map(link -> CompetencyDto.builder()
                         .id(link.getCompetency().getId())
                         .name(n(link.getCompetency().getName()))
@@ -124,7 +124,7 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .toList();
 
         List<FileDto> files = programFileRepository
-                .findAllByProgram_programIdIdOrderByCreatedAtAsc(programId).stream()
+                .findAllByProgram_programIdOrderByCreatedAtAsc(programId).stream()
                 .map(this::toFileDto)
                 .toList();
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface StudentCertificateRepository extends JpaRepository<StudentCertificate, Long> {
-    boolean existsByProgram_ProgramIdAndStudent_UserId(Long programId, Long studentId);
-    Optional<StudentCertificate> findByProgram_ProgramIdAndStudent_UserId(Long programId, Long studentId);
+    boolean existsByProgram_ProgramIdAndStudent_Id(Long programId, Long studentId);
+    Optional<StudentCertificate> findByProgram_ProgramIdAndStudent_Id(Long programId, Long studentId);
 }
 

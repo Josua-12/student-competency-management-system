@@ -11,6 +11,10 @@ import com.competency.SCMS.repository.noncurricular.program.ProgramRepository;
 import com.competency.SCMS.repository.noncurricular.program.ProgramScheduleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,7 @@ public class SatisfactionSurveyCommandServiceImpl implements SatisfactionSurveyC
     private final ProgramRepository programRepository;
     private final ProgramScheduleRepository scheduleRepository;
     private final SatisfactionSurveyRepository surveyRepository;
+    private final ProgramScheduleRepository programScheduleRepository;
 
     @Override
     public SatisfactionSurveyResponse save(SatisfactionSurveySaveRequest req) {
@@ -114,5 +119,19 @@ public class SatisfactionSurveyCommandServiceImpl implements SatisfactionSurveyC
                                 .build()
                 ).toList())
                 .build();
+    }
+
+    @Override
+    public Page<ProgramSchedule> getSchedulesByProgram(Long programId) {
+        Pageable pageable = PageRequest.of(
+                0, 10,
+                Sort.by("date").ascending().and(Sort.by("startTime").ascending())
+        );
+
+        // 인스턴스로 호출
+        Page<ProgramSchedule> page =
+                programScheduleRepository.findByProgram_ProgramId(programId, pageable);
+
+        return page;
     }
 }
