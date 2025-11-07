@@ -9,10 +9,17 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
-@Table(name = "counseling_reservations")
+@Table(name = "counseling_reservations",
+        indexes = {
+                @Index(name = "idx_counselor_date_time", columnList = "counselor_id,reservation_date,start_time"),
+                @Index(name = "idx_student_status", columnList = "student_id,status"),
+                @Index(name = "idx_reservation_date", columnList = "reservation_date")
+        })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,31 +39,31 @@ public class CounselingReservation {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CounselingField counselingField;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_field_id")
+    private CounselingSubField subField;
+
     @Column(nullable = false)
-    private LocalDateTime requestedDateTime;
-    
+    private LocalDate reservationDate;
+
+    @Column(nullable = false)
+    private LocalTime startTime;    //09:00, 10:00 등 (1시간 단위)
+
+    @Column(nullable = false)
+    private LocalTime endTime;    //10:00, 11:00 등 (1시간 단위)
+
     @Column(columnDefinition = "TEXT")
-    private String content;
+    private String requestContent;  // 상담 신청 내용
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.PENDING;
-//    오류로 인한 수정 - JHE
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "counselor_id")
-//    @Column(nullable = true)
-// (권장) 지연 로딩 + FK 컬럼 지정
-    @ManyToOne(fetch = FetchType.LAZY, optional = true) // 상담사 배정 전일 수 있으니 optional=true
+
+    @ManyToOne(fetch = FetchType.LAZY) // 상담사 배정 전일 수 있으니 optional=true
     @JoinColumn(name = "counselor_id")                  // FK 컬럼명 지정
     private User counselor;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private CounselingSubField category;
-    
-    private LocalDateTime confirmedDateTime;
-    
+
     @Column(columnDefinition = "TEXT")
     private String memo;
 
@@ -66,14 +73,34 @@ public class CounselingReservation {
     @Column(columnDefinition = "TEXT")
     private String rejectReason;
 
+
     @Column(nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
-
     @LastModifiedDate
     private LocalDateTime updatedAt;
+    private LocalDateTime confirmedAt;  // 승인 시각
+    private LocalDateTime completedAt;  // 상담 완료 시각
+    private LocalDateTime cancelledAt;  // 취소 시각
+    private LocalDateTime rejectedAt;   // 거절 시각
 
-    public enum ReservationStatus {
-        PENDING, APPROVED, REJECTED, CANCELLED, COMPLETED
+
+    // 예약 시작 시간을 LocalDateTime으로 반환 (편의 메서드)
+    public LocalDateTime getReservationDateTime() {
+        return LocalDateTime.of(reservationDate, startTime);
+    }
+
+    // 예약 시간이 지났는지 확인
+    public boolean isPast() {
+        return getReservationDateTime().isBefore(LocalDateTime.now());
+    }
+
+    // 취소 가능한지 확인 (예: 예약 24시간 전까지만 취소 가능)
+    public boolean isCancellable() {
+        if (status != ReservationStatus.CONFIRMED) {
+            return false;
+        }
+        LocalDateTime cancelDeadline = getReservationDateTime().minusHours(24);
+        return LocalDateTime.now().isBefore(cancelDeadline);
     }
 }

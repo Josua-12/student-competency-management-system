@@ -111,6 +111,10 @@ public class User {
         this.grade = grade;
     }
 
+    public String getUsername() {
+        return String.valueOf(this.studentNum);
+    }
+
     // ========== 비밀번호 재설정 관련 메서드 ==========
     public void setPasswordResetToken(String token, int expiryMinutes) {
         this.passwordResetToken = token;

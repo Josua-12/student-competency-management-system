@@ -1,5 +1,9 @@
 package com.competency.SCMS.exception;
 
+/**
+ * 모든 에러 코드를 한 곳에서 관리
+ * 각 예외의 code와 message를 정의
+ */
 public enum ErrorCode {
 
     // ========== 사용자 (USER) ==========
@@ -33,9 +37,27 @@ public enum ErrorCode {
     INVALID_INPUT("VALID-001", "입력값이 올바르지 않습니다."),
     REQUIRED_FIELD_MISSING("VALID-002", "필수 입력값이 누락되었습니다."),
 
+    // ========== 권한 (AUTHORIZATION) ==========
+    FORBIDDEN("AUTH-001", "접근 권한이 없습니다."),
+    
+    // ========== 입력값 (INPUT) ==========
+    INVALID_INPUT_VALUE("INPUT-001", "잘못된 입력값입니다."),
+    
     // ========== 시스템 (SYSTEM) ==========
     INTERNAL_SERVER_ERROR("SYS-001", "서버 오류가 발생했습니다."),
-    DATABASE_ERROR("SYS-002", "데이터베이스 오류가 발생했습니다.");
+    DATABASE_ERROR("SYS-002", "데이터베이스 오류가 발생했습니다."),
+    
+    // ========== 상담 (COUNSELING) ==========
+    RESERVATION_NOT_FOUND("CNSL-001", "상담 예약을 찾을 수 없습니다."),
+    INVALID_RESERVATION_STATUS("CNSL-002", "유효하지 않은 예약 상태입니다."),
+    RECORD_NOT_FOUND("CNSL-003", "상담일지를 찾을 수 없습니다."),
+    SATISFACTION_ALREADY_SUBMITTED("CNSL-004", "이미 만족도 조사를 제출했습니다."),
+    QUESTION_NOT_FOUND("CNSL-005", "설문 문항을 찾을 수 없습니다."),
+    OPTION_NOT_FOUND("CNSL-006", "설문 옵션을 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND("CNSL-007", "상담 분류를 찾을 수 없습니다."),
+    COUNSELOR_NOT_FOUND("CNSL-008", "상담사를 찾을 수 없습니다."),
+    CANNOT_MODIFY_SYSTEM_QUESTION("CNSL-009", "시스템 기본 질문은 수정할 수 없습니다."),
+    CANNOT_DELETE_SYSTEM_QUESTION("CNSL-010", "시스템 기본 질문은 삭제할 수 없습니다.");
 
     private final String code;
     private final String message;

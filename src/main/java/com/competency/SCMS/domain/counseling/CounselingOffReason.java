@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum CounselingOffReason {
 
     ANNUAL_LEAVE("연차휴가"),
-    HALF_DAY_LEAVE("반차"),
+    HALF_DAY_AM("오전 반차"),
+    HALF_DAY_PM("오후 반차"),
     SICK_LEAVE("병가"),
     FAMILY_EVENT_LEAVE("경조휴가"),
     MATERNITY_LEAVE("출산휴가"),

@@ -1,7 +1,6 @@
 package com.competency.SCMS.domain.counseling;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,16 +24,12 @@ public class CounselingSubField { // 관리자가 하위 상담 분야 관리
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @NotNull(message = "상위 상담 분야는 필수입니다")
     private CounselingField counselingField;    // 상위 상담 분야
     
     @Column(nullable = false)
-    @NotBlank(message = "카테고리명은 필수입니다")
-    @Size(max = 100, message = "카테고리명은 100자를 초과할 수 없습니다")
     private String categoryName;
     
     @Column(columnDefinition = "TEXT")
-    @Size(max = 500, message = "설명은 500자를 초과할 수 없습니다")
     private String description;
     
     @Column(nullable = false)
@@ -47,9 +42,4 @@ public class CounselingSubField { // 관리자가 하위 상담 분야 관리
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // 필수 필드 생성자
-    public CounselingSubField(CounselingField counselingField, String categoryName) {
-        this.counselingField = counselingField;
-        this.categoryName = categoryName;
-    }
 }

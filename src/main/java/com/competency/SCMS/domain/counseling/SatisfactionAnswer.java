@@ -39,10 +39,5 @@ public class SatisfactionAnswer { //하나의 설문에 있는 설문문항들 �
     @JoinColumn(name = "selected_option_id")
     private QuestionOption selectedOption; // MULTIPLE_CHOICE 타입 답변
 
-    // 필수 필드 생성자
-    public SatisfactionAnswer(CounselingSatisfaction satisfaction, SatisfactionQuestion question) {
-        this.satisfaction = satisfaction;
-        this.question = question;
-    }
 
 }

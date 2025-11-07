@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일정 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>상담사 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/counselor/schedule}">
+                                <i class="bi bi-calendar3"></i> 일정 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/reservations}">
+                                <i class="bi bi-check-circle"></i> 예약 승인
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/records}">
+                                <i class="bi bi-journal-text"></i> 상담일지
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/history}">
+                                <i class="bi bi-clock-history"></i> 상담 이력
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/satisfaction}">
+                                <i class="bi bi-star"></i> 만족도 결과
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">일정 관리</h1>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#offScheduleModal">
+                        <i class="bi bi-plus"></i> 휴무 신청
+                    </button>
+                </div>
+
+                <!-- 기본 근무시간표 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">기본 근무시간표</h5>
+                        <small class="text-muted">관리자가 설정한 기본 근무시간입니다.</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>시간</th>
+                                        <th>월요일</th>
+                                        <th>화요일</th>
+                                        <th>수요일</th>
+                                        <th>목요일</th>
+                                        <th>금요일</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>09:00-10:00</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-light text-center">-</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                    </tr>
+                                    <tr>
+                                        <td>10:00-11:00</td>
+                                        <td class="bg-light text-center">-</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-light text-center">-</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-light text-center">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>11:00-12:00</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                    </tr>
+                                    <tr>
+                                        <td>14:00-15:00</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15:00-16:00</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                        <td class="bg-success text-white text-center">근무</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 휴무 신청 내역 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">휴무 신청 내역</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>신청일</th>
+                                        <th>휴무 기간</th>
+                                        <th>휴무 사유</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2024-01-10</td>
+                                        <td>2024-01-16 ~ 2024-01-16</td>
+                                        <td>개인사정</td>
+                                        <td><span class="badge bg-warning">대기중</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#offScheduleModal">수정</button>
+                                            <button class="btn btn-sm btn-outline-danger">취소</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024-01-05</td>
+                                        <td>2024-01-12 ~ 2024-01-12</td>
+                                        <td>병가</td>
+                                        <td><span class="badge bg-success">승인됨</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">상세</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024-01-03</td>
+                                        <td>2024-01-08 ~ 2024-01-09</td>
+                                        <td>연차</td>
+                                        <td><span class="badge bg-danger">거부됨</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-info">상세</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 실제 근무 일정 -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">실제 근무 일정</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary" id="prevWeek">
+                                <i class="bi bi-chevron-left"></i> 이전 주
+                            </button>
+                            <span class="mx-3" id="currentWeek">2024년 1월 15일 - 1월 19일</span>
+                            <button class="btn btn-sm btn-outline-primary" id="nextWeek">
+                                다음 주 <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th width="100">시간</th>
+                                        <th>월요일<br><small>1/15</small></th>
+                                        <th>화요일<br><small>1/16</small></th>
+                                        <th>수요일<br><small>1/17</small></th>
+                                        <th>목요일<br><small>1/18</small></th>
+                                        <th>금요일<br><small>1/19</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>09:00-10:00</td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                        <td class="bg-light text-center">-</td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                        <td class="bg-warning text-center">예약됨<br><small>김학생</small></td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                    </tr>
+                                    <tr>
+                                        <td>14:00-15:00</td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                        <td class="bg-danger text-white text-center">휴무<br><small>개인사정</small></td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                        <td class="bg-success text-white text-center">근무가능</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 휴무 신청 모달 -->
+    <div class="modal fade" id="offScheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">휴무 신청</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">휴무 사유 <span class="text-danger">*</span></label>
+                            <select class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="PERSONAL">개인사정</option>
+                                <option value="SICK">병가</option>
+                                <option value="VACATION">연차</option>
+                                <option value="FAMILY">경조사</option>
+                                <option value="EDUCATION">교육/연수</option>
+                                <option value="OTHER">기타</option>
+                            </select>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label">시작일 <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">종료일 <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">상세 사유</label>
+                            <textarea class="form-control" rows="3" placeholder="휴무 사유를 상세히 입력하세요"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary">신청</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 주간 네비게이션
+        document.getElementById('prevWeek').addEventListener('click', function() {
+            console.log('이전 주 로드');
+        });
+
+        document.getElementById('nextWeek').addEventListener('click', function() {
+            console.log('다음 주 로드');
+        });
+    </script>
+</body>
+</html>

@@ -15,6 +15,8 @@ public interface SatisfactionQuestionRepository extends JpaRepository<Satisfacti
 
     // CNSL-024: 상담만족도 문항관리 - 활성화된 질문 조회
     Page<SatisfactionQuestion> findByIsActiveTrueOrderByDisplayOrderAsc(Pageable pageable);
+    
+    List<SatisfactionQuestion> findByIsActiveTrueOrderByDisplayOrderAsc();
 
     // 상담 분야별 질문 조회
     Page<SatisfactionQuestion> findByCounselingFieldAndIsActiveTrueOrderByDisplayOrderAsc(CounselingField counselingField, Pageable pageable);

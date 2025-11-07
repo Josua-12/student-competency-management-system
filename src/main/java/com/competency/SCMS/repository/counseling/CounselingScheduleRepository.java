@@ -6,19 +6,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.userdetails.User;
+import com.competency.SCMS.domain.user.User;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Repository
 public interface CounselingScheduleRepository extends JpaRepository<CounselingBaseSchedule, Long> {
 
     // CNSL-006: 상담사별 일정 조회
-    Page<CounselingBaseSchedule> findByCounselorOrderByScheduleDateAsc(User counselor, Pageable pageable);
+    Page<CounselingBaseSchedule> findByCounselorOrderByCreatedAtDesc(User counselor, Pageable pageable);
 
-    // CNSL-007: 특정 날짜의 상담사 일정 조회
-    Page<CounselingBaseSchedule> findByCounselorAndScheduleDate(User counselor, LocalDate scheduleDate, Pageable pageable);
+    // CNSL-007: 특정 요일의 상담사 일정 조회
+    Optional<CounselingBaseSchedule> findByCounselorAndDayOfWeek(User counselor, DayOfWeek dayOfWeek);
 
     // 기간별 상담사 일정 조회
     @Query("SELECT cs FROM CounselingSchedule cs WHERE cs.counselor = :counselor AND cs.scheduleDate BETWEEN :startDate AND :endDate ORDER BY cs.scheduleDate ASC")

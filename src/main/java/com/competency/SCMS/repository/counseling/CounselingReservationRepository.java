@@ -2,6 +2,7 @@ package com.competency.SCMS.repository.counseling;
 
 import com.competency.SCMS.domain.counseling.CounselingField;
 import com.competency.SCMS.domain.counseling.CounselingReservation;
+import com.competency.SCMS.domain.counseling.ReservationStatus;
 import com.competency.SCMS.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,13 +24,14 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     Page<CounselingReservation> findByStudentAndCounselingFieldOrderByCreatedAtDesc(User student, CounselingField counselingField, Pageable pageable);
 
     // CNSL-008 : (관리자) 상담 승인 관리 - 모든 대기 중인 예약 조회
-    Page<CounselingReservation> findByStatusOrderByCreatedAtAsc(CounselingReservation.ReservationStatus status, Pageable pageable);
+    Page<CounselingReservation> findByStatusOrderByCreatedAtAsc(ReservationStatus status, Pageable pageable);
 
     // CNSL-009: (상담사) 상담 승인 관리 - 본인에게 배정된 대기 중인 예약 조회
-    Page<CounselingReservation> findByCounselorAndStatusOrderByCreatedAtAsc(User counselor, CounselingReservation.ReservationStatus status, Pageable pageable);
+    Page<CounselingReservation> findByCounselorAndStatusOrderByCreatedAtAsc(User counselor, ReservationStatus status, Pageable pageable);
 
-    // CNSL-011: 상담사별 특정상태의 상담 일정 조회 (배정된 상태:APPROVED)
-    Page<CounselingReservation> findByCounselorAndStatusOrderByConfirmedDateTimeAsc(User counselor, CounselingReservation.ReservationStatus status, Pageable pageable);
+    // CNSL-011: 상담사별 특정상태의 상담 일정 조회 (배정된 상태:CONFIRMED)
+    @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status = :status ORDER BY cr.reservationDate ASC, cr.startTime ASC")
+    Page<CounselingReservation> findByCounselorAndStatusOrderByConfirmedDateTimeAsc(@Param("counselor") User counselor, @Param("status") ReservationStatus status, Pageable pageable);
 
     // CNSL-015: 전체 상담 이력 조회 (검색 기능 포함)
     @Query("SELECT cr FROM CounselingReservation cr " +
@@ -42,12 +44,12 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     Page<CounselingReservation> findByCounselorOrderByCreatedAtDesc(User counselor, Pageable pageable);
 
     // CNSL-017: 상담사 본인 담당 상담 현황
-    @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status IN :statuses ORDER BY cr.confirmedDateTime ASC")
-    Page<CounselingReservation> findByCounselorAndStatusIn(@Param("counselor") User counselor, @Param("statuses") List<CounselingReservation.ReservationStatus> statuses, Pageable pageable);
+    @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status IN :statuses ORDER BY cr.reservationDate ASC, cr.startTime ASC")
+    Page<CounselingReservation> findByCounselorAndStatusIn(@Param("counselor") User counselor, @Param("statuses") List<ReservationStatus> statuses, Pageable pageable);
 
     // CNSL-018: 상담 유형별 통계
     @Query("SELECT cr.counselingField, COUNT(cr) FROM CounselingReservation cr WHERE cr.status = :status GROUP BY cr.counselingField")
-    List<Object[]> countByStatusGroupByCounselingField(@Param("status") CounselingReservation.ReservationStatus status);
+    List<Object[]> countByStatusGroupByCounselingField(@Param("status") ReservationStatus status);
 
     // CNSL-019: 전체 상담 현황 통계
     @Query("SELECT cr.status, COUNT(cr) FROM CounselingReservation cr GROUP BY cr.status")
