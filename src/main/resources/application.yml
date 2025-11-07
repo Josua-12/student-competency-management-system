@@ -1,9 +1,20 @@
 spring:
+  profiles:
+    active: dev
+    include: jwt, gmail
+
   datasource:
     url: jdbc:mysql://localhost:3306/student_competency?allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: 12345
+
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
     show-sql: true
+
+  server:
+    port: 8080
