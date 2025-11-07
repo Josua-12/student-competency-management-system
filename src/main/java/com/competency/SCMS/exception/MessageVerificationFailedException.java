@@ -13,4 +13,8 @@ public class MessageVerificationFailedException extends BusinessException {
     public MessageVerificationFailedException(String message) {
         super(ErrorCode.VERIFICATION_CODE_MISMATCH, message);
     }
+
+    public MessageVerificationFailedException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
+    }
 }

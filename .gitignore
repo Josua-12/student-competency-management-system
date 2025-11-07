@@ -34,4 +34,5 @@ Thumbs.db
 *.lock
 
 problems-report.html
-
+application-jwt.yml
+application-gmail.yml

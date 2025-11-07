@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto.response;
+package com.competency.SCMS.dto.dashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

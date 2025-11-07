@@ -63,14 +63,6 @@ public class PhoneVerification {
     @Column(name = "purpose", length = 50)
     private String purpose;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        if (this.expiredAt == null) {
-            this.expiredAt = LocalDateTime.now().plusMinutes(5);
-        }
-    }
-
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiredAt);
     }
@@ -95,11 +87,6 @@ public class PhoneVerification {
         this.isVerified = true;
         this.verifiedAt = LocalDateTime.now();
         this.messageReceivedAt = LocalDateTime.now();
-    }
-
-    public void markAsFailed() {
-        this.status = VerificationStatus.FAILED;
-        incrementFailureCount();
     }
 
     public void markAsExpired() {
