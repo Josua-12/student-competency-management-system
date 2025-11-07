@@ -37,9 +37,5 @@ public class LoginHistory {
     @Column(name = "fail_reason", length = 255)
     private String failReason;
 
-    @PrePersist
-    protected void onCreate() {
-        this.loginAt = LocalDateTime.now();
-    }
 
 }

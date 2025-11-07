@@ -1,11 +1,11 @@
 package com.competency.SCMS.exception;
 
-public class UserNotFoundException extends RuntimeException{
+public class UserNotFoundException extends BusinessException {
     public UserNotFoundException() {
-        super("사용자를 찾을 수 없습니다.");
+        super(ErrorCode.USER_NOT_FOUND);
     }
 
     public UserNotFoundException(String message) {
-        super(message);
+        super(ErrorCode.USER_NOT_FOUND, message);
     }
 }

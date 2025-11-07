@@ -1,11 +1,11 @@
 package com.competency.SCMS.exception;
 
-public class PhoneNotVerifiedException extends RuntimeException {
+public class PhoneNotVerifiedException extends BusinessException {
     public PhoneNotVerifiedException() {
-        super("휴대폰 인증이 아직 완료되지 않았습니다.");
+        super(ErrorCode.PHONE_NOT_VERIFIED);
     }
 
     public PhoneNotVerifiedException(String message) {
-        super(message);
+        super(ErrorCode.PHONE_NOT_VERIFIED, message);
     }
 }

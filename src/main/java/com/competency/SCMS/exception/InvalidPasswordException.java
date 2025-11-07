@@ -1,11 +1,11 @@
 package com.competency.SCMS.exception;
 
-public class InvalidPasswordException extends RuntimeException {
+public class InvalidPasswordException extends BusinessException {
   public InvalidPasswordException() {
-    super("비밀번호가 일치하지 않습니다.");
+    super(ErrorCode.INVALID_PASSWORD);
   }
 
   public InvalidPasswordException(String message) {
-    super(message);
+    super(ErrorCode.INVALID_PASSWORD, message);
   }
 }

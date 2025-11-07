@@ -29,7 +29,7 @@ public class PhoneVerificationService {
      * 인증 코드 생성 및 SMS 링크 제공
      */
     public PhoneVerificationResponseDto startVerification(PhoneVerificationRequestDto request) {
-        String normalizedPhone = phoneVerificationUtil.normalizePhoneNumber(request.getPhoneNumber());
+        String normalizedPhone = phoneVerificationUtil.normalizePhoneNumber(request.getPhone());
 
         // 기존 PENDING 상태 인증 무효화
         phoneVerificationRepo.findByPhoneAndStatus(normalizedPhone, VerificationStatus.PENDING)
@@ -59,6 +59,7 @@ public class PhoneVerificationService {
         log.info("인증 코드 생성 완료 - 휴대폰: {}, 코드: {}", normalizedPhone, verificationCode);
 
         return PhoneVerificationResponseDto.builder()
+                .success(true)  // ✓ 추가
                 .verificationCode(verificationCode)
                 .smsLink(smsLink)
                 .phoneNumber(normalizedPhone)
@@ -74,6 +75,7 @@ public class PhoneVerificationService {
     public boolean verifyCode(PhoneVerificationConfirmDto confirmDto) {
         String normalizedPhone = phoneVerificationUtil.normalizePhoneNumber(confirmDto.getPhoneNumber());
 
+        // ✓ 명확한 예외 처리
         PhoneVerification verification = phoneVerificationRepo
                 .findByPhoneAndVerificationCodeAndStatus(
                         normalizedPhone,

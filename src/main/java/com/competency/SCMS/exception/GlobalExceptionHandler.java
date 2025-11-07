@@ -21,9 +21,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
-        log.error("BusinessException: {}", ex.getMessage());
+        log.error("BusinessException: {}", ex.getErrorCode().getCode());
         ErrorResponse response = ErrorResponse.of(ex.getErrorCode());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        // ErrorCode에 따라 HTTP 상태 코드 매핑
+        HttpStatus status = mapErrorCodeToHttpStatus(ex.getErrorCode());
+        return ResponseEntity.status(status).body(response);
     }
 
     /**
@@ -82,10 +85,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * MessageVerificationFailedException 처리 (새로 추가)
+     * MessageVerificationFailedException 처리
      */
     @ExceptionHandler(MessageVerificationFailedException.class)
-    public ResponseEntity<ErrorResponse> handleMessageVerificationFailed(MessageVerificationFailedException ex) {
+    public ResponseEntity<ErrorResponse> handleMessageVerificationFailed(
+            MessageVerificationFailedException ex) {
         log.error("MessageVerificationFailedException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ErrorResponse.of(ex.getErrorCode())
@@ -99,7 +103,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
         log.error("JwtException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                ErrorResponse.of(ErrorCode.TOKEN_INVALID, ex.getMessage())
+                ErrorResponse.of(ex.getErrorCode())
         );
     }
 
@@ -127,5 +131,37 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage())
         );
+    }
+
+    /**
+     * ErrorCode를 HTTP 상태 코드로 매핑
+     */
+    private HttpStatus mapErrorCodeToHttpStatus(ErrorCode errorCode) {
+        return switch (errorCode) {
+            case USER_NOT_FOUND, RESERVATION_NOT_FOUND, RECORD_NOT_FOUND,
+                 QUESTION_NOT_FOUND, OPTION_NOT_FOUND, CATEGORY_NOT_FOUND,
+                 COUNSELOR_NOT_FOUND -> HttpStatus.NOT_FOUND;
+
+            case DUPLICATE_EMAIL, DUPLICATE_STUDENT_NUM,
+                 PHONE_ALREADY_VERIFIED, SATISFACTION_ALREADY_SUBMITTED -> HttpStatus.CONFLICT;
+
+            case INVALID_PASSWORD, INVALID_CREDENTIALS, ACCOUNT_LOCKED,
+                 PHONE_NOT_VERIFIED, TOKEN_EXPIRED, TOKEN_INVALID -> HttpStatus.UNAUTHORIZED;
+
+            case VERIFICATION_EXPIRED, PHONE_NUMBER_MISMATCH -> HttpStatus.GONE;
+
+            case FORBIDDEN -> HttpStatus.FORBIDDEN;
+
+            case INVALID_INPUT, REQUIRED_FIELD_MISSING, INVALID_INPUT_VALUE,
+                 MESSAGE_NOT_RECEIVED, VERIFICATION_CODE_MISMATCH,
+                 VERIFICATION_BLOCKED, PASSWORD_MISMATCH,
+                 PASSWORD_RESET_TOKEN_INVALID, PASSWORD_RESET_TOKEN_EXPIRED,
+                 INVALID_RESERVATION_STATUS, CANNOT_MODIFY_SYSTEM_QUESTION,
+                 CANNOT_DELETE_SYSTEM_QUESTION -> HttpStatus.BAD_REQUEST;
+
+            case INTERNAL_SERVER_ERROR, DATABASE_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
     }
 }

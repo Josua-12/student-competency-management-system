@@ -1,11 +1,11 @@
 package com.competency.SCMS.exception;
 
-public class PhoneExpiredException extends RuntimeException {
+public class PhoneExpiredException extends BusinessException {
     public PhoneExpiredException() {
-        super("인증 코드가 만료되었습니다. 다시 요청해주세요.");
+        super(ErrorCode.VERIFICATION_EXPIRED);
     }
 
     public PhoneExpiredException(String message) {
-        super(message);
+        super(ErrorCode.VERIFICATION_EXPIRED, message);
     }
 }
