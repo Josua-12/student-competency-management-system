@@ -1,8 +1,8 @@
 package com.competency.SCMS.controller.noncurricular.program;
 
 
-import com.competency.SCMS.dto.noncurricular.program.ProgramPageResponse;
-import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCond;
+import com.competency.SCMS.dto.noncurricular.program.ProgramPageResponseDto;
+import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCondDto;
 import com.competency.SCMS.service.noncurricular.program.ProgramCommandService;
 import com.competency.SCMS.service.noncurricular.program.ProgramQueryService;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,9 @@ public class OperatorProgramApiController {
 
     // 목록 조회(검색/정렬/페이징)
     @GetMapping
-    public ProgramPageResponse list(ProgramSearchCond cond, @PageableDefault(size = 10) Pageable pageable){
+    public ProgramPageResponseDto list(ProgramSearchCondDto cond, @PageableDefault(size = 10) Pageable pageable){
         var page = programQueryService.search(cond, pageable);
-        return ProgramPageResponse.from(page);
+        return ProgramPageResponseDto.from(page);
     }
 
     // 단건 승인요청

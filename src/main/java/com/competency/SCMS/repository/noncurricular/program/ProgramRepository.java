@@ -2,11 +2,8 @@ package com.competency.SCMS.repository.noncurricular.program;
 
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import com.competency.SCMS.domain.noncurricular.program.ProgramStatus;
-import com.competency.SCMS.dto.noncurricular.program.ProgramListRow;
-import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCond;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

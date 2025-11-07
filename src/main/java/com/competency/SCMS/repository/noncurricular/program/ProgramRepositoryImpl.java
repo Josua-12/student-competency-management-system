@@ -1,8 +1,8 @@
 package com.competency.SCMS.repository.noncurricular.program;
 
 import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.dto.noncurricular.program.ProgramListRow;
-import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCond;
+import com.competency.SCMS.dto.noncurricular.program.ProgramListRowDto;
+import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCondDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -29,12 +29,12 @@ public class ProgramRepositoryImpl implements ProgramRepositoryCustom {
     }
 
     @Override
-    public Page<ProgramListRow> search(ProgramSearchCond cond, Pageable pageable) {
+    public Page<ProgramListRowDto> search(ProgramSearchCondDto cond, Pageable pageable) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         // ===== Select 쿼리 =====
-        CriteriaQuery<ProgramListRow> cq = cb.createQuery(ProgramListRow.class);
+        CriteriaQuery<ProgramListRowDto> cq = cb.createQuery(ProgramListRowDto.class);
         Root<Program> p = cq.from(Program.class);
         Join<Object, Object> d = p.join("department", JoinType.LEFT); // 부서
         Join<Object, Object> owner = p.join("owner", JoinType.LEFT);  // 작성자(등록자)
@@ -121,7 +121,7 @@ public class ProgramRepositoryImpl implements ProgramRepositoryCustom {
 
         // SELECT 필드 매핑 → ProgramListRow 생성자에 정확히 맞춤
         cq.select(cb.construct(
-                ProgramListRow.class,
+                ProgramListRowDto.class,
                 p.get("programId"), // Long id
                 p.get("code"),      // String code
                 p.get("title"),     // String title
@@ -140,10 +140,10 @@ public class ProgramRepositoryImpl implements ProgramRepositoryCustom {
                 cb.function("date", LocalDate.class, p.get("createdAt")) // LocalDate created
         ));
 
-        TypedQuery<ProgramListRow> query = em.createQuery(cq);
+        TypedQuery<ProgramListRowDto> query = em.createQuery(cq);
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
-        List<ProgramListRow> content = query.getResultList();
+        List<ProgramListRowDto> content = query.getResultList();
 
         // ===== Count 쿼리 =====
         CriteriaQuery<Long> countCq = cb.createQuery(Long.class);
