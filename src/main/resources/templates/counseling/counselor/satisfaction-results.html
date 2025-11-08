@@ -187,7 +187,7 @@
                                 <h6 class="m-0 font-weight-bold text-primary">만족도 분포</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="satisfactionChart" width="400" height="300"></canvas>
+                                <div id="satisfactionChart"></div>
                             </div>
                         </div>
                     </div>
@@ -198,7 +198,7 @@
                                 <h6 class="m-0 font-weight-bold text-primary">월별 만족도 추이</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="monthlyChart" width="400" height="300"></canvas>
+                                <div id="monthlyChart"></div>
                             </div>
                         </div>
                     </div>
@@ -418,49 +418,41 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
     <script>
         // 만족도 분포 차트
-        const satisfactionCtx = document.getElementById('satisfactionChart').getContext('2d');
-        new Chart(satisfactionCtx, {
-            type: 'doughnut',
+        const satisfactionChart = toastui.Chart.pieChart({
+            el: document.getElementById('satisfactionChart'),
             data: {
-                labels: ['5점', '4점', '3점', '2점', '1점'],
-                datasets: [{
-                    data: [20, 12, 3, 1, 0],
-                    backgroundColor: ['#28a745', '#17a2b8', '#ffc107', '#fd7e14', '#dc3545']
-                }]
+                categories: ['5점', '4점', '3점', '2점', '1점'],
+                series: [
+                    { name: '5점', data: 20 },
+                    { name: '4점', data: 12 },
+                    { name: '3점', data: 3 },
+                    { name: '2점', data: 1 },
+                    { name: '1점', data: 0 }
+                ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                chart: { width: 400, height: 300 }
             }
         });
 
         // 월별 만족도 추이 차트
-        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-        new Chart(monthlyCtx, {
-            type: 'line',
+        const monthlyChart = toastui.Chart.lineChart({
+            el: document.getElementById('monthlyChart'),
             data: {
-                labels: ['10월', '11월', '12월', '1월'],
-                datasets: [{
-                    label: '평균 만족도',
-                    data: [4.2, 4.3, 4.4, 4.5],
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
+                categories: ['10월', '11월', '12월', '1월'],
+                series: [{
+                    name: '평균 만족도',
+                    data: [4.2, 4.3, 4.4, 4.5]
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 3.5,
-                        max: 5
-                    }
-                }
+                chart: { width: 400, height: 300 },
+                yAxis: { min: 3.5, max: 5 },
+                series: { spline: true }
             }
         });
 
