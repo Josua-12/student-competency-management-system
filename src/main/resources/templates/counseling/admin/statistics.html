@@ -160,7 +160,7 @@
                                 <h6 class="m-0 font-weight-bold text-primary">상담 유형별 통계</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="typeChart" width="400" height="300"></canvas>
+                                <div id="typeChart"></div>
                             </div>
                         </div>
                     </div>
@@ -172,7 +172,7 @@
                                 <h6 class="m-0 font-weight-bold text-primary">월별 상담 현황</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="monthlyChart" width="400" height="300"></canvas>
+                                <div id="monthlyChart"></div>
                             </div>
                         </div>
                     </div>
@@ -279,7 +279,7 @@
                                 <h6 class="m-0 font-weight-bold text-primary">상담 만족도 분포</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="satisfactionChart" width="400" height="200"></canvas>
+                                <div id="satisfactionChart"></div>
                             </div>
                         </div>
                     </div>
@@ -290,7 +290,7 @@
                                 <h6 class="m-0 font-weight-bold text-primary">상담 상태별 현황</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="statusChart" width="400" height="200"></canvas>
+                                <div id="statusChart"></div>
                             </div>
                         </div>
                     </div>
@@ -300,77 +300,71 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
     <script>
         // 상담 유형별 통계 차트
-        const typeCtx = document.getElementById('typeChart').getContext('2d');
-        new Chart(typeCtx, {
-            type: 'doughnut',
+        const typeChart = toastui.Chart.pieChart({
+            el: document.getElementById('typeChart'),
             data: {
-                labels: ['진로상담', '학업상담', '심리상담', '취업상담'],
-                datasets: [{
-                    data: [45, 38, 32, 41],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
-                }]
+                categories: ['진로상담', '학업상담', '심리상담', '취업상담'],
+                series: [
+                    { name: '진로상담', data: 45 },
+                    { name: '학업상담', data: 38 },
+                    { name: '심리상담', data: 32 },
+                    { name: '취업상담', data: 41 }
+                ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                chart: { width: 400, height: 300 }
             }
         });
 
         // 월별 상담 현황 차트
-        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-        new Chart(monthlyCtx, {
-            type: 'line',
+        const monthlyChart = toastui.Chart.lineChart({
+            el: document.getElementById('monthlyChart'),
             data: {
-                labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
-                datasets: [{
-                    label: '상담 건수',
-                    data: [25, 30, 28, 35, 32, 38],
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
+                categories: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                series: [{
+                    name: '상담 건수',
+                    data: [25, 30, 28, 35, 32, 38]
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                chart: { width: 400, height: 300 },
+                series: { spline: true }
             }
         });
 
         // 만족도 분포 차트
-        const satisfactionCtx = document.getElementById('satisfactionChart').getContext('2d');
-        new Chart(satisfactionCtx, {
-            type: 'bar',
+        const satisfactionChart = toastui.Chart.columnChart({
+            el: document.getElementById('satisfactionChart'),
             data: {
-                labels: ['1점', '2점', '3점', '4점', '5점'],
-                datasets: [{
-                    label: '응답 수',
-                    data: [2, 5, 15, 45, 55],
-                    backgroundColor: ['#FF6384', '#FF9F40', '#FFCD56', '#4BC0C0', '#36A2EB']
+                categories: ['1점', '2점', '3점', '4점', '5점'],
+                series: [{
+                    name: '응답 수',
+                    data: [2, 5, 15, 45, 55]
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                chart: { width: 400, height: 200 }
             }
         });
 
         // 상담 상태별 현황 차트
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        new Chart(statusCtx, {
-            type: 'pie',
+        const statusChart = toastui.Chart.pieChart({
+            el: document.getElementById('statusChart'),
             data: {
-                labels: ['완료', '진행중', '취소', '거부'],
-                datasets: [{
-                    data: [142, 8, 4, 2],
-                    backgroundColor: ['#28a745', '#ffc107', '#6c757d', '#dc3545']
-                }]
+                categories: ['완료', '진행중', '취소', '거부'],
+                series: [
+                    { name: '완료', data: 142 },
+                    { name: '진행중', data: 8 },
+                    { name: '취소', data: 4 },
+                    { name: '거부', data: 2 }
+                ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                chart: { width: 400, height: 200 }
             }
         });
 
