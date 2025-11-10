@@ -8,7 +8,7 @@ import com.competency.SCMS.domain.user.UserRole;
 import com.competency.SCMS.dto.counsel.CounselingReservationDto;
 import com.competency.SCMS.exception.BusinessException;
 import com.competency.SCMS.exception.ErrorCode;
-import com.competency.SCMS.repository.UserRepository;
+import com.competency.SCMS.repository.user.UserRepository;
 import com.competency.SCMS.repository.counseling.CounselingCategoryRepository;
 import com.competency.SCMS.repository.counseling.CounselingReservationRepository;
 import lombok.RequiredArgsConstructor;
