@@ -50,15 +50,20 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
-                        .requestMatchers("/api/phone/**").permitAll()
-                        .requestMatchers("/api/password/**").permitAll()
-                        .requestMatchers("/").permitAll()
+                        // 인증 없이 접근 가능
+                        .requestMatchers("/", "/auth/**", "/static/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/api/user/login", "/api/user/refresh").permitAll()
+                        .requestMatchers("/api/phone/**", "/api/password/**").permitAll()
+
+                        // 공개 API (GET만)
                         .requestMatchers(HttpMethod.GET, "/api/programs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/competencies/**").permitAll()
+
+                        // 역할별 접근 제어
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/counselor/**").hasRole("COUNSELOR")
+
+                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

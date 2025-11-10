@@ -5,6 +5,7 @@ import com.competency.SCMS.domain.user.VerificationStatus;
 import com.competency.SCMS.dto.user.*;
 import com.competency.SCMS.exception.*;
 import com.competency.SCMS.repository.verification.PhoneVerificationRepo;
+import com.competency.SCMS.service.mail.MailReceiveService;
 import com.competency.SCMS.util.PhoneVerificationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class PhoneVerificationService {
 
     private final PhoneVerificationRepo phoneVerificationRepo;
     private final PhoneVerificationUtil phoneVerificationUtil;
+    private final MailReceiveService mailReceiveService;
 
     private static final int VERIFICATION_EXPIRY_MINUTES = 5;
 
@@ -55,6 +57,8 @@ public class PhoneVerificationService {
                 .build();
 
         phoneVerificationRepo.save(verification);
+
+        mailReceiveService.startPolling(normalizedPhone);
 
         log.info("인증 코드 생성 완료 - 휴대폰: {}, 코드: {}", normalizedPhone, verificationCode);
 

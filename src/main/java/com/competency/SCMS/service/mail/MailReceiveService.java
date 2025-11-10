@@ -15,6 +15,9 @@ import jakarta.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +29,11 @@ import java.util.regex.Pattern;
 public class MailReceiveService {
 
     private final PhoneVerificationRepo phoneVerificationRepo;
+
+    private volatile boolean isPollingActive = false;
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newSingleThreadScheduledExecutor();
 
     @Value("${mail.receive.email}")
     private String receiverEmail;
@@ -40,10 +48,30 @@ public class MailReceiveService {
     private String imapPort;
 
     /**
-     * 10초마다 수신한 이메일을 확인하여 인증 완료 처리
+     * 인증 시작 시 폴링 활성화
+     */
+    public void startPolling(String phone) {
+        if (!isPollingActive) {
+            isPollingActive = true;
+            log.info("이메일 폴링 시작: {}", phone);
+
+            // 5분 후 자동 중단
+            scheduler.schedule(() -> {
+                isPollingActive = false;
+                log.info("이메일 폴링 자동 중단");
+            }, 5, TimeUnit.MINUTES);
+        }
+    }
+
+    /**
+     * 10초마다 수신한 이메일을 확인 (폴링 활성화 시에만)
      */
     @Scheduled(fixedDelay = 10000)
     public void checkIncomingMails() {
+        if (!isPollingActive) {
+            return;
+        }
+
         try {
             log.debug("이메일 확인 시작...");
 

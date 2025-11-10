@@ -80,7 +80,7 @@ public class AuthService {
         }
 
         String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getRole().name());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getEmail(), user.getRole().name());
 
         loginHistoryRepository.save(LoginHistory.builder()
                 .user(user)
@@ -117,10 +117,6 @@ public class AuthService {
      */
     public String refreshAccessToken(String refreshToken) {
         jwtUtil.validateToken(refreshToken);
-
-        if (!"REFRESH".equals(jwtUtil.getTokenType(refreshToken))) {
-            throw new JwtException("Refresh Token이 아닙니다.");
-        }
 
         Long userId = jwtUtil.getUserIdFromToken(refreshToken);
         User user = userRepository.findById(userId)

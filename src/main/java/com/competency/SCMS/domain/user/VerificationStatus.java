@@ -4,7 +4,8 @@ public enum VerificationStatus {
     PENDING("대기중"),
     VERIFIED("인증완료"),
     EXPIRED("만료됨"),
-    BLOCKED("차단됨");
+    BLOCKED("차단됨"),
+    USED("사용중");
 
     private final String description;
 
