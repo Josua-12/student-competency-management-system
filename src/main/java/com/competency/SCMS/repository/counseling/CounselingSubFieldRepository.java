@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CounselingCategoryRepository extends JpaRepository<CounselingSubField, Long> {
+public interface CounselingSubFieldRepository extends JpaRepository<CounselingSubField, Long> {
 
     // CNSL-022: 상담분류관리 - 활성화된 카테고리 조회
-    Page<CounselingSubField> findByIsActiveTrueOrderByCounselingFieldAscCategoryNameAsc(Pageable pageable);
+    Page<CounselingSubField> findByIsActiveTrueOrderByCounselingFieldAscSubfieldNameAsc(Pageable pageable);
 
     // 상담 분야별 활성화된 카테고리 조회
-    Page<CounselingSubField> findByCounselingFieldAndIsActiveTrueOrderByCategoryNameAsc(CounselingField counselingField, Pageable pageable);
+    Page<CounselingSubField> findByCounselingFieldAndIsActiveTrueOrderBySubfieldNameAsc(CounselingField counselingField, Pageable pageable);
 
 }

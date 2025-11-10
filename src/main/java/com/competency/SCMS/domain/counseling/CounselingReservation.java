@@ -2,9 +2,7 @@ package com.competency.SCMS.domain.counseling;
 
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Builder
 @Entity
 @Table(name = "counseling_reservations",
         indexes = {
@@ -23,6 +22,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CounselingReservation {
     
