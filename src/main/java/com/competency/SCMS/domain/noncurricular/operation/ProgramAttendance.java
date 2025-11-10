@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @Table(name = "program_attendance",
         uniqueConstraints = @UniqueConstraint(
                 name="uq_attend_unique",
-                columnNames = {"schd_id","student_id"}
+                columnNames = {"schd_id","user_id"}
         ),
         indexes = {
                 @Index(name="ix_attend_prog", columnList="prog_id"),
                 @Index(name="ix_attend_schd", columnList="schd_id"),
-                @Index(name="ix_attend_student", columnList="student_id"),
+                @Index(name="ix_attend_student", columnList="user_id"),
                 @Index(name="ix_attend_status", columnList="status")
         }
 )
@@ -41,7 +41,7 @@ public class ProgramAttendance extends BaseEntity {
     private ProgramSchedule schedule;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "user_id")
     private User student;
 
     @Enumerated(EnumType.STRING)

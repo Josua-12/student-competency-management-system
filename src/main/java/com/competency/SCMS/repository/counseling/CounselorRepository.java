@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CounselorRepository extends JpaRepository<Counselor, User> {
+public interface CounselorRepository extends JpaRepository<Counselor, Long> {
     // CNSL-023: 상담원관리 - 활성화된 상담사 조회
     Page<Counselor> findByIsActiveTrueOrderByCreatedAtDesc(Pageable pageable);
 
@@ -19,5 +19,5 @@ public interface CounselorRepository extends JpaRepository<Counselor, User> {
     Page<Counselor> findByCounselingFieldAndIsActiveTrueOrderByCreatedAtDesc(CounselingField counselingField, Pageable pageable);
 
     // 사용자 ID로 상담사 정보 조회
-    Optional<Counselor> findByCounselorId(User user);
+    Optional<Counselor> findByCounselorId(Long counselorId);
 }

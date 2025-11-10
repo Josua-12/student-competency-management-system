@@ -13,6 +13,7 @@ import java.util.List;
 @Getter @Setter
 public class DashboardResponseDto {
     private String userName;
+    private String userEmail;
     private Integer mileage;
     private Integer programCount;
     private Integer counselingCount;

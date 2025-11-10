@@ -22,9 +22,12 @@ import org.hibernate.annotations.SQLDelete;
 public class Counselor {
     
     @Id
+    @Column(name = "user_id")
+    private Long counselorId;
+    
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User counselorId;
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

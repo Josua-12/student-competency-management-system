@@ -18,14 +18,14 @@ public class SatisfactionSurvey {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "program_id")
+    @JoinColumn(name = "prog_id")
     private Program program;
 
     // 전체회차 선택 시 이 테이블은 비울 수 있음
     @ManyToMany
     @JoinTable(name = "survey_satisfaction_schedule",
             joinColumns = @JoinColumn(name = "survey_id"),
-            inverseJoinColumns = @JoinColumn(name = "schedule_id"))
+            inverseJoinColumns = @JoinColumn(name = "schd_id"))
     @Builder.Default
     private List<ProgramSchedule> schedules = new ArrayList<>();
 

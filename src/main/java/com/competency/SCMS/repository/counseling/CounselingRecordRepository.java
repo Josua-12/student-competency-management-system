@@ -19,7 +19,7 @@ public interface CounselingRecordRepository extends JpaRepository<CounselingReco
     Page<CounselingRecord> findByCounselorOrderByCreatedAtDesc(User counselor, Pageable pageable);
 
     // CNSL-013-1: (상담사) 본인이 담당한 학생별 상담일지 조회
-    Page<CounselingRecord> findByCounselorAndStudentOrderByCreatedAtDesc(User student, Pageable pageable);
+    Page<CounselingRecord> findByCounselorAndStudentOrderByCreatedAtDesc(User counselor, User student, Pageable pageable);
 
     // CNSL-013-2: (관리자) 공개된 상담 일지 전체 조회
     Page<CounselingRecord> findByIsPublicTrueOrderByCreatedAtDesc(Pageable pageable);

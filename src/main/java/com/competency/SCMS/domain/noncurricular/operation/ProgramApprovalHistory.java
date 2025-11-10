@@ -19,7 +19,7 @@ public class ProgramApprovalHistory {
 
     /** 소속 프로그램 */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "program_id")
+    @JoinColumn(name = "prog_id")
     private Program program;
 
     /** 처리 상태 */

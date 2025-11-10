@@ -28,12 +28,13 @@ public class MainDashboardService {
     private final CounselorRepository counselorRepository;
     private final CompetencyRepository competencyRepository;
 
-    public DashboardResponseDto getMainDashboardData(String userEmail) {
-        log.info("[MainDashboardService] 대시보드 데이터 조회 - userEmail: {}", userEmail);
+    public DashboardResponseDto getMainDashboardData(String userNum) {
+        log.info("[MainDashboardService] 대시보드 데이터 조회 - userNum: {}", userNum);
 
         try {
             // 1. 사용자 정보 조회
-            User user = userRepository.findByEmail(userEmail)
+            Integer userNumber = Integer.parseInt(userNum);
+            User user = userRepository.findByUserNum(userNumber)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
             String userName = user.getName();
@@ -55,6 +56,7 @@ public class MainDashboardService {
 
             return DashboardResponseDto.builder()
                     .userName(userName)
+                    .userEmail(user.getEmail())
                     .mileage(mileage)
                     .programCount(programCount)
                     .counselingCount((int) counselingCount)
@@ -63,7 +65,7 @@ public class MainDashboardService {
                     .build();
 
         } catch (Exception e) {
-            log.error("[MainDashboardService] 대시보드 데이터 조회 실패 - userEmail: {}", userEmail, e);
+            log.error("[MainDashboardService] 대시보드 데이터 조회 실패 - userNum: {}", userNum, e);
             throw new RuntimeException("대시보드 데이터를 조회할 수 없습니다.", e);
         }
     }

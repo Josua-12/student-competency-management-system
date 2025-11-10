@@ -8,7 +8,7 @@ import lombok.*;
 
 @Entity
 @Table(name="student_certificates",
-        uniqueConstraints=@UniqueConstraint(columnNames={"program_id","student_id"}))
+        uniqueConstraints=@UniqueConstraint(columnNames={"prog_id","user_id"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,11 +21,11 @@ public class StudentCertificate extends BaseEntity {
     private Long certificateId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program_id", nullable = false)
+    @JoinColumn(name = "prog_id", nullable = false)
     private Program program;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User student;
 
     @Column(nullable = false)

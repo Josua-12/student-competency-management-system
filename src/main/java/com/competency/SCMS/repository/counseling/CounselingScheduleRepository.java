@@ -23,10 +23,9 @@ public interface CounselingScheduleRepository extends JpaRepository<CounselingBa
     Optional<CounselingBaseSchedule> findByCounselorAndDayOfWeek(User counselor, DayOfWeek dayOfWeek);
 
     // 기간별 상담사 일정 조회
-    @Query("SELECT cs FROM CounselingSchedule cs WHERE cs.counselor = :counselor AND cs.scheduleDate BETWEEN :startDate AND :endDate ORDER BY cs.scheduleDate ASC")
+    @Query("SELECT cs FROM CounselingBaseSchedule cs WHERE cs.counselor = :counselor ORDER BY cs.dayOfWeek ASC")
     Page<CounselingBaseSchedule> findByCounselorAndScheduleDateBetween(@Param("counselor") User counselor, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 
-    // 특정 날짜에 예약 가능한 상담사들 조회
-    @Query("SELECT cs FROM CounselingSchedule cs WHERE cs.scheduleDate = :date AND (cs.slot0910 = true OR cs.slot1011 = true OR cs.slot1112 = true OR cs.slot1213 = true OR cs.slot1314 = true OR cs.slot1415 = true OR cs.slot1516 = true OR cs.slot1617 = true OR cs.slot1718 = true)")
-    Page<CounselingBaseSchedule> findAvailableCounselorsOnDate(@Param("date") LocalDate date, Pageable pageable);
+    // 특정 요일에 예약 가능한 상담사들 조회
+    Page<CounselingBaseSchedule> findByDayOfWeekAndSlot0910TrueOrSlot1011TrueOrSlot1112TrueOrSlot1314TrueOrSlot1415TrueOrSlot1516TrueOrSlot1617TrueOrSlot1718True(DayOfWeek dayOfWeek, Pageable pageable);
 }

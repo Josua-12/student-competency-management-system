@@ -50,7 +50,7 @@ public class AuthService {
      * 로그인 (AUTH-001)
      */
     public LoginResponseDto login(LoginRequestDto request, String ipAddress, String userAgent) {
-        User user = userRepository.findByStudentNum(request.getStudentNum())
+        User user = userRepository.findByUserNum(request.getUserNum())
                 .orElseThrow(() -> new UserNotFoundException("등록된 사용자가 없습니다."));
 
         if (user.getLocked()) {
@@ -92,14 +92,14 @@ public class AuthService {
         user.resetFailAttempt();
         userRepository.save(user);
 
-        log.info("로그인 성공: userId={}, studentNum={}", user.getId(), user.getStudentNum());
+        log.info("로그인 성공: userId={}, studentNum={}", user.getId(), user.getUserNum());
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getId())
                 .name(user.getName())
-                .studentNum(user.getStudentNum())
+                .userNum(user.getUserNum())
                 .role(user.getRole().name())  // ✓ .name() 추가
                 .message("로그인 성공")
                 .build();
@@ -130,9 +130,9 @@ public class AuthService {
      */
     public PhoneVerificationResponseDto requestPhoneAuthentication(PhoneVerificationRequestDto request) {
         LocalDate birthDate = convertBirthDateToLocalDate(request.getBirthDate());
-        User user = userRepository.findByNameAndStudentNumAndBirthDate(
+        User user = userRepository.findByNameAndUserNumAndBirthDate(
                 request.getName(),
-                request.getStudentNum(),
+                request.getUserNum(),
                 birthDate
         ).orElseThrow(() -> new UserNotFoundException("사용자 정보가 일치하지 않습니다."));
 

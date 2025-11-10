@@ -7,7 +7,6 @@ import com.competency.SCMS.exception.BusinessException;
 import com.competency.SCMS.exception.ErrorCode;
 import com.competency.SCMS.repository.user.UserRepository;
 import com.competency.SCMS.repository.counseling.*;
-import com.competency.SCMS.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -72,7 +71,7 @@ public class CounselingManagementService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
         Counselor counselor = new Counselor();
-        counselor.setCounselorId(user);
+        counselor.setCounselorId(user.getId());
         counselor.setCounselingField(request.getCounselingField());
         counselor.setSpecialization(request.getSpecialization());
         counselor.setIsActive(true);
@@ -85,7 +84,7 @@ public class CounselingManagementService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
-        Counselor counselor = counselorRepository.findByCounselorId(user)
+        Counselor counselor = counselorRepository.findByCounselorId(user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUNSELOR_NOT_FOUND));
         
         counselor.setCounselingField(request.getCounselingField());
@@ -97,7 +96,7 @@ public class CounselingManagementService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
-        Counselor counselor = counselorRepository.findByCounselorId(user)
+        Counselor counselor = counselorRepository.findByCounselorId(user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUNSELOR_NOT_FOUND));
         
         counselor.setIsActive(false);
@@ -184,9 +183,9 @@ public class CounselingManagementService {
 
     private CounselingManagementDto.CounselorResponse toCounselorResponse(Counselor counselor) {
         CounselingManagementDto.CounselorResponse response = new CounselingManagementDto.CounselorResponse();
-        response.setUserId(counselor.getCounselorId().getId());
-        response.setName(counselor.getCounselorId().getName());
-        response.setEmail(counselor.getCounselorId().getEmail());
+        response.setUserId(counselor.getCounselorId());
+        response.setName(counselor.getUser().getName());
+        response.setEmail(counselor.getUser().getEmail());
         response.setCounselingField(counselor.getCounselingField());
         response.setSpecialization(counselor.getSpecialization());
         response.setIsActive(counselor.getIsActive());

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "program_satisfaction",
         uniqueConstraints = @UniqueConstraint(name="uq_satis_unique",
-                columnNames={"prog_id","schd_id","student_id"}))
+                columnNames={"prog_id","schd_id","user_id"}))
 public class ProgramSatisfaction extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="satisfaction_id")
@@ -29,7 +29,7 @@ public class ProgramSatisfaction extends BaseEntity {
 
     // 학생을 키만 들고갈지, User 연관으로 들고갈지는 프로젝트 정책에 따라
     // (지금 zip에는 User 연관으로 잡은 버전/키 보관 버전이 혼재)
-    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="student_id", nullable=false)
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="user_id", nullable=false)
     private User student;
 
     @Column(nullable=false) private Integer rating;   // 1~5
@@ -40,7 +40,7 @@ public class ProgramSatisfaction extends BaseEntity {
 //        ),
 //        indexes = {
 //                @Index(name="ix_satis_prog", columnList="prog_id"),
-//                @Index(name="ix_satis_student", columnList="student_id"),
+//                @Index(name="ix_satis_student", columnList="user_id"),
 //                @Index(name="ix_satis_rating", columnList="rating")
 //        }
 

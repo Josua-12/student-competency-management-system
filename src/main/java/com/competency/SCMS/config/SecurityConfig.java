@@ -3,6 +3,7 @@ package com.competency.SCMS.config;
 import com.competency.SCMS.security.CustomUserDetailsService;
 import com.competency.SCMS.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -27,7 +29,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // 임시로 평문 비밀번호 허용 (테스트용)
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
     @Bean
@@ -47,27 +50,26 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // 인증 없이 접근 가능
-                        .requestMatchers("/", "/auth/**", "/static/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/auth/**", "/static/**", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/api/user/login", "/api/user/refresh").permitAll()
-                        .requestMatchers("/api/phone/**", "/api/password/**").permitAll()
-
-                        // 공개 API (GET만)
-                        .requestMatchers(HttpMethod.GET, "/api/programs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/competencies/**").permitAll()
-
-                        // 역할별 접근 제어
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/counselor/**").hasRole("COUNSELOR")
-
-                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .usernameParameter("userNum")
+                        .passwordParameter("password")
+                        .successHandler((request, response, authentication) -> {
+                            log.info("로그인 성공: {}", authentication.getName());
+                            response.sendRedirect("/main");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            log.error("로그인 실패: {}", exception.getMessage());
+                            response.sendRedirect("/auth/login?error=true");
+                        })
+                        .permitAll()
+                )
+                .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
