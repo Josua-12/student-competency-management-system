@@ -93,7 +93,7 @@ public class CounselingRecordService {
         CounselingRecordDto.ListResponse response = new CounselingRecordDto.ListResponse();
         response.setId(record.getId());
         response.setStudentName(record.getStudent().getName());
-        response.setStudentId(record.getStudent().getUsername());
+        response.setStudentId(String.valueOf(record.getStudent().getStudentNum()));
         response.setCategoryName(record.getCategory().getCategoryName());
         response.setCounselingDate(record.getCounselingDate());
         response.setIsPublic(record.isPublic());
@@ -105,7 +105,7 @@ public class CounselingRecordService {
         CounselingRecordDto.DetailResponse response = new CounselingRecordDto.DetailResponse();
         response.setId(record.getId());
         response.setStudentName(record.getStudent().getName());
-        response.setStudentId(record.getStudent().getUsername());
+        response.setStudentId(String.valueOf(record.getStudent().getStudentNum()));
         response.setCategoryName(record.getCategory().getCategoryName());
         response.setRecordContent(record.getRecordContent());
         response.setCounselorMemo(record.getCounselorMemo());
