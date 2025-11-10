@@ -2,6 +2,7 @@ package com.competency.SCMS.repository.competency;
 
 import com.competency.SCMS.domain.competency.Competency;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -13,4 +14,21 @@ public interface CompetencyRepository extends JpaRepository<Competency, Long> {
 
     // 2. 특정 부모 ID 하위의 역량들 찾기
     List<Competency> findByParentId(Long parentId);
+
+    /**
+     * 3. '진단 페이지' 로드를 위한 N+1 해결 쿼리
+     *  1) 모든 활성화된 '핵심역량'(parent=null) 조회
+     *  2) 그 '자식'들도 Fetch Join (1차)
+     *  3) 하위역량의 '문항'들도 Fetch Join (2차)
+     *  4) 문항의 '보기'들도 Fetch Join (3차)
+     */
+    @Query("SELECT DISTINCT c FROM Competency c " +
+            "LEFT JOIN FETCH c.children sc " +  // sc: sub-competency (하위역량)
+            "LEFT JOIN FETCH sc.questions sq " +    // sq: sub-question (하위역량의 문항)
+            "LEFT JOIN FETCH sq.options so " +  // so: sub-option (하위역량 문항의 보기)
+            "WHERE c.parent IS NULL AND c.isActive = true " +
+            "AND (sc IS NULL OR sc.isActive = true) " +
+            "AND (sq IS NULL OR sq.isActive = true) " +
+            "ORDER BY c.displayOrder, sc.displayOrder, sq.displayOrder, so.displayOrder")
+    List<Competency> findActiveRootCompetenciesForAssessment();
 }

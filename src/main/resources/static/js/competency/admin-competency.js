@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     /* ==================================================================
-    == 1. 역량 트리 및 상세 폼 (기존 로직)
+    == 1. 역량 트리 및 상세 폼
     ================================================================== */
 
     // 1-1. DOM 요소 캐시
@@ -82,6 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1-8. '역량 저장' 버튼 (C/U)
     saveButton.addEventListener('click', (e) => {
         e.preventDefault();
+
+        // 버튼 비활성화 및 로딩 표시
+        saveButton.disabled = true;
+        const originalSaveButtonText = saveButton.innerHTML;
+        saveButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 저장 중...';
+
         const formData = {
             id: document.getElementById('competencyId').value || null,
             parentId: document.getElementById('parentId').value || null,
@@ -105,7 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.message || '저장되었습니다.');
                 window.location.reload();
             })
-            .catch(error => alert('저장 실패: ' + error.message));
+            .catch(error => {
+                alert('저장 실패: ' + error.message);
+                saveButton.disabled = false;
+                saveButton.innerHTML = originalSaveButtonText
+            });
     });
 
     // 1-9. '역량 삭제' 버튼 (D)
@@ -117,6 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!competencyId) return alert('삭제할 역량이 선택되지 않았습니다.');
         if (!confirm(`'${competencyName}' 역량을 정말 삭제하시겠습니까?`)) return;
 
+        deleteButton.disabled = true;
+        const originalDeleteButtonText = deleteButton.innerHTML;
+        deleteButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 삭제 중...';
+
         fetch(`/admin/competency/api/competencies/${competencyId}`, {
             method: 'DELETE',
             headers: { [csrfHeader]: csrfToken }
@@ -127,7 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.message || '삭제되었습니다.');
                 window.location.reload();
             })
-            .catch(error => alert('삭제 실패: ' + error.message));
+            .catch(error => {
+                alert('삭제 실패: ' + error.message);
+                // ⭐️ (2) 실패 시 버튼 원상 복구
+                deleteButton.disabled = false;
+                deleteButton.innerHTML = originalDeleteButtonText;
+            });
     });
 
     /**
@@ -182,8 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(`/admin/competency/api/competencies/${competencyId}/questions`)
             .then(response => {
-                if (!response.ok) throw new Error('문항 목록 로딩 실패');
-                return response.json();
+
+
+
+
             })
             .then(questions => {
                 if (questions.length === 0) {
@@ -233,6 +254,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // ️ (1) 버튼 비활성화 (연타 방지)
+            button.disabled = true;
+            const originalButtonText = button.innerHTML;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
             fetch(`/admin/competency/api/questions/${questionId}`, {
                 method: 'DELETE',
                 headers: { [csrfHeader]: csrfToken }
@@ -245,17 +271,60 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(data.message || '삭제되었습니다.');
                     row.remove(); // ️ API 성공 시, 화면에서 해당 줄(tr) 즉시 삭제
                 })
-                .catch(error => alert('삭제 실패: ' + error.message));
+                .catch(error => {
+                    alert('삭제 실패: ' + error.message);
+                    // (2) 실패 시 버튼 원상 복구
+                    button.disabled = false;
+                    button.innerHTML = originalButtonText;
+                });
         }
 
         // (B) '수정' 버튼을 클릭한 경우
-        if (e.target.classList.contains('btn-edit-question')) {
-            const questionId = e.target.dataset.questionId;
-            alert('(구현 필요) 문항 수정 기능 - ID: ' + questionId);
-            // TODO: (다음 단계)
-            // 1. fetch(`/api/admin/questions/${questionId}/details`) (새 API 필요)
-            // 2. 모달(questionModal)을 DTO 데이터로 채우기
-            // 3. questionModal.show()
+        if (button.classList.contains('btn-edit-question')) {
+            const button = e.target;
+            const questionId = button.dataset.questionId;
+
+            button.disabled = true;
+            const originalEditText = button.innerHTML;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            // 1. (11단계 API 호출) 서버에서 '문항 상세정보 + 항목 목록' DTO를 fetch
+            fetch(`/admin/competency/api/questions/${questionId}/details`)
+                .then(response => {
+                    if (!response.ok) return response.json().then(err => { throw new Error(err.error) });
+                    return response.json();
+                })
+                .then(dto => {
+                    // 2. 모달 폼 초기화
+                    questionForm.reset();
+                    optionListContainer.innerHTML = ''; // '보기' 목록 비우기
+                    modalTitle.innerHTML = '<i class="fas fa-edit me-1"></i> 문항 수정';
+
+                    // 3. 모달 폼 채우기 (기본 정보)
+                    document.getElementById('modalQuestionId').value = dto.id;
+                    document.getElementById('modalCompetencyId').value = dto.competencyId;
+                    document.getElementById('modalQuestionText').value = dto.questionText;
+                    document.getElementById('modalQuestionCode').value = dto.questionCode;
+                    document.getElementById('modalQuestionType').value = dto.questionType;
+                    document.getElementById('modalQuestionOrder').value = dto.displayOrder;
+                    document.getElementById('modalQuestionActive').checked = dto.isActive;
+
+                    // 4. 모달 폼 채우기 ('보기' 목록)
+                    //    서버에서 받은 dto.options 배열을 순회하며 addOptionRow 호출
+                    if (dto.options && dto.options.length > 0) {
+                        dto.options.forEach(optionData => {
+                            addOptionRow(optionData); // ️ (기존 Helper 함수 재사용)
+                        });
+                    }
+
+                    // 5. 모달 띄우기
+                    questionModal.show();
+                })
+                .catch(error => alert('문항 정보 로딩 실패: ' + error.message))
+                .finally(() => {
+                    button.disabled = false;
+                    button.innerHTML = originalEditText;
+                });
         }
     });
 
@@ -296,6 +365,10 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     saveQuestionButton.addEventListener('click', (e) => {
         e.preventDefault();
+
+        saveQuestionButton.disabled = true;
+        const originalModalButtonText = saveQuestionButton.innerHTML;
+        saveQuestionButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 저장 중...';
 
         // 1. '보기' 항목들을 수집
         const options = [];
@@ -346,6 +419,10 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 console.error('Question Save Error:', error);
                 alert('저장 실패: ' + error.message);
+            })
+            .finally(() => {
+                saveQuestionButton.disabled = false;
+                saveQuestionButton.innerHTML = originalModalButtonText;
             });
     });
 
