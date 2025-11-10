@@ -19,8 +19,8 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "student_num", nullable = false)
-    private Integer studentNum;
+    @Column(name = "user_num", nullable = false)
+    private Integer userNum;
 
     @Column(name = "name", nullable = false)
     private String name;
