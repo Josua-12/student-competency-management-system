@@ -1,5 +1,6 @@
 package com.competency.SCMS.domain.noncurricular.operation;
 
+import com.competency.SCMS.domain.noncurricular.operation.ApprovalStatus; // REQ/WAIT/DONE/REJ
 import com.competency.SCMS.domain.noncurricular.program.Program;
 import jakarta.persistence.*;
 import lombok.*;

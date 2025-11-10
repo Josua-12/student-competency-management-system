@@ -1,6 +1,4 @@
 package com.competency.SCMS.domain.noncurricular.program;
-
-
 import com.competency.SCMS.domain.BaseEntity;
 import com.competency.SCMS.domain.Department;
 import com.competency.SCMS.domain.File;
