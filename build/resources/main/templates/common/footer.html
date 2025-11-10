@@ -1,51 +1,40 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
+<meta charset="UTF-8">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" >
 <footer th:fragment="footer" class="bg-dark text-light mt-auto">
-    <div class="container py-5">
-        <div class="footer-content">
-
-            <!-- 역량 진단 -->
-            <div class="footer-section">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-chart-bar me-2"></i>역량진단
-                </h5>
-                <ul class="list-unstyled">
-                    <li><a href="/competency/assessment" class="text-decoration-none text-light">역량진단</a></li>
-                    <li><a href="/competency/result" class="text-decoration-none text-light">진단 결과 확인하기</a></li>
-                </ul>
-            </div>
-
-            <!-- 상담 예약 -->
-            <div class="footer-section">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-calendar-alt me-2"></i>상담예약
-                </h5>
-                <ul class="list-unstyled">
-                    <li><a href="/consultation/reserve" class="text-decoration-none text-light">상담 예약하기</a></li>
-                    <li><a href="/consultation/history" class="text-decoration-none text-light">내 예약 조회</a></li>
-                </ul>
-            </div>
-
-            <!-- 비교과 프로그램 -->
-            <div class="footer-section">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-book me-2"></i>비교과 프로그램
-                </h5>
-                <ul class="list-unstyled">
-                    <li><a href="/dashboard?type=internal" class="text-decoration-none text-light">교내 비교과 프로그램</a></li>
-                    <li><a href="/dashboard?type=external" class="text-decoration-none text-light">교외 비교과 프로그램</a></li>
-                </ul>
-            </div>
+    <div class="container">
+        <!-- 역량 진단 -->
+        <div class="row py-5">
+            <h5 class="fw-bold md-4">
+                <i class="fas fa-chart-bar me-2"></i>역량진단
+            </h5>
+            <ul class="list-unstyled">
+                <li><a href="#" class="text-decoration-none text-dark">역량진단</a></li>
+                <li><a href="#" class="text-decoration-none text-dark">진단 결과 확인하기</a></li>
+            </ul>
         </div>
 
-        <!-- 하단 저작권 -->
-        <div class="border-top pt-4 mt-4">
-            <p class="text-center text-muted mb-0">
-                &copy; 2025 우석대학교 학생역량관리시스템. All rights reserved.
-            </p>
+        <!-- 상담 예약 -->
+        <div class="col-md-4 mb-4">
+            <h5 class="fw-bold md-4">
+                <i class="fas fa-calendar-alt me-2"></i>상담예약
+            </h5>
+            <ul class="list-unstyled">
+                <li><a href="#" class="text-decoration-none text-dark">상담 예약하기</a></li>
+                <li><a href="#" class="text-decoration-none text-dark">내 예약 조회</a></li>
+            </ul>
+        </div>
+
+        <!-- 비교과 프로그램 -->
+        <div class="col-md-4 mb-4">
+            <h5 class="fw-bold md-4">
+                <i class="fas fa-book me-2"></i>비교과 프로그램
+            </h5>
+            <ul class="list-unstyled">
+                <li><a href="#" class="text-decoration-none text-dark">교내 비교과 프로그램</a></li>
+                <li><a href="#" class="text-decoration-none text-dark">교외 비교과 프로그램</a></li>
+            </ul>
         </div>
     </div>
 </footer>
-
 </html>
