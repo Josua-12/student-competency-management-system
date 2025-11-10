@@ -124,7 +124,7 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .toList();
 
         List<FileDto> files = programFileRepository
-                .findAllByProgram_programIdIdOrderByCreatedAtAsc(programId).stream()
+                .findAllByProgram_programIdOrderByCreatedAtAsc(programId).stream()
                 .map(this::toFileDto)
                 .toList();
 
