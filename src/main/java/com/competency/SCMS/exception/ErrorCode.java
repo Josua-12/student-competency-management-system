@@ -27,6 +27,8 @@ public enum ErrorCode {
     ACCOUNT_LOCKED("LOGIN-002", "계정이 잠금 상태입니다."),
     TOKEN_EXPIRED("LOGIN-003", "토큰이 만료되었습니다."),
     TOKEN_INVALID("LOGIN-004", "유효하지 않은 토큰입니다."),
+    REFRESH_TOKEN_NOT_FOUND("LOGIN-005", "리프레시 토큰이 없습니다."),
+    INVALID_REFRESH_TOKEN("LOGIN-006", "유효하지 않은 리프레시 토큰입니다."),
 
     // ========== 비밀번호 재설정 (PASSWORD RESET) ==========
     PASSWORD_RESET_TOKEN_INVALID("PWD-001", "유효하지 않은 비밀번호 재설정 토큰입니다."),
