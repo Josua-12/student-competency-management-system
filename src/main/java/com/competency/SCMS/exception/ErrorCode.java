@@ -9,7 +9,7 @@ public enum ErrorCode {
     // ========== 사용자 (USER) ==========
     USER_NOT_FOUND("USER-001", "사용자를 찾을 수 없습니다."),
     DUPLICATE_EMAIL("USER-002", "이미 존재하는 이메일입니다."),
-    DUPLICATE_STUDENT_NUM("USER-003", "이미 존재하는 학번입니다."),
+    DUPLICATE_USER_NUM("USER-003", "이미 존재하는 학번입니다."),
     INVALID_PASSWORD("USER-004", "비밀번호가 일치하지 않습니다."),
     USER_LOCKED("USER-005", "잠금 처리된 계정입니다."),
 
