@@ -112,7 +112,7 @@ public class CompetencyAdminService {
     @Transactional(readOnly = true)
     public CompetencyFormDto getCompetencyDetails(Long competencyId) {
         Competency competency = competencyRepository.findById(competencyId)
-                .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 역량입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역량입니다."));
 
         // Entity -> DTO 변환
         CompetencyFormDto dto = new CompetencyFormDto();
@@ -200,8 +200,47 @@ public class CompetencyAdminService {
         List<AssessmentQuestion> questions = questionRepository.findByCompetencyId(competencyId);
 
         // 3. 리스트를 리스트dto로 변환
-        return  questions.stream()
+        return questions.stream()
                 .map(QuestionListDto::new)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 8. 문항 상세 조회
+     */
+    @Transactional(readOnly = true)
+    public QuestionFormDto getQuestionDetails(Long questionId) {
+        // 1. 문항 엔티티 조회
+        AssessmentQuestion question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문항입니다."));
+
+        // 2. Entity -> DTO 변환
+        QuestionFormDto dto = new QuestionFormDto();
+        dto.setId(question.getId());
+        dto.setCompetencyId(question.getCompetency().getId()); // 부모 역량 ID
+        dto.setQuestionText(question.getQuestionText());
+        dto.setQuestionCode(question.getQuestionCode());
+        dto.setQuestionType(question.getQuestionType());
+        dto.setDisplayOrder(question.getDisplayOrder());
+        dto.setActive(question.isActive());
+
+        // 3. (⭐️핵심) 하위 항목(Option) 목록을 List<OptionFormDto>로 변환
+        List<OptionFormDto> optionDtos = question.getOptions().stream()
+                .map(option -> {
+                    // OptionFormDto도 수동 매핑
+                    OptionFormDto optionDto = new OptionFormDto();
+                    optionDto.setId(option.getId());
+                    optionDto.setOptionText(option.getOptionText());
+                    optionDto.setScore(option.getScore());
+                    optionDto.setDisplayOrder(option.getDisplayOrder());
+                    return optionDto;
+                })
+                // displayOrder 순서대로 정렬해서 반환하면 JS가 편함
+                .sorted((o1, o2) -> Integer.compare(o1.getDisplayOrder(), o2.getDisplayOrder()))
+                .collect(Collectors.toList());
+
+        dto.setOptions(optionDtos);
+
+        return dto;
     }
 }
