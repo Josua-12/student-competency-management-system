@@ -1,5 +1,6 @@
 package com.competency.SCMS.util;
 
+import com.competency.SCMS.exception.JwtException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

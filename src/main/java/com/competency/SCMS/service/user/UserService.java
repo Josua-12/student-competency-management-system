@@ -1,62 +1,106 @@
-package com.competency.SCMS.service;
+package com.competency.SCMS.service.user;
 
+import com.competency.SCMS.domain.user.LoginHistory;
 import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.exception.UserNotFoundException;
-import com.competency.SCMS.repository.UserRepository;
+import com.competency.SCMS.dto.auth.LoginRequestDto;
+import com.competency.SCMS.dto.auth.LoginResponseDto;
+import com.competency.SCMS.exception.BusinessException;
+import com.competency.SCMS.exception.ErrorCode;
+import com.competency.SCMS.repository.user.LoginHistoryRepository;
+import com.competency.SCMS.repository.user.UserRepository;
+import com.competency.SCMS.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-//@Service
-//@Bean
-//@RequiredArgsConstructor
-//public class UserService {
-//    private final UserRepository userRepository;
-//
-//    // 전체 학생 수 조회
-//    public long getStudentCount() {
-//        return userRepository.count();
-//    }
-//
-//    // 학생 목록 페이지네이션/검색/필터
-//    public Page<User> getUserList(String search, Boolean locked, Pageable pageable) {
-//        if (search != null && !search.isEmpty()) {
-//            if (locked != null) {
-//                return userRepository.findByNameContainsOrStudentNumContainsAndLocked(
-//                        search, search, locked, pageable);
-//            }
-//            return userRepository.findByNameContainsOrStudentNumContains(
-//                    search, search, pageable);
-//        } else if (locked != null) {
-//            return userRepository.findByLocked(locked, pageable);
-//        }
-//        return userRepository.findAll(pageable);
-//    }
-//
-//    // 사용자 상세 조회
-//    public User getUserById(Integer userId) {
-//        return userRepository.findById(userId)
-//                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-//    }
-//
-//    // 사용자 정보 수정/저장
-//    public User updateUser(Integer userId, User updateData) {
-//        User user = getUserById(userId);
-//        user.setName(updateData.getName());
-//        user.setEmail(updateData.getEmail());
-//        user.setStudentNum(updateData.getStudentNum());
-//        user.setLocked(updateData.getLocked());
-//        // 더 필요한 필드 추가
-//        return userRepository.save(user);
-//    }
-//
-//    // 계정 활성화/비활성화 처리
-//    public void updateUserStatus(Integer userId, Boolean locked) {
-//        User user = getUserById(userId);
-//        user.setLocked(locked);
-//        userRepository.save(user);
-//    }
-//}
+import java.time.LocalDateTime;
 
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final LoginHistoryRepository loginHistoryRepository;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * 로그인
+     */
+    public LoginResponseDto login(LoginRequestDto request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
+
+        // 계정 잠금 확인
+        if (user.getLocked()) {
+            throw new BusinessException(ErrorCode.ACCOUNT_LOCKED);
+        }
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            user.addFailAttempt();  // ✓ 수정됨
+            userRepository.save(user);
+            recordLoginFailure(user, "비밀번호 불일치");
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        // 로그인 성공 시 실패 횟수 초기화
+        user.resetFailAttempt();  // ✓ 수정됨
+        userRepository.save(user);
+
+        // JWT 토큰 생성
+        String accessToken = jwtUtil.generateAccessToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name()
+        );
+
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+
+        // 로그인 기록
+        recordLoginSuccess(user);
+
+        log.info("로그인 성공 - 사용자: {}", user.getEmail());
+
+        // ✓ 실제 DTO 구조에 맞게 수정
+        return LoginResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .studentNum(user.getStudentNum())
+                .role(user.getRole().name())
+                .message("로그인 성공")
+                .build();
+    }
+
+    /**
+     * 로그인 성공 기록
+     */
+    private void recordLoginSuccess(User user) {
+        LoginHistory history = LoginHistory.builder()
+                .user(user)
+                .loginAt(LocalDateTime.now())
+                .isSuccess(true)
+                .build();
+        loginHistoryRepository.save(history);
+    }
+
+    /**
+     * 로그인 실패 기록
+     */
+    private void recordLoginFailure(User user, String reason) {
+        LoginHistory history = LoginHistory.builder()
+                .user(user)
+                .loginAt(LocalDateTime.now())
+                .isSuccess(false)
+                .failReason(reason)
+                .build();
+        loginHistoryRepository.save(history);
+    }
+}

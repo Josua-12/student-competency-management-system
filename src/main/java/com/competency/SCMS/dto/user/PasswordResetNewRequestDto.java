@@ -1,15 +1,14 @@
 package com.competency.SCMS.dto.user;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class PasswordResetNewRequestDto {
     @NotBlank(message = "휴대폰 번호는 필수입니다.")
     private String phone;

@@ -7,7 +7,7 @@ import com.competency.SCMS.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.SCMS.domain.noncurricular.program.*;
 import com.competency.SCMS.dto.noncurricular.program.BasicInfoDto;
 import com.competency.SCMS.dto.noncurricular.program.OperationDto;
-import com.competency.SCMS.dto.noncurricular.program.ProgramOpenRequest;
+import com.competency.SCMS.dto.noncurricular.program.ProgramOpenRequestDto;
 import com.competency.SCMS.dto.noncurricular.program.ScheduleDto;
 import com.competency.SCMS.repository.DepartmentRepository;
 import com.competency.SCMS.repository.FileRepository;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
     }
 
     @Override
-    public Long saveDraft(Long programId, ProgramOpenRequest dto,
+    public Long saveDraft(Long programId, ProgramOpenRequestDto dto,
                           MultipartFile poster,
                           List<MultipartFile> guides,
                           List<MultipartFile> attachments) {
@@ -60,7 +59,7 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
     }
 
     @Override
-    public Long submitApproval(Long programId, ProgramOpenRequest dto,
+    public Long submitApproval(Long programId, ProgramOpenRequestDto dto,
                                MultipartFile poster,
                                List<MultipartFile> guides,
                                List<MultipartFile> attachments) {
@@ -79,7 +78,7 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
 
     // ========= 내부 유틸 =========
 
-    private void mapToEntity(Program p, ProgramOpenRequest req, boolean submitting) {
+    private void mapToEntity(Program p, ProgramOpenRequestDto req, boolean submitting) {
         BasicInfoDto b = req.getBasic();
         OperationDto o = req.getOperation();
 

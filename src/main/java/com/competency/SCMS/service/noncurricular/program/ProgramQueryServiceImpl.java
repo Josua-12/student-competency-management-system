@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
+
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
     private final ApprovalHistoryRepository programApprovalHistoryRepository;
 
     @Override
-    public Page<ProgramListItemDto> search(ProgramSearchCond cond, Pageable pageable) {
+    public Page<ProgramListRowDto> search(ProgramSearchCondDto cond, Pageable pageable) {
         Specification<Program> spec = (root, query, cb) -> {
             List<Predicate> ps = new ArrayList<>();
 
@@ -65,14 +67,15 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
 
         Page<Program> page = programRepository.findAll(spec, pageable);
 
-        return page.map(p -> ProgramListItemDto.builder()
+        return page.map(p -> ProgramListRowDto.builder()
                 .id(p.getProgramId())
                 .title(p.getTitle())
                 .deptName(p.getDepartment()!=null ? p.getDepartment().getName() : "-")
-                .categoryName(p.getCategory()!=null ? p.getCategory().getName() : "-")
+                .categoryName(p.getCategory()!=null ? p.getCategory().name() : "-")
                 .status(p.getStatus()!=null ? p.getStatus().name() : "-")
                 .mileage(p.getMileage())
-                .periodText(formatPeriod(p))
+                .appPeriod(formatPeriod(p.getRecruitStartAt(), p.getRecruitEndAt())) // 신청기간
+                .runPeriod(formatPeriod(p.getProgramStartAt(), p.getProgramEndAt())) // 운영기간
                 .thumbnailUrl(p.getThumbnailUrl())
                 .build());
     }
@@ -89,29 +92,31 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .title(n(program.getTitle()))
                 .deptName(program.getOwner()!=null && program.getOwner().getDepartment()!=null
                         ? n(program.getDepartment().getName()) : "-")
-                .categoryName(program.getCategory()!=null ? n(program.getCategory().getName()) : "-")
+                .categoryName(program.getCategory()!=null ? n(program.getCategory().name()) : "-")
                 .status(program.getStatus()!=null ? program.getStatus().name() : "-")
                 .mileage(program.getMileage())
-                .periodText(formatPeriod(program))       // ✅ Program 기간 표기
+                .appPeriod(formatPeriod(program.getRecruitStartAt(), program.getRecruitEndAt())) // 신청기간
+                .runPeriod(formatPeriod(program.getProgramStartAt(), program.getProgramEndAt())) // 운영기간
                 .location(n(program.getLocation()))
                 .desc(n(program.getDescription()))
                 .thumbnailUrl(n(program.getThumbnailUrl()))
                 .build();
 
         List<ScheduleDto> schedules = scheduleRepository
-                .findAllByProgram_IdOrderByRoundNoAsc(programId).stream()
+                .findAllByProgram_ProgramIdOrderBySessionNoAsc(programId).stream()
                 .map(s -> ScheduleDto.builder()
                         .roundNo(s.getSessionNo())
-                        .date(s.getDate()!=null ? s.getDate().toString() : "")
-                        .timeRange((s.getStartTime()!=null?s.getStartTime().toString():"")
-                                + " ~ "
-                                + (s.getEndTime()!=null?s.getEndTime().toString():""))
+                        .date(s.getDate()!=null ? s.getDate() : null)
+                        .timeRange(s.getStartTime(), s.getEndTime())
+//                        .timeRange((s.getStartTime()!=null?s.getStartTime().toString():"")
+//                                + " ~ "
+//                                + (s.getEndTime()!=null?s.getEndTime().toString():""))
                         .content(n(s.getRemarks()))
                         .build())
                 .toList();
 
         List<CompetencyDto> competencies = competencyLinkRepository
-                .findAllByProgram_Id(programId).stream()
+                .findAllByProgram_ProgramIdAndCompetency_IsActiveTrueOrderByCompetency_NameAsc(programId).stream()
                 .map(link -> CompetencyDto.builder()
                         .id(link.getCompetency().getId())
                         .name(n(link.getCompetency().getName()))
@@ -119,13 +124,13 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
                 .toList();
 
         List<FileDto> files = programFileRepository
-                .findAllByProgram_IdOrderByCreatedAtAsc(programId).stream()
+                .findAllByProgram_programIdOrderByCreatedAtAsc(programId).stream()
                 .map(this::toFileDto)
                 .toList();
 
         DateTimeFormatter dt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         List<ApprovalHistoryDto> approvals = programApprovalHistoryRepository
-                .findAllByProgram_IdOrderByCreatedAtDesc(programId).stream()
+                .findAllByProgram_ProgramIdOrderByCreatedAtDesc(programId).stream()
                 .map(a -> ApprovalHistoryDto.builder()
                         .requestedAt(a.getCreatedAt()!=null ? a.getCreatedAt().format(dt) : "")
                         .status(a.getStatus()!=null ? a.getStatus().name() : "-")
@@ -158,11 +163,16 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
     }
 
     // Program 전체 기간 (엔티티가 programStartAt/programEndAt을 쓰는 경우)
-    private String formatPeriod(Program p){
-        String s = p.getProgramStartAt()!=null ? p.getProgramStartAt().toLocalDate().toString() : "";
-        String e = p.getProgramEndAt()!=null ? p.getProgramEndAt().toLocalDate().toString() : "";
-        return (s.isEmpty() && e.isEmpty()) ? "-" : (s + " ~ " + e);
+
+    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    private String formatPeriod(LocalDateTime start, LocalDateTime end) {
+        if (start == null && end == null) return "-";
+        String s = (start != null) ? start.format(DT_FMT) : "";
+        String e = (end != null) ? end.format(DT_FMT) : "";
+        return s + " ~ " + e;
     }
+
 
     // 회차(일정)용
     private String formatPeriod(ProgramSchedule s) {

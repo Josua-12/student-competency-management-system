@@ -7,6 +7,7 @@ import com.competency.SCMS.exception.BusinessException;
 import com.competency.SCMS.exception.ErrorCode;
 import com.competency.SCMS.repository.user.UserRepository;
 import com.competency.SCMS.repository.counseling.*;
+import com.competency.SCMS.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

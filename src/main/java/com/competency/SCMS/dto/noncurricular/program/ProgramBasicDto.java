@@ -12,7 +12,8 @@ public class ProgramBasicDto {
     String categoryName;
     String status;          // DRAFT/PENDING/APPROVED/REJECTED/...
     Integer mileage;        // null 가능
-    String periodText;      // "yyyy-MM-dd ~ yyyy-MM-dd"
+    String appPeriod;      // "yyyy-MM-dd ~ yyyy-MM-dd"
+    String runPeriod;
     String location;
     String desc;
     String thumbnailUrl;    // 없으면 null

@@ -7,7 +7,7 @@ import lombok.*;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class ProgramOpenRequest {
+public class ProgramOpenRequestDto {
     private Long programId;
 
     @NotNull

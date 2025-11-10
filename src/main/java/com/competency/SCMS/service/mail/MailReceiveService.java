@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Properties;

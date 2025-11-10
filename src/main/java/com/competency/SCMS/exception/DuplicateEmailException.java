@@ -1,11 +1,11 @@
 package com.competency.SCMS.exception;
 
-public class DuplicateEmailException extends RuntimeException {
+public class DuplicateEmailException extends BusinessException {
     public DuplicateEmailException() {
-        super("이미 존재하는 이메일입니다.");
+        super(ErrorCode.DUPLICATE_EMAIL);
     }
 
     public DuplicateEmailException(String message) {
-        super(message);
+        super(ErrorCode.DUPLICATE_EMAIL, message);
     }
 }

@@ -1,7 +1,12 @@
 package com.competency.SCMS.controller;
 
+import com.competency.SCMS.dto.auth.LoginRequestDto;
+import com.competency.SCMS.dto.auth.LoginResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import com.competency.SCMS.dto.user.*;
-import com.competency.SCMS.service.user.AuthenticationService;
+import com.competency.SCMS.service.auth.AuthService;
 import com.competency.SCMS.service.user.PasswordResetService;
 import com.competency.SCMS.service.user.PhoneVerificationService;
 import jakarta.validation.Valid;
@@ -9,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
 
 @RestController
@@ -18,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
-    private final AuthenticationService authenticationService;
+    private final AuthService authenticationService;
     private final PhoneVerificationService phoneVerificationService;
     private final PasswordResetService passwordResetService;
 
@@ -28,7 +32,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         log.info("로그인 요청 - 이메일: {}", request.getEmail());
-        LoginResponseDto response = authenticationService.login(request);
+
+        // ✓ 수정: HttpServletRequest에서 IP와 User-Agent 추출
+        HttpServletRequest httpRequest = getHttpServletRequest();
+        String ipAddress = getClientIpAddress(httpRequest);
+        String userAgent = httpRequest.getHeader("User-Agent");
+
+        LoginResponseDto response = authenticationService.login(request, ipAddress, userAgent);
         return ResponseEntity.ok(response);
     }
 
@@ -38,8 +48,8 @@ public class UserController {
     @PostMapping("/phone/verify/start")
     public ResponseEntity<PhoneVerificationResponseDto> startPhoneVerification(
             @Valid @RequestBody PhoneVerificationRequestDto request) {
-        log.info("본인 인증 시작 - 휴대폰: {}", request.getPhoneNumber());
-        PhoneVerificationResponseDto response = phoneVerificationService.startVerification(request);
+        log.info("본인 인증 시작 - 휴대폰: {}", request.getPhone()); // ✓ phoneNumber → phone
+        PhoneVerificationResponseDto response = authenticationService.requestPhoneAuthentication(request);
         return ResponseEntity.ok(response);
     }
 
@@ -48,9 +58,10 @@ public class UserController {
      */
     @PostMapping("/phone/verify/confirm")
     public ResponseEntity<Map<String, Object>> confirmPhoneVerification(
-            @Valid @RequestBody PhoneVerificationConfirmDto request) {
-        log.info("본인 인증 확인 - 휴대폰: {}", request.getPhoneNumber());
-        boolean verified = phoneVerificationService.verifyCode(request);
+            @RequestParam String phone,
+            @RequestParam String verificationCode) {
+        log.info("본인 인증 확인 - 휴대폰: {}", phone);
+        boolean verified = authenticationService.checkPhoneAuthStatus(phone, verificationCode);
         return ResponseEntity.ok(Map.of(
                 "verified", verified,
                 "message", "본인 인증이 완료되었습니다."
@@ -62,9 +73,9 @@ public class UserController {
      */
     @PostMapping("/password-reset/start")
     public ResponseEntity<PhoneVerificationResponseDto> startPasswordReset(
-            @Valid @RequestBody PasswordResetStartDto request) {
-        log.info("비밀번호 찾기 시작 - 이메일: {}", request.getEmail());
-        PhoneVerificationResponseDto response = passwordResetService.startPasswordReset(request);
+            @Valid @RequestBody PhoneVerificationRequestDto request) {
+        log.info("비밀번호 찾기 시작 - 휴대폰: {}", request.getPhone()); // ✓ phoneNumber → phone
+        PhoneVerificationResponseDto response = authenticationService.requestPhoneAuthentication(request);
         return ResponseEntity.ok(response);
     }
 
@@ -73,11 +84,41 @@ public class UserController {
      */
     @PostMapping("/password-reset/confirm")
     public ResponseEntity<Map<String, String>> confirmPasswordReset(
-            @Valid @RequestBody PasswordResetConfirmDto request) {
-        log.info("비밀번호 재설정 요청 - 휴대폰: {}", request.getPhoneNumber());
-        passwordResetService.confirmPasswordReset(request);
+            @Valid @RequestBody PasswordResetNewRequestDto request) {
+        log.info("비밀번호 재설정 요청 - 휴대폰: {}", request.getPhone());
+        authenticationService.resetPasswordWithPhoneAuth(request);
         return ResponseEntity.ok(Map.of(
                 "message", "비밀번호가 성공적으로 변경되었습니다."
         ));
+    }
+
+    /**
+     * HttpServletRequest 가져오기
+     */
+    private HttpServletRequest getHttpServletRequest() {
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs != null) {
+            return attrs.getRequest();
+        }
+        return null;
+    }
+
+    /**
+     * 클라이언트 IP 주소 추출
+     */
+    private String getClientIpAddress(HttpServletRequest request) {
+        if (request == null) return "UNKNOWN";
+
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isEmpty()) {
+            return xRealIp;
+        }
+
+        return request.getRemoteAddr();
     }
 }

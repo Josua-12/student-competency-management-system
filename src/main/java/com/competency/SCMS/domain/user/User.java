@@ -65,7 +65,7 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    // ========== 비밀번호 재설정 관련 필드 추가 ==========
+    // ========== 비밀번호 재설정 관련 필드 ==========
     @Column(name = "password_reset_token", length = 255)
     private String passwordResetToken;
 
@@ -85,14 +85,15 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void increaseFailCount() {
+    // ========== 계정 잠금 관련 메서드 ==========
+    public void addFailAttempt() {
         this.failCnt++;
         if (this.failCnt >= 5) {
             this.locked = true;
         }
     }
 
-    public void resetFailCount() {
+    public void resetFailAttempt() {
         this.failCnt = 0;
     }
 
@@ -101,21 +102,11 @@ public class User {
         this.failCnt = 0;
     }
 
+    // ========== 비밀번호 관련 메서드 ==========
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
 
-    public void updateProfile(String phone, String department, Integer grade) {
-        this.phone = phone;
-        this.department = department;
-        this.grade = grade;
-    }
-
-    public String getUsername() {
-        return String.valueOf(this.studentNum);
-    }
-
-    // ========== 비밀번호 재설정 관련 메서드 ==========
     public void setPasswordResetToken(String token, int expiryMinutes) {
         this.passwordResetToken = token;
         this.passwordResetTokenExpiredAt = LocalDateTime.now().plusMinutes(expiryMinutes);
@@ -129,5 +120,12 @@ public class User {
     public void clearPasswordResetToken() {
         this.passwordResetToken = null;
         this.passwordResetTokenExpiredAt = null;
+    }
+
+    // ========== 프로필 관련 메서드 ==========
+    public void updateProfile(String phone, String department, Integer grade) {
+        this.phone = phone;
+        this.department = department;
+        this.grade = grade;
     }
 }

@@ -1,36 +1,46 @@
 package com.competency.SCMS.global.response;
 
-import java.time.LocalDateTime;
+import com.competency.SCMS.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ErrorResponse {
     private String code;
     private String message;
-    private String path;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 
-    public ErrorResponse(String code, String message, String path) {
-        this.code = code;
-        this.message = message;
-        this.path = path;
-        this.timestamp = LocalDateTime.now();
+    public static ErrorResponse of(ErrorCode errorCode) {
+        return ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 
-    public String getCode() {
-        return code;
+    public static ErrorResponse of(ErrorCode errorCode, String customMessage) {
+        return ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .message(customMessage != null ? customMessage : errorCode.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public static ErrorResponse of(String code, String message) {
+        return ErrorResponse.builder()
+                .code(code)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
     }
 }

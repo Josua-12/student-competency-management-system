@@ -11,6 +11,7 @@ import com.competency.SCMS.exception.ErrorCode;
 import com.competency.SCMS.repository.user.UserRepository;
 import com.competency.SCMS.repository.counseling.CounselingCategoryRepository;
 import com.competency.SCMS.repository.counseling.CounselingReservationRepository;
+import com.competency.SCMS.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

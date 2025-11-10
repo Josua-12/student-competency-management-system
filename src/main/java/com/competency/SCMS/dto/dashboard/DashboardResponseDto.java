@@ -2,10 +2,7 @@ package com.competency.SCMS.dto.dashboard;
 
 import com.competency.SCMS.dto.competency.CompetencyScoreDto;
 import com.competency.SCMS.dto.noncurricular.program.ProgramBasicDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
 public class DashboardResponseDto {
     private String userName;
     private Integer mileage;

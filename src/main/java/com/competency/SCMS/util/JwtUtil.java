@@ -1,9 +1,12 @@
 package com.competency.SCMS.util;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.JwtException;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +64,7 @@ public class JwtUtil {
      * 토큰에서 사용자 ID 추출
      */
     public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
@@ -73,7 +76,7 @@ public class JwtUtil {
      * 토큰에서 이메일 추출
      */
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
@@ -86,7 +89,7 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
+            Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
@@ -101,7 +104,7 @@ public class JwtUtil {
      */
     public boolean isTokenExpired(String token) {
         try {
-            Date expiration = Jwts.parserBuilder()
+            Date expiration = Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
@@ -111,5 +114,17 @@ public class JwtUtil {
         } catch (JwtException e) {
             return true;
         }
+    }
+
+    /**
+     * 토큰 타입 확인
+     */
+    public String getTokenType(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("type", String.class);
     }
 }
