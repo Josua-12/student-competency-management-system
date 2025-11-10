@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MonthlyLoginStatDto {
-
     private Integer year;
     private Integer month;
     private Integer day;
