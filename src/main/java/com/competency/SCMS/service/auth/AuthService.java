@@ -92,14 +92,14 @@ public class AuthService {
         user.resetFailAttempt();
         userRepository.save(user);
 
-        log.info("로그인 성공: userId={}, studentNum={}", user.getId(), user.getStudentNum());
+        log.info("로그인 성공: userId={}, studentNum={}", user.getId(), user.getUserNum());
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getId())
                 .name(user.getName())
-                .studentNum(user.getStudentNum())
+                .studentNum(user.getUserNum())
                 .role(user.getRole().name())  // ✓ .name() 추가
                 .message("로그인 성공")
                 .build();

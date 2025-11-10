@@ -21,7 +21,7 @@ public interface SatisfactionAnswerRepository extends JpaRepository<Satisfaction
     @Query("SELECT AVG(sa.ratingValue) FROM SatisfactionAnswer sa WHERE sa.question = :question AND sa.ratingValue IS NOT NULL")
     Double getAverageRatingByQuestion(@Param("question") SatisfactionQuestion question);
 
-    // 질문별 답변 개수
+    // 질문별 답변 개수 (통계목적)
     @Query("SELECT COUNT(sa) FROM SatisfactionAnswer sa WHERE sa.question = :question")
     Long countByQuestion(@Param("question") SatisfactionQuestion question);
 }

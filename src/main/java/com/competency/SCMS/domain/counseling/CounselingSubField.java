@@ -31,7 +31,8 @@ public class CounselingSubField { // 관리자가 하위 상담 분야 관리
     
     @Column(columnDefinition = "TEXT")
     private String description;
-    
+
+    @Builder.Default
     @Column(nullable = false)
     private Boolean isActive = true;
 

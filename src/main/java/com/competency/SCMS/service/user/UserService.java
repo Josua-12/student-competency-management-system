@@ -73,7 +73,7 @@ public class UserService {
                 .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
-                .studentNum(user.getStudentNum())
+                .studentNum(user.getUserNum())
                 .role(user.getRole().name())
                 .message("로그인 성공")
                 .build();
