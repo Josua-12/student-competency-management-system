@@ -4,9 +4,13 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="2">
+          <list size="6">
             <item index="0" class="java.lang.String" itemvalue="th:replace" />
             <item index="1" class="java.lang.String" itemvalue="th:href" />
+            <item index="2" class="java.lang.String" itemvalue="th:fragment" />
+            <item index="3" class="java.lang.String" itemvalue="th:content" />
+            <item index="4" class="java.lang.String" itemvalue="th:text" />
+            <item index="5" class="java.lang.String" itemvalue="th:src" />
           </list>
         </value>
       </option>
@@ -27,6 +31,9 @@
         </value>
       </option>
       <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="RequiredAttributes" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myAdditionalRequiredHtmlAttributes" value="src" />
     </inspection_tool>
   </profile>
 </component>

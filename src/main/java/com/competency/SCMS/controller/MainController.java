@@ -1,7 +1,7 @@
 package com.competency.SCMS.controller;
 
 import com.competency.SCMS.dto.dashboard.DashboardResponseDto;
-import com.competency.SCMS.service.main.MainDashboardService;
+import com.competency.SCMS.service.main.DashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 public class MainController {
 
-    private final MainDashboardService mainDashboardService;
+    private final DashboardService mainDashboardService;
 
     @GetMapping({"/", "/main"})
     public String getMainDashboard(Model model, Authentication authentication) {

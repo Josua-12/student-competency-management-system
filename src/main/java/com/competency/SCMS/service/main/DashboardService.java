@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MainDashboardService {
+public class DashboardService {
 
     private final UserRepository userRepository;
     private final ProgramRepository programRepository;
@@ -72,7 +72,7 @@ public class MainDashboardService {
 
     private ProgramBasicDto convertToProgramBasicDto(Program program) {
         return ProgramBasicDto.builder()
-                .id(program.getProgramId())  // ✓ 수정: getId() → getProgramId()
+                .id(program.getProgramId())
                 .title(program.getTitle())
                 .status(program.getStatus() != null ? program.getStatus().name() : "UNKNOWN")
                 .mileage(program.getMileage())
@@ -82,8 +82,8 @@ public class MainDashboardService {
 
     private CompetencyScoreDto convertToCompetencyScoreDto(Competency competency) {
         return CompetencyScoreDto.builder()
-                .competencyName(competency.getName())  // ✓ 수정: getCompetencyName() → getName()
-                .score(0.0)  // ✓ 수정: getScore() → Competency에 score 필드 없음
+                .competencyName(competency.getName())
+                .score(0.0)
                 .build();
     }
 }
