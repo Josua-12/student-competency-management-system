@@ -1,7 +1,7 @@
 spring:
   profiles:
     active: dev
-    include: jwt
+    include: jwt, gmail
 
   datasource:
     url: jdbc:mysql://localhost:3306/student_competency?allowPublicKeyRetrieval=true&useSSL=false
@@ -14,7 +14,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect  # Test 하기 위해 추가
     show-sql: true
 
 server:
@@ -22,3 +22,4 @@ server:
 
 app:
   default-profile-image: /images/default-profile.png
+

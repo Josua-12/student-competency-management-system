@@ -1,6 +1,6 @@
-package com.competency.scms.domain.counseling;
+package com.competency.SCMS.domain.counseling;
 
-import com.competency.scms.domain.user.User;
+import com.competency.SCMS.domain.user.User;
 
 import jakarta.persistence.*;
 import lombok.Getter;
