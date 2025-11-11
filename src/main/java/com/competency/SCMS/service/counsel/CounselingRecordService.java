@@ -94,7 +94,7 @@ public class CounselingRecordService {
         response.setId(record.getId());
         response.setStudentName(record.getStudent().getName());
         response.setStudentId(String.valueOf(record.getStudent().getUserNum()));
-        response.setCategoryName(record.getCategory().getCategoryName());
+        response.setSubfieldName(record.getCategory().getSubfieldName());
         response.setCounselingDate(record.getCounselingDate());
         response.setIsPublic(record.isPublic());
         response.setCreatedAt(record.getCreatedAt());
@@ -106,7 +106,7 @@ public class CounselingRecordService {
         response.setId(record.getId());
         response.setStudentName(record.getStudent().getName());
         response.setStudentId(String.valueOf(record.getStudent().getUserNum()));
-        response.setCategoryName(record.getCategory().getCategoryName());
+        response.setSubfieldName(record.getCategory().getSubfieldName());
         response.setRecordContent(record.getRecordContent());
         response.setCounselorMemo(record.getCounselorMemo());
         response.setIsPublic(record.isPublic());

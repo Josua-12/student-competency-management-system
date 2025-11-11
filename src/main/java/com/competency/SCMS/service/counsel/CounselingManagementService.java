@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CounselingManagementService {
 
-    private final CounselingCategoryRepository categoryRepository;
+    private final CounselingSubFieldRepository subFieldRepository;
     private final CounselorRepository counselorRepository;
     private final SatisfactionQuestionRepository questionRepository;
     private final QuestionOptionRepository optionRepository;
@@ -33,34 +33,34 @@ public class CounselingManagementService {
     public Long createCategory(CounselingManagementDto.CategoryRequest request) {
         CounselingSubField category = new CounselingSubField();
         category.setCounselingField(request.getCounselingField());
-        category.setCategoryName(request.getCategoryName());
+        category.setSubfieldName(request.getSubfieldName());
         category.setDescription(request.getDescription());
         category.setIsActive(true);
         
-        CounselingSubField saved = categoryRepository.save(category);
+        CounselingSubField saved = subFieldRepository.save(category);
         return saved.getId();
     }
 
     @Transactional
     public void updateCategory(Long categoryId, CounselingManagementDto.CategoryRequest request) {
-        CounselingSubField category = categoryRepository.findById(categoryId)
+        CounselingSubField category = subFieldRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
         
         category.setCounselingField(request.getCounselingField());
-        category.setCategoryName(request.getCategoryName());
+        category.setSubfieldName(request.getSubfieldName());
         category.setDescription(request.getDescription());
     }
 
     @Transactional
     public void deleteCategory(Long categoryId) {
-        CounselingSubField category = categoryRepository.findById(categoryId)
+        CounselingSubField category = subFieldRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
         
         category.setIsActive(false);
     }
 
     public List<CounselingManagementDto.CategoryResponse> getAllCategories() {
-        List<CounselingSubField> categories = categoryRepository.findAll();
+        List<CounselingSubField> categories = subFieldRepository.findAll();
         return categories.stream().map(this::toCategoryResponse).collect(Collectors.toList());
     }
 
@@ -175,7 +175,7 @@ public class CounselingManagementService {
         CounselingManagementDto.CategoryResponse response = new CounselingManagementDto.CategoryResponse();
         response.setId(category.getId());
         response.setCounselingField(category.getCounselingField());
-        response.setCategoryName(category.getCategoryName());
+        response.setSubfieldName(category.getSubfieldName());
         response.setDescription(category.getDescription());
         response.setIsActive(category.getIsActive());
         return response;

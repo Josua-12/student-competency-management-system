@@ -9,9 +9,8 @@ import com.competency.SCMS.dto.counsel.CounselingReservationDto;
 import com.competency.SCMS.exception.BusinessException;
 import com.competency.SCMS.exception.ErrorCode;
 import com.competency.SCMS.repository.user.UserRepository;
-import com.competency.SCMS.repository.counseling.CounselingCategoryRepository;
+import com.competency.SCMS.repository.counseling.CounselingSubFieldRepository;
 import com.competency.SCMS.repository.counseling.CounselingReservationRepository;
-import com.competency.SCMS.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +26,7 @@ public class CounselingReservationService {
 
     private final CounselingReservationRepository reservationRepository;
     private final UserRepository userRepository;
-    private final CounselingCategoryRepository categoryRepository;
+    private final CounselingSubFieldRepository subFieldRepository;
 
     // CNSL-001: 상담 예약 등록
     @Transactional
@@ -167,7 +166,7 @@ public class CounselingReservationService {
     }
 
     private CounselingSubField findSubFieldById(Long subFieldId) {
-        return categoryRepository.findById(subFieldId)
+        return subFieldRepository.findById(subFieldId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE));
     }
 
@@ -186,7 +185,7 @@ public class CounselingReservationService {
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getCategoryName());
+        response.setSubFieldName(reservation.getSubField().getSubfieldName());
         response.setReservationDate(reservation.getReservationDate());
         response.setStartTime(reservation.getStartTime());
         response.setEndTime(reservation.getEndTime());
@@ -200,7 +199,7 @@ public class CounselingReservationService {
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getCategoryName());
+        response.setSubFieldName(reservation.getSubField().getSubfieldName());
         response.setReservationDate(reservation.getReservationDate());
         response.setStartTime(reservation.getStartTime());
         response.setEndTime(reservation.getEndTime());
