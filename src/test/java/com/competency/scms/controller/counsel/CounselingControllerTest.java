@@ -77,7 +77,7 @@ class CounselingControllerTest {
     @BeforeEach
     void setup() {
         studentUser = User.builder()
-                .id(1L)
+                .userId(1L)
                 .userNum(20250001)
                 .name("학생")
                 .email("student@test.com")
@@ -88,7 +88,7 @@ class CounselingControllerTest {
                 .build();
 
         counselorUser = User.builder()
-                .id(2L)
+                .userId(2L)
                 .userNum(20250002)
                 .name("상담사")
                 .email("counselor@test.com")
@@ -99,7 +99,7 @@ class CounselingControllerTest {
                 .build();
 
         adminUser = User.builder()
-                .id(3L)
+                .userId(3L)
                 .userNum(20250003)
                 .name("관리자")
                 .email("admin@test.com")
