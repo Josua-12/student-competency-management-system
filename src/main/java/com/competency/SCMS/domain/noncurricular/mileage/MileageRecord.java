@@ -10,7 +10,7 @@ import lombok.*;
 @Entity
 @Table(name = "mileage_records",
         indexes = {
-                @Index(name = "ix_mileage_student", columnList = "student_id"),
+                @Index(name = "ix_mileage_student", columnList = "user_id"),
                 @Index(name = "ix_mileage_program", columnList = "prog_id"),
                 @Index(name = "ix_mileage_type", columnList = "type")
         }
@@ -24,8 +24,13 @@ public class MileageRecord extends BaseEntity {
     private Long mileageId;
 
     /** 학생 ID */
+<<<<<<< HEAD
     @Column(name = "student_id", nullable = false)
     private Long studentIds;
+=======
+    @Column(name = "user_id", nullable = false)
+    private Long student;
+>>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
 
     /** 관련 프로그램 (없을 수도 있음) */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,7 +58,7 @@ public class MileageRecord extends BaseEntity {
     private String description;
 
 
-    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="created_by_id")
+    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="created_by_user_id")
     private User createdBy;
 
 }

@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 @Table(name = "program_applications",
         uniqueConstraints = @UniqueConstraint(
                 name = "uq_app_unique",
-                columnNames = {"prog_id","schd_id","student_id"}
+                columnNames = {"prog_id","schd_id","user_id"}
         ),
         indexes = {
                 @Index(name="ix_app_prog", columnList="prog_id"),
                 @Index(name="ix_app_schd", columnList="schd_id"),
-                @Index(name="ix_app_student", columnList="student_id"),
+                @Index(name="ix_app_student", columnList="user_id"),
                 @Index(name="ix_app_status", columnList="status")
         }
 )
@@ -39,7 +39,11 @@ public class ProgramApplication extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+<<<<<<< HEAD
     @JoinColumn(name = "stu_user_id")
+=======
+    @JoinColumn(name = "user_id")
+>>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
     private User student;
 
     public Long getId() {

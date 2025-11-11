@@ -28,10 +28,9 @@
         <section class="user-info-section">
             <div class="user-info-card">
                 <div class="user-header">
-                    <img th:src="${userInfo.profileImageUrl}"
-                         alt="프로필"
-                         class="profile-image"
-                         onerror="this.src='/images/default-profile.jpg'">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #8ca0f4 0%, #bec7f3 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                        <span style="color: white; font-size: 2rem; font-weight: bold;" th:text="${#strings.substring(userInfo.userName, 0, 1)}">사</span>
+                    </div>
                     <div class="user-text">
                         <h2 class="user-name" th:text="${userInfo.userName} + '님'">00O님</h2>
                         <p class="user-email" th:text="${userInfo.userEmail}">user@university.ac.kr</p>
@@ -55,7 +54,7 @@
 
         <!-- ===== 메인 배너 ===== -->
         <section class="main-banner">
-            <img src="https://via.placeholder.com/1200x300?text=Main+Banner"
+            <img th:src="@{/images/main-banner.jpg}"
                  alt="메인 배너"
                  class="banner-image">
         </section>
@@ -173,12 +172,12 @@
 
 <!-- 메인 대시보드 CSS -->
 <th:block th:fragment="css">
-    <link th:href="@{/css/main-dashboard.css}" rel="stylesheet">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
 </th:block>
 
 <!-- 메인 대시보드 JavaScript -->
 <th:block th:fragment="scripts">
-    <script th:src="@{/js/main-dashboard.js}"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
 </th:block>
 
 </body>

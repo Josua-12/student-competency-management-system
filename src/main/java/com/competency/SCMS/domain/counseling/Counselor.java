@@ -22,13 +22,21 @@ import org.hibernate.annotations.SQLDelete;
 public class Counselor {
     
     @Id
+    @Column(name = "user_id")
+    private Long counselorId;
+    
     @OneToOne(fetch = FetchType.LAZY)
+<<<<<<< HEAD
     @JoinColumn(name = "counselor_user_id")
     private User counselorId;
 
     public User getId() {
         return counselorId;
     }
+=======
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+>>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

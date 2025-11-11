@@ -2,9 +2,7 @@ package com.competency.SCMS.domain.counseling;
 
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,24 +11,34 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Builder
 @Entity
 @Table(name = "counseling_reservations",
         indexes = {
-                @Index(name = "idx_counselor_date_time", columnList = "counselor_id,reservation_date,start_time"),
-                @Index(name = "idx_student_status", columnList = "student_id,status"),
+                @Index(name = "idx_counselor_date_time", columnList = "counselor_user_id,reservation_date,start_time"),
+                @Index(name = "idx_student_status", columnList = "student_user_id,status"),
                 @Index(name = "idx_reservation_date", columnList = "reservation_date")
         })
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CounselingReservation {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+<<<<<<< HEAD
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stu_user_id") // ERD: counseling_reservations.stu_user_id
+=======
+//    오류로 인한 수정 - JHE
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_user_id") // ERD: counseling_reservations.stu_id
+>>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
     private User student;
 
     @Enumerated(EnumType.STRING)
@@ -55,6 +63,7 @@ public class CounselingReservation {
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private ReservationStatus status = ReservationStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY) // 상담사 배정 전일 수 있으니 optional=true

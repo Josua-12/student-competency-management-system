@@ -10,9 +10,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
 public class DashboardResponseDto {
     private String userName;
+    private String userEmail;
+    private String profileImageUrl;
     private Integer mileage;
     private Integer programCount;
     private Integer counselingCount;

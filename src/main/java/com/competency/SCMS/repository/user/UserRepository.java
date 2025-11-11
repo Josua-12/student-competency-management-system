@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // 학번으로 사용자 조회
-    Optional<User> findByStudentNum(Integer studentNum);
+    Optional<User> findByUserNum(Integer userNum);
 
     // 이메일로 사용자 조회
     Optional<User> findByEmail(String email);
@@ -29,18 +29,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByPhone(String phone);
 
     // 이름과 학번으로 사용자 조회 (비밀번호 찾기)
-    @Query("SELECT u FROM User u WHERE u.name = :name AND u.studentNum = :studentNum AND u.deletedAt IS NULL")
-    Optional<User> findByNameAndStudentNum(
+    @Query("SELECT u FROM User u WHERE u.name = :name AND u.userNum = :userNum AND u.deletedAt IS NULL")
+    Optional<User> findByNameAndUserNum(
             @Param("name") String name,
-            @Param("studentNum") Integer studentNum
+            @Param("userNum") Integer userNum
     );
 
     // 이름, 학번, 생년월일로 사용자 조회
-    @Query("SELECT u FROM User u WHERE u.name = :name AND u.studentNum = :studentNum " +
+    @Query("SELECT u FROM User u WHERE u.name = :name AND u.userNum = :userNum " +
             "AND u.birthDate = :birthDate AND u.deletedAt IS NULL")
-    Optional<User> findByNameAndStudentNumAndBirthDate(
+    Optional<User> findByNameAndUserNumAndBirthDate(
             @Param("name") String name,
-            @Param("studentNum") Integer studentNum,
+            @Param("userNum") Integer userNum,
             @Param("birthDate") LocalDate birthDate
     );
 

@@ -36,7 +36,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
-        log.info("로그인 요청 - 이메일: {}", request.getEmail());
+        log.info("로그인 요청 - 학번: {}", request.getUserNum());
 
         // ✓ 수정: HttpServletRequest에서 IP와 User-Agent 추출
         HttpServletRequest httpRequest = getHttpServletRequest();

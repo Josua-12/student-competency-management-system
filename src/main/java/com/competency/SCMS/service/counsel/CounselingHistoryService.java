@@ -84,10 +84,10 @@ public class CounselingHistoryService {
         CounselingHistoryDto.HistoryResponse response = new CounselingHistoryDto.HistoryResponse();
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
-        response.setStudentId(reservation.getStudent().getStudentNum().toString());
+        response.setStudentId(reservation.getStudent().getUserNum().toString());
         response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getCategoryName());
+        response.setSubFieldName(reservation.getSubField().getSubfieldName());
         response.setCounselingDate(reservation.getReservationDate());
         response.setStatus(reservation.getStatus());
         response.setCreatedAt(reservation.getCreatedAt());

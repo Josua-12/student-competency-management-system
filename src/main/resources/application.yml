@@ -14,7 +14,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect  # Test 하기 위해 추가
     show-sql: true
 
-  server:
-    port: 8080
+server:
+  port: 8080
+
+app:
+  default-profile-image: /images/default-profile.png
+

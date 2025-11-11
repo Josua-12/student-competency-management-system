@@ -33,10 +33,10 @@ public class CustomUserDetails implements UserDetails {
         return user.getPassword();
     }
 
-    // 사용자명 반환 (이메일 사용)
+    // 사용자명 반환 (학번 사용)
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getUserNum().toString();
     }
 
     // 계정 비활성화 확인 (true = 활성)

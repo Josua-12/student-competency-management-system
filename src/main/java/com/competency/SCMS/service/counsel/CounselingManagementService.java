@@ -7,7 +7,6 @@ import com.competency.SCMS.exception.BusinessException;
 import com.competency.SCMS.exception.ErrorCode;
 import com.competency.SCMS.repository.user.UserRepository;
 import com.competency.SCMS.repository.counseling.*;
-import com.competency.SCMS.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CounselingManagementService {
 
-    private final CounselingCategoryRepository categoryRepository;
+    private final CounselingSubFieldRepository subFieldRepository;
     private final CounselorRepository counselorRepository;
     private final SatisfactionQuestionRepository questionRepository;
     private final QuestionOptionRepository optionRepository;
@@ -34,34 +33,34 @@ public class CounselingManagementService {
     public Long createCategory(CounselingManagementDto.CategoryRequest request) {
         CounselingSubField category = new CounselingSubField();
         category.setCounselingField(request.getCounselingField());
-        category.setCategoryName(request.getCategoryName());
+        category.setSubfieldName(request.getSubfieldName());
         category.setDescription(request.getDescription());
         category.setIsActive(true);
         
-        CounselingSubField saved = categoryRepository.save(category);
+        CounselingSubField saved = subFieldRepository.save(category);
         return saved.getId();
     }
 
     @Transactional
     public void updateCategory(Long categoryId, CounselingManagementDto.CategoryRequest request) {
-        CounselingSubField category = categoryRepository.findById(categoryId)
+        CounselingSubField category = subFieldRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
         
         category.setCounselingField(request.getCounselingField());
-        category.setCategoryName(request.getCategoryName());
+        category.setSubfieldName(request.getSubfieldName());
         category.setDescription(request.getDescription());
     }
 
     @Transactional
     public void deleteCategory(Long categoryId) {
-        CounselingSubField category = categoryRepository.findById(categoryId)
+        CounselingSubField category = subFieldRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
         
         category.setIsActive(false);
     }
 
     public List<CounselingManagementDto.CategoryResponse> getAllCategories() {
-        List<CounselingSubField> categories = categoryRepository.findAll();
+        List<CounselingSubField> categories = subFieldRepository.findAll();
         return categories.stream().map(this::toCategoryResponse).collect(Collectors.toList());
     }
 
@@ -72,7 +71,7 @@ public class CounselingManagementService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
         Counselor counselor = new Counselor();
-        counselor.setCounselorId(user);
+        counselor.setCounselorId(user.getId());
         counselor.setCounselingField(request.getCounselingField());
         counselor.setSpecialization(request.getSpecialization());
         counselor.setIsActive(true);
@@ -85,7 +84,7 @@ public class CounselingManagementService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
-        Counselor counselor = counselorRepository.findByCounselorId(user)
+        Counselor counselor = counselorRepository.findByCounselorId(user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUNSELOR_NOT_FOUND));
         
         counselor.setCounselingField(request.getCounselingField());
@@ -97,7 +96,7 @@ public class CounselingManagementService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         
-        Counselor counselor = counselorRepository.findByCounselorId(user)
+        Counselor counselor = counselorRepository.findByCounselorId(user.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.COUNSELOR_NOT_FOUND));
         
         counselor.setIsActive(false);
@@ -176,7 +175,7 @@ public class CounselingManagementService {
         CounselingManagementDto.CategoryResponse response = new CounselingManagementDto.CategoryResponse();
         response.setId(category.getId());
         response.setCounselingField(category.getCounselingField());
-        response.setCategoryName(category.getCategoryName());
+        response.setSubfieldName(category.getSubfieldName());
         response.setDescription(category.getDescription());
         response.setIsActive(category.getIsActive());
         return response;
@@ -184,9 +183,9 @@ public class CounselingManagementService {
 
     private CounselingManagementDto.CounselorResponse toCounselorResponse(Counselor counselor) {
         CounselingManagementDto.CounselorResponse response = new CounselingManagementDto.CounselorResponse();
-        response.setUserId(counselor.getCounselorId().getId());
-        response.setName(counselor.getCounselorId().getName());
-        response.setEmail(counselor.getCounselorId().getEmail());
+        response.setUserId(counselor.getCounselorId());
+        response.setName(counselor.getUser().getName());
+        response.setEmail(counselor.getUser().getEmail());
         response.setCounselingField(counselor.getCounselingField());
         response.setSpecialization(counselor.getSpecialization());
         response.setIsActive(counselor.getIsActive());
