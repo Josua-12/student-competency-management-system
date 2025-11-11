@@ -2,7 +2,6 @@ package com.competency.SCMS.service.noncurricular.program;
 
 import com.competency.SCMS.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.repository.noncurricular.program.ProgramRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

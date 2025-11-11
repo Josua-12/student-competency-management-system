@@ -1,7 +1,6 @@
 package com.competency.SCMS.service.noncurricular.operation;
 
 import com.competency.SCMS.domain.noncurricular.operation.ProgramSatisfaction;
-import com.competency.SCMS.domain.noncurricular.program.Program;
 import com.competency.SCMS.domain.noncurricular.program.ProgramStatus;
 import com.competency.SCMS.dto.noncurricular.operation.*;
 import com.competency.SCMS.repository.noncurricular.operation.SatisfactionRepository;
@@ -15,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

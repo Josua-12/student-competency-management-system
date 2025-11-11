@@ -14,7 +14,7 @@ public class PhoneVerificationRequestDto {
     private String name;
 
     @NotNull(message = "학번은 필수입니다.")
-    private Integer studentNum;
+    private Integer userNum;
 
     @NotBlank(message = "생년월일은 필수입니다. (YYMMDD)")
     @Pattern(regexp = "^\\d{6}$", message = "생년월일은 YYMMDD 형식이어야 합니다.")

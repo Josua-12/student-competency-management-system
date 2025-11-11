@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class ProgramParticipantServiceImpl implements ProgramParticipantService 
                 ParticipantListItemDto.builder()
                         .applicationId(pa.getApplicationId())
                         .name(pa.getStudent().getName())
-                        .studentNo(pa.getStudent().getStudentNum())
+                        .studentNo(pa.getStudent().getUserNum())
                         .dept(pa.getStudent().getDepartment())
                         .grade(pa.getStudent().getGrade())
                         .phone(pa.getStudent().getPhone())
@@ -112,7 +111,7 @@ public class ProgramParticipantServiceImpl implements ProgramParticipantService 
         for (ProgramApplication pa : page.getContent()) {
             sb.append(pa.getApplicationId()).append(',')
                     .append(s(pa.getStudent().getName())).append(',')
-                    .append(s(pa.getStudent().getStudentNum())).append(',')
+                    .append(s(pa.getStudent().getUserNum())).append(',')
                     .append(s(pa.getStudent().getDepartment())).append(',')
                     .append(pa.getStudent().getGrade() == null ? "" : pa.getStudent().getGrade()).append(',')
                     .append(s(pa.getStudent().getPhone())).append(',')

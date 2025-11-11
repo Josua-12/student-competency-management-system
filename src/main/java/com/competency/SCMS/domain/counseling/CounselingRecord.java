@@ -33,11 +33,11 @@ public class CounselingRecord {
     private CounselingReservation reservation;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "counselor_id", nullable = false)
+    @JoinColumn(name = "counselor_user_id", nullable = false)
     private User counselor;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_user_id", nullable = false)
     private User student;
     
     @ManyToOne(fetch = FetchType.LAZY)

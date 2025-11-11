@@ -24,17 +24,18 @@
             </div>
 
             <!--로그인 폼-->
-            <form th:action="@{/auth/login}" method="post">
+            <form action="/auth/login" method="post">
                 <!--이메일-->
                 <div class="mb-3">
                     <label for="studentNum" class="form-label">학번</label>
-                    <input type="email"
+                    <input type="text"
                            class="form-control"
                            id="studentNum"
-                           name="studentNum"
+                           name="userNum"
                            placeholder="학번을 입력하세요"
                            required
                            autofocus>
+
                 </div>
                 <!--비밀번호-->
                 <div class="mb-3">
@@ -57,7 +58,7 @@
             <!-- 비밀번호 찾기 -->
             <div class="row text-center">
                 <div class="col-6">
-                    <a href="#" class="text-decoration-none">
+                    <a th:href="@{/auth/find-password}" class="text-decoration-none">
                         <small>비밀번호 찾기</small>
                     </a>
                 </div>
@@ -66,4 +67,6 @@
     </div>
 </div>
 </body>
+<script src="/js/app.js"></script>
+<script src="/js/login.js"></script>
 </html>

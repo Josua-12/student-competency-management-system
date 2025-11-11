@@ -2,6 +2,8 @@ package com.competency.SCMS.domain.counseling;
 
 import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,14 +19,19 @@ import org.hibernate.annotations.SQLDelete;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE counselors SET deleted_at = NOW(), is_active = false WHERE user_id = ?")
 public class Counselor {
     
     @Id
+    @Column(name = "user_id")
+    private Long counselorId;
+    
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User counselorId;
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

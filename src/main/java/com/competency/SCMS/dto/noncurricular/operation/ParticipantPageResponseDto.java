@@ -1,7 +1,6 @@
 package com.competency.SCMS.dto.noncurricular.operation;
 
 import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 
 import java.util.List;

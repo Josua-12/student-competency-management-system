@@ -18,9 +18,9 @@ public class CounselingManagementDto {
     public static class CategoryRequest {
         @NotNull(message = "상담 분야는 필수입니다")
         private CounselingField counselingField;
-        @NotBlank(message = "카테고리명은 필수입니다")
-        @Size(max = 100, message = "카테고리명은 100자를 초과할 수 없습니다")
-        private String categoryName;
+        @NotBlank(message = "하위 분야는 필수입니다")
+        @Size(max = 100, message = "하위 분야는 100자를 초과할 수 없습니다")
+        private String subfieldName;
         @Size(max = 500, message = "설명은 500자를 초과할 수 없습니다")
         private String description;
         private Boolean isActive;
@@ -30,7 +30,7 @@ public class CounselingManagementDto {
     public static class CategoryResponse {
         private Long id;
         private CounselingField counselingField;
-        private String categoryName;
+        private String subfieldName;
         private String description;
         private Boolean isActive;
     }
@@ -91,7 +91,7 @@ public class CounselingManagementDto {
         private String questionText;
         private String questionType;  // "RATING", "TEXT", "MULTIPLE_CHOICE"
         private CounselingField counselingField;
-        private String categoryName;
+        private String subfieldName;
         private Integer displayOrder;
         private Boolean isRequired;
         private Boolean isSystemDefault;

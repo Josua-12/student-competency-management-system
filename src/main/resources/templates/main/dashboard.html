@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{common/layout :: layout(
+        ~{::title},
+        ~{::content},
+        ~{::css},
+        ~{::scripts}
+      )}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>메인 대시보드</title>
+
+    <!-- 메인 대시보드 전용 CSS -->
+    <th:block th:fragment="css">
+        <link th:href="@{/css/main-dashboard.css}" rel="stylesheet">
+        <!-- Chart.js for 역량 그래프 -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    </th:block>
+</head>
+
+<body>
+<th:block th:fragment="content">
+    <div class="main-dashboard-container">
+
+        <!-- ===== 사용자 정보 카드 ===== -->
+        <section class="user-info-section">
+            <div class="user-info-card">
+                <div class="user-header">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #8ca0f4 0%, #bec7f3 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);">
+                        <span style="color: white; font-size: 2rem; font-weight: bold;" th:text="${#strings.substring(userInfo.userName, 0, 1)}">사</span>
+                    </div>
+                    <div class="user-text">
+                        <h2 class="user-name" th:text="${userInfo.userName} + '님'">00O님</h2>
+                        <p class="user-email" th:text="${userInfo.userEmail}">user@university.ac.kr</p>
+                    </div>
+                </div>
+
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">마일리지</span>
+                        <span class="stat-value" th:text="${userInfo.mileage} + '점'">00점</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">나의 비교과</span>
+                        <span class="stat-value" th:text="${userInfo.programCount} + '건'">00건</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 메인 배너 ===== -->
+        <section class="main-banner">
+            <img th:src="@{/images/main-banner.jpg}"
+                 alt="메인 배너"
+                 class="banner-image">
+        </section>
+
+        <!-- ===== 세 개의 주요 섹션 ===== -->
+        <div class="sections-container">
+
+            <!-- 섹션 1: 핵심역량 -->
+            <section class="dashboard-section competency-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-chart-radar"></i> 핵심역량
+                    </h3>
+                    <a href="/competency" class="section-link">더보기 →</a>
+                </div>
+
+                <div class="competency-chart">
+                    <canvas id="competencyChart"></canvas>
+                </div>
+
+                <div class="competency-scores">
+                    <div th:each="comp : ${competencies}" class="score-item">
+                        <span class="score-name" th:text="${comp.competencyName}">역량명</span>
+                        <div class="score-bar">
+                            <div class="score-fill"
+                                 th:style="'width: ' + ${comp.score} + '%; background-color: ' + ${comp.color}"
+                                 th:title="${comp.score} + '%'"></div>
+                        </div>
+                        <span class="score-value" th:text="${#numbers.formatInteger(comp.score, 0)} + '%'">00%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 섹션 2: 상담 -->
+            <section class="dashboard-section consultation-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-comments"></i> 상담
+                    </h3>
+                    <a href="/consultation" class="section-link">더보기 →</a>
+                </div>
+
+                <div class="consultation-actions">
+                    <a href="/consultation/reserve" class="action-btn primary-btn">
+                        <i class="fas fa-calendar-plus"></i> 상담 예약 및 안내
+                    </a>
+                    <a href="/consultation/history" class="action-btn secondary-btn">
+                        <i class="fas fa-history"></i> 내 예약 조회
+                    </a>
+                </div>
+
+                <div class="consultation-history">
+                    <th:block th:if="${consultations.isEmpty()}">
+                        <p class="no-data">상담 이력이 없습니다.</p>
+                    </th:block>
+                </div>
+            </section>
+
+            <!-- 섹션 3: 비교과 프로그램 -->
+            <section class="dashboard-section program-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-book"></i> 비교과 프로그램
+                    </h3>
+                    <a href="/dashboard" class="section-link">전체보기 →</a>
+                </div>
+
+                <div class="programs-container">
+                    <th:block th:if="${recentPrograms.isEmpty()}">
+                        <p class="no-data">프로그램이 없습니다.</p>
+                    </th:block>
+                    <th:block th:unless="${recentPrograms.isEmpty()}">
+                        <div th:each="program : ${recentPrograms}" class="program-item">
+                            <img th:src="${program.imageUrl}"
+                                 th:alt="${program.title}"
+                                 class="program-thumb"
+                                 onerror="this.src='/images/placeholder.jpg'">
+
+                            <div class="program-info">
+                                <div class="program-header">
+                  <span class="program-category"
+                        th:style="'background-color: ' + ${program.categoryColor}"
+                        th:text="${program.categoryName}">
+                        카테고리
+                  </span>
+                                    <span class="program-status"
+                                          th:class="'status-' + ${#strings.toLowerCase(program.status)}"
+                                          th:text="${program.status}">
+                        상태
+                  </span>
+                                </div>
+                                <h4 class="program-title" th:text="${program.title}">프로그램명</h4>
+                                <p class="program-desc" th:text="${program.summary}">설명</p>
+
+                                <div class="program-footer">
+                  <span class="program-meta">
+                    <i class="fas fa-calendar"></i>
+                    <span th:text="${#dates.format(program.programStartAt, 'MM.dd')}">11.05</span>
+                  </span>
+                                    <span class="program-meta">
+                    <i class="fas fa-users"></i>
+                    <span th:text="${program.currentParticipants} + '/' + ${program.capacity}">25/30</span>
+                  </span>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </section>
+
+        </div>
+
+    </div>
+</th:block>
+
+<!-- 메인 대시보드 CSS -->
+<th:block th:fragment="css">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+</th:block>
+
+<!-- 메인 대시보드 JavaScript -->
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/dashboard.js}"></script>
+</th:block>
+
+</body>
+</html>
