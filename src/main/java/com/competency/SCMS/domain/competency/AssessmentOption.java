@@ -1,6 +1,6 @@
-package com.competency.SCMS.domain.competency;
+package com.competency.scms.domain.competency;
 
-import com.competency.SCMS.dto.competency.OptionFormDto;
+import com.competency.scms.dto.competency.OptionFormDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

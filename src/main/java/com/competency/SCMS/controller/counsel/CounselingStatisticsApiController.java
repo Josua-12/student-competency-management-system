@@ -1,7 +1,7 @@
-package com.competency.SCMS.controller.counsel;
+package com.competency.scms.controller.counsel;
 
-import com.competency.SCMS.dto.counsel.CounselingStatisticsDto;
-import com.competency.SCMS.service.counsel.CounselingStatisticsService;
+import com.competency.scms.dto.counsel.CounselingStatisticsDto;
+import com.competency.scms.service.counsel.CounselingStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

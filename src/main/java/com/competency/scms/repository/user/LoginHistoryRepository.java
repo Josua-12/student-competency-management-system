@@ -1,0 +1,20 @@
+package com.competency.scms.repository.user;
+
+import com.competency.scms.domain.user.LoginHistory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Repository
+public interface LoginHistoryRepository extends JpaRepository<LoginHistory, Integer> {
+    // 월별 접속자 통계
+    @Query("SELECT MONTH(l.loginAt) AS month, COUNT(DISTINCT l.user.id) AS visitorCount " +
+            "FROM LoginHistory l GROUP BY MONTH(l.loginAt)")
+    List<Object[]> getMonthlyUserStats();
+
+
+    long countByLoginAtAfter(LocalDateTime localDateTime);
+}

@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.competency;
+package com.competency.scms.domain.competency;
 
 /**
  * 필요하면 질문 타입 추가
