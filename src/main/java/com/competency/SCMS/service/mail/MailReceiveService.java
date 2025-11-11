@@ -35,16 +35,16 @@ public class MailReceiveService {
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
 
-    @Value("${mail.receive.email}")
+    @Value("${mail.receive.email:test@example.com}")
     private String receiverEmail;
 
-    @Value("${mail.receive.password}")
+    @Value("${mail.receive.password:password}")
     private String emailPassword;
 
-    @Value("${mail.receive.imap-host}")
+    @Value("${mail.receive.imap-host:imap.gmail.com}")
     private String imapHost;
 
-    @Value("${mail.receive.imap-port}")
+    @Value("${mail.receive.imap-port:993}")
     private String imapPort;
 
     /**

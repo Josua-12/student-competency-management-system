@@ -51,6 +51,7 @@ public class Program extends BaseEntity {
     private Integer maxParticipants;
     private Integer minParticipants;
     @Column(nullable = false)
+    @Builder.Default
     private Integer currentParticipants = 0;
     private String location;
 

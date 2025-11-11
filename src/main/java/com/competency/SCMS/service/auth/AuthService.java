@@ -43,7 +43,7 @@ public class AuthService {
     @Value("${jwt.refresh-token-expiration}")
     private Long refreshTokenExpiration;
 
-    @Value("${mail.receive.email}")
+    @Value("${mail.receive.email:test@example.com}")
     private String receiverEmail;
 
     /**

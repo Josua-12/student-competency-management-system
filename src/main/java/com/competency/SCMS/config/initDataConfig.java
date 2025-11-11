@@ -403,17 +403,17 @@ public class initDataConfig implements CommandLineRunner {
         log.info("✅ Program 초기 데이터 20건이 생성되었습니다.");
 
         mileageRecordRepository.save(MileageRecord.builder().student(getUserId(20212802)).program(prog2).type(MileageType.EARN)
-                .reason(MileageReason.PROGRAM_COMPLETION).points(10).remarks("외국어 말하기 경진대회 이수").build());
+                .reason(MileageReason.PROGRAM_COMPLETION).points(10).description("외국어 말하기 경진대회 이수").build());
         mileageRecordRepository.save(MileageRecord.builder().student(getUserId(20214503)).program(prog3).type(MileageType.EARN)
-                .reason(MileageReason.PROGRAM_COMPLETION).points(15).remarks("심리상담 프로그램 이수").build());
+                .reason(MileageReason.PROGRAM_COMPLETION).points(15).description("심리상담 프로그램 이수").build());
         mileageRecordRepository.save(MileageRecord.builder().student(getUserId(20214405)).program(prog5).type(MileageType.EARN)
-                .reason(MileageReason.PROGRAM_COMPLETION).points(10).remarks("학생 멘토링 프로그램 이수").build());
+                .reason(MileageReason.PROGRAM_COMPLETION).points(10).description("학생 멘토링 프로그램 이수").build());
         mileageRecordRepository.save(MileageRecord.builder().student(getUserId(20213414)).program(prog14).type(MileageType.EARN)
-                .reason(MileageReason.PROGRAM_COMPLETION).points(15).remarks("교수학습 튜터링 이수").build());
+                .reason(MileageReason.PROGRAM_COMPLETION).points(15).description("교수학습 튜터링 이수").build());
         mileageRecordRepository.save(MileageRecord.builder().student(getUserId(20211215)).program(prog15).type(MileageType.EARN)
-                .reason(MileageReason.PROGRAM_COMPLETION).points(30).remarks("산학연계 현장실습 이수").build());
+                .reason(MileageReason.PROGRAM_COMPLETION).points(30).description("산학연계 현장실습 이수").build());
         mileageRecordRepository.save(MileageRecord.builder().student(getUserId(20212318)).program(prog18).type(MileageType.EARN)
-                .reason(MileageReason.PROGRAM_COMPLETION).points(10).remarks("자기소개서·이력서 컨설팅 이수").build());
+                .reason(MileageReason.PROGRAM_COMPLETION).points(10).description("자기소개서·이력서 컨설팅 이수").build());
 
         log.info("✅ MileageRecord 초기 데이터 6건이 생성되었습니다.");
 
