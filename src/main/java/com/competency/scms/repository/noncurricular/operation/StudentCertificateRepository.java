@@ -1,6 +1,6 @@
-package com.competency.SCMS.repository.noncurricular.operation;
+package com.competency.scms.repository.noncurricular.operation;
 
-import com.competency.SCMS.domain.noncurricular.operation.StudentCertificate;
+import com.competency.scms.domain.noncurricular.operation.StudentCertificate;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
-package com.competency.SCMS.repository.counseling;
+package com.competency.scms.repository.counseling;
 
-import com.competency.SCMS.domain.counseling.QuestionOption;
-import com.competency.SCMS.domain.counseling.SatisfactionQuestion;
+import com.competency.scms.domain.counseling.QuestionOption;
+import com.competency.scms.domain.counseling.SatisfactionQuestion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

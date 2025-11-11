@@ -1,16 +1,16 @@
-package com.competency.SCMS.config;
+package com.competency.scms.config;
 
-import com.competency.SCMS.domain.counseling.*;
-import com.competency.SCMS.domain.noncurricular.mileage.*;
-import com.competency.SCMS.domain.noncurricular.operation.*;
-import com.competency.SCMS.domain.noncurricular.program.*;
-import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.domain.user.UserRole;
-import com.competency.SCMS.repository.counseling.*;
-import com.competency.SCMS.repository.noncurricular.mileage.MileageRecordRepository;
-import com.competency.SCMS.repository.noncurricular.operation.ProgramApplicationRepository;
-import com.competency.SCMS.repository.noncurricular.program.ProgramRepository;
-import com.competency.SCMS.repository.user.UserRepository;
+import com.competency.scms.domain.counseling.*;
+import com.competency.scms.domain.noncurricular.mileage.*;
+import com.competency.scms.domain.noncurricular.operation.*;
+import com.competency.scms.domain.noncurricular.program.*;
+import com.competency.scms.domain.user.User;
+import com.competency.scms.domain.user.UserRole;
+import com.competency.scms.repository.counseling.*;
+import com.competency.scms.repository.noncurricular.mileage.MileageRecordRepository;
+import com.competency.scms.repository.noncurricular.operation.ProgramApplicationRepository;
+import com.competency.scms.repository.noncurricular.program.ProgramRepository;
+import com.competency.scms.repository.user.UserRepository;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

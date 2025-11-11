@@ -1,10 +1,10 @@
-package com.competency.SCMS.controller.counsel;
+package com.competency.scms.controller.counsel;
 
-import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.domain.user.UserRole;
-import com.competency.SCMS.dto.counsel.*;
-import com.competency.SCMS.security.CustomUserDetails;
-import com.competency.SCMS.service.counsel.*;
+import com.competency.scms.domain.user.User;
+import com.competency.scms.domain.user.UserRole;
+import com.competency.scms.dto.counsel.*;
+import com.competency.scms.security.CustomUserDetails;
+import com.competency.scms.service.counsel.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

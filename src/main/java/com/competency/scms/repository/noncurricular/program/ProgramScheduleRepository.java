@@ -1,6 +1,6 @@
-package com.competency.SCMS.repository.noncurricular.program;
+package com.competency.scms.repository.noncurricular.program;
 
-import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
+import com.competency.scms.domain.noncurricular.program.ProgramSchedule;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.*;
 
@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 

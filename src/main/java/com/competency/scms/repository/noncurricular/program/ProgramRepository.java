@@ -1,8 +1,8 @@
-package com.competency.SCMS.repository.noncurricular.program;
+package com.competency.scms.repository.noncurricular.program;
 
-import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.domain.noncurricular.program.ProgramCategoryType;
-import com.competency.SCMS.domain.noncurricular.program.ProgramStatus;
+import com.competency.scms.domain.noncurricular.program.Program;
+import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
+import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 

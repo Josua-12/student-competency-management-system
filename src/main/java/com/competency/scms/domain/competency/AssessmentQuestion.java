@@ -1,6 +1,6 @@
-package com.competency.SCMS.domain.competency;
+package com.competency.scms.domain.competency;
 
-import com.competency.SCMS.dto.competency.QuestionFormDto;
+import com.competency.scms.dto.competency.QuestionFormDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

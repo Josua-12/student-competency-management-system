@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto.competency;
+package com.competency.scms.dto.competency;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.competency.SCMS.util;
+package com.competency.scms.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

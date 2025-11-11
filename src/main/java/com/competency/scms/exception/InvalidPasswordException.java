@@ -1,4 +1,4 @@
-package com.competency.SCMS.exception;
+package com.competency.scms.exception;
 
 public class InvalidPasswordException extends BusinessException {
   public InvalidPasswordException() {

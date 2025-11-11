@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.counseling;
+package com.competency.scms.domain.counseling;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

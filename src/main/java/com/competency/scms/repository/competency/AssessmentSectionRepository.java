@@ -1,6 +1,6 @@
-package com.competency.SCMS.repository.competency;
+package com.competency.scms.repository.competency;
 
-import com.competency.SCMS.domain.competency.AssessmentSection;
+import com.competency.scms.domain.competency.AssessmentSection;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

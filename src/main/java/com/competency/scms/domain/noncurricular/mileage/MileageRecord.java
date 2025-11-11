@@ -1,9 +1,9 @@
-package com.competency.SCMS.domain.noncurricular.mileage;
+package com.competency.scms.domain.noncurricular.mileage;
 
 
-import com.competency.SCMS.domain.BaseEntity;
-import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.BaseEntity;
+import com.competency.scms.domain.noncurricular.program.Program;
+import com.competency.scms.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 

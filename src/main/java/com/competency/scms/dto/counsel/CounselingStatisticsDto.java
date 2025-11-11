@@ -1,6 +1,6 @@
-package com.competency.SCMS.dto.counsel;
+package com.competency.scms.dto.counsel;
 
-import com.competency.SCMS.domain.counseling.CounselingField;
+import com.competency.scms.domain.counseling.CounselingField;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -1,8 +1,8 @@
-package com.competency.SCMS.service.noncurricular.operation;
+package com.competency.scms.service.noncurricular.operation;
 
-import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
-import com.competency.SCMS.dto.noncurricular.operation.SatisfactionSurveyResponse;
-import com.competency.SCMS.dto.noncurricular.operation.SatisfactionSurveySaveRequest;
+import com.competency.scms.domain.noncurricular.program.ProgramSchedule;
+import com.competency.scms.dto.noncurricular.operation.SatisfactionSurveyResponse;
+import com.competency.scms.dto.noncurricular.operation.SatisfactionSurveySaveRequest;
 import org.springframework.data.domain.Page;
 
 public interface SatisfactionSurveyCommandService {

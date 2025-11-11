@@ -1,10 +1,10 @@
-package com.competency.SCMS.controller.competency;
+package com.competency.scms.controller.competency;
 
-import com.competency.SCMS.dto.competency.CompetencyFormDto;
-import com.competency.SCMS.dto.competency.CompetencyTreeDto;
-import com.competency.SCMS.dto.competency.QuestionFormDto;
-import com.competency.SCMS.dto.competency.QuestionListDto;
-import com.competency.SCMS.service.competency.CompetencyAdminService;
+import com.competency.scms.dto.competency.CompetencyFormDto;
+import com.competency.scms.dto.competency.CompetencyTreeDto;
+import com.competency.scms.dto.competency.QuestionFormDto;
+import com.competency.scms.dto.competency.QuestionListDto;
+import com.competency.scms.service.competency.CompetencyAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

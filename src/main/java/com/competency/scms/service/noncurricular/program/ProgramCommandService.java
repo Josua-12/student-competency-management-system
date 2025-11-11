@@ -1,4 +1,4 @@
-package com.competency.SCMS.service.noncurricular.program;
+package com.competency.scms.service.noncurricular.program;
 
 import java.util.List;
 

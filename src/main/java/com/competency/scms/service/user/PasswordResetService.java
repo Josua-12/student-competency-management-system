@@ -1,13 +1,13 @@
-package com.competency.SCMS.service.user;
+package com.competency.scms.service.user;
 
-import com.competency.SCMS.domain.user.PhoneVerification;
-import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.domain.user.VerificationStatus;
-import com.competency.SCMS.dto.user.*;
-import com.competency.SCMS.exception.BusinessException;
-import com.competency.SCMS.exception.ErrorCode;
-import com.competency.SCMS.repository.user.UserRepository;
-import com.competency.SCMS.repository.verification.PhoneVerificationRepo;
+import com.competency.scms.domain.user.PhoneVerification;
+import com.competency.scms.domain.user.User;
+import com.competency.scms.domain.user.VerificationStatus;
+import com.competency.scms.dto.user.*;
+import com.competency.scms.exception.BusinessException;
+import com.competency.scms.exception.ErrorCode;
+import com.competency.scms.repository.user.UserRepository;
+import com.competency.scms.repository.verification.PhoneVerificationRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,4 +1,4 @@
-package com.competency.SCMS.exception;
+package com.competency.scms.exception;
 
 public class UserNotFoundException extends BusinessException {
     public UserNotFoundException() {

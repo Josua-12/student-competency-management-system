@@ -1,7 +1,7 @@
-package com.competency.SCMS.dto.counsel;
+package com.competency.scms.dto.counsel;
 
-import com.competency.SCMS.domain.counseling.CounselingField;
-import com.competency.SCMS.domain.counseling.ReservationStatus;
+import com.competency.scms.domain.counseling.CounselingField;
+import com.competency.scms.domain.counseling.ReservationStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

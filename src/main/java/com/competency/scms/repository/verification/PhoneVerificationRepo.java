@@ -1,7 +1,7 @@
-package com.competency.SCMS.repository.verification;
+package com.competency.scms.repository.verification;
 
-import com.competency.SCMS.domain.user.PhoneVerification;
-import com.competency.SCMS.domain.user.VerificationStatus;
+import com.competency.scms.domain.user.PhoneVerification;
+import com.competency.scms.domain.user.VerificationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,6 @@
-package com.competency.SCMS.repository.noncurricular.linkCompetency;
+package com.competency.scms.repository.noncurricular.linkCompetency;
 
-import com.competency.SCMS.domain.noncurricular.linkCompetency.LinkCompetency;
+import com.competency.scms.domain.noncurricular.linkCompetency.LinkCompetency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

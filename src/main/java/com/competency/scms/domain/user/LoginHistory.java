@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.user;
+package com.competency.scms.domain.user;
 
 import jakarta.persistence.*;
 import lombok.*;

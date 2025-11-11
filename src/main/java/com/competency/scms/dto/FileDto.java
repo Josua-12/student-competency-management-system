@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto;
+package com.competency.scms.dto;
 
 import lombok.Builder;
 import lombok.Value;

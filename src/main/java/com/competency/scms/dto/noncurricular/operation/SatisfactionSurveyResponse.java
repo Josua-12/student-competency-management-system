@@ -1,6 +1,6 @@
-package com.competency.SCMS.dto.noncurricular.operation;
+package com.competency.scms.dto.noncurricular.operation;
 
-import com.competency.SCMS.domain.noncurricular.operation.SurveyStatus;
+import com.competency.scms.domain.noncurricular.operation.SurveyStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;

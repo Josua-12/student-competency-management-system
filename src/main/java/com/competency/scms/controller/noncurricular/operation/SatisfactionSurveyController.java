@@ -1,9 +1,9 @@
-package com.competency.SCMS.controller.noncurricular.operation;
+package com.competency.scms.controller.noncurricular.operation;
 
-import com.competency.SCMS.domain.noncurricular.operation.SurveyStatus;
-import com.competency.SCMS.dto.noncurricular.operation.SatisfactionSurveyResponse;
-import com.competency.SCMS.dto.noncurricular.operation.SatisfactionSurveySaveRequest;
-import com.competency.SCMS.service.noncurricular.operation.SatisfactionSurveyCommandService;
+import com.competency.scms.domain.noncurricular.operation.SurveyStatus;
+import com.competency.scms.dto.noncurricular.operation.SatisfactionSurveyResponse;
+import com.competency.scms.dto.noncurricular.operation.SatisfactionSurveySaveRequest;
+import com.competency.scms.service.noncurricular.operation.SatisfactionSurveyCommandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

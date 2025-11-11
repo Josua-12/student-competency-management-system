@@ -1,7 +1,7 @@
-package com.competency.SCMS.service.mail;
+package com.competency.scms.service.mail;
 
-import com.competency.SCMS.domain.user.PhoneVerification;
-import com.competency.SCMS.repository.verification.PhoneVerificationRepo;
+import com.competency.scms.domain.user.PhoneVerification;
+import com.competency.scms.repository.verification.PhoneVerificationRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

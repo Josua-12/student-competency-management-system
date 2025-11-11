@@ -1,4 +1,4 @@
-package com.competency.SCMS.exception;
+package com.competency.scms.exception;
 
 /**
  * 모든 에러 코드를 한 곳에서 관리

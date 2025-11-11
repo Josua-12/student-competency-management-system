@@ -1,15 +1,11 @@
-package com.competency.SCMS.domain.noncurricular.operation;
+package com.competency.scms.domain.noncurricular.operation;
 
-import com.competency.SCMS.domain.BaseEntity;
-import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.BaseEntity;
+import com.competency.scms.domain.noncurricular.program.Program;
+import com.competency.scms.domain.noncurricular.program.ProgramSchedule;
+import com.competency.scms.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Getter @Setter
 @Entity

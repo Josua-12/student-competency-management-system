@@ -1,17 +1,17 @@
-package com.competency.SCMS.service.noncurricular.program;
+package com.competency.scms.service.noncurricular.program;
 
 
-import com.competency.SCMS.domain.Department;
-import com.competency.SCMS.domain.File;
-import com.competency.SCMS.domain.noncurricular.operation.ApprovalStatus;
-import com.competency.SCMS.domain.noncurricular.program.*;
-import com.competency.SCMS.dto.noncurricular.program.BasicInfoDto;
-import com.competency.SCMS.dto.noncurricular.program.OperationDto;
-import com.competency.SCMS.dto.noncurricular.program.ProgramOpenRequestDto;
-import com.competency.SCMS.dto.noncurricular.program.ScheduleDto;
-import com.competency.SCMS.repository.DepartmentRepository;
-import com.competency.SCMS.repository.FileRepository;
-import com.competency.SCMS.repository.noncurricular.program.*;
+import com.competency.scms.domain.Department;
+import com.competency.scms.domain.File;
+import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
+import com.competency.scms.domain.noncurricular.program.*;
+import com.competency.scms.dto.noncurricular.program.BasicInfoDto;
+import com.competency.scms.dto.noncurricular.program.OperationDto;
+import com.competency.scms.dto.noncurricular.program.ProgramOpenRequestDto;
+import com.competency.scms.dto.noncurricular.program.ScheduleDto;
+import com.competency.scms.repository.DepartmentRepository;
+import com.competency.scms.repository.FileRepository;
+import com.competency.scms.repository.noncurricular.program.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

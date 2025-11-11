@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto.dashboard;
+package com.competency.scms.dto.dashboard;
 
 import lombok.*;
 import java.util.List;

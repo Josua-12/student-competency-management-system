@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.noncurricular.report;
+package com.competency.scms.domain.noncurricular.report;
 
 /** 보고서 유형 */
 public enum ReportType {

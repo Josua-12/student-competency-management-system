@@ -1,6 +1,6 @@
-package com.competency.SCMS.repository.user;
+package com.competency.scms.repository.user;
 
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

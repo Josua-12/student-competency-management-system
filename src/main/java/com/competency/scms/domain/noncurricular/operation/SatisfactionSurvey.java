@@ -1,7 +1,7 @@
-package com.competency.SCMS.domain.noncurricular.operation;
+package com.competency.scms.domain.noncurricular.operation;
 
-import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.domain.noncurricular.program.ProgramSchedule;
+import com.competency.scms.domain.noncurricular.program.Program;
+import com.competency.scms.domain.noncurricular.program.ProgramSchedule;
 import jakarta.persistence.*;
 import lombok.*;
 

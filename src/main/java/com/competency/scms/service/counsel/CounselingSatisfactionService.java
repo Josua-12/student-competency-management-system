@@ -1,11 +1,11 @@
-package com.competency.SCMS.service.counsel;
+package com.competency.scms.service.counsel;
 
-import com.competency.SCMS.domain.counseling.*;
-import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.dto.counsel.CounselingSatisfactionDto;
-import com.competency.SCMS.exception.BusinessException;
-import com.competency.SCMS.exception.ErrorCode;
-import com.competency.SCMS.repository.counseling.*;
+import com.competency.scms.domain.counseling.*;
+import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.counsel.CounselingSatisfactionDto;
+import com.competency.scms.exception.BusinessException;
+import com.competency.scms.exception.ErrorCode;
+import com.competency.scms.repository.counseling.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

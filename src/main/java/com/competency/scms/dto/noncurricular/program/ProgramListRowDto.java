@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto.noncurricular.program;
+package com.competency.scms.dto.noncurricular.program;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

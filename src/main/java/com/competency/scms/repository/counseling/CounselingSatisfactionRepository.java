@@ -1,6 +1,6 @@
-package com.competency.SCMS.repository.counseling;
+package com.competency.scms.repository.counseling;
 
-import com.competency.SCMS.domain.counseling.CounselingSatisfaction;
+import com.competency.scms.domain.counseling.CounselingSatisfaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

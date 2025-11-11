@@ -1,13 +1,9 @@
-package com.competency.SCMS.repository.noncurricular.report;
+package com.competency.scms.repository.noncurricular.report;
 
-import com.competency.SCMS.domain.noncurricular.program.Program;
-import com.competency.SCMS.domain.noncurricular.report.ProgramReport;
-import com.competency.SCMS.domain.noncurricular.report.ReportStatus;
-import com.competency.SCMS.domain.noncurricular.report.ReportType;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.competency.scms.domain.noncurricular.program.Program;
+import com.competency.scms.domain.noncurricular.report.ProgramReport;
+import com.competency.scms.domain.noncurricular.report.ReportStatus;
 import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

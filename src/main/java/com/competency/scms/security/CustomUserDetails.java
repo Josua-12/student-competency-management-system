@@ -1,6 +1,6 @@
-package com.competency.SCMS.security;
+package com.competency.scms.security;
 
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.user.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

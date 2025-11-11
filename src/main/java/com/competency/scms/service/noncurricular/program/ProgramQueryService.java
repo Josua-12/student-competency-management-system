@@ -1,9 +1,8 @@
-package com.competency.SCMS.service.noncurricular.program;
+package com.competency.scms.service.noncurricular.program;
 
-import com.competency.SCMS.dto.noncurricular.program.ProgramDetailDto;
-import com.competency.SCMS.dto.noncurricular.program.ProgramListRowDto;
-import com.competency.SCMS.dto.noncurricular.program.ProgramListRowDto;
-import com.competency.SCMS.dto.noncurricular.program.ProgramSearchCondDto;
+import com.competency.scms.dto.noncurricular.program.ProgramDetailDto;
+import com.competency.scms.dto.noncurricular.program.ProgramListRowDto;
+import com.competency.scms.dto.noncurricular.program.ProgramSearchCondDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

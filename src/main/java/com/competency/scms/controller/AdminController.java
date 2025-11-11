@@ -1,8 +1,8 @@
-package com.competency.SCMS.controller;
+package com.competency.scms.controller;
 
 
-import com.competency.SCMS.repository.user.LoginHistoryRepository;
-import com.competency.SCMS.repository.user.UserRepository;
+import com.competency.scms.repository.user.LoginHistoryRepository;
+import com.competency.scms.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

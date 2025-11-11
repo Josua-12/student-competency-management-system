@@ -1,6 +1,6 @@
-package com.competency.SCMS.domain.competency;
+package com.competency.scms.domain.competency;
 
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

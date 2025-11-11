@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto.noncurricular.operation;
+package com.competency.scms.dto.noncurricular.operation;
 
 import lombok.Value;
 

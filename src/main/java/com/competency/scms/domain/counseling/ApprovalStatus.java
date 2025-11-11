@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.counseling;
+package com.competency.scms.domain.counseling;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

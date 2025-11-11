@@ -1,10 +1,10 @@
-package com.competency.SCMS.controller.noncurricular.operation;
+package com.competency.scms.controller.noncurricular.operation;
 
-import com.competency.SCMS.dto.noncurricular.operation.ApproveRejectRequestDto;
-import com.competency.SCMS.dto.noncurricular.operation.NotifyRequestDto;
-import com.competency.SCMS.dto.noncurricular.operation.ParticipantPageResponseDto;
-import com.competency.SCMS.dto.noncurricular.operation.ParticipantSearchConditionDto;
-import com.competency.SCMS.service.noncurricular.operation.ProgramParticipantService;
+import com.competency.scms.dto.noncurricular.operation.ApproveRejectRequestDto;
+import com.competency.scms.dto.noncurricular.operation.NotifyRequestDto;
+import com.competency.scms.dto.noncurricular.operation.ParticipantPageResponseDto;
+import com.competency.scms.dto.noncurricular.operation.ParticipantSearchConditionDto;
+import com.competency.scms.service.noncurricular.operation.ProgramParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

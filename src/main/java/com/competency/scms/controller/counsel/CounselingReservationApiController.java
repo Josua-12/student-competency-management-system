@@ -1,8 +1,8 @@
-package com.competency.SCMS.controller.counsel;
+package com.competency.scms.controller.counsel;
 
-import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.dto.counsel.CounselingReservationDto;
-import com.competency.SCMS.service.counsel.CounselingReservationService;
+import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.counsel.CounselingReservationDto;
+import com.competency.scms.service.counsel.CounselingReservationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

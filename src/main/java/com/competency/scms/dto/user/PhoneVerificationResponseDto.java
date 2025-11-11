@@ -1,4 +1,4 @@
-package com.competency.SCMS.dto.user;
+package com.competency.scms.dto.user;
 
 import lombok.*;
 

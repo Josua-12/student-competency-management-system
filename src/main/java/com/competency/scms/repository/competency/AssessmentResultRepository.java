@@ -1,9 +1,9 @@
-package com.competency.SCMS.repository.competency;
+package com.competency.scms.repository.competency;
 
-import com.competency.SCMS.domain.competency.AssessmentResult;
-import com.competency.SCMS.domain.competency.AssessmentResultStatus;
-import com.competency.SCMS.domain.competency.AssessmentSection;
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.competency.AssessmentResult;
+import com.competency.scms.domain.competency.AssessmentResultStatus;
+import com.competency.scms.domain.competency.AssessmentSection;
+import com.competency.scms.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,12 +1,12 @@
-package com.competency.SCMS.repository.counseling;
+package com.competency.scms.repository.counseling;
 
-import com.competency.SCMS.domain.counseling.CounselingRecord;
+import com.competency.scms.domain.counseling.CounselingRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.competency.SCMS.domain.user.User;
+import com.competency.scms.domain.user.User;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;

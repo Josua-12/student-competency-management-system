@@ -1,6 +1,6 @@
-package com.competency.SCMS.global.response;
+package com.competency.scms.global.response;
 
-import com.competency.SCMS.exception.ErrorCode;
+import com.competency.scms.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,8 +1,8 @@
-package com.competency.SCMS.controller.counsel;
+package com.competency.scms.controller.counsel;
 
-import com.competency.SCMS.domain.user.User;
-import com.competency.SCMS.dto.counsel.CounselingRecordDto;
-import com.competency.SCMS.service.counsel.CounselingRecordService;
+import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.counsel.CounselingRecordDto;
+import com.competency.scms.service.counsel.CounselingRecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
