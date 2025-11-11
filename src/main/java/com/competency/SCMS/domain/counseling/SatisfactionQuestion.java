@@ -1,6 +1,8 @@
 package com.competency.SCMS.domain.counseling;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +20,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE satisfaction_questions SET deleted_at = NOW(), is_active = false WHERE id = ?")
 public class SatisfactionQuestion {
