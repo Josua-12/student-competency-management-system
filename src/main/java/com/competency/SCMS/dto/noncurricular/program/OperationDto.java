@@ -1,6 +1,6 @@
-package com.competency.SCMS.dto.noncurricular.program;
+package com.competency.scms.dto.noncurricular.program;
 
-import com.competency.SCMS.domain.noncurricular.program.FundSource;
+import com.competency.scms.domain.noncurricular.program.FundSource;
 import lombok.*;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder

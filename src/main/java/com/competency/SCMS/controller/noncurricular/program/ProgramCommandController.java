@@ -1,6 +1,6 @@
-package com.competency.SCMS.controller.noncurricular.program;
+package com.competency.scms.controller.noncurricular.program;
 
-import com.competency.SCMS.service.noncurricular.program.ProgramCommandService;
+import com.competency.scms.service.noncurricular.program.ProgramCommandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
