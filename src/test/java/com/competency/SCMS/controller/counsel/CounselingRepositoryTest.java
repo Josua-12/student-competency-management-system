@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import com.competency.SCMS.domain.user.User;
+import org.springframework.transaction.annotation.Transactional;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)    //MySQL 사용
+@Transactional      // 각 테스트 후 롤백하여 DB 정리
 public class CounselingRepositoryTest { //@Query문만 검사
 
     //--테스트에 필수적 Repos--//
@@ -140,25 +143,54 @@ public class CounselingRepositoryTest { //@Query문만 검사
         Long count = satisfactionAnswerRepository.countByQuestion(testQuestion);
 
         //Then: 결과 검증
-        assert count == 1L;
+        assertNotNull(count, "답변 개수는 null이 아니어야 합니다");
+        assertEquals(1L, count, "답변 개수는 1개여야 합니다.");
     }
 
     @Test
     @DisplayName("테스트2 - 질문별 평균점수")
     void testGetAverageRatingByQuestion(){
         //Given: 테스트 데이터 준비
+
+        //추가 예약 2개 생성 (테스트2 전용) -- 제약조건 충돌발생 방지하기 위함
+        CounselingReservation reservation1 = CounselingReservation.builder()
+                .student(testStudent)
+                .counselor(testCounselor)
+                .counselingField(CounselingField.CAREER)
+                .subField(subfield)
+                .reservationDate(LocalDate.of(2025,12,1))
+                .startTime(LocalTime.of(14,0))
+                .endTime(LocalTime.of(15,0))
+                .requestContent("평균점수 테스트용 예약1")
+                .build();
+        counselingReservationRepository.save(reservation1);
+
+        CounselingReservation reservation2 = CounselingReservation.builder()
+                .student(testStudent)
+                .counselor(testCounselor)
+                .counselingField(CounselingField.CAREER)
+                .subField(subfield)
+                .reservationDate(LocalDate.of(2025,12,2))
+                .startTime(LocalTime.of(10,0))
+                .endTime(LocalTime.of(11,0))
+                .requestContent("평균점수 테스트용 예약2")
+                .build();
+        counselingReservationRepository.save(reservation2);
+
+        // 만족도 2개 생성
         CounselingSatisfaction testSatisfaction = new CounselingSatisfaction();
-        testSatisfaction.setReservation(testReservation);
+        testSatisfaction.setReservation(reservation1);
         testSatisfaction.setStudent(testStudent);
         testSatisfaction.setCounselor(testCounselor);
         counselingSatisfactionRepository.save(testSatisfaction);
 
         CounselingSatisfaction testSatisfaction2 = new CounselingSatisfaction();
-        testSatisfaction2.setReservation(testReservation);
+        testSatisfaction2.setReservation(reservation2);
         testSatisfaction2.setStudent(testStudent);
         testSatisfaction2.setCounselor(testCounselor);
         counselingSatisfactionRepository.save(testSatisfaction2);
 
+        // 답변 2개 생성 (5점, 3점)
         SatisfactionAnswer testAnswer = new SatisfactionAnswer();
         testAnswer.setSatisfaction(testSatisfaction2);
         testAnswer.setQuestion(testQuestion);
@@ -174,8 +206,9 @@ public class CounselingRepositoryTest { //@Query문만 검사
         //When: 질문별 평균점수 조회
         Double average = satisfactionAnswerRepository.getAverageRatingByQuestion(testQuestion);
 
-        //Then: 결과 검증
-        assert average == 4;
+        //Then: 결과 검증 (5+3) / 2 = 4.0
+        assertNotNull(average, "평균 점수는 null이 아니어야 합니다");
+        assertEquals(4.0, average, 0.01,"평균 점수는 4.0이어야 합니다.");
 
     }
 
