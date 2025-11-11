@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class CounselingRepositoryTest { //@Query문만 검사
 
     //--테스트에 필수적 Repos--//
@@ -44,6 +44,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private User testStudent;
     private User testCounselor;
     private CounselingReservation testReservation;
+    private CounselingReservation testReservation2;
     private CounselingSubField subfield;
     private CounselingSatisfaction testSatisfaction;
     private SatisfactionQuestion testQuestion;
@@ -54,7 +55,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
 
     @BeforeEach
     void setup(){
-        User testStudent = User.builder()
+        testStudent = User.builder()
                 .role(UserRole.STUDENT)
                 .userNum(12345)
                 .name("김학생")
@@ -67,7 +68,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .build();
         userRepository.save(testStudent);
 
-        User testCounselor = User.builder()
+        testCounselor = User.builder()
                 .role(UserRole.COUNSELOR)
                 .userNum(12345)
                 .name("이상담")
@@ -78,7 +79,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .build();
         userRepository.save(testCounselor);
 
-        CounselingSubField subfield = CounselingSubField.builder()
+        subfield = CounselingSubField.builder()
                 .counselingField(CounselingField.CAREER)
                 .subfieldName("하위분야이름")
                 .description("직업상담의 하위분야입니다")
@@ -86,7 +87,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
         subFieldRepository.save(subfield);
 
         // 예약 2개
-        CounselingReservation testReservation = CounselingReservation.builder()
+        testReservation = CounselingReservation.builder()
                 .student(testStudent)
                 .counselor(testCounselor)
                 .counselingField(CounselingField.CAREER)
@@ -98,7 +99,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .build();
         counselingReservationRepository.save(testReservation);
 
-        CounselingReservation testReservation2 = CounselingReservation.builder()
+        testReservation2 = CounselingReservation.builder()
                 .student(testStudent)
                 .counselor(testCounselor)
                 .counselingField(CounselingField.CAREER)
@@ -111,13 +112,11 @@ public class CounselingRepositoryTest { //@Query문만 검사
         counselingReservationRepository.save(testReservation2);
 
         // 질문 1개
-        SatisfactionQuestion testQuestion = new SatisfactionQuestion();
+        testQuestion = new SatisfactionQuestion();
         testQuestion.setQuestionText("상담에 만족하셨나요?");
         testQuestion.setQuestionType(SatisfactionQuestion.QuestionType.RATING);
         testQuestion.setDisplayOrder(1);
         satisfactionQuestionRepository.save(testQuestion);
-
-
 
     }
 
