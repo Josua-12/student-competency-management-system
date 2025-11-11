@@ -2,8 +2,6 @@ package com.competency.SCMS.domain.counseling;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,8 +17,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE question_options SET deleted_at = NOW(), is_active = false WHERE id = ?")
 public class QuestionOption {

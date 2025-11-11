@@ -1,3 +1,3 @@
 package com.competency.SCMS.domain.noncurricular.program;
 
-public enum ProgramCategoryType { CAREER, GLOBAL, LEAD, VOL, COUNSEL, MENTOR, ACADEMIC, LEADERSHIP, CULTURE }
+public enum ProgramCategoryType { CAREER, GLOBAL, LEAD, VOL }
