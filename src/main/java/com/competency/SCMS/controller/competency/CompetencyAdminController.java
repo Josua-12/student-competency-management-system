@@ -126,4 +126,18 @@ public class CompetencyAdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
+
+    /**
+     * 9. '문항' 1개 상세 조회 (수정용)
+     */
+    @GetMapping("/api/questions/{id}/details")
+    @ResponseBody
+    public ResponseEntity<?> getQuestionDetailsForEdit(@PathVariable("id") Long questionId) {
+        try {
+            QuestionFormDto dto = competencyAdminService.getQuestionDetails(questionId);
+            return ResponseEntity.ok(dto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
