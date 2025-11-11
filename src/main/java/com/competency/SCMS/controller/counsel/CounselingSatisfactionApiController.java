@@ -1,8 +1,8 @@
-package com.competency.scms.controller.counsel;
+package com.competency.SCMS.controller.counsel;
 
-import com.competency.scms.domain.user.User;
-import com.competency.scms.dto.counsel.CounselingSatisfactionDto;
-import com.competency.scms.service.counsel.CounselingSatisfactionService;
+import com.competency.SCMS.domain.user.User;
+import com.competency.SCMS.dto.counsel.CounselingSatisfactionDto;
+import com.competency.SCMS.service.counsel.CounselingSatisfactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

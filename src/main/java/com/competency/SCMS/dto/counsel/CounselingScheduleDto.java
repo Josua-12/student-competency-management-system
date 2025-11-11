@@ -1,6 +1,6 @@
-package com.competency.scms.dto.counsel;
+package com.competency.SCMS.dto.counsel;
 
-import com.competency.scms.domain.counseling.ReservationStatus;
+import com.competency.SCMS.domain.counseling.ReservationStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotEmpty;

@@ -1,4 +1,4 @@
-package com.competency.scms.dto.counsel;
+package com.competency.SCMS.dto.counsel;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;

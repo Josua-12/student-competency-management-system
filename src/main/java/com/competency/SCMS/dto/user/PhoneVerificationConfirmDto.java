@@ -1,4 +1,4 @@
-package com.competency.scms.dto.user;
+package com.competency.SCMS.dto.user;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
