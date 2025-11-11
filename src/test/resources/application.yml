@@ -10,11 +10,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect  # Test 하기 위해 추가
+        dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
 logging:
+  file:
+    name: ./log/test.log  # 로그 파일 경로
+  logback:
+    rollingpolicy:
+      max-history: 7  # 7일 이상된 로그 삭제
+      max-file-size: 10MB   # 파일당 최대 10MB
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
