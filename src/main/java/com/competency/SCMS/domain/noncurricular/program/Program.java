@@ -36,11 +36,8 @@ public class Program extends BaseEntity {
 
     // 개설자(운영자/부서관리자 등)
     @ManyToOne(fetch = FetchType.LAZY)
-<<<<<<< HEAD
-    @JoinColumn(name = "owner_user_id", nullable = false)
-=======
     @JoinColumn(name = "user_id", nullable = false)
->>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
+
     private User owner;
 
     /**

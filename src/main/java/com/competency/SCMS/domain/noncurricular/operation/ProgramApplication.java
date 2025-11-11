@@ -39,11 +39,7 @@ public class ProgramApplication extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-<<<<<<< HEAD
-    @JoinColumn(name = "stu_user_id")
-=======
     @JoinColumn(name = "user_id")
->>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
     private User student;
 
     public Long getId() {

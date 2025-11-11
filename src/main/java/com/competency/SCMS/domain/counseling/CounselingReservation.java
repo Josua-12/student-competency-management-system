@@ -29,16 +29,13 @@ public class CounselingReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-<<<<<<< HEAD
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stu_user_id") // ERD: counseling_reservations.stu_user_id
-=======
+
 //    오류로 인한 수정 - JHE
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_user_id") // ERD: counseling_reservations.stu_id
->>>>>>> 8f74f2b01d284f4d9ef2011a6bb2e3773c784cd7
+
     private User student;
 
     @Enumerated(EnumType.STRING)
