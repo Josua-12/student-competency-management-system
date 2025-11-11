@@ -1,10 +1,7 @@
 package com.competency.SCMS.controller.competency;
 
 import com.competency.SCMS.domain.competency.AssessmentResult;
-import com.competency.SCMS.dto.competency.AssessmentPageDto;
-import com.competency.SCMS.dto.competency.AssessmentSectionListDto;
-import com.competency.SCMS.dto.competency.AssessmentSubmitDto;
-import com.competency.SCMS.dto.competency.CompletedResultDto;
+import com.competency.SCMS.dto.competency.*;
 import com.competency.SCMS.security.CustomUserDetails;
 import com.competency.SCMS.service.competency.AssessmentService;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +95,13 @@ public class AssessmentController {
         }
     }
 
+    /**
+     * 임시저장 / 최종제출 처리
+     * @param submitDto
+     * @param userDetails
+     * @param ra
+     * @return
+     */
     @PostMapping("/submit")
     public String handleSubmitAssessment(@ModelAttribute AssessmentSubmitDto submitDto,
                                          @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -125,6 +129,37 @@ public class AssessmentController {
         } catch (IllegalStateException e) {
             ra.addFlashAttribute("error", "이미 제출이 완료된 진단입니다. ");
             return "redirect:/assessment/result/" + submitDto.getResultId();
+        }
+    }
+
+    /**
+     * 최종 진단 결과 페이지
+     * @param resultId
+     * @param userDetails
+     * @param model
+     * @return
+     */
+    @GetMapping("/result/{resultId}")
+    public String viewResult(@PathVariable("resultId") Long resultId,
+                             @AuthenticationPrincipal CustomUserDetails userDetails,
+                             Model model) {
+
+        try {
+            Long currentUserId = userDetails.getUser().getId();
+
+            // 점수 계산 및 DTO 조립
+            AssessmentResultData resultData =
+                    assessmentService.getAssessmentResultData(resultId, currentUserId);
+
+            model.addAttribute("assessmentResultData", resultData);
+
+            return "competency/assessmentResult";
+        } catch (IllegalStateException e) {
+            // 아직 완료되지 않은 진단
+            return "redirect:/assessment/page/" + resultId;
+        } catch (SecurityException | IllegalArgumentException e) {
+            // 권한 없거나 존재하지 않는 진단
+            return "redirect:/assessment";
         }
     }
 }

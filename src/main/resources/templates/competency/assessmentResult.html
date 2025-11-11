@@ -99,7 +99,8 @@
 </main>
 
 <th:block th:fragment="scripts" id="page-scripts">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css" />
 
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -112,64 +113,59 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const ctx = document.getElementById('competencyRadarChart').getContext('2d');
 
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [
-                        {
-                            label: '내 점수',
-                            data: chartData.myScores,
-                            fill: false,
-                            backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                            borderColor: 'rgba(102, 126, 234, 1)',
-                            pointBackgroundColor: 'rgba(102, 126, 234, 1)',
-                        },
-                        {
-                            label: '학과 평균',
-                            data: chartData.deptScores,
-                            fill: false,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                        },
-                        {
-                            label: '학교 평균',
-                            data: chartData.univScores,
-                            fill: false,
-                            borderColor: 'rgba(153, 153, 153, 1)',
-                            pointBackgroundColor: 'rgba(153, 153, 153, 1)',
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            // ⭐️ [핵심 수정] 0점 ~ 5점 척도로 변경
-                            min: 0,
-                            max: 5,
-                            ticks: {
-                                stepSize: 1, // 1점 단위로 눈금 표시
-                                backdropColor: 'white',
-                                color: '#777'
-                            },
-                            pointLabels: {
-                                font: {
-                                    size: 13,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
+            // 1. Toast UI Chart를 위한 데이터 구조로 변환
+            const tuiData = {
+                categories: chartData.labels, // 레이블은 categories
+                series: [
+                    {
+                        name: '내 점수',
+                        data: chartData.myScores,
                     },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                        }
+                    {
+                        name: '학과 평균',
+                        data: chartData.deptScores,
+                    },
+                    {
+                        name: '학교 평균',
+                        data: chartData.univScores,
                     }
+                ]
+            };
+
+            // 2. Toast UI Chart 옵션 설정
+            const tuiOptions = {
+                chart: {
+                    width: 'auto',
+                    height: 450, // 차트 높이 설정
+                },
+                legend: {
+                    visible: true,
+                    align: 'bottom', // 범례를 하단으로
+                },
+                // ⭐️ 0점 ~ 5점 척도 설정
+                scale: {
+                    limit: {
+                        min: 0,
+                        max: 5,
+                    },
+                    stepSize: 1, // 1점 단위 눈금
+                },
+                exportMenu: {
+                    visible: false
+                },
+                plot: {
+                    // 차트의 영역 배경색을 투명하게 설정하여 캔버스 배경과 통일
+                    visible: true,
+                    showLine: true
                 }
+            };
+
+            // 3. 차트 생성
+            new tui.chart.RadialChart({
+                el: document.getElementById('competencyRadarChart'),
+                data: tuiData,
+                options: tuiOptions,
             });
         });
 
