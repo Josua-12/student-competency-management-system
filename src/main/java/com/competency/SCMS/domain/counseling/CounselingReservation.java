@@ -15,8 +15,8 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "counseling_reservations",
         indexes = {
-                @Index(name = "idx_counselor_date_time", columnList = "counselor_id,reservation_date,start_time"),
-                @Index(name = "idx_student_status", columnList = "student_id,status"),
+                @Index(name = "idx_counselor_date_time", columnList = "counselor_user_id,reservation_date,start_time"),
+                @Index(name = "idx_student_status", columnList = "student_user_id,status"),
                 @Index(name = "idx_reservation_date", columnList = "reservation_date")
         })
 @Getter
@@ -31,9 +31,9 @@ public class CounselingReservation {
     private Long id;
 //    오류로 인한 수정 - JHE
 //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "student_id", nullable = false)
+//    @JoinColumn(name = "user_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stu_id") // ERD: counseling_reservations.stu_id
+    @JoinColumn(name = "student_user_id") // ERD: counseling_reservations.stu_id
     private User student;
 
     @Enumerated(EnumType.STRING)
@@ -62,7 +62,7 @@ public class CounselingReservation {
     private ReservationStatus status = ReservationStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY) // 상담사 배정 전일 수 있으니 optional=true
-    @JoinColumn(name = "counselor_id")                  // FK 컬럼명 지정
+    @JoinColumn(name = "counselor_user_id")                  // FK 컬럼명 지정
     private User counselor;
 
     @Column(columnDefinition = "TEXT")

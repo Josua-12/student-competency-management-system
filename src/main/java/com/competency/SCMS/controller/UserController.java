@@ -2,7 +2,11 @@ package com.competency.SCMS.controller;
 
 import com.competency.SCMS.dto.auth.LoginRequestDto;
 import com.competency.SCMS.dto.auth.LoginResponseDto;
+import com.competency.SCMS.exception.BusinessException;
+import com.competency.SCMS.exception.ErrorCode;
+import com.competency.SCMS.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import com.competency.SCMS.dto.user.*;
@@ -25,13 +29,14 @@ public class UserController {
     private final AuthService authenticationService;
     private final PhoneVerificationService phoneVerificationService;
     private final PasswordResetService passwordResetService;
+    private final JwtUtil jwtUtil;
 
     /**
      * 로그인
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
-        log.info("로그인 요청 - 이메일: {}", request.getEmail());
+        log.info("로그인 요청 - 학번: {}", request.getUserNum());
 
         // ✓ 수정: HttpServletRequest에서 IP와 User-Agent 추출
         HttpServletRequest httpRequest = getHttpServletRequest();
@@ -121,4 +126,30 @@ public class UserController {
 
         return request.getRemoteAddr();
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponseDto> refreshToken(
+            @CookieValue(value = "refreshToken", required = false) String refreshToken) {
+
+        if (refreshToken == null) {
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
+
+        // JwtUtil로 리프레시 토큰 검증
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        // 새 액세스 토큰 발급
+        Long userId = jwtUtil.getUserIdFromToken(refreshToken);
+        String email = jwtUtil.getEmailFromToken(refreshToken);
+        String role = jwtUtil.getRoleFromToken(refreshToken);
+
+        String newAccessToken = jwtUtil.generateAccessToken(userId, email, role);
+
+        return ResponseEntity.ok(LoginResponseDto.builder()
+                .accessToken(newAccessToken)
+                .build());
+    }
+
 }

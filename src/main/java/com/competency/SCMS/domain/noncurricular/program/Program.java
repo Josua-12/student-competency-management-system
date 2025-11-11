@@ -36,7 +36,7 @@ public class Program extends BaseEntity {
 
     // 개설자(운영자/부서관리자 등)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User owner;
 
     /**
@@ -226,7 +226,7 @@ public class Program extends BaseEntity {
      * 신청자격(학년)
      */
     @ElementCollection
-    @CollectionTable(name = "program_eligible_grades", joinColumns = @JoinColumn(name = "program_id"))
+    @CollectionTable(name = "program_eligible_grades", joinColumns = @JoinColumn(name = "prog_id"))
     @Column(name = "grade", length = 10)
     private List<String> eligibleGrades = new ArrayList<>();
 
@@ -234,7 +234,7 @@ public class Program extends BaseEntity {
      * 신청자격(학과)
      */
     @ElementCollection
-    @CollectionTable(name = "program_eligible_majors", joinColumns = @JoinColumn(name = "program_id"))
+    @CollectionTable(name = "program_eligible_majors", joinColumns = @JoinColumn(name = "prog_id"))
     @Column(name = "major", length = 100)
     private List<String> eligibleMajors = new ArrayList<>();
 
@@ -242,7 +242,7 @@ public class Program extends BaseEntity {
      * 역량 매핑(코드 리스트) — LinkCompetency와 병행 가능
      */
     @ElementCollection
-    @CollectionTable(name = "program_competency_mappings", joinColumns = @JoinColumn(name = "program_id"))
+    @CollectionTable(name = "program_competency_mappings", joinColumns = @JoinColumn(name = "prog_id"))
     @Column(name = "competency_code", length = 50)
     private List<String> competencyMappings = new ArrayList<>();
 

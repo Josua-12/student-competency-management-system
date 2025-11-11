@@ -12,7 +12,7 @@ import lombok.*;
 public class LoginResponseDto {
 
     private Long userId;
-    private Integer studentNum;
+    private Integer userNum;
     private String email;
     private String name;
     private String role;

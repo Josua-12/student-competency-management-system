@@ -11,7 +11,6 @@ import lombok.*;
 @Builder
 public class LoginRequestDto {
 
-    private String email;
+    private Integer userNum;
     private String password;
-    private Integer studentNum;
 }

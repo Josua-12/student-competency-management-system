@@ -24,17 +24,18 @@
             </div>
 
             <!--로그인 폼-->
-            <form th:action="@{/auth/login}" method="post">
+            <form action="/auth/login" method="post">
                 <!--이메일-->
                 <div class="mb-3">
                     <label for="studentNum" class="form-label">학번</label>
-                    <input type="email"
+                    <input type="text"
                            class="form-control"
                            id="studentNum"
-                           name="studentNum"
+                           name="userNum"
                            placeholder="학번을 입력하세요"
                            required
                            autofocus>
+
                 </div>
                 <!--비밀번호-->
                 <div class="mb-3">
@@ -66,4 +67,6 @@
     </div>
 </div>
 </body>
+<script src="/js/app.js"></script>
+<script src="/js/login.js"></script>
 </html>

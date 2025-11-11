@@ -32,7 +32,7 @@ public class UserService {
      * 로그인
      */
     public LoginResponseDto login(LoginRequestDto request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByUserNum(request.getUserNum())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
 
         // 계정 잠금 확인
@@ -59,7 +59,11 @@ public class UserService {
                 user.getRole().name()
         );
 
-        String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name()
+        );
 
         // 로그인 기록
         recordLoginSuccess(user);
@@ -73,7 +77,7 @@ public class UserService {
                 .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
-                .studentNum(user.getUserNum())
+                .userNum(user.getUserNum())
                 .role(user.getRole().name())
                 .message("로그인 성공")
                 .build();

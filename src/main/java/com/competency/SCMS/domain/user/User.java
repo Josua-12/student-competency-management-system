@@ -56,6 +56,9 @@ public class User {
     @Builder.Default
     private Integer failCnt = 0;
 
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -90,16 +93,37 @@ public class User {
         this.failCnt++;
         if (this.failCnt >= 5) {
             this.locked = true;
+            this.lockedUntil = LocalDateTime.now().plusMinutes(30);
         }
     }
 
+    public boolean isAccountLocked() {
+        if (!this.locked) {
+            return false;
+        }
+
+        // 잠금 시간이 지났으면 자동 해제
+        if (this.lockedUntil != null && this.lockedUntil.isBefore(LocalDateTime.now())) {
+            this.locked = false;
+            this.failCnt = 0;
+            this.lockedUntil = null;
+            return false;
+        }
+
+        return true;
+    }
+
+
     public void resetFailAttempt() {
         this.failCnt = 0;
+        this.locked = false;
+        this.lockedUntil = null;
     }
 
     public void unlock() {
         this.locked = false;
         this.failCnt = 0;
+        this.lockedUntil = null;
     }
 
     // ========== 비밀번호 관련 메서드 ==========

@@ -30,11 +30,11 @@ public class CounselingSatisfaction { // 상담별 만족도 설문 결과(통�
     private CounselingReservation reservation;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_user_id", nullable = false)
     private User student;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "counselor_id", nullable = false)
+    @JoinColumn(name = "counselor_user_id", nullable = false)
     private User counselor;
     
     @OneToMany(mappedBy = "satisfaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

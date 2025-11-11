@@ -50,7 +50,7 @@ public class AuthService {
      * 로그인 (AUTH-001)
      */
     public LoginResponseDto login(LoginRequestDto request, String ipAddress, String userAgent) {
-        User user = userRepository.findByStudentNum(request.getStudentNum())
+        User user = userRepository.findByUserNum(request.getUserNum())
                 .orElseThrow(() -> new UserNotFoundException("등록된 사용자가 없습니다."));
 
         if (user.getLocked()) {
@@ -80,7 +80,7 @@ public class AuthService {
         }
 
         String accessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getRole().name());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getEmail(), user.getRole().name());
 
         loginHistoryRepository.save(LoginHistory.builder()
                 .user(user)
@@ -99,7 +99,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .userId(user.getId())
                 .name(user.getName())
-                .studentNum(user.getUserNum())
+                .userNum(user.getUserNum())
                 .role(user.getRole().name())  // ✓ .name() 추가
                 .message("로그인 성공")
                 .build();
@@ -118,10 +118,6 @@ public class AuthService {
     public String refreshAccessToken(String refreshToken) {
         jwtUtil.validateToken(refreshToken);
 
-        if (!"REFRESH".equals(jwtUtil.getTokenType(refreshToken))) {
-            throw new JwtException("Refresh Token이 아닙니다.");
-        }
-
         Long userId = jwtUtil.getUserIdFromToken(refreshToken);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
@@ -134,9 +130,9 @@ public class AuthService {
      */
     public PhoneVerificationResponseDto requestPhoneAuthentication(PhoneVerificationRequestDto request) {
         LocalDate birthDate = convertBirthDateToLocalDate(request.getBirthDate());
-        User user = userRepository.findByNameAndStudentNumAndBirthDate(
+        User user = userRepository.findByNameAndUserNumAndBirthDate(
                 request.getName(),
-                request.getStudentNum(),
+                request.getUserNum(),
                 birthDate
         ).orElseThrow(() -> new UserNotFoundException("사용자 정보가 일치하지 않습니다."));
 

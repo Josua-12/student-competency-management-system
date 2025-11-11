@@ -9,7 +9,7 @@ public enum ErrorCode {
     // ========== 사용자 (USER) ==========
     USER_NOT_FOUND("USER-001", "사용자를 찾을 수 없습니다."),
     DUPLICATE_EMAIL("USER-002", "이미 존재하는 이메일입니다."),
-    DUPLICATE_STUDENT_NUM("USER-003", "이미 존재하는 학번입니다."),
+    DUPLICATE_USER_NUM("USER-003", "이미 존재하는 학번입니다."),
     INVALID_PASSWORD("USER-004", "비밀번호가 일치하지 않습니다."),
     USER_LOCKED("USER-005", "잠금 처리된 계정입니다."),
 
@@ -27,6 +27,8 @@ public enum ErrorCode {
     ACCOUNT_LOCKED("LOGIN-002", "계정이 잠금 상태입니다."),
     TOKEN_EXPIRED("LOGIN-003", "토큰이 만료되었습니다."),
     TOKEN_INVALID("LOGIN-004", "유효하지 않은 토큰입니다."),
+    REFRESH_TOKEN_NOT_FOUND("LOGIN-005", "리프레시 토큰이 없습니다."),
+    INVALID_REFRESH_TOKEN("LOGIN-006", "유효하지 않은 리프레시 토큰입니다."),
 
     // ========== 비밀번호 재설정 (PASSWORD RESET) ==========
     PASSWORD_RESET_TOKEN_INVALID("PWD-001", "유효하지 않은 비밀번호 재설정 토큰입니다."),
