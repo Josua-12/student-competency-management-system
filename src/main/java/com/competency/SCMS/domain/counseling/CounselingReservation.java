@@ -29,11 +29,8 @@ public class CounselingReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    오류로 인한 수정 - JHE
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "student_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stu_id") // ERD: counseling_reservations.stu_id
+    @JoinColumn(name = "stu_user_id") // ERD: counseling_reservations.stu_user_id
     private User student;
 
     @Enumerated(EnumType.STRING)
@@ -61,8 +58,12 @@ public class CounselingReservation {
     private ReservationStatus status = ReservationStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY) // 상담사 배정 전일 수 있으니 optional=true
-    @JoinColumn(name = "counselor_id")                  // FK 컬럼명 지정
+    @JoinColumn(name = "counselor_user_id")                  // FK 컬럼명 지정
     private User counselor;
+
+    public Long getId() {
+        return id;
+    }
 
     @Column(columnDefinition = "TEXT")
     private String memo;

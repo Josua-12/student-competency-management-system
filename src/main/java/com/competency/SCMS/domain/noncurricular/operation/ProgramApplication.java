@@ -39,8 +39,12 @@ public class ProgramApplication extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "stu_user_id")
     private User student;
+
+    public Long getId() {
+        return applicationId;
+    }
 
 
     @Enumerated(EnumType.STRING)

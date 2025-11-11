@@ -13,7 +13,8 @@ public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "dept_id")
+    private Long deptId;
 
     /** 부서 코드(선택) */
     @Column(length = 50, unique = true)
@@ -25,8 +26,12 @@ public class Department {
 
     /** 상위부서(선택) */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_dept_id")
     private Department parent;
+
+    public Long getId() {
+        return deptId;
+    }
 
     /** 사용 여부(선택) */
     @Column(nullable = false)

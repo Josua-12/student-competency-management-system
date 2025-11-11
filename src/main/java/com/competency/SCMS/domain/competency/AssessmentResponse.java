@@ -19,7 +19,7 @@ public class AssessmentResponse extends CompetencyBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "resp_id")
-    private Long id;
+    private Long respId;
 
     /**
      * 1. 진단 결과 (N:1) - 이 답변이 속한 "결과지"
@@ -42,17 +42,21 @@ public class AssessmentResponse extends CompetencyBaseEntity {
     @JoinColumn(name = "option_id") // nullable = true (기본값)
     private AssessmentOption assessmentOption;
 
+    public Long getId() {
+        return respId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AssessmentResponse that)) return false;
-        if (this.id == null || that.id == null) return false;
-        return id.equals(that.id);
+        if (this.respId == null || that.respId == null) return false;
+        return respId.equals(that.respId);
     }
 
     @Override
     public int hashCode() {
-        return (id != null) ? id.hashCode() : super.hashCode();
+        return (respId != null) ? respId.hashCode() : super.hashCode();
     }
 
 }

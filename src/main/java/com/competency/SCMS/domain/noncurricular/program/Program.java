@@ -36,7 +36,7 @@ public class Program extends BaseEntity {
 
     // 개설자(운영자/부서관리자 등)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_user_id", nullable = false)
     private User owner;
 
     /**
@@ -77,6 +77,10 @@ public class Program extends BaseEntity {
 
     @Column(name = "organizer_user_id", nullable = false)
     private Long organizerUserId; // 추후 User 엔티티로 교체 가능
+
+    public Long getId() {
+        return programId;
+    }
 
     @Enumerated(EnumType.STRING)
     @Column(length = 30, nullable = false)

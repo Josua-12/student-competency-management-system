@@ -23,7 +23,7 @@ public class AssessmentResult extends CompetencyBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rslt_id")
-    private Long id;
+    private Long rsltId;
 
     /**
      * 이 진단을 수행한 유저 (N:1)
@@ -31,6 +31,10 @@ public class AssessmentResult extends CompetencyBaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false) // FK 컬럼명은 "user_id"
     private User user;
+
+    public Long getId() {
+        return rsltId;
+    }
 
     /**
      * 이 진단을 포함하는 진단섹션

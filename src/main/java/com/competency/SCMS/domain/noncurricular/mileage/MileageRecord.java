@@ -25,7 +25,7 @@ public class MileageRecord extends BaseEntity {
 
     /** 학생 ID */
     @Column(name = "student_id", nullable = false)
-    private Long student;
+    private Long studentIds;
 
     /** 관련 프로그램 (없을 수도 있음) */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,9 +47,13 @@ public class MileageRecord extends BaseEntity {
     private Integer points;
 
     /** 비고 / 상세 사유 */
-    @Column(name = "remarks", length = 255)
-    private String remarks;
+//    @Column(name = "remarks", length = 255)
+//    private String remarks;
+    @Column(name = "description", length = 255)
+    private String description;
+
 
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="created_by_id")
     private User createdBy;
+
 }

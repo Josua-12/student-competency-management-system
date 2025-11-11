@@ -23,8 +23,12 @@ public class Counselor {
     
     @Id
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "counselor_user_id")
     private User counselorId;
+
+    public User getId() {
+        return counselorId;
+    }
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

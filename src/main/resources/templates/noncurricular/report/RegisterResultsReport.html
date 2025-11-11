@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OP-007 결과보고서 등록</title>
+    <style>
+        :root{
+            --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
+            --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
+            --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+            --chip:#f3f4f6; --card:#fafafa; --focus:#93c5fd;
+            --shadow:0 6px 20px rgba(0,0,0,.08);
+            --radius:14px;
+        }
+        html,body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif}
+        h1{font-size:22px;margin:0 0 12px}
+        h2{font-size:16px;margin:0 0 10px}
+        .page{max-width:1200px;margin:24px auto;padding:0 16px}
+        .toolbar{display:grid;gap:10px;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr auto auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+        .field{display:flex;flex-direction:column;gap:6px}
+        label{font-weight:600;color:#374151}
+        input[type="text"], input[type="date"], select, textarea{
+            border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff;
+            outline:none; transition:.15s; font-size:14px;
+        }
+        input:focus, select:focus, textarea:focus{box-shadow:0 0 0 3px var(--focus); border-color:#93c5fd}
+        .btn{border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:12px; cursor:pointer}
+        .btn.pri{background:var(--pri); border-color:var(--pri); color:#fff}
+        .btn.pri:hover{background:var(--pri-600)}
+        .btn.ghost{background:transparent}
+        .btn.warn{background:var(--warn); border-color:var(--warn); color:#fff}
+        .btn.ok{background:var(--ok); border-color:var(--ok); color:#fff}
+        .btn.err{background:var(--err); border-color:var(--err); color:#fff}
+        .stack{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+        /* KPI chips */
+        .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:14px 0}
+        .kpi{background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:12px}
+        .kpi .name{font-size:12px;color:var(--muted)}
+        .kpi .val{font-size:18px;font-weight:700;margin-top:4px}
+
+        /* Card sections */
+        .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+        .muted{color:var(--muted)}
+        .help{font-size:12px;color:var(--muted)}
+
+        /* Tables */
+        table{width:100%;border-collapse:separate;border-spacing:0}
+        th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left}
+        th{font-size:12px;color:#374151;background:#f9fafb}
+        tr:last-child td{border-bottom:none}
+
+        /* Uploader */
+        .uploader{border:2px dashed var(--line);border-radius:14px;padding:14px;text-align:center;background:#fcfcfc}
+        .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+        .thumb{position:relative;width:120px;height:90px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f3f4f6}
+        .thumb img{width:100%;height:100%;object-fit:cover}
+        .thumb button{position:absolute;top:6px;right:6px;border:none;background:rgba(0,0,0,.55);color:#fff;border-radius:8px;padding:2px 6px;cursor:pointer}
+
+        /* Footer actions */
+        .footer{display:flex;gap:10px;justify-content:flex-end;margin:16px 0 40px}
+
+        /* Modal */
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+        .modal.open{display:flex}
+        .modal .panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);width:min(920px,95vw);max-height:85vh;overflow:auto;border:1px solid var(--line)}
+        .modal .head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+        .modal .body{padding:16px}
+        .icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer}
+
+        /* Toast */
+        .toast-wrap{position:fixed;right:12px;bottom:12px;display:flex;flex-direction:column;gap:8px;z-index:60}
+        .toast{background:#111827;color:#fff;border-radius:10px;padding:10px 12px;box-shadow:var(--shadow);opacity:.98}
+        .toast.ok{background:var(--ok)} .toast.err{background:var(--err)} .toast.warn{background:var(--warn)}
+
+        /* Responsive */
+        @media (max-width: 980px){
+            .toolbar{grid-template-columns:1fr 1fr; }
+            .kpis{grid-template-columns:repeat(3,1fr)}
+            .grid-2,.grid-3{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1>결과보고서 등록 <span class="muted">운영자</span></h1>
+
+    <!-- Toolbar: Program / Schedule / Period / Search -->
+    <div class="toolbar" role="search">
+        <div class="field">
+            <label for="prog">프로그램</label>
+            <div class="stack">
+                <input id="prog" type="text" placeholder="프로그램 ID 또는 명" aria-label="프로그램 입력" />
+                <button id="btnFindProg" class="icon-btn" title="프로그램 찾기" aria-label="프로그램 찾기">🔍</button>
+            </div>
+            <div class="help">예: 123 또는 ‘진로캠프’</div>
+        </div>
+        <div class="field">
+            <label for="schd">회차</label>
+            <select id="schd" aria-label="회차 선택"><option value="">회차 선택</option></select>
+        </div>
+        <div class="field">
+            <label for="from">활동기간 시작</label>
+            <input id="from" type="date"/>
+        </div>
+        <div class="field">
+            <label for="to">활동기간 종료</label>
+            <input id="to" type="date"/>
+        </div>
+        <div class="field">
+            <label for="status">상태</label>
+            <select id="status">
+                <option value="">전체</option>
+                <option value="DRAFT">임시저장</option>
+                <option value="SUBMITTED">제출</option>
+                <option value="APPROVED">승인완료</option>
+                <option value="REJECTED">반려</option>
+            </select>
+        </div>
+        <div class="field" style="align-self:end;">
+            <button id="btnSearch" class="btn pri">검색</button>
+        </div>
+        <div class="field" style="align-self:end;">
+            <button id="btnReset" class="btn">초기화</button>
+        </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpis" aria-live="polite">
+        <div class="kpi"><div class="name">총 신청</div><div class="val" id="kpiApply">-</div></div>
+        <div class="kpi"><div class="name">참석</div><div class="val" id="kpiAttend">-</div></div>
+        <div class="kpi"><div class="name">이수</div><div class="val" id="kpiComplete">-</div></div>
+        <div class="kpi"><div class="name">만족도 제출</div><div class="val" id="kpiSurvey">-</div></div>
+        <div class="kpi"><div class="name">평균 만족도</div><div class="val" id="kpiRating">-</div></div>
+        <div class="kpi"><div class="name">마일리지 합계</div><div class="val" id="kpiMileage">-</div></div>
+    </div>
+
+    <!-- Program Basic -->
+    <div class="card">
+        <h2>기본정보</h2>
+        <div class="grid-3">
+            <div class="field">
+                <label>프로그램명</label>
+                <input id="title" type="text" placeholder="자동/수정 가능" />
+            </div>
+            <div class="field">
+                <label>운영부서</label>
+                <input id="dept" type="text" placeholder="자동/수정 가능" />
+            </div>
+            <div class="field">
+                <label>운영기간</label>
+                <input id="period" type="text" placeholder="예: 2025-05-01 ~ 2025-05-31" />
+            </div>
+        </div>
+        <div class="grid-2" style="margin-top:10px">
+            <div class="field">
+                <label>운영방식/장소</label>
+                <input id="runPlace" type="text" placeholder="온라인/오프라인, 장소명 등" />
+            </div>
+            <div class="field">
+                <label>담당자 연락처</label>
+                <input id="contact" type="text" placeholder="010-0000-0000 / email@univ.ac.kr" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Body -->
+    <div class="card" style="margin-top:12px">
+        <h2>보고서 본문</h2>
+        <div class="grid-2">
+            <div class="field">
+                <label>활동 개요</label>
+                <textarea id="overview" rows="5" placeholder="활동 목적, 대상, 내용 요약"></textarea>
+                <div class="help">최대 1,000자 권장</div>
+            </div>
+            <div class="field">
+                <label>운영 결과 요약</label>
+                <textarea id="resultSummary" rows="5" placeholder="참가/이수 통계, 성과 요약"></textarea>
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px">
+            <div class="field">
+                <label>만족도 요약</label>
+                <textarea id="satisfaction" rows="5" placeholder="평균점수, 응답 수, 주요 피드백"></textarea>
+            </div>
+            <div class="field">
+                <label>성과·역량 매핑</label>
+                <textarea id="competency" rows="5" placeholder="성과지표 달성도, 역량영역 매핑"></textarea>
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px">
+            <div class="field">
+                <label>특이사항</label>
+                <textarea id="issues" rows="4" placeholder="문제 발생/리스크/대응"></textarea>
+            </div>
+            <div class="field">
+                <label>향후 개선 방안</label>
+                <textarea id="improve" rows="4" placeholder="프로세스/콘텐츠/운영 개선점"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="card" style="margin-top:12px">
+        <h2>참가/이수 통계</h2>
+        <table aria-describedby="statsHelp">
+            <thead><tr>
+                <th>구분</th><th>인원</th><th>비고</th>
+            </tr></thead>
+            <tbody id="statTbody">
+            <tr><td>신청</td><td><input type="number" id="stApply" value="0" /></td><td></td></tr>
+            <tr><td>참석</td><td><input type="number" id="stAttend" value="0" /></td><td></td></tr>
+            <tr><td>이수</td><td><input type="number" id="stComplete" value="0" /></td><td></td></tr>
+            <tr><td>미이수</td><td><input type="number" id="stFail" value="0" /></td><td></td></tr>
+            </tbody>
+        </table>
+        <div id="statsHelp" class="help">※ ‘검색’ 시 KPI에서 자동 채움. 필요 시 편집 후 저장 가능.</div>
+    </div>
+
+    <!-- Budget -->
+    <div class="card" style="margin-top:12px">
+        <h2>예산 사용 내역</h2>
+        <table>
+            <thead><tr><th>항목</th><th>금액(원)</th><th>메모</th><th style="width:70px">삭제</th></tr></thead>
+            <tbody id="budgetTbody"></tbody>
+        </table>
+        <div class="stack" style="margin-top:10px">
+            <button id="btnAddBudget" class="btn">+ 항목 추가</button>
+            <div class="help">총액: <b id="budgetSum">0</b> 원</div>
+        </div>
+    </div>
+
+    <!-- Files -->
+    <div class="card" style="margin-top:12px">
+        <h2>첨부</h2>
+        <div class="grid-2">
+            <div>
+                <div class="field">
+                    <label>증빙 파일(문서)</label>
+                    <div class="uploader" id="docDrop">
+                        <input id="docInput" type="file" multiple hidden />
+                        <p>여기로 파일 드롭 또는 <button id="btnDocPick" class="btn">파일 선택</button></p>
+                        <div class="help">pdf, xlsx, docx 등 (최대 10개)</div>
+                    </div>
+                    <ul id="docList" class="help" style="margin-top:8px"></ul>
+                </div>
+            </div>
+            <div>
+                <div class="field">
+                    <label>사진(갤러리)</label>
+                    <div class="uploader" id="imgDrop">
+                        <input id="imgInput" type="file" accept="image/*" multiple hidden />
+                        <p>여기로 이미지 드롭 또는 <button id="btnImgPick" class="btn">이미지 선택</button></p>
+                        <div class="help">jpg, png (최대 12장)</div>
+                    </div>
+                    <div class="thumbs" id="thumbs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="footer">
+        <button id="btnPreview" class="btn ghost">미리보기</button>
+        <button id="btnExport" class="btn">엑셀 다운로드</button>
+        <div style="flex:1"></div>
+        <button id="btnDelete" class="btn err">삭제</button>
+        <button id="btnSave" class="btn">임시저장</button>
+        <button id="btnSubmit" class="btn ok">제출(승인요청)</button>
+    </div>
+</div>
+
+<!-- Program Finder Modal -->
+<div id="modalProg" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalProgTitle">
+    <div class="panel">
+        <div class="head">
+            <h2 id="modalProgTitle">프로그램 찾기</h2>
+            <button class="icon-btn" id="btnCloseProg" aria-label="닫기">✕</button>
+        </div>
+        <div class="body">
+            <div class="stack">
+                <input id="progQuery" type="text" placeholder="프로그램명 검색" style="flex:1" />
+                <button id="btnProgSearch" class="btn pri">검색</button>
+            </div>
+            <table style="margin-top:12px">
+                <thead><tr><th>ID</th><th>프로그램명</th><th>부서</th><th>기간</th><th>선택</th></tr></thead>
+                <tbody id="progTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div id="modalPreview" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalPreviewTitle">
+    <div class="panel">
+        <div class="head">
+            <h2 id="modalPreviewTitle">미리보기</h2>
+            <button class="icon-btn" id="btnClosePreview" aria-label="닫기">✕</button>
+        </div>
+        <div class="body" id="previewBody"></div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+<script>
+    /* ===== Config & State ===== */
+    const API = {
+        base: '', // 서버 루트. 배포 시 e.g. '/api'
+        form:   (p,s)=> `/ops/reports/form?progId=${p||''}&schdId=${s||''}`,
+        stats:  (p,s)=> `/ops/reports/stats?progId=${p||''}&schdId=${s||''}`,
+        save:   `/ops/reports`,
+        submit: `/ops/reports/submit`,
+        upload: r => `/ops/reports/${r}/files`,
+        export: (p,s)=> `/ops/reports/export?progId=${p||''}&schdId=${s||''}`
+    };
+
+    const state = {
+        programId: null,
+        scheduleId: null,
+        reportId: null,
+        docs: [], // {name,size,file}
+        images: [] // {url,file}
+    };
+
+    /* ===== Dummy Data (fallback without server) ===== */
+    const DUMMY = {
+        programs: [
+            {id:123, title:'진로캠프', deptName:'비교과센터', period:'2025-05-01 ~ 2025-05-31',
+                schedules:[
+                    {id:9001, name:'1회차(05-10 10:00)'},
+                    {id:9002, name:'2회차(05-24 14:00)'}
+                ]},
+            {id:456, title:'리더십 워크숍', deptName:'학생처', period:'2025-06-10 ~ 2025-06-30',
+                schedules:[{id:9101, name:'1회차(06-15 10:00)'}]},
+        ],
+        kpi: (progId, schdId)=>({
+            apply: 80, attend: 65, complete: 60, survey: 58, rating: 4.5, mileage: 6000
+        }),
+        form: (prog)=>({
+            title: prog?.title || '', dept: prog?.deptName || '', period: prog?.period || '',
+            runPlace:'오프라인 / 공학관 101호', contact:'010-1234-5678 / ops@univ.ac.kr',
+            overview:'프로그램 목적과 주요 활동을 요약합니다.',
+            resultSummary:'총 65명 참석, 60명 이수. 조별 활동과 발표 진행.',
+            satisfaction:'평균 4.5/5, 긍/부정 피드백 요약.',
+            competency:'의사소통/문제해결 역량과 매핑.',
+            issues:'장비 세팅 지연 발생, 예비 장비 필요.',
+            improve:'사전 리허설 강화, 질문시간 확보.'
+        })
+    };
+
+    /* ===== Utilities ===== */
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    function toast(msg, type='ok', ms=2200){
+        const box = document.createElement('div');
+        box.className = `toast ${type}`; box.textContent = msg;
+        $('#toastWrap').appendChild(box);
+        setTimeout(()=>{ box.remove(); }, ms);
+    }
+    function fmtNumber(n){return Number(n||0).toLocaleString('ko-KR');}
+
+    /* ===== Program Finder Modal ===== */
+    const modalProg = $('#modalProg');
+    $('#btnFindProg').addEventListener('click', ()=> { openProgModal(); });
+    $('#btnCloseProg').addEventListener('click', ()=> modalProg.classList.remove('open'));
+    $('#btnProgSearch').addEventListener('click', ()=> renderProgTable($('#progQuery').value.trim()));
+
+    function openProgModal(){
+        renderProgTable('');
+        modalProg.classList.add('open');
+    }
+    function renderProgTable(q){
+        const tbody = $('#progTable'); tbody.innerHTML='';
+        const rows = DUMMY.programs.filter(p=>!q || p.title.includes(q));
+        rows.forEach(p=>{
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+      <td>${p.id}</td>
+      <td>${p.title}</td>
+      <td>${p.deptName}</td>
+      <td>${p.period}</td>
+      <td><button class="btn pri" data-pid="${p.id}">선택</button></td>`;
+            tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('button').forEach(b=>{
+            b.addEventListener('click', (e)=>{
+                const pid = Number(e.currentTarget.dataset.pid);
+                const prog = DUMMY.programs.find(x=>x.id===pid);
+                state.programId = pid;
+                $('#prog').value = `${prog.id} - ${prog.title}`;
+                // 회차 select 채우기
+                const sel = $('#schd'); sel.innerHTML='<option value="">회차 선택</option>';
+                prog.schedules.forEach(s=>{
+                    const opt = document.createElement('option'); opt.value=s.id; opt.textContent=s.name; sel.appendChild(opt);
+                });
+                modalProg.classList.remove('open');
+                toast('프로그램이 선택되었습니다.');
+            });
+        });
+    }
+
+    /* ===== Search / Load KPI & Form ===== */
+    $('#btnSearch').addEventListener('click', async ()=>{
+        const pTxt = $('#prog').value.trim();
+        if(!state.programId){
+            // 숫자 ID 직접 입력 허용
+            const idFromText = /^\d+$/.test(pTxt) ? Number(pTxt) : null;
+            if(idFromText) state.programId = idFromText;
+        }
+        state.scheduleId = $('#schd').value || null;
+
+        if(!state.programId){ toast('프로그램을 선택하세요.', 'warn'); return; }
+
+        // Load KPI (dummy)
+        const k = DUMMY.kpi(state.programId, state.scheduleId);
+        $('#kpiApply').textContent=fmtNumber(k.apply);
+        $('#kpiAttend').textContent=fmtNumber(k.attend);
+        $('#kpiComplete').textContent=fmtNumber(k.complete);
+        $('#kpiSurvey').textContent=fmtNumber(k.survey);
+        $('#kpiRating').textContent=k.rating?.toFixed(1);
+        $('#kpiMileage').textContent=fmtNumber(k.mileage);
+
+        // Fill stats table
+        $('#stApply').value=k.apply; $('#stAttend').value=k.attend; $('#stComplete').value=k.complete;
+        $('#stFail').value=Math.max(0,k.attend - k.complete);
+
+        // Load form (dummy)
+        const prog = DUMMY.programs.find(x=>x.id===state.programId);
+        const f = DUMMY.form(prog);
+        $('#title').value=f.title; $('#dept').value=f.dept; $('#period').value=f.period;
+        $('#runPlace').value=f.runPlace; $('#contact').value=f.contact;
+        $('#overview').value=f.overview; $('#resultSummary').value=f.resultSummary;
+        $('#satisfaction').value=f.satisfaction; $('#competency').value=f.competency;
+        $('#issues').value=f.issues; $('#improve').value=f.improve;
+
+        toast('검색 완료: KPI 및 기본정보가 채워졌습니다.');
+    });
+    $('#btnReset').addEventListener('click', ()=>{
+        $$('input, select, textarea').forEach(el=>{
+            if(['btn','button','file'].includes(el.type)) return;
+            if(el.id==='status') el.value='';
+            else if(el.tagName==='SELECT') el.selectedIndex=0;
+            else el.value='';
+        });
+        $('#thumbs').innerHTML=''; $('#docList').innerHTML='';
+        state.programId=null; state.scheduleId=null; state.reportId=null; state.docs=[]; state.images=[];
+        $$('#kpiApply,#kpiAttend,#kpiComplete,#kpiSurvey,#kpiRating,#kpiMileage').forEach(n=>n.textContent='-');
+        toast('초기화 되었습니다.');
+    });
+
+    /* ===== Budget ===== */
+    function addBudgetRow(item={name:'', amt:0, memo:''}){
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+    <td><input type="text" class="bd-name" value="${item.name||''}"></td>
+    <td><input type="number" class="bd-amt" value="${item.amt||0}"></td>
+    <td><input type="text" class="bd-memo" value="${item.memo||''}"></td>
+    <td><button class="btn err btn-del">삭제</button></td>`;
+        $('#budgetTbody').appendChild(tr);
+        tr.querySelector('.btn-del').addEventListener('click', ()=>{ tr.remove(); calcBudget(); });
+        tr.querySelector('.bd-amt').addEventListener('input', calcBudget);
+        calcBudget();
+    }
+    function calcBudget(){
+        const sum = $$('#budgetTbody .bd-amt').reduce((a,el)=>a + Number(el.value||0), 0);
+        $('#budgetSum').textContent = fmtNumber(sum);
+    }
+    $('#btnAddBudget').addEventListener('click', ()=> addBudgetRow());
+
+    /* ===== Files: Docs ===== */
+    $('#btnDocPick').addEventListener('click', ()=> $('#docInput').click());
+    $('#docInput').addEventListener('change', e=> handleDocs(e.target.files));
+    $('#docDrop').addEventListener('dragover', e=>{e.preventDefault();});
+    $('#docDrop').addEventListener('drop', e=>{e.preventDefault(); handleDocs(e.dataTransfer.files);});
+    function handleDocs(files){
+        const ul = $('#docList');
+        [...files].forEach(f=>{
+            if(state.docs.length>=10){ toast('문서는 최대 10개까지 가능합니다.','warn'); return; }
+            state.docs.push({name:f.name,size:f.size,file:f});
+            const li = document.createElement('li');
+            li.textContent = `• ${f.name} (${fmtNumber(f.size)} bytes)`;
+            ul.appendChild(li);
+        });
+    }
+
+    /* ===== Files: Images ===== */
+    $('#btnImgPick').addEventListener('click', ()=> $('#imgInput').click());
+    $('#imgInput').addEventListener('change', e=> handleImages(e.target.files));
+    $('#imgDrop').addEventListener('dragover', e=>{e.preventDefault();});
+    $('#imgDrop').addEventListener('drop', e=>{e.preventDefault(); handleImages(e.dataTransfer.files);});
+    function handleImages(files){
+        const wrap = $('#thumbs');
+        [...files].forEach(f=>{
+            if(state.images.length>=12){ toast('이미지는 최대 12장까지 가능합니다.','warn'); return; }
+            const url = URL.createObjectURL(f);
+            state.images.push({url,file:f});
+            const box = document.createElement('div');
+            box.className='thumb';
+            box.innerHTML=`<img src="${url}" alt="첨부 이미지 미리보기"/><button title="삭제">✕</button>`;
+            box.querySelector('button').addEventListener('click', ()=>{
+                URL.revokeObjectURL(url); box.remove();
+                state.images = state.images.filter(x=>x.url!==url);
+            });
+            wrap.appendChild(box);
+        });
+    }
+
+    /* ===== Preview ===== */
+    const modalPreview = $('#modalPreview');
+    $('#btnPreview').addEventListener('click', ()=>{
+        const html = `
+    <div style="font-size:15px;line-height:1.6">
+      <h3 style="margin:0 0 8px">[${$('#title').value||'-'}] 결과보고서</h3>
+      <p class="muted">${$('#period').value||'-'} / ${$('#dept').value||'-'} / ${$('#runPlace').value||'-'}</p>
+      <hr/>
+      <h4>활동 개요</h4><p>${nl2br($('#overview').value)}</p>
+      <h4>운영 결과</h4><p>${nl2br($('#resultSummary').value)}</p>
+      <h4>만족도 요약</h4><p>${nl2br($('#satisfaction').value)}</p>
+      <h4>성과·역량 매핑</h4><p>${nl2br($('#competency').value)}</p>
+      <h4>특이사항</h4><p>${nl2br($('#issues').value)}</p>
+      <h4>향후 개선</h4><p>${nl2br($('#improve').value)}</p>
+      <h4>참가/이수 통계</h4>
+      <ul>
+        <li>신청 ${$('#stApply').value}명, 참석 ${$('#stAttend').value}명, 이수 ${$('#stComplete').value}명, 미이수 ${$('#stFail').value}명</li>
+      </ul>
+      <h4>예산 합계</h4><p>${$('#budgetSum').textContent} 원</p>
+    </div>`;
+        $('#previewBody').innerHTML = html;
+        modalPreview.classList.add('open');
+    });
+    $('#btnClosePreview').addEventListener('click', ()=> modalPreview.classList.remove('open'));
+    function nl2br(t){return (t||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replace(/\n/g,'<br>')}
+
+    /* ===== Save / Submit / Delete / Export ===== */
+    function collectPayload(){
+        return {
+            programId: state.programId,
+            scheduleId: state.scheduleId,
+            title: $('#title').value, dept: $('#dept').value, period: $('#period').value,
+            runPlace: $('#runPlace').value, contact: $('#contact').value,
+            body: {
+                overview: $('#overview').value,
+                resultSummary: $('#resultSummary').value,
+                satisfaction: $('#satisfaction').value,
+                competency: $('#competency').value,
+                issues: $('#issues').value,
+                improve: $('#improve').value
+            },
+            stats: {
+                apply: Number($('#stApply').value||0),
+                attend: Number($('#stAttend').value||0),
+                complete: Number($('#stComplete').value||0),
+                fail: Number($('#stFail').value||0)
+            },
+            budget: $$('#budgetTbody tr').map(tr=>({
+                name: tr.querySelector('.bd-name').value,
+                amt: Number(tr.querySelector('.bd-amt').value||0),
+                memo: tr.querySelector('.bd-memo').value
+            }))
+        };
+    }
+    async function fakePost(url, payload){
+        // 데모용: 성공 응답 모킹
+        await new Promise(r=>setTimeout(r, 350));
+        return {ok:true, json: async()=>({reportId: state.reportId || 7001})};
+    }
+    $('#btnSave').addEventListener('click', async ()=>{
+        if(!state.programId){ toast('프로그램을 먼저 선택하세요.','warn'); return; }
+        const res = await fakePost(API.save, collectPayload());
+        if(res.ok){ const data = await res.json(); state.reportId = data.reportId; toast('임시저장 완료'); }
+        else toast('저장 실패','err');
+    });
+    $('#btnSubmit').addEventListener('click', async ()=>{
+        if(!state.programId){ toast('프로그램을 먼저 선택하세요.','warn'); return; }
+        const res = await fakePost(API.submit, {...collectPayload(), reportId: state.reportId});
+        if(res.ok){ toast('제출(승인요청) 되었습니다.'); } else toast('제출 실패','err');
+    });
+    $('#btnDelete').addEventListener('click', ()=>{
+        if(!confirm('보고서를 삭제하시겠습니까?')) return;
+        // 데모: 상태만 초기화
+        state.reportId=null; toast('삭제되었습니다.');
+    });
+    $('#btnExport').addEventListener('click', ()=>{
+        if(!state.programId){ toast('프로그램을 먼저 선택하세요.','warn'); return; }
+        // 실제에선 location.href = API.export(...)
+        toast('엑셀 다운로드를 시작합니다.');
+    });
+
+    /* ===== Init ===== */
+    function init(){
+        // 예시 예산 행 1개
+        addBudgetRow({name:'다과', amt:50000, memo:'물/간식'});
+        addBudgetRow({name:'강사료', amt:200000, memo:'2시간'});
+    }
+    init();
+</script>
+</body>
+</html>

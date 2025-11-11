@@ -17,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Column(name = "student_num", nullable = false)
     private Integer studentNum;
@@ -95,6 +95,10 @@ public class User {
             this.locked = true;
             this.lockedUntil = LocalDateTime.now().plusMinutes(30);
         }
+    }
+
+    public Long getId() {
+        return userId;
     }
 
     public boolean isAccountLocked() {
