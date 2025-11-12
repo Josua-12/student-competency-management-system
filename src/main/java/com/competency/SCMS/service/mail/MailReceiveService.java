@@ -35,6 +35,11 @@ public class MailReceiveService {
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
 
+    private volatile boolean isPollingActive = false;
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newSingleThreadScheduledExecutor();
+
     @Value("${mail.receive.email}")
     private String receiverEmail;
 

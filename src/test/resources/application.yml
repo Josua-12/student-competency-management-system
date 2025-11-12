@@ -1,8 +1,4 @@
 spring:
-  profiles:
-    active: dev
-    include: jwt, gmail
-
   datasource:
     url: jdbc:mysql://localhost:3306/student_competency?allowPublicKeyRetrieval=true&useSSL=false
     username: root
@@ -10,18 +6,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop # 테스트 시작 시 테이블 생성, 종료 시 삭제
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect  # Test 하기 위해 추가
+        dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
-
-server:
-  port: 8080
-
-app:
-  default-profile-image: /images/default-profile.png
 
 logging:
   file:
@@ -30,3 +20,6 @@ logging:
     rollingpolicy:
       max-history: 7  # 7일 이상된 로그 삭제
       max-file-size: 10MB   # 파일당 최대 10MB
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
