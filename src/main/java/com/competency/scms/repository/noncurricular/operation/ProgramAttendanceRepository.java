@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.*;
 
-// src/main/java/com/competency/SCMS/repository/noncurricular/operation/ProgramAttendanceRepository.java
+// src/main/java/com/competency/scms/repository/noncurricular/operation/ProgramAttendanceRepository.java
 
 public interface ProgramAttendanceRepository extends JpaRepository<ProgramAttendance, Long> {
 

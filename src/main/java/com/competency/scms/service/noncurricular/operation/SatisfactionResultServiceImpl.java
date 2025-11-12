@@ -294,7 +294,7 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
 
         // 응답률 (예: ProgramAttendance의 PRESENT 수 기준)
         try {
-            String qAttend = "select count(a) from ProgramAttendance a where a.status = com.competency.SCMS.domain.noncurricular.operation.AttendanceStatus.PRESENT"
+            String qAttend = "select count(a) from ProgramAttendance a where a.status = com.competency.scms.domain.noncurricular.operation.AttendanceStatus.PRESENT"
                     + (c.getProgramId()!=null ? " and a.schedule.program.programId = :pid" : "");
             Map<String,Object> p2 = new HashMap<>();
             if (c.getProgramId()!=null) p2.put("pid", c.getProgramId());

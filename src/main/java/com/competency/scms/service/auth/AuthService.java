@@ -13,8 +13,8 @@ import com.competency.scms.exception.PhoneExpiredException;
 import com.competency.scms.exception.PhoneNotVerifiedException;
 import com.competency.scms.exception.UserNotFoundException;
 import com.competency.scms.repository.user.LoginHistoryRepository;
+import com.competency.scms.repository.user.PhoneVerificationRepository;
 import com.competency.scms.repository.user.UserRepository;
-import com.competency.scms.repository.verification.PhoneVerificationRepo;
 import com.competency.scms.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final LoginHistoryRepository loginHistoryRepository;
-    private final PhoneVerificationRepo phoneVerificationRepository;
+    private final PhoneVerificationRepository phoneVerificationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
