@@ -9,9 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -46,25 +46,25 @@ class CounselingControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Mock
+    @MockBean
     private CounselingReservationService reservationService;
 
-    @Mock
+    @MockBean
     private CounselingRecordService recordService;
 
-    @Mock
+    @MockBean
     private CounselingHistoryService historyService;
 
-    @Mock
+    @MockBean
     private CounselingManagementService managementService;
 
-    @Mock
+    @MockBean
     private CounselingSatisfactionService satisfactionService;
 
-    @Mock
+    @MockBean
     private CounselingStatisticsService statisticsService;
 
-    @Mock
+    @MockBean
     private CounselingScheduleService scheduleService;
 
     private User studentUser;
@@ -117,7 +117,7 @@ class CounselingControllerTest {
 
 
     @Test
-    @DisplayName("학생 상담 메인 페이지 조회")
+    @DisplayName("테스트1 - 학생 상담 메인 페이지 조회")
     @WithMockUser(roles = "STUDENT")
     void studentCounselingMain() throws Exception {
         mockMvc.perform(get("/counseling/student"))
@@ -126,7 +126,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("학생 상담 신청 현황 조회")
+    @DisplayName("테스트2 - 학생 상담 신청 현황 조회")
     @WithMockUser(roles = "STUDENT")
     void studentCounselingStatus() throws Exception {
         mockMvc.perform(get("/counseling/student/status"))
@@ -135,7 +135,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 메인 페이지 조회")
+    @DisplayName("테스트3 - 상담사 메인 페이지 조회")
     @WithMockUser(roles = "COUNSELOR")
     void counselorMain() throws Exception {
         mockMvc.perform(get("/counseling/counselor"))
@@ -144,7 +144,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 일정 관리 페이지 조회")
+    @DisplayName("테스트4 - 상담사 일정 관리 페이지 조회")
     @WithMockUser(roles = "COUNSELOR")
     void counselorSchedule() throws Exception {
         mockMvc.perform(get("/counseling/counselor/schedule"))
@@ -153,7 +153,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 예약 승인 관리 페이지 조회")
+    @DisplayName("테스트5 - 상담사 예약 승인 관리 페이지 조회")
     @WithMockUser(roles = "COUNSELOR")
     void counselorReservations() throws Exception {
         mockMvc.perform(get("/counseling/counselor/reservations"))
@@ -162,7 +162,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 상담일지 관리 페이지 조회")
+    @DisplayName("테스트6 - 상담사 상담일지 관리 페이지 조회")
     @WithMockUser(roles = "COUNSELOR")
     void counselorRecords() throws Exception {
         mockMvc.perform(get("/counseling/counselor/records"))
@@ -171,7 +171,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 상담 이력 조회 페이지")
+    @DisplayName("테스트7 - 상담사 상담 이력 조회 페이지")
     @WithMockUser(roles = "COUNSELOR")
     void counselorHistory() throws Exception {
         mockMvc.perform(get("/counseling/counselor/history"))
@@ -180,7 +180,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 만족도 조회 페이지")
+    @DisplayName("테스트8 - 상담사 만족도 조회 페이지")
     @WithMockUser(roles = "COUNSELOR")
     void counselorSatisfaction() throws Exception {
         mockMvc.perform(get("/counseling/counselor/satisfaction"))
@@ -189,7 +189,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("관리자 메인 페이지 조회")
+    @DisplayName("테스트9 - 관리자 메인 페이지 조회")
     @WithMockUser(roles = "ADMIN")
     void adminMain() throws Exception {
         mockMvc.perform(get("/counseling/admin"))
@@ -198,7 +198,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("관리자 상담 승인 관리 페이지 조회")
+    @DisplayName("테스트10 - 관리자 상담 승인 관리 페이지 조회")
     @WithMockUser(roles = "ADMIN")
     void adminApprovals() throws Exception {
         mockMvc.perform(get("/counseling/admin/approvals"))
@@ -207,7 +207,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("관리자 상담 통계 페이지 조회")
+    @DisplayName("테스트11 - 관리자 상담 통계 페이지 조회")
     @WithMockUser(roles = "ADMIN")
     void adminStatistics() throws Exception {
         mockMvc.perform(get("/counseling/admin/statistics"))
@@ -216,7 +216,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("관리자 상담 기초 관리 페이지 조회")
+    @DisplayName("테스트12 - 관리자 상담 기초 관리 페이지 조회")
     @WithMockUser(roles = "ADMIN")
     void adminSettings() throws Exception {
         mockMvc.perform(get("/counseling/admin/settings"))
@@ -225,7 +225,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 예약 등록")
+    @DisplayName("테스트13 - 상담 예약 등록")
     @WithMockUser(roles = "STUDENT")
     void createReservation() throws Exception {
         given(reservationService.createReservation(any(), any())).willReturn(1L);
@@ -240,7 +240,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 예약 목록 조회")
+    @DisplayName("테스트14 - 상담 예약 목록 조회")
     @WithMockUser(roles = "STUDENT")
     void getMyReservations() throws Exception {
         Page<CounselingReservationDto.ListResponse> page = new PageImpl<>(List.of());
@@ -252,7 +252,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 예약 상세 조회")
+    @DisplayName("테스트15 - 상담 예약 상세 조회")
     @WithMockUser(roles = "STUDENT")
     void getReservationDetail() throws Exception {
         given(reservationService.getReservationDetail(anyLong(), any()))
@@ -264,7 +264,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 예약 취소")
+    @DisplayName("테스트16 - 상담 예약 취소")
     @WithMockUser(roles = "STUDENT")
     void cancelReservation() throws Exception {
         mockMvc.perform(post("/api/counseling/reservations/1/cancel")
@@ -278,7 +278,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 승인")
+    @DisplayName("테스트17 - 상담 승인")
     @WithMockUser(roles = "COUNSELOR")
     void approveReservation() throws Exception {
         mockMvc.perform(post("/api/counseling/reservations/1/approve")
@@ -292,7 +292,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 거부")
+    @DisplayName("테스트18 - 상담 거부")
     @WithMockUser(roles = "COUNSELOR")
     void rejectReservation() throws Exception {
         mockMvc.perform(post("/api/counseling/reservations/1/reject")
@@ -305,7 +305,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("배정된 상담 일정 조회")
+    @DisplayName("테스트19 - 배정된 상담 일정 조회")
     @WithMockUser(roles = "COUNSELOR")
     void getAssignedReservations() throws Exception {
         Page<CounselingReservationDto.ListResponse> page = new PageImpl<>(List.of());
@@ -317,7 +317,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담일지 작성")
+    @DisplayName("테스트20 - 상담일지 작성")
     @WithMockUser(roles = "COUNSELOR")
     void createRecord() throws Exception {
         given(recordService.createRecord(any(), any())).willReturn(1L);
@@ -332,7 +332,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담일지 수정")
+    @DisplayName("테스트21 - 상담일지 수정")
     @WithMockUser(roles = "COUNSELOR")
     void updateRecord() throws Exception {
         mockMvc.perform(put("/api/counseling/records/1")
@@ -346,7 +346,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담일지 목록 조회")
+    @DisplayName("테스트22 - 상담일지 목록 조회")
     @WithMockUser(roles = "COUNSELOR")
     void getRecordList() throws Exception {
         Page<CounselingRecordDto.ListResponse> page = new PageImpl<>(List.of());
@@ -358,7 +358,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담일지 상세 조회")
+    @DisplayName("테스트23 - 상담일지 상세 조회")
     @WithMockUser(roles = "COUNSELOR")
     void getRecordDetail() throws Exception {
         given(recordService.getRecordDetail(anyLong(), any()))
@@ -370,7 +370,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("전체 상담 이력 조회")
+    @DisplayName("테스트24 - 전체 상담 이력 조회")
     @WithMockUser(roles = "ADMIN")
     void getAllHistory() throws Exception {
         Page<CounselingHistoryDto.HistoryResponse> page = new PageImpl<>(List.of());
@@ -382,7 +382,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사별 상담 이력 조회")
+    @DisplayName("테스트25 - 상담사별 상담 이력 조회")
     @WithMockUser(roles = "COUNSELOR")
     void getCounselorHistory() throws Exception {
         Page<CounselingHistoryDto.HistoryResponse> page = new PageImpl<>(List.of());
@@ -394,7 +394,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담사 본인 담당 상담 현황")
+    @DisplayName("테스트26 - 상담사 본인 담당 상담 현황")
     @WithMockUser(roles = "COUNSELOR")
     void getCounselorStatus() throws Exception {
         given(historyService.getCounselorStatus(any()))
@@ -406,7 +406,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담분류 생성")
+    @DisplayName("테스트27 - 상담분류 생성")
     @WithMockUser(roles = "ADMIN")
     void createCategory() throws Exception {
         given(managementService.createCategory(any())).willReturn(1L);
@@ -420,7 +420,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담분류 수정")
+    @DisplayName("테스트28 - 상담분류 수정")
     @WithMockUser(roles = "ADMIN")
     void updateCategory() throws Exception {
         mockMvc.perform(put("/api/counseling/management/categories/1")
@@ -433,7 +433,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담분류 삭제")
+    @DisplayName("테스트29 - 상담분류 삭제")
     @WithMockUser(roles = "ADMIN")
     void deleteCategory() throws Exception {
         mockMvc.perform(delete("/api/counseling/management/categories/1")
@@ -444,7 +444,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담분류 목록 조회")
+    @DisplayName("테스트30 - 상담분류 목록 조회")
     @WithMockUser(roles = "ADMIN")
     void getAllCategories() throws Exception {
         given(managementService.getAllCategories()).willReturn(List.of());
@@ -454,7 +454,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담원 생성")
+    @DisplayName("테스트31 - 상담원 생성")
     @WithMockUser(roles = "ADMIN")
     void createCounselor() throws Exception {
         mockMvc.perform(post("/api/counseling/management/counselors")
@@ -467,7 +467,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담원 수정")
+    @DisplayName("테스트32 - 상담원 수정")
     @WithMockUser(roles = "ADMIN")
     void updateCounselor() throws Exception {
         mockMvc.perform(put("/api/counseling/management/counselors/1")
@@ -480,7 +480,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담원 삭제")
+    @DisplayName("테스트33 - 상담원 삭제")
     @WithMockUser(roles = "ADMIN")
     void deleteCounselor() throws Exception {
         mockMvc.perform(delete("/api/counseling/management/counselors/1")
@@ -491,7 +491,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담원 목록 조회")
+    @DisplayName("테스트34 - 상담원 목록 조회")
     @WithMockUser(roles = "ADMIN")
     void getAllCounselors() throws Exception {
         Page<CounselingManagementDto.CounselorResponse> page = new PageImpl<>(List.of());
@@ -502,7 +502,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("만족도 문항 생성")
+    @DisplayName("테스트35 - 만족도 문항 생성")
     @WithMockUser(roles = "ADMIN")
     void createQuestion() throws Exception {
         given(managementService.createQuestion(any())).willReturn(1L);
@@ -516,7 +516,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("만족도 문항 수정")
+    @DisplayName("테스트36 - 만족도 문항 수정")
     @WithMockUser(roles = "ADMIN")
     void updateQuestion() throws Exception {
         mockMvc.perform(put("/api/counseling/management/questions/1")
@@ -529,7 +529,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("만족도 문항 삭제")
+    @DisplayName("테스트37 - 만족도 문항 삭제")
     @WithMockUser(roles = "ADMIN")
     void deleteQuestion() throws Exception {
         mockMvc.perform(delete("/api/counseling/management/questions/1")
@@ -540,7 +540,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("만족도 문항 목록 조회")
+    @DisplayName("테스트38 - 만족도 문항 목록 조회")
     @WithMockUser(roles = "ADMIN")
     void getAllQuestions() throws Exception {
         given(managementService.getAllQuestions()).willReturn(List.of());
@@ -550,7 +550,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담만족도 제출")
+    @DisplayName("테스트39 - 상담만족도 제출")
     @WithMockUser(roles = "STUDENT")
     void submitSatisfaction() throws Exception {
         given(satisfactionService.submitSatisfaction(any(), any())).willReturn(1L);
@@ -565,7 +565,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("만족도 설문 조회")
+    @DisplayName("테스트40 - 만족도 설문 조회")
     @WithMockUser(roles = "STUDENT")
     void getSurvey() throws Exception {
         given(satisfactionService.getSurvey(anyLong(), any()))
@@ -577,7 +577,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담 유형별 통계")
+    @DisplayName("테스트41 - 상담 유형별 통계")
     @WithMockUser(roles = "ADMIN")
     void getTypeStatistics() throws Exception {
         given(statisticsService.getTypeStatistics())
@@ -588,7 +588,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("전체 상담 현황/이력 통계")
+    @DisplayName("테스트42 - 전체 상담 현황/이력 통계")
     @WithMockUser(roles = "ADMIN")
     void getOverallStatistics() throws Exception {
         given(statisticsService.getOverallStatistics())
@@ -599,7 +599,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담만족도 결과 조회")
+    @DisplayName("테스트43 - 상담만족도 결과 조회")
     @WithMockUser(roles = "ADMIN")
     void getSatisfactionResults() throws Exception {
         given(statisticsService.getSatisfactionResults()).willReturn(List.of());
@@ -609,7 +609,7 @@ class CounselingControllerTest {
     }
 
     @Test
-    @DisplayName("상담원별 현황")
+    @DisplayName("테스트44 - 상담원별 현황")
     @WithMockUser(roles = "ADMIN")
     void getCounselorStatistics() throws Exception {
         given(statisticsService.getCounselorStatistics()).willReturn(List.of());

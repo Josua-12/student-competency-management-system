@@ -5,6 +5,8 @@ import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.counsel.CounselingScheduleDto;
 import com.competency.scms.repository.counseling.CounselingScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,5 +64,15 @@ public class CounselingScheduleService {
     private List<CounselingScheduleDto.TimeSlotResponse> convertToTimeSlotResponses(CounselingBaseSchedule schedule) {
         // 구현 필요: 시간대별 응답 변환
         return List.of();
+    }
+
+    // 상담사별 일정 조회 (요일순)
+    public Page<CounselingBaseSchedule> getCounselorSchedulesByDayOfWeek(User counselor, Pageable pageable) {
+        return scheduleRepository.findByCounselorOrderByDayOfWeek(counselor, pageable);
+    }
+
+    // 특정 요일에 예약 가능한 상담사 조회
+    public Page<CounselingBaseSchedule> getAvailableSchedulesByDayOfWeek(DayOfWeek dayOfWeek, Pageable pageable) {
+        return scheduleRepository.findAvailableSchedulesByDayOfWeek(dayOfWeek, pageable);
     }
 }

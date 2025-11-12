@@ -10,22 +10,22 @@ import com.competency.scms.domain.user.User;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
 public interface CounselingScheduleRepository extends JpaRepository<CounselingBaseSchedule, Long> {
 
-    // CNSL-006: 상담사별 일정 조회
+    // CNSL-006: 상담사별 일정 조회 (생성일순)
     Page<CounselingBaseSchedule> findByCounselorOrderByCreatedAtDesc(User counselor, Pageable pageable);
 
     // CNSL-007: 특정 요일의 상담사 일정 조회
     Optional<CounselingBaseSchedule> findByCounselorAndDayOfWeek(User counselor, DayOfWeek dayOfWeek);
 
-    // 기간별 상담사 일정 조회
+    // 상담사별 일정 조회 (요일순)
     @Query("SELECT cs FROM CounselingBaseSchedule cs WHERE cs.counselor = :counselor ORDER BY cs.dayOfWeek ASC")
-    Page<CounselingBaseSchedule> findByCounselorAndScheduleDateBetween(@Param("counselor") User counselor, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
+    Page<CounselingBaseSchedule> findByCounselorOrderByDayOfWeek(@Param("counselor") User counselor, Pageable pageable);
 
     // 특정 요일에 예약 가능한 상담사들 조회
-    Page<CounselingBaseSchedule> findByDayOfWeekAndSlot0910TrueOrSlot1011TrueOrSlot1112TrueOrSlot1314TrueOrSlot1415TrueOrSlot1516TrueOrSlot1617TrueOrSlot1718True(DayOfWeek dayOfWeek, Pageable pageable);
+    @Query("SELECT cs FROM CounselingBaseSchedule cs WHERE cs.dayOfWeek = :dayOfWeek AND (cs.slot0910 = true OR cs.slot1011 = true OR cs.slot1112 = true OR cs.slot1314 = true OR cs.slot1415 = true OR cs.slot1516 = true OR cs.slot1617 = true OR cs.slot1718 = true)")
+    Page<CounselingBaseSchedule> findAvailableSchedulesByDayOfWeek(@Param("dayOfWeek") DayOfWeek dayOfWeek, Pageable pageable);
 }

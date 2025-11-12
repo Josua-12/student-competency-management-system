@@ -467,24 +467,36 @@ public class initDataConfig implements CommandLineRunner {
                 .isSystemDefault(true)
                 .questionType(SatisfactionQuestion.QuestionType.RATING)
                 .displayOrder(1)
+                .isRequired(true)
+                .isActive(true)
                 .build());
 
         SatisfactionQuestion question2 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
                 .questionText("상담을 통해 문제 해결에 도움을 받으셨습니까?")
                 .isSystemDefault(true)
                 .questionType(SatisfactionQuestion.QuestionType.RATING)
-                .displayOrder(2).build());
+                .displayOrder(2)
+                .isRequired(true)
+                .isActive(true)
+                .build());
 
         SatisfactionQuestion question3 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
                 .questionText("추가로 하고 싶은 말씀이 있으신가요?")
                 .isSystemDefault(true)
-                .questionType(SatisfactionQuestion.QuestionType.TEXT)
-                .displayOrder(3).build());
+                .questionType(SatisfactionQuestion.QuestionType.TEXT) //주관식
+                .displayOrder(3)
+                .isRequired(false)
+                .isActive(true)
+                .build());
 
         SatisfactionQuestion question4 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
                 .questionText("향후 선호하는 상담 방식은 무엇입니까?")
                 .questionType(SatisfactionQuestion.QuestionType.MULTIPLE_CHOICE)
-                .displayOrder(4).build());
+                .displayOrder(4)
+                .isSystemDefault(false)
+                .isRequired(false)
+                .isActive(true)
+                .build());
 
         questionOptionRepository.save(QuestionOption.builder()
                 .question(question4).optionText("대면 상담").optionValue(1).displayOrder(1).build());

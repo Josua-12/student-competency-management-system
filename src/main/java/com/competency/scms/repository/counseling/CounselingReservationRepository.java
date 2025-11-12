@@ -7,9 +7,11 @@ import com.competency.scms.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,7 +49,7 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status IN :statuses ORDER BY cr.reservationDate ASC, cr.startTime ASC")
     Page<CounselingReservation> findByCounselorAndStatusIn(@Param("counselor") User counselor, @Param("statuses") List<ReservationStatus> statuses, Pageable pageable);
 
-    // CNSL-018: 상담 유형별 통계
+    // CNSL-018: 상담 유형별 통계     //특정 상태(status)인 상담 예약들을 상담 유형(counselingField)별로 몇 건씩 있는지 세는 통계
     @Query("SELECT cr.counselingField, COUNT(cr) FROM CounselingReservation cr WHERE cr.status = :status GROUP BY cr.counselingField")
     List<Object[]> countByStatusGroupByCounselingField(@Param("status") ReservationStatus status);
 
@@ -62,4 +64,10 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     // 기간별 조회 (통계용)
     @Query("SELECT cr FROM CounselingReservation cr WHERE cr.createdAt BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
     Page<CounselingReservation> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+
+    // 테스트용: createdAt 직접 업데이트
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE counseling_reservations SET created_at = :createdAt WHERE id = :id", nativeQuery = true)
+    void updateCreatedAt(@Param("id") Long id, @Param("createdAt") LocalDateTime createdAt);
 }
