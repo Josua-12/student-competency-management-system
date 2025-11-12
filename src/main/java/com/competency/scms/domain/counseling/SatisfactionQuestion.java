@@ -34,6 +34,7 @@ public class SatisfactionQuestion {
     private String questionText;
     
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isSystemDefault = false; // 시스템 기본 질문 (관리자가 실수로 핵심 질문을 삭제하는 것을 방지)
     
     @Enumerated(EnumType.STRING)
@@ -52,9 +53,11 @@ public class SatisfactionQuestion {
     private Integer displayOrder;
     
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isRequired = true;
     
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isActive = true; // 삭제 대신 비활성화 (기본:활성화)
 
     public boolean isDeleted(){

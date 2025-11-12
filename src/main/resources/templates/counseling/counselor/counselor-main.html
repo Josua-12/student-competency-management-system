@@ -68,7 +68,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             대기중인 예약</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">5건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-clock text-primary" style="font-size: 2rem;"></i>
@@ -85,7 +85,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             오늘 상담</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">3건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
@@ -102,7 +102,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                             이번 달 상담</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">28건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-bar-chart text-info" style="font-size: 2rem;"></i>
@@ -119,7 +119,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                             평균 만족도</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.2/5.0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0/5.0</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
@@ -159,22 +159,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>09:00</td>
-                                                <td>김학생</td>
-                                                <td>진로상담</td>
-                                                <td><span class="badge bg-success">확정</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>11:00</td>
-                                                <td>이학생</td>
-                                                <td>학업상담</td>
-                                                <td><span class="badge bg-success">확정</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td>14:00</td>
-                                                <td>박학생</td>
-                                                <td>심리상담</td>
-                                                <td><span class="badge bg-warning">대기</span></td>
+                                                <td colspan="4" class="text-center">일정이 없습니다.</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -188,30 +173,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 날짜 네비게이션
-        let currentDate = new Date();
-        
-        function updateDateDisplay() {
-            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
-            const dateStr = currentDate.toLocaleDateString('ko-KR', options);
-            document.getElementById('currentDate').textContent = dateStr;
-        }
-        
-        document.getElementById('prevDay').addEventListener('click', function() {
-            currentDate.setDate(currentDate.getDate() - 1);
-            updateDateDisplay();
-            // 여기서 해당 날짜의 일정 데이터를 로드
-        });
-        
-        document.getElementById('nextDay').addEventListener('click', function() {
-            currentDate.setDate(currentDate.getDate() + 1);
-            updateDateDisplay();
-            // 여기서 해당 날짜의 일정 데이터를 로드
-        });
-        
-        // 초기 날짜 표시
-        updateDateDisplay();
-    </script>
+    <script th:src="@{/js/counseling/counselor-main.js}"></script>
 </body>
 </html>
