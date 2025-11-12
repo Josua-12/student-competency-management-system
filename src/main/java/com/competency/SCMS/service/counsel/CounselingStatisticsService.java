@@ -4,7 +4,6 @@ import com.competency.SCMS.domain.counseling.CounselingField;
 import com.competency.SCMS.domain.counseling.ReservationStatus;
 import com.competency.SCMS.dto.counsel.CounselingStatisticsDto;
 import com.competency.SCMS.repository.counseling.CounselingReservationRepository;
-import com.competency.SCMS.repository.counseling.CounselingSatisfactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

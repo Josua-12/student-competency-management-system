@@ -1,5 +1,6 @@
 package com.competency.SCMS.service.auth;
 
+import com.competency.SCMS.domain.user.LoginHistory;
 import com.competency.SCMS.domain.user.User;
 import com.competency.SCMS.domain.user.PhoneVerification;
 import com.competency.SCMS.domain.user.LoginHistory;
@@ -8,10 +9,13 @@ import com.competency.SCMS.dto.user.PasswordResetNewRequestDto;
 import com.competency.SCMS.dto.user.PhoneVerificationResponseDto;
 import com.competency.SCMS.dto.auth.LoginRequestDto;
 import com.competency.SCMS.dto.auth.LoginResponseDto;
+import com.competency.SCMS.exception.InvalidPasswordException;
+import com.competency.SCMS.exception.PhoneExpiredException;
+import com.competency.SCMS.exception.PhoneNotVerifiedException;
+import com.competency.SCMS.exception.UserNotFoundException;
 import com.competency.SCMS.repository.user.LoginHistoryRepository;
 import com.competency.SCMS.repository.user.UserRepository;
 import com.competency.SCMS.repository.verification.PhoneVerificationRepo;
-import com.competency.SCMS.exception.*;
 import com.competency.SCMS.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

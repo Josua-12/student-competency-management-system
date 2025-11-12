@@ -1,6 +1,5 @@
 package com.competency.SCMS.domain.user;
 
-import com.competency.SCMS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -62,6 +61,13 @@ public class PhoneVerification {
 
     @Column(name = "purpose", length = 50)
     private String purpose;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expiredAt);

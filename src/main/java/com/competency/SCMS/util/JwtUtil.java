@@ -1,15 +1,12 @@
 package com.competency.SCMS.util;
 
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.JwtException;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,79 +24,56 @@ public class JwtUtil {
     private long refreshTokenExpiration;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException("JWT secret must be at least 256 bits");
+        }
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * 액세스 토큰 생성
-     */
     public String generateAccessToken(Long userId, String email, String role) {
-        Map<String, Object> claims = new HashMap<>();
+        Map<String,Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("email", email);
         claims.put("role", role);
-
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + accessTokenExpiration);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .setIssuedAt(now)
+                .setExpiration(exp)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    /**
-     * 리프레시 토큰 생성
-     */
     public String generateRefreshToken(Long userId, String email, String role) {
-        Map<String, Object> claims = new HashMap<>();
+        Map<String,Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("email", email);
         claims.put("role", role);
-
+        claims.put("tokenType", "refresh");
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + refreshTokenExpiration);
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(String.valueOf(userId))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(exp)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    /**
-     * 토큰에서 사용자 ID 추출
-     */
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("userId", Long.class);
-    }
-
-    /**
-     * 토큰에서 이메일 추출
-     */
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("email", String.class);
-    }
-
-    /**
-    *  토큰에서 Role 추출
-    */
-    public String getRoleFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("role", String.class);
+    public String generateRefreshToken(String email) {
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + refreshTokenExpiration);
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(exp)
+                .claim("tokenType", "refresh")
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     /**
@@ -107,42 +81,29 @@ public class JwtUtil {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    /**
-     * 토큰 만료 확인
-     */
-    public boolean isTokenExpired(String token) {
-        try {
-            Date expiration = Jwts.parserBuilder()  // ✓ builder() 아닌 parserBuilder() 사용
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getExpiration();
-            return expiration.before(new Date());
-        } catch (JwtException e) {
-            return true;
-        }
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody();
     }
 
-    /**
-     * 토큰 타입 확인
-     */
-    public String getTokenType(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("type", String.class);
+    public String getEmailFromToken(String token) {
+        return parseClaims(token).get("email", String.class);
+    }
+
+    public String getRoleFromToken(String token) {
+        return parseClaims(token).get("role", String.class);
+    }
+
+    public Long getUserIdFromToken(String token) {
+        Object v = parseClaims(token).get("userId");
+        if (v == null) return null;
+        return Long.parseLong(String.valueOf(v));
     }
 }

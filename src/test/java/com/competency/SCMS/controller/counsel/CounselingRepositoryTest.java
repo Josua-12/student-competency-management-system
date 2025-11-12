@@ -187,7 +187,6 @@ public class CounselingRepositoryTest { //@Query문만 검사
 
         // 만족도 2개 생성
         CounselingSatisfaction testSatisfaction = new CounselingSatisfaction();
-        testSatisfaction.setReservation(reservation1);
         testSatisfaction.setStudent(testStudent);
         testSatisfaction.setCounselor(testCounselor);
         counselingSatisfactionRepository.save(testSatisfaction);

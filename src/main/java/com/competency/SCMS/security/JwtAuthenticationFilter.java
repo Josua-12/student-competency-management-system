@@ -3,6 +3,7 @@ package com.competency.SCMS.security;
 import com.competency.SCMS.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,43 +25,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        return uri.startsWith("/auth/")
+                || uri.startsWith("/css/")
+                || uri.startsWith("/js/")
+                || uri.startsWith("/images/")
+                || uri.startsWith("/static/")
+                || "/api/user/login".equals(uri)
+                || "/api/user/refresh".equals(uri);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain chain) throws ServletException, IOException {
         try {
-            String jwt = extractJwtFromRequest(request);
-
-            if (StringUtils.hasText(jwt) && jwtUtil.validateToken(jwt)) {
-                String email = jwtUtil.getEmailFromToken(jwt);
+            String token = resolveToken(request);
+            if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
+                String email = jwtUtil.getEmailFromToken(token);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("[JwtAuthenticationFilter] JWT 인증 성공 - email: {}", email);
+                var auth = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (Exception e) {
-            log.error("[JwtAuthenticationFilter] JWT 처리 중 오류: {}", e.getMessage());
+            log.debug("JWT filter skipped due to: {}", e.getMessage());
         }
-
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 
-    /**
-     * 요청 헤더에서 JWT 추출
-     */
-    private String extractJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_PREFIX.length());
+    private String resolveToken(HttpServletRequest request) {
+        String bearer = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("ACCESS-TOKEN".equals(c.getName())) return c.getValue();
+            }
         }
         return null;
     }

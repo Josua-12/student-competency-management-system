@@ -28,14 +28,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 휴대폰 번호 존재 여부
     boolean existsByPhone(String phone);
 
-    // 이름과 학번으로 사용자 조회 (비밀번호 찾기)
-    @Query("SELECT u FROM User u WHERE u.name = :name AND u.userNum = :userNum AND u.deletedAt IS NULL")
-    Optional<User> findByNameAndUserNum(
-            @Param("name") String name,
-            @Param("userNum") Integer userNum
-    );
+    // 서비스에서 사용하는 파생 메서드(학번 + 이름)
+    Optional<User> findByUserNumAndName(Integer userNum, String name);
 
-    // 이름, 학번, 생년월일로 사용자 조회
+    // 기존 @Query 버전 유지
+    @Query("SELECT u FROM User u WHERE u.name = :name AND u.userNum = :userNum AND u.deletedAt IS NULL")
+    Optional<User> findByNameAndUserNum(@Param("name") String name, @Param("userNum") Integer userNum);
+
     @Query("SELECT u FROM User u WHERE u.name = :name AND u.userNum = :userNum " +
             "AND u.birthDate = :birthDate AND u.deletedAt IS NULL")
     Optional<User> findByNameAndUserNumAndBirthDate(
@@ -57,8 +56,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 일정 기간 동안 생성된 미삭제 사용자 수
     @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt BETWEEN :startDate AND :endDate AND u.deletedAt IS NULL")
-    long countNewUsersInPeriod(
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate
-    );
+    long countNewUsersInPeriod(@Param("startDate") LocalDateTime startDate,
+                               @Param("endDate") LocalDateTime endDate);
 }

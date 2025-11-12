@@ -38,6 +38,7 @@ public enum ErrorCode {
     // ========== 검증 (VALIDATION) ==========
     INVALID_INPUT("VALID-001", "입력값이 올바르지 않습니다."),
     REQUIRED_FIELD_MISSING("VALID-002", "필수 입력값이 누락되었습니다."),
+    INVALID_REQUEST("COMMON-400", "잘못된 요청입니다."),
 
     // ========== 권한 (AUTHORIZATION) ==========
     FORBIDDEN("AUTH-001", "접근 권한이 없습니다."),

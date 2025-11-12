@@ -4,7 +4,7 @@ import com.competency.SCMS.domain.user.PhoneVerification;
 import com.competency.SCMS.domain.user.VerificationStatus;
 import com.competency.SCMS.dto.user.*;
 import com.competency.SCMS.exception.*;
-import com.competency.SCMS.repository.verification.PhoneVerificationRepo;
+import com.competency.SCMS.repository.user.PhoneVerificationRepository;
 import com.competency.SCMS.service.mail.MailReceiveService;
 import com.competency.SCMS.util.PhoneVerificationUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 @Transactional
 public class PhoneVerificationService {
 
-    private final PhoneVerificationRepo phoneVerificationRepo;
+    private final PhoneVerificationRepository phoneVerificationRepo;
     private final PhoneVerificationUtil phoneVerificationUtil;
     private final MailReceiveService mailReceiveService;
 

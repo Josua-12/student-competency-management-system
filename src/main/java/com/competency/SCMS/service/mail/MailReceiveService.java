@@ -1,7 +1,7 @@
 package com.competency.SCMS.service.mail;
 
 import com.competency.SCMS.domain.user.PhoneVerification;
-import com.competency.SCMS.repository.verification.PhoneVerificationRepo;
+import com.competency.SCMS.repository.user.PhoneVerificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +28,12 @@ import java.util.regex.Pattern;
 @Transactional
 public class MailReceiveService {
 
-    private final PhoneVerificationRepo phoneVerificationRepo;
+    private final PhoneVerificationRepository phoneVerificationRepo;
+
+    private volatile boolean isPollingActive = false;
+
+    private final ScheduledExecutorService scheduler =
+            Executors.newSingleThreadScheduledExecutor();
 
     private volatile boolean isPollingActive = false;
 
