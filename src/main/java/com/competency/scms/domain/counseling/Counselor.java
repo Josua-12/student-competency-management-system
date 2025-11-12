@@ -41,6 +41,7 @@ public class Counselor {
     private String specialization;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isActive = true;    // 상담 예약 가능 여부 제어
 
     public boolean isDeleted(){

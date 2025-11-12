@@ -58,7 +58,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             전체 상담 예약</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">156건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-calendar-check text-primary" style="font-size: 2rem;"></i>
@@ -75,7 +75,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                             승인 대기</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">12건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-clock text-warning" style="font-size: 2rem;"></i>
@@ -92,7 +92,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             활성 상담사</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">8명</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0명</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-people text-success" style="font-size: 2rem;"></i>
@@ -109,7 +109,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                             평균 만족도</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.3/5.0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">0/5.0</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-star-fill text-info" style="font-size: 2rem;"></i>
@@ -165,16 +165,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>김학생</td>
-                                                <td>진로상담</td>
-                                                <td>01-15</td>
-                                                <td><a href="#" class="btn btn-sm btn-primary">처리</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td>이학생</td>
-                                                <td>학업상담</td>
-                                                <td>01-14</td>
-                                                <td><a href="#" class="btn btn-sm btn-primary">처리</a></td>
+                                                <td colspan="4" class="text-center">승인 대기 내역이 없습니다.</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -201,16 +192,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>김상담</td>
-                                                <td>진로</td>
-                                                <td>15건</td>
-                                                <td>4.5</td>
-                                            </tr>
-                                            <tr>
-                                                <td>이상담</td>
-                                                <td>학업</td>
-                                                <td>12건</td>
-                                                <td>4.2</td>
+                                                <td colspan="4" class="text-center">상담사 데이터가 없습니다.</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -224,41 +206,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
-    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
-    <script>
-        // 월별 상담 현황 차트
-        const monthlyChart = toastui.Chart.lineChart({
-            el: document.getElementById('monthlyChart'),
-            data: {
-                categories: ['1월', '2월', '3월', '4월', '5월', '6월'],
-                series: [{
-                    name: '상담 건수',
-                    data: [12, 19, 15, 25, 22, 30]
-                }]
-            },
-            options: {
-                chart: { width: 400, height: 200 },
-                series: { spline: true }
-            }
-        });
-
-        // 상담 유형별 분포 차트
-        const typeChart = toastui.Chart.pieChart({
-            el: document.getElementById('typeChart'),
-            data: {
-                categories: ['진로상담', '학업상담', '심리상담', '취업상담'],
-                series: [
-                    { name: '진로상담', data: 30 },
-                    { name: '학업상담', data: 25 },
-                    { name: '심리상담', data: 20 },
-                    { name: '취업상담', data: 25 }
-                ]
-            },
-            options: {
-                chart: { width: 400, height: 200 }
-            }
-        });
-    </script>
+    <script th:src="@{/js/counseling/admin-main.js}"></script>
 </body>
 </html>

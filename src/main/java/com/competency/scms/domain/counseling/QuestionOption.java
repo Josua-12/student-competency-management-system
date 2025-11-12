@@ -49,6 +49,7 @@ public class QuestionOption {
     private Integer displayOrder;
     
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isActive = true;
 
     public boolean isDeleted(){

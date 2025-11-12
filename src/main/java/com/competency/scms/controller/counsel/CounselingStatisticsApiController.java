@@ -42,4 +42,16 @@ public class CounselingStatisticsApiController {
         List<CounselingStatisticsDto.CounselorStatistics> statistics = statisticsService.getCounselorStatistics();
         return ResponseEntity.ok(statistics);
     }
+    
+    // 관리자 대시보드용 전체 통계 조회
+    @GetMapping("/overview")
+    public ResponseEntity<CounselingStatisticsDto.OverallStatistics> getOverview() {
+        return ResponseEntity.ok(statisticsService.getOverallStatistics());
+    }
+    
+    // 관리자 대시보드용 상담사별 통계 조회
+    @GetMapping("/counselors")
+    public ResponseEntity<List<CounselingStatisticsDto.CounselorStatistics>> getCounselors() {
+        return ResponseEntity.ok(statisticsService.getCounselorStatistics());
+    }
 }
