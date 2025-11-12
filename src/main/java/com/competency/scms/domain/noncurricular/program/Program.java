@@ -49,6 +49,7 @@ public class Program extends BaseEntity {
     @Column(nullable = false)
     private Integer maxParticipants;
     private Integer minParticipants;
+    @Builder.Default
     @Column(nullable = false)
     private Integer currentParticipants = 0;
     private String location;
@@ -78,6 +79,7 @@ public class Program extends BaseEntity {
     @Column(name = "organizer_user_id", nullable = false)
     private Long organizerUserId; // 추후 User 엔티티로 교체 가능
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(length = 30, nullable = false)
     private ProgramStatus status = ProgramStatus.DRAFT;
@@ -105,9 +107,11 @@ public class Program extends BaseEntity {
     @Column(name = "location_text", length = 200)
     private String locationText;
 
+    @Builder.Default
     @Column(name = "online_yn", nullable = false)
     private boolean online = false;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean deleted = false;
 
@@ -194,6 +198,7 @@ public class Program extends BaseEntity {
     /**
      * 만족도 설문 필수 여부
      */
+    @Builder.Default
     @Column(name = "survey_required", nullable = false)
     private boolean surveyRequired = false;
 

@@ -31,6 +31,7 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
     private final FileRepository fileRepository;
     private final DepartmentRepository departmentRepository;
     private final ProgramCategoryRepository programCategoryRepository;
+    private final com.competency.scms.repository.user.UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,6 +49,11 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
         Program program = (programId != null)
                 ? programRepository.findById(programId).orElse(new Program())
                 : new Program();
+
+        // 새 프로그램인 경우 필수 필드 초기화
+        if (program.getProgramId() == null) {
+            program.setCurrentParticipants(0);
+        }
 
         mapToEntity(program, dto, false);
         Program saved = programRepository.save(program);
@@ -82,6 +88,33 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
         BasicInfoDto b = req.getBasic();
         OperationDto o = req.getOperation();
 
+        // 0) 필수 필드 설정 (새 프로그램인 경우)
+        if (p.getProgramId() == null) {
+            // title 설정 (name을 title로 매핑)
+            p.setTitle(b.getName());
+            
+            // code 생성 (임시로 타임스탬프 기반 코드 생성)
+            p.setCode("PROG-" + System.currentTimeMillis());
+            
+            // organizerUserId 설정 (임시로 1L, 실제로는 현재 로그인 사용자 ID 사용)
+            p.setOrganizerUserId(1L);
+            
+            // owner 설정 (임시로 ID 1L 사용자 조회, 실제로는 현재 로그인 사용자 사용)
+            com.competency.scms.domain.user.User owner = userRepository.findById(1L)
+                    .orElseThrow(() -> new IllegalArgumentException("Owner user not found"));
+            p.setOwner(owner);
+            
+            // 기본 상태값 설정
+            if (p.getStatus() == null) {
+                p.setStatus(com.competency.scms.domain.noncurricular.program.ProgramStatus.DRAFT);
+            }
+            p.setOnline(false);
+            p.setDeleted(false);
+        } else {
+            // 기존 프로그램 수정 시 title 업데이트
+            p.setTitle(b.getName());
+        }
+
         // 1) 카테고리 enum
         p.setCategory(b.getCategory());
 
@@ -115,6 +148,7 @@ public class ProgramOpenServiceImpl implements ProgramOpenService {
 
         // 정원
         p.setCapacity(b.getCapacity());
+        p.setMaxParticipants(b.getCapacity()); // maxParticipants는 필수 필드
 
         // 자격/역량매핑 리스트 (엔티티에 ElementCollection 필드가 있다면 그대로 대입)
         p.setEligibleGrades(emptyIfNull(b.getEligibleGrades()));
