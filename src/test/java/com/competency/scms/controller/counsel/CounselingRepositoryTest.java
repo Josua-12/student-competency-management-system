@@ -608,7 +608,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
         List<Object[]> result = counselingReservationRepository.countByStatusGroupByCounselingField(ReservationStatus.COMPLETED);
 
         //THEN
-        assertThat(result).hasSize(1);      // counselingField = CARRER 로 한 개
+        assertThat(result).hasSize(1);      // counselingField = CAREER 로 한 개
         assertThat(result.get(0)[0]).isEqualTo(CounselingField.CAREER);
         assertThat(result.get(0)[1]).isEqualTo(2L);
     }
