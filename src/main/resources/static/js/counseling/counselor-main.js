@@ -46,6 +46,10 @@ async function loadTodaySchedule() {
 
 function renderScheduleTable(reservations) {
     const tbody = document.querySelector('table tbody');
+    if (reservations.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">일정이 없습니다.</td></tr>';
+        return;
+    }
     tbody.innerHTML = reservations.map(r => `
         <tr>
             <td>${r.startTime}</td>
