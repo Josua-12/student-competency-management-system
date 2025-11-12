@@ -1,144 +1,109 @@
-/**
- * 공통 유틸리티 및 CSRF 설정
- */
+// 공통 API 유틸
+const Api = (() => {
+    const getAccess = () => localStorage.getItem('accessToken');
+    const getRefresh = () => localStorage.getItem('refreshToken');
+    const setAccess = (t) => localStorage.setItem('accessToken', t);
+    const clearTokens = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+    };
 
-// CSRF 토큰 설정
-document.addEventListener('DOMContentLoaded', function() {
-    const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-    const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-
-    // 모든 AJAX 요청에 사용될 수 있도록 window 객체에 저장
-    if (token && header) {
-        window.CSRF_TOKEN = token;
-        window.CSRF_HEADER = header;
-    }
-});
-
-/**
- * 전역 유틸리티 객체
- */
-window.Utils = {
-    /**
-     * HTML 이스케이프 - XSS 방지
-     */
-    escapeHtml: function(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    },
-
-    /**
-     * 날짜 포맷팅
-     */
-    formatDate: function(dateString, format = 'yyyy.MM.dd') {
-        if (!dateString) return '';
-
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-
-        return format
-            .replace('yyyy', year)
-            .replace('MM', month)
-            .replace('dd', day)
-            .replace('HH', hours)
-            .replace('mm', minutes);
-    },
-
-    /**
-     * CSRF 토큰과 함께 API 호출
-     */
-    apiCall: function(url, options = {}) {
-        const config = {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            }
-        };
-
-        // CSRF 토큰 추가
-        if (window.CSRF_TOKEN && window.CSRF_HEADER) {
-            config.headers[window.CSRF_HEADER] = window.CSRF_TOKEN;
+    // 기본 요청: Authorization 자동 첨부
+    async function request(input, init = {}, retry = true) {
+        const headers = new Headers(init.headers || {});
+        const token = getAccess();
+        if (token) headers.set('Authorization', `Bearer ${token}`);
+        if (!headers.has('Content-Type') && !(init?.body instanceof FormData)) {
+            headers.set('Content-Type', 'application/json');
         }
 
+        const resp = await fetch(input, { ...init, headers });
+
+        // 정상 또는 401 외 상태는 그대로 반환
+        if (resp.status !== 401) return resp;
+
+        // 이미 재시도 했거나 refresh 토큰 없음 -> 그대로 반환
+        if (!retry || !getRefresh()) return resp;
+
+        // 액세스 토큰 갱신 시도
+        const refreshed = await refreshAccessToken();
+        if (!refreshed) return resp;
+
+        // 새 토큰으로 1회 재시도
+        return request(input, init, false);
+    }
+
+    // JSON GET
+    async function getJson(url) {
+        const resp = await request(url, { method: 'GET' });
+        if (!resp.ok) throw await buildError(resp);
+        return resp.json();
+    }
+
+    // JSON POST
+    async function postJson(url, body) {
+        const resp = await request(url, { method: 'POST', body: JSON.stringify(body) });
+        if (!resp.ok) throw await buildError(resp);
+        return resp.json();
+    }
+
+    // 파일 업로드
+    async function upload(url, formData) {
+        const resp = await request(url, { method: 'POST', body: formData, headers: {} });
+        if (!resp.ok) throw await buildError(resp);
+        return resp.json();
+    }
+
+    // 401용: 액세스 토큰 갱신
+    async function refreshAccessToken() {
         try {
-            const response = await fetch(url, config);
-
-            // HTTP 상태 코드 체크 (404, 500 등)
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            const resp = await fetch('/api/user/refresh', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken: getRefresh() }),
+            });
+            if (!resp.ok) {
+                clearTokens();
+                return false;
             }
-
-            return response;
-        } catch (error) {
-            // 네트워크 에러 또는 CORS 에러
-            console.error('API 호출 실패 :', error);
-            throw error;
-        }
-    },
-
-    /**
-    *  JSON 응답을 포함한 API 호출
-    */
-    apiCallJson: async function(url, options = {}) {
-        const response = await this.apiCall(url, options);
-        return await response.json();
-    },
-
-    /**
-     * 성공 알림
-     */
-    showAlert: function(message, type = 'success') {
-        const existingAlter = document.querySelector('.alert.custom-alert');
-        if (existingAlter) {
-            existingAlter.remove();
-        }
-
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-        alertDiv.setAttribute('role', 'alert');
-        alertDiv.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-
-        const mainContent = document.querySelector('.main-content');
-        if (mainContent) {
-            mainContent.insertBefore(alertDiv, mainContent.firstChild);
-
-            // 5초 후 자동 제거
-            setTimeout(() => {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 150);
-            }, 5000);
-        }
-    },
-
-    /*
-        로딩 표시
-    */
-    showLoading: function(show = true) {
-        let spinner = document.querySelector('.global-spinner');
-
-        if (show) {
-            if (!spinner) {
-                spinner = document.createElement('div');
-                spinner.className = 'global-spinner';
-                spinner.innerHTML = `
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">로딩 중...</span>
-                                    </div>
-                                `;
-                document.body.appendChild(spinner);
+            const data = await resp.json();
+            if (data?.accessToken) {
+                setAccess(data.accessToken);
+                return true;
             }
-            spinner.style.display = 'flex';
-        } else if (spinner) {
-            spinner.style.display = 'none';
+            clearTokens();
+            return false;
+        } catch (e) {
+            clearTokens();
+            return false;
         }
     }
-};
+
+    async function buildError(resp) {
+        let payload = null;
+        try { payload = await resp.json(); } catch (_) {}
+        const err = new Error(payload?.message || `HTTP ${resp.status}`);
+        err.status = resp.status;
+        err.payload = payload;
+        return err;
+    }
+
+    async function getJson(url, opts={}) {
+        const token = getAccessToken();
+        const headers = { 'Content-Type': 'application/json', ...(opts.headers||{}) };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch(url, { ...opts, headers, credentials: 'same-origin' });
+        if (res.status === 401) {
+            const ok = await tryRefresh(); // /api/user/refresh 호출
+            if (ok) return getJson(url, opts);
+            // 실패 시 로그인 이동
+            window.location.href = '/auth/login';
+            throw Object.assign(new Error('Unauthorized'), { status: 401 });
+        }
+        if (!res.ok) throw Object.assign(new Error('HTTP '+res.status), { status: res.status });
+        return res.json();
+    }
+
+    return { request, getJson, postJson, upload };
+})();
+window.Api = Api;

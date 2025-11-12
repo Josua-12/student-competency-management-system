@@ -3,7 +3,6 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
-
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
@@ -18,7 +17,6 @@ async function handleLogin(e) {
     const studentNum = document.getElementById('studentNum').value.trim();
     const password = document.getElementById('password').value;
 
-    // 유효성 검사
     if (!studentNum || !password) {
         showAlert('학번과 비밀번호를 입력해주세요.', 'error');
         return;
@@ -31,22 +29,34 @@ async function handleLogin(e) {
             body: JSON.stringify({ userNum: studentNum, password })
         });
 
-        const data = await response.json();
+        const data = await safeJson(response);
 
         if (response.ok) {
-            if (data.accessToken) localStorage.setItem('accessToken', data.accessToken);
-            if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+            persistTokens(data);
             showAlert('로그인 성공!', 'success');
-            setTimeout(() => { window.location.href = '/main'; }, 500);
+            window.location.replace('/main/dashboard');
         } else {
-            // 에러 처리
             handleLoginError(data);
         }
-
     } catch (error) {
         console.error('로그인 오류:', error);
         showAlert('서버 연결에 실패했습니다.', 'error');
     }
+}
+
+/**
+ * 응답 JSON 안전 파싱
+ */
+async function safeJson(resp) {
+    try { return await resp.json(); } catch (_) { return null; }
+}
+
+/**
+ * 토큰 저장
+ */
+function persistTokens(data) {
+    if (data?.accessToken) localStorage.setItem('accessToken', data.accessToken);
+    if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
 }
 
 /**

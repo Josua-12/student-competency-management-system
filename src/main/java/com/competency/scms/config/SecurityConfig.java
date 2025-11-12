@@ -52,17 +52,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers(
+                                "/", "/index.html",
+                                "/auth/**",
+                                "/css/**", "/js/**", "/images/**", "/static/**",
+                                "/main/**"
+                        ).permitAll()
                         .requestMatchers("/api/user/login", "/api/user/refresh").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .usernameParameter("userNum")
-                        .passwordParameter("password")
-                        .permitAll()
-                )
+                .formLogin(form -> form.disable())
                 .authenticationProvider(authenticationProvider());
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
