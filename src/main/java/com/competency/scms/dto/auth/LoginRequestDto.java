@@ -1,0 +1,16 @@
+package com.competency.scms.dto.auth;
+
+import lombok.*;
+
+/**
+ * 로그인 요청 DTO
+ */
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class LoginRequestDto {
+
+    private Integer userNum;
+    private String password;
+}

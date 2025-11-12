@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.user;
+package com.competency.scms.domain.user;
 
 public enum UserRole {
     STUDENT("학생"),

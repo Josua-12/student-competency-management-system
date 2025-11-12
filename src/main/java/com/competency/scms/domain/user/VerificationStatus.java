@@ -1,4 +1,4 @@
-package com.competency.SCMS.domain.user;
+package com.competency.scms.domain.user;
 
 public enum VerificationStatus {
     PENDING("대기중"),
