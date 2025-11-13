@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
@@ -55,15 +57,23 @@ public class SecurityConfig {
                         // 공개 경로: 초기 로그인 화면 및 정적 리소스
                         .requestMatchers(
                                 "/", "/index.html",
-                                "/auth/login", "/login", "/error",  // /login 추가
+                                "/auth/login", "/login", "/error",
                                 "/favicon.ico", "/manifest.json",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()
                         // 인증 관련 공개 API (로그인/토큰/비번재설정/본인인증)
                         .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**").permitAll()
+
+                        // 역할 기반 접근 제어 (AUTH-007, AUTH-008)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/counselor/**").hasRole("COUNSELOR")
+                        .requestMatchers("/operator/**").hasRole("OPERATOR")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
+
                 // 미인증 접근 시 /auth/login로 리다이렉트
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
