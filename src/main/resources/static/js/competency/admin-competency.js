@@ -201,10 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(`/admin/competency/api/competencies/${competencyId}/questions`)
             .then(response => {
-
-
-
-
+                if (!response.ok) {
+                    throw new Error('문항 목록을 불러오는데 실패했습니다.');
+                }
+                return response.json();
             })
             .then(questions => {
                 if (questions.length === 0) {
