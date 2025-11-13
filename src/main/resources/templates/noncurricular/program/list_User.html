@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NP-001 비교과 프로그램 조회 (학생)</title>
+    <style>
+        :root{
+          /* Light theme tokens */
+          --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb; --chip:#f3f4f6; --card:#fafafa;
+          --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
+          --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+          --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif}
+        a{color:inherit;text-decoration:none}
+        .wrap{max-width:1180px;margin:32px auto;padding:0 16px}
+
+        /* Header */
+        .title-bar{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+        .title-bar h1{font-size:20px;margin:0}
+        .badge{padding:2px 8px;border-radius:999px;background:var(--pri-50);color:var(--pri-600);font-weight:600}
+
+        /* Search Card */
+        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+        .grid{display:grid;gap:12px}
+        .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+        .grid.cols-4{grid-template-columns:repeat(4,1fr)}
+        .row{display:flex;gap:10px;align-items:center}
+
+        label{display:block;font-weight:600;font-size:12px;color:var(--muted);margin-bottom:6px}
+        input[type="text"], input[type="date"], select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+        input::placeholder{color:#9ca3af}
+
+        .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+        .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;cursor:pointer}
+        .btn.primary{background:var(--pri);border-color:var(--pri);color:#fff}
+        .btn.primary:hover{background:var(--pri-600)}
+        .btn.ghost{background:transparent}
+
+        /* List */
+        .list-head{display:flex;justify-content:space-between;align-items:center;margin:16px 4px}
+        .chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+
+        .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+        .prog-card {
+          display: flex;
+          flex-direction: column;
+          background: #fff;
+          border: 1px solid var(--line);
+          border-radius: var(--radius);
+          overflow: hidden;
+          transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .prog-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 4px 10px rgba(0,0,0,.05);
+        }
+
+        .prog-card .thumb {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          overflow: hidden;
+          background: #f3f4f6;
+        }
+        .prog-card .thumb img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .prog-card .thumb .status {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+        }
+        .prog-card .body {
+          padding: 12px 14px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .prog-card h3{margin:0;font-size:16px}
+        .meta{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:12px}
+        .meta .dot::before{content:"• ";margin:0 4px;color:#c4c4c4}
+        .stat{display:flex;gap:8px;align-items:center}
+        .stat b{font-weight:700}
+        .row.end{justify-content:flex-end}
+
+        .status{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;}
+        .status.open{background:#eaf7ef;color:var(--ok);border:1px solid #b9e6c5}
+        .status.closed{background:#f3f4f6;color:#6b7280;border:1px solid var(--line)}
+        .status.done{background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe}
+
+        /* Pagination */
+        .paging{display:flex;gap:6px;justify-content:center;margin:20px 0}
+        .page-btn{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
+        .page-btn[aria-current="true"]{background:var(--pri-50);border-color:var(--pri);}
+
+        /* Skeleton */
+        .skeleton{background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:sk 1.2s infinite}
+        @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        /* Empty & Error */
+        .empty{padding:40px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted)}
+        .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:10px;opacity:.95}
+
+        /* Responsive */
+        @media (max-width:1024px){.cards{grid-template-columns:repeat(2,1fr)}}
+        @media (max-width:640px){.grid.cols-4,.grid.cols-3{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="title-bar">
+        <span class="badge">학생 / 비교과</span>
+        <h1>프로그램 조회</h1>
+        <span id="resultCount" class="chip" aria-live="polite"></span>
+    </div>
+
+    <!-- 검색 영역 -->
+    <form id="searchForm" class="card" autocomplete="off">
+        <div class="grid cols-4">
+            <div>
+                <label for="q">프로그램명</label>
+                <input id="q" name="keyword" type="text" placeholder="예) 진로캠프, 리더십…" />
+            </div>
+            <div>
+                <label for="category">분류</label>
+                <select id="category" name="category">
+                    <option value="">전체</option>
+                    <option value="CAREER">진로</option>
+                    <option value="COMPETENCY">역량</option>
+                    <option value="VOLUNTEER">봉사</option>
+                    <option value="GLOBAL">글로벌</option>
+                </select>
+            </div>
+            <div>
+                <label for="dept">운영부서</label>
+                <select id="dept" name="dept">
+                    <option value="">전체</option>
+                    <option value="NCC">비교과센터</option>
+                    <option value="JOB">취업지원센터</option>
+                    <option value="INTL">국제교류처</option>
+                </select>
+            </div>
+            <div>
+                <label for="status">모집상태</label>
+                <select id="status" name="status">
+                    <option value="">전체</option>
+                    <option value="OPEN">모집중</option>
+                    <option value="CLOSED">마감</option>
+                    <option value="DONE">종료</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid cols-3" style="margin-top:12px">
+            <div>
+                <label for="from">모집 시작일</label>
+                <input id="from" name="from" type="date" />
+            </div>
+            <div>
+                <label for="to">모집 종료일</label>
+                <input id="to" name="to" type="date" />
+            </div>
+            <div class="actions" style="align-self:end">
+                <button type="button" class="btn" id="resetBtn">초기화</button>
+                <button type="submit" class="btn primary" aria-label="검색하기">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg> 검색
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="list-head">
+        <div class="chip">검색 결과</div>
+        <div class="row">
+            <a class="btn ghost" href="/student/noncurricular/my-applications">나의 신청내역 보기</a>
+        </div>
+    </div>
+
+    <!-- 목록 영역 -->
+    <section id="list" class="cards" aria-live="polite" aria-busy="false"></section>
+    <nav id="paging" class="paging" aria-label="페이지네이션"></nav>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+    // =============================
+    // Config
+    // =============================
+    const API = {
+      list: '/student/noncurricular/list',
+      detail: id => `/student/noncurricular/${id}`,
+      apply: id => `/student/noncurricular/${id}/apply`
+    };
+
+    // Toggle to use mock data when backend is not ready
+    const USE_MOCK = true;
+
+    // =============================
+    // State
+    // =============================
+    const state = {
+      page: 0,
+      size: 9,
+      totalPages: 0,
+      totalElements: 0,
+      lastQuery: ''
+    };
+
+    // =============================
+    // Utilities
+    // =============================
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    function toast(msg){
+      const t = $('#toast');
+      t.textContent = msg; t.hidden = false;
+      setTimeout(()=> t.hidden = true, 2200);
+    }
+
+    function queryFromForm(){
+      const f = new FormData($('#searchForm'));
+      const p = new URLSearchParams();
+      for(const [k,v] of f.entries()) if(v) p.set(k, v.trim());
+      p.set('page', state.page);
+      p.set('size', state.size);
+      return p.toString();
+    }
+
+    function statusBadge(s){
+      if(s==='OPEN') return '<span class="status open">모집중</span>';
+      if(s==='CLOSED') return '<span class="status closed">마감</span>';
+      if(s==='DONE') return '<span class="status done">종료</span>';
+      return '';
+    }
+
+    // =============================
+    // Rendering
+    // =============================
+    function setBusy(b){ $('#list').setAttribute('aria-busy', String(b)); }
+
+    function renderSkeleton(){
+      const host = $('#list');
+      host.innerHTML = Array.from({length: state.size}).map(()=>
+        `<article class="prog-card">
+           <div class="skeleton" style="height:20px;width:70%"></div>
+           <div class="skeleton" style="height:14px;width:40%"></div>
+           <div class="skeleton" style="height:14px;width:60%"></div>
+           <div class="skeleton" style="height:34px;width:100%"></div>
+         </article>`).join('');
+    }
+
+    function renderList(data){
+      const host = $('#list');
+      if(!data.content?.length){
+        host.innerHTML = `<div class="empty">조건에 맞는 프로그램이 없습니다.</div>`;
+        $('#resultCount').textContent = '0건';
+        $('#paging').innerHTML = '';
+        return;
+      }
+
+      const html = data.content.map(item => {
+        const period = `${item.recruitStart} ~ ${item.recruitEnd}`;
+        const date = `${item.programStart} ~ ${item.programEnd}`;
+        const status = statusBadge(item.status);
+        const showApply = item.status === 'OPEN'; // 👈 모집중 여부
+
+        return `
+          <article class="prog-card" aria-label="${item.title}">
+            <div class="thumb">
+              <img src="${item.thumbnailUrl || 'https://picsum.photos/seed/noncurricular' + item.id + '/600/338'}"
+                   alt="${item.title} 썸네일" />
+              ${status}
+            </div>
+            <div class="body">
+              <div class="row" style="justify-content:space-between;align-items:flex-start">
+                <h3><a href="${API.detail(item.id)}">${item.title}</a></h3>
+              </div>
+              <div class="meta">
+                <span>${item.deptName}</span>
+                <span class="dot">모집기간 ${period}</span>
+                <span class="dot">운영 ${date}</span>
+              </div>
+              <div class="row" style="justify-content:space-between">
+                <div class="stat"><span>신청</span><b>${item.applied}</b>/<span>${item.capacity}</span></div>
+                <div class="row end">
+                  <a class="btn" href="${API.detail(item.id)}">상세보기</a>
+                  ${showApply ? `<button class="btn primary" data-apply="${item.id}">신청하기</button>` : ''}
+                </div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      host.innerHTML = html;
+      $('#resultCount').textContent = `${data.totalElements}건`;
+      renderPaging(data.number, data.totalPages);
+
+      // 모집중 카드에만 apply 이벤트 연결
+      $$('#list [data-apply]').forEach(btn => btn.addEventListener('click', onApply));
+    }
+
+    function renderPaging(page, total){
+      state.page = page; state.totalPages = total;
+      const host = $('#paging');
+      if(total <= 1){ host.innerHTML = ''; return; }
+      const pages = Array.from({length: total}, (_,i)=>i);
+      host.innerHTML = `
+        <button class="page-btn" ${page===0?'disabled':''} data-goto="${page-1}">이전</button>
+        ${pages.map(i=>`<button class="page-btn" aria-current="${i===page}" data-goto="${i}">${i+1}</button>`).join('')}
+        <button class="page-btn" ${page===total-1?'disabled':''} data-goto="${page+1}">다음</button>
+      `;
+      host.querySelectorAll('[data-goto]').forEach(b=> b.addEventListener('click', e=>{
+        const p = Number(e.currentTarget.getAttribute('data-goto'));
+        if(p<0 || p>=state.totalPages) return;
+        state.page = p; doSearch();
+      }));
+    }
+
+    // =============================
+    // Data (Mock or Real)
+    // =============================
+    async function fetchPrograms(query){
+      if(!USE_MOCK){
+        const res = await fetch(`${API.list}?${query}`);
+        if(!res.ok) throw new Error('목록 조회 실패');
+        return await res.json();
+      }
+      // ---- Mock dataset shaped like backend paging (Page<T>) ----
+      const url = new URLSearchParams(query);
+      const page = Number(url.get('page')||0);
+      const size = Number(url.get('size')||9);
+      const keyword = (url.get('keyword')||'').toLowerCase();
+      const status = url.get('status')||'';
+      const category = url.get('category')||'';
+      const dept = url.get('dept')||'';
+
+      const all = Array.from({length:23}).map((_,i)=>({
+          id: 200 + i,
+          title: ['진로캠프','리더십 워크숍','글로벌 멘토링','봉사 리더','프레젠테이션'][i%5] + ' ' + (i+1),
+          deptName: ['비교과센터','취업지원센터','국제교류처'][i%3],
+          category: ['CAREER','COMPETENCY','GLOBAL','VOLUNTEER'][i%4],
+          recruitStart: '2025-11-01', recruitEnd: '2025-11-30',
+          programStart: '2025-12-05', programEnd: '2025-12-06',
+          applied: (i*3)%40, capacity: 40,
+          status: ['OPEN','CLOSED','DONE'][i%3],
+          thumbnailUrl: `https://picsum.photos/seed/noncurricular${i}/600/338`
+        }));
+
+      let filtered = all.filter(x =>
+        (!keyword || x.title.toLowerCase().includes(keyword)) &&
+        (!status || x.status===status) &&
+        (!category || x.category===category) &&
+        (!dept || (dept==='NCC'?x.deptName==='비교과센터':dept==='JOB'?x.deptName==='취업지원센터':dept==='INTL'?x.deptName==='국제교류처':true))
+      );
+
+      const totalElements = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(totalElements/size));
+      const start = page*size;
+      const content = filtered.slice(start, start+size);
+      return { content, totalPages, totalElements, number: page, size };
+    }
+
+    // =============================
+    // Events
+    // =============================
+    async function doSearch(){
+      try{
+        setBusy(true); renderSkeleton();
+        const query = queryFromForm();
+        state.lastQuery = query;
+        const data = await fetchPrograms(query);
+        renderList(data);
+      }catch(err){
+        console.error(err);
+        $('#list').innerHTML = `<div class="empty">오류가 발생했습니다. 잠시 후 다시 시도해주세요.</div>`;
+        toast('목록 조회 중 오류');
+      }finally{ setBusy(false); }
+    }
+
+    async function onApply(e){
+      const id = e.currentTarget.getAttribute('data-apply');
+      if(!id) return;
+      if(USE_MOCK){
+        toast('신청이 접수되었습니다. (모의)');
+        return;
+      }
+      try{
+        const res = await fetch(API.apply(id), {method:'POST'});
+        if(!res.ok) throw new Error('신청 실패');
+        toast('신청이 접수되었습니다.');
+        // 갱신
+        doSearch();
+      }catch(err){ toast('신청 중 오류가 발생했습니다.'); }
+    }
+
+    // Form submit & reset
+    $('#searchForm').addEventListener('submit', e=>{ e.preventDefault(); state.page=0; doSearch(); });
+    $('#resetBtn').addEventListener('click', ()=>{
+      $('#searchForm').reset(); state.page=0; doSearch();
+    });
+
+    // First load
+    doSearch();
+</script>
+</body>
+</html>
