@@ -32,7 +32,7 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final LoginHistoryRepository loginHistoryRepository;

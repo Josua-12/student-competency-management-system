@@ -40,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+        long startTime = System.currentTimeMillis();
+
         try {
             String token = resolveToken(request);
             if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
@@ -51,9 +53,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             log.debug("JWT filter skipped due to: {}", e.getMessage());
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            if (duration > 100) {
+                log.warn("JWT 토큰 검증 시간 초과: {}ms (목표: 100ms 이내)", duration);
+            } else {
+                log.debug("JWT 토큰 검증 완료: {}ms", duration);
+            }
         }
+
         chain.doFilter(request, response);
     }
+
 
     private String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
