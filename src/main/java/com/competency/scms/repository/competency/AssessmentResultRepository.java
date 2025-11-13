@@ -26,7 +26,7 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
     List<AssessmentResult> findByAssessmentSection(AssessmentSection section);
 
     // 특정 진단 회차에 응시한 특정 학과 학생의 모든 결과 조회
-    List<AssessmentResult> findByAssessmentSectionAndUserDepartment(
+    List<AssessmentResult> findByAssessmentSectionAndUser_Department_Name(
             AssessmentSection section, String departmentName
     );
 

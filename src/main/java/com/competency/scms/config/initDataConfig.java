@@ -11,6 +11,8 @@ import com.competency.scms.repository.noncurricular.mileage.MileageRecordReposit
 import com.competency.scms.repository.noncurricular.operation.ProgramApplicationRepository;
 import com.competency.scms.repository.noncurricular.program.ProgramRepository;
 import com.competency.scms.repository.user.UserRepository;
+import com.competency.scms.repository.DepartmentRepository;
+import com.competency.scms.domain.Department;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class initDataConfig implements CommandLineRunner {
     private final QuestionOptionRepository questionOptionRepository;
     private final ProgramApplicationRepository programApplicationRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    private final DepartmentRepository departmentRepository;
 
 
     private User getUser(int userNum) {
@@ -48,36 +51,49 @@ public class initDataConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        initDepartments();
+        initAdmins();
+        initStudents();
+
         if(userRepository.count() > 0) {
+
             log.info("➡️ 데이터가 이미 존재합니다. 초기화를 건너뜁니다.");
             return;
         }
+
+        Department deptSysAdmin        = ensureDept("SYS_ADMIN", "시스템 관리자");
+        Department deptNcpAdmin        = ensureDept("NCP_ADMIN", "비교과프로그램 관리자");
+        Department deptNcpOperator     = ensureDept("NCP_OPERATOR", "비교과프로그램 운영자");
+        Department deptCounselAdmin    = ensureDept("COUNSEL_ADMIN", "상담 관리자");
+        Department deptCompetencyAdmin = ensureDept("COMPETENCY_ADMIN", "역량관리 관리자");
+        Department deptCounselCenter   = ensureDept("STUDENT_COUNSEL_CENTER", "학생상담센터");
 
         log.info("▶️ 테스트 데이터 초기화 시작");
 
         // 시스템 관리자 3명
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(100001).name("이현우").email("leehyunwoo@pureum.ac.kr").phone("010-2363-9792")
-                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1965, 7, 27)).department("시스템 관리").build());
+                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1965, 7, 27)).department(deptSysAdmin).build());
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(100002).name("임예린").email("limyerin@pureum.ac.kr").phone("010-2390-6079")
-                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1983, 5, 24)).department("시스템 관리").build());
+                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1983, 5, 24)).department(deptSysAdmin).build());
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(100003).name("조은우").email("choeunwoo@pureum.ac.kr").phone("010-9926-4095")
-                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1968, 11, 10)).department("시스템 관리").build());
+                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1968, 11, 10)).department(deptSysAdmin).build());
 
         // 비교과프로그램 관리자 1명
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(110001).name("박태현").email("parktaehyun@pureum.ac.kr").phone("010-4205-3849")
-                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1961, 3, 15)).department("비교과프로그램 관리").build());
+                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1961, 3, 15)).department(deptNcpAdmin).build());
 
         // 비교과프로그램 운영자 1명
         userRepository.save(User.builder().role(UserRole.OPERATOR).userNum(140001).name("임도윤").email("limdoyoon@pureum.ac.kr").phone("010-7136-5442")
-                .password(passwordEncoder.encode(("operator123"))).birthDate(LocalDate.of(1972, 2, 13)).department("비교과프로그램 운영").build());
+                .password(passwordEncoder.encode(("operator123"))).birthDate(LocalDate.of(1972, 2, 13)).department(deptNcpOperator).build());
 
         // 상담 관리자 1명
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(120001).name("윤지훈").email("yoonjihun@pureum.ac.kr").phone("010-7316-9474")
-                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1965, 12, 18)).department("상담 관리").build());
+                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1965, 12, 18)).department(deptCounselAdmin).build());
 
         // 역량관리 관리자 1명
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(130001).name("강지윤").email("kangjiyun@pureum.ac.kr").phone("010-3399-5747")
-                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1971, 12, 4)).department("역량관리 관리").build());
+                .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1971, 12, 4)).department(deptCompetencyAdmin).build());
 
         // 상담 서브필드 5개
         counselingSubFieldRepository.save(CounselingSubField.builder()
@@ -93,135 +109,136 @@ public class initDataConfig implements CommandLineRunner {
 
         log.info("✅ 상담 서브필드 초기 데이터 5건이 생성되었습니다.");
 
-        // 상담사 12명
+        // 상담사 12명 (학생상담센터)
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150001).name("정준호").email("jungjoonho@pureum.ac.kr").phone("010-3191-1123")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1983, 11, 14)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1983, 11, 14)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150002).name("조수빈").email("chosubin@pureum.ac.kr").phone("010-9053-2777")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1968, 12, 5)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1968, 12, 5)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150003).name("강준호").email("kangjoonho@pureum.ac.kr").phone("010-8022-6241")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1988, 5, 19)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1988, 5, 19)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150004).name("강현우").email("kanghyunwoo@pureum.ac.kr").phone("010-2701-1701")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1989, 4, 24)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1989, 4, 24)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150005).name("최하은").email("choihaeun@pureum.ac.kr").phone("010-3882-5110")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 4, 19)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 4, 19)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150006).name("임서연").email("limseoyeon@pureum.ac.kr").phone("010-6770-2619")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1968, 8, 3)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1968, 8, 3)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150007).name("박지민").email("parkjimin@pureum.ac.kr").phone("010-8274-4740")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1988, 9, 13)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1988, 9, 13)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150008).name("장민수").email("jangminsu@pureum.ac.kr").phone("010-7510-1526")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1974, 11, 17)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1974, 11, 17)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150009).name("김지연").email("kimjiyeon@pureum.ac.kr").phone("010-3820-1250")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1971, 9, 3)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1971, 9, 3)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150010).name("정유진").email("jungyujin@pureum.ac.kr").phone("010-8174-9986")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1975, 9, 16)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1975, 9, 16)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150011).name("최예린").email("choiyerin@pureum.ac.kr").phone("010-5069-1842")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1970, 10, 10)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1970, 10, 10)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150012).name("김민수").email("kimminsu@pureum.ac.kr").phone("010-7556-2469")
-                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 9, 16)).department("학생상담센터").build());
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 9, 16)).department(deptCounselCenter).build());
 
         // 학생 데이터 50명
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213901).name("김서윤").email("20213901@school.edu").phone("010-2958-4213")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 5)).department("국어국문학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 5)).department(ensureDept("KOREAN_LANG", "국어국문학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212802).name("이준호").email("20212802@school.edu").phone("010-4135-9920")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 24)).department("심리학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 24)).department(ensureDept("PSYCHOLOGY", "심리학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214503).name("박지민").email("20214503@school.edu").phone("010-3182-7654")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 28)).department("컴퓨터공학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 28)).department(ensureDept("COMPUTER_ENGINEERING", "컴퓨터공학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212904).name("최민수").email("20212904@school.edu").phone("010-8754-2231")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 4, 9)).department("경영학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 4, 9)).department(ensureDept("BUSINESS_ADMIN", "경영학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214405).name("윤다인").email("20214405@school.edu").phone("010-3356-4881")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 24)).department("생명과학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 24)).department(ensureDept("LIFE_SCIENCE", "생명과학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212206).name("정하늘").email("20212206@school.edu").phone("010-7674-5800")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 6, 10)).department("행정학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 6, 10)).department(ensureDept("PUBLIC_ADMIN", "행정학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211707).name("오예린").email("20211707@school.edu").phone("010-4482-3107")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 8, 3)).department("영어영문학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 8, 3)).department(ensureDept("ENGLISH_LANG", "영어영문학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210808).name("안지훈").email("20210808@school.edu").phone("010-5193-2750")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 27)).department("전자공학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 27)).department(ensureDept("ELECTRONIC_ENGINEERING", "전자공학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213109).name("송수진").email("20213109@school.edu").phone("010-7352-9486")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 5, 24)).department("디자인학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 5, 24)).department(ensureDept("DESIGN", "디자인학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213710).name("김도윤").email("20213710@school.edu").phone("010-8692-5143")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 5, 9)).department("물리학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 5, 9)).department(ensureDept("PHYSICS", "물리학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212711).name("김하은").email("20212711@school.edu").phone("010-2791-6109")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 5, 19)).department("역사학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 5, 19)).department(ensureDept("HISTORY", "역사학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210912).name("문현우").email("20210912@school.edu").phone("010-6842-1108")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 4)).department("기계공학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 4)).department(ensureDept("MECHANICAL_ENGINEERING", "기계공학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210213).name("유채린").email("20210213@school.edu").phone("010-9372-8013")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 6, 16)).department("사회복지학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 6, 16)).department(ensureDept("SOCIAL_WELFARE", "사회복지학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213414).name("장태현").email("20213414@school.edu").phone("010-1328-6452")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 4, 25)).department("회계학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 4, 25)).department(ensureDept("ACCOUNTING", "회계학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211215).name("윤소연").email("20211215@school.edu").phone("010-8070-3291")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 18)).department("화학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 18)).department(ensureDept("CHEMISTRY", "화학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214216).name("배정우").email("20214216@school.edu").phone("010-5823-9910")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 22)).department("산업공학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 22)).department(ensureDept("INDUSTRIAL_ENGINEERING", "산업공학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214617).name("김수빈").email("20214617@school.edu").phone("010-3945-7482")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 23)).department("시각디자인학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 23)).department(ensureDept("VISUAL_DESIGN", "시각디자인학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212318).name("이동건").email("20212318@school.edu").phone("010-9512-6640")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 4, 15)).department("정치외교학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 4, 15)).department(ensureDept("POLITICAL_SCIENCE", "정치외교학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213619).name("박예지").email("20213619@school.edu").phone("010-4049-2738")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 8)).department("철학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 8)).department(ensureDept("PHILOSOPHY", "철학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210320).name("손우진").email("20210320@school.edu").phone("010-7728-5851")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 12)).department("소프트웨어학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 12)).department(ensureDept("SOFTWARE", "소프트웨어학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213821).name("이나래").email("20213821@school.edu").phone("010-5654-3008")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 8, 3)).department("수학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 8, 3)).department(ensureDept("MATHEMATICS", "수학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210722).name("김민재").email("20210722@school.edu").phone("010-8753-7290")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 8, 16)).department("국제경영학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 8, 16)).department(ensureDept("INTERNATIONAL_BUSINESS", "국제경영학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213323).name("조은비").email("20213323@school.edu").phone("010-6931-1182")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 16)).department("일본어문화학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 16)).department(ensureDept("JAPANESE_STUDIES", "일본어문화학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212024).name("한지호").email("20212024@school.edu").phone("010-2205-4482")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 6, 19)).department("화학공학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 6, 19)).department(ensureDept("CHEMICAL_ENGINEERING", "화학공학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213225).name("최유진").email("20213225@school.edu").phone("010-9109-5149")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 4, 11)).department("경제학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 4, 11)).department(ensureDept("ECONOMICS", "경제학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210426).name("정민호").email("20210426@school.edu").phone("010-3054-3710")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 8, 10)).department("정보통신공학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 8, 10)).department(ensureDept("ICT_ENGINEERING", "정보통신공학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213027).name("김예린").email("20213027@school.edu").phone("010-4219-6033")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 25)).department("생화학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 25)).department(ensureDept("BIOCHEMISTRY", "생화학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212428).name("신태호").email("20212428@school.edu").phone("010-7551-2410")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 8, 16)).department("마케팅학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 8, 16)).department(ensureDept("MARKETING", "마케팅학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213529).name("이지수").email("20213529@school.edu").phone("010-3368-7748")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 5, 10)).department("문헌정보학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 5, 10)).department(ensureDept("LIBRARY_INFORMATION", "문헌정보학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211530).name("정도현").email("20211530@school.edu").phone("010-5294-6002")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 6, 23)).department("사회학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 6, 23)).department(ensureDept("SOCIOLOGY", "사회학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212531).name("김채원").email("20212531@school.edu").phone("010-7555-2209")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 27)).department("음악학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 27)).department(ensureDept("MUSIC", "음악학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211632).name("권지후").email("20211632@school.edu").phone("010-2485-7650")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 18)).department("토목공학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 18)).department(ensureDept("CIVIL_ENGINEERING", "토목공학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214033).name("백유정").email("20214033@school.edu").phone("010-5077-1116")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 4, 2)).department("천문학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 4, 2)).department(ensureDept("ASTRONOMY", "천문학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212134).name("김성우").email("20212134@school.edu").phone("010-9993-8347")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 8)).department("경영정보학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 8)).department(ensureDept("MIS", "경영정보학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210535).name("이다은").email("20210535@school.edu").phone("010-6835-4299")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 14)).department("독일어학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 14)).department(ensureDept("GERMAN_LANG", "독일어학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211836).name("조현성").email("20211836@school.edu").phone("010-3046-7418")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 1)).department("전기공학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 1)).department(ensureDept("ELECTRICAL_ENGINEERING", "전기공학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211937).name("양지인").email("20211937@school.edu").phone("010-5820-9543")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 5, 21)).department("연극영화학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 5, 21)).department(ensureDept("THEATRE_FILM", "연극영화학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211338).name("김도현").email("20211338@school.edu").phone("010-8821-5274")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 14)).department("지질학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 14)).department(ensureDept("GEOLOGY", "지질학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214139).name("박하늘").email("20214139@school.edu").phone("010-7315-6025")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 11)).department("언론정보학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 11)).department(ensureDept("MEDIA_COMM", "언론정보학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212640).name("정원재").email("20212640@school.edu").phone("010-4262-3339")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 2)).department("환경공학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 2)).department(ensureDept("ENVIRONMENTAL_ENGINEERING", "환경공학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213441).name("이수정").email("20213441@school.edu").phone("010-5664-4051")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 25)).department("회계학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 25)).department(ensureDept("ACCOUNTING", "회계학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212242).name("송지호").email("20212242@school.edu").phone("010-6258-9892")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 6, 7)).department("행정학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 6, 7)).department(ensureDept("PUBLIC_ADMIN", "행정학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211043).name("박수진").email("20211043@school.edu").phone("010-3128-6900")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 6)).department("불어불문학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 7, 6)).department(ensureDept("FRENCH_LANG", "불어불문학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214544).name("남정우").email("20214544@school.edu").phone("010-9759-5213")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 13)).department("컴퓨터공학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 13)).department(ensureDept("COMPUTER_ENGINEERING", "컴퓨터공학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20214345).name("문슬기").email("20214345@school.edu").phone("010-4445-7020")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 14)).department("통계학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 8, 14)).department(ensureDept("STATISTICS", "통계학과")).grade(3).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210646).name("이현우").email("20210646@school.edu").phone("010-6074-8499")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 6, 5)).department("메카트로닉스공학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 6, 5)).department(ensureDept("MECHATRONICS", "메카트로닉스공학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211447).name("최다혜").email("20211447@school.edu").phone("010-2632-7414")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 6, 23)).department("회화학과").grade(1).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2025, 6, 23)).department(ensureDept("PAINTING", "회화학과")).grade(1).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213248).name("하민석").email("20213248@school.edu").phone("010-8899-3905")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 28)).department("경제학과").grade(4).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2022, 7, 28)).department(ensureDept("ECONOMICS", "경제학과")).grade(4).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20211149).name("강유진").email("20211149@school.edu").phone("010-3117-5176")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 15)).department("중국어학과").grade(2).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 15)).department(ensureDept("CHINESE_LANG", "중국어학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210150).name("노태경").email("20210150@school.edu").phone("010-7441-6833")
-                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 1)).department("건축학과").grade(3).build());
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 1)).department(ensureDept("ARCHITECTURE", "건축학과")).grade(3).build());
 
         log.info("✅ User 초기 데이터 56건이 생성되었습니다.");
+
 
         Counselor counselorEntity1 = counselorRepository.save(Counselor.builder()
                 .counselorId(getUserId(150001)).counselingField(CounselingField.PSYCHOLOGICAL)
@@ -517,5 +534,164 @@ public class initDataConfig implements CommandLineRunner {
 
         log.info("테스트 데이터 초기화 완료");
     }
+
+    // ---------------------------------------------------------
+    // 1) 부서 엔티티 생성 (중복 방지)
+    // ---------------------------------------------------------
+    private Department ensureDept(String code, String name) {
+        return departmentRepository.findByCode(code)
+                .orElseGet(() -> departmentRepository.save(
+                        Department.builder()
+                                .code(code)
+                                .name(name)
+                                .build()
+                ));
+    }
+
+    private void initDepartments() {
+        ensureDept("KOREAN_LANG", "국어국문학과");
+        ensureDept("PSYCHOLOGY", "심리학과");
+        ensureDept("COMPUTER_ENGINEERING", "컴퓨터공학과");
+        ensureDept("BUSINESS_ADMIN", "경영학과");
+        ensureDept("LIFE_SCIENCE", "생명과학과");
+        ensureDept("PUBLIC_ADMIN", "행정학과");
+        ensureDept("ENGLISH_LANG", "영어영문학과");
+        ensureDept("ELECTRONIC_ENGINEERING", "전자공학과");
+        ensureDept("DESIGN", "디자인학과");
+        ensureDept("PHYSICS", "물리학과");
+        ensureDept("HISTORY", "역사학과");
+        ensureDept("MECHANICAL_ENGINEERING", "기계공학과");
+        ensureDept("SOCIAL_WELFARE", "사회복지학과");
+        ensureDept("ACCOUNTING", "회계학과");
+        ensureDept("CHEMISTRY", "화학과");
+        ensureDept("INDUSTRIAL_ENGINEERING", "산업공학과");
+        ensureDept("VISUAL_DESIGN", "시각디자인학과");
+        ensureDept("POLITICAL_SCIENCE", "정치외교학과");
+        ensureDept("PHILOSOPHY", "철학과");
+        ensureDept("SOFTWARE", "소프트웨어학과");
+        ensureDept("MATHEMATICS", "수학과");
+        ensureDept("INTERNATIONAL_BUSINESS", "국제경영학과");
+        ensureDept("JAPANESE_STUDIES", "일본어문화학과");
+        ensureDept("CHEMICAL_ENGINEERING", "화학공학과");
+        ensureDept("ECONOMICS", "경제학과");
+        ensureDept("ICT_ENGINEERING", "정보통신공학과");
+        ensureDept("BIOCHEMISTRY", "생화학과");
+        ensureDept("MARKETING", "마케팅학과");
+        ensureDept("LIBRARY_INFORMATION", "문헌정보학과");
+        ensureDept("SOCIOLOGY", "사회학과");
+        ensureDept("MUSIC", "음악학과");
+        ensureDept("CIVIL_ENGINEERING", "토목공학과");
+        ensureDept("ASTRONOMY", "천문학과");
+        ensureDept("MIS", "경영정보학과");
+        ensureDept("GERMAN_LANG", "독일어학과");
+        ensureDept("ELECTRICAL_ENGINEERING", "전기공학과");
+        ensureDept("THEATRE_FILM", "연극영화학과");
+        ensureDept("GEOLOGY", "지질학과");
+        ensureDept("MEDIA_COMM", "언론정보학과");
+        ensureDept("ENVIRONMENTAL_ENGINEERING", "환경공학과");
+        ensureDept("FRENCH_LANG", "불어불문학과");
+        ensureDept("STATISTICS", "통계학과");
+        ensureDept("MECHATRONICS", "메카트로닉스공학과");
+        ensureDept("PAINTING", "회화학과");
+        ensureDept("CHINESE_LANG", "중국어학과");
+        ensureDept("ARCHITECTURE", "건축학과");
+
+// 관리자/운영 관련 부서(또는 조직)
+        ensureDept("SYS_ADMIN", "시스템 관리자");
+        ensureDept("NCP_ADMIN", "비교과프로그램 관리자");
+        ensureDept("NCP_OPERATOR", "비교과프로그램 운영자");
+        ensureDept("COUNSEL_ADMIN", "상담 관리자");
+        ensureDept("COUNSELOR", "상담사");
+        ensureDept("COMPETENCY_ADMIN", "역량관리 관리자");
+        ensureDept("STUDENT_COUNSEL_CENTER", "학생상담센터");
+    }
+
+    // ---------------------------------------------------------
+    // 2) 관리자 및 운영자
+    // ---------------------------------------------------------
+    private void initAdmins() {
+        Department sys = ensureDept("SYS", "시스템관리");
+        Department ncpAdmin = ensureDept("NCP_ADMIN", "비교과프로그램 관리");
+        Department ncpOper = ensureDept("NCP_OPER", "비교과프로그램 운영");
+
+        userRepository.save(
+                User.builder()
+                        .role(UserRole.ADMIN)
+                        .email("admin@scms.com")
+                        .name("시스템 관리자")
+                        .password("admin123!")
+                        .birthDate(LocalDate.of(1965, 7, 27))
+                        .department(sys)
+                        .build()
+        );
+
+        userRepository.save(
+                User.builder()
+                        .role(UserRole.ADMIN)
+                        .email("noncurri_admin@scms.com")
+                        .name("비교과 프로그램 관리자")
+                        .password("admin123!")
+                        .birthDate(LocalDate.of(1980, 3, 15))
+                        .department(ncpAdmin)
+                        .build()
+        );
+
+        userRepository.save(
+                User.builder()
+                        .role(UserRole.OPERATOR)
+                        .email("operator@scms.com")
+                        .name("비교과 프로그램 운영자")
+                        .password("oper123!")
+                        .birthDate(LocalDate.of(1985, 11, 20))
+                        .department(ncpOper)
+                        .build()
+        );
+    }
+
+    // ---------------------------------------------------------
+    // 3) 학생 더미데이터
+    // ---------------------------------------------------------
+    private void initStudents() {
+        Department econ = ensureDept("ECON", "경제학과");
+        Department chinese = ensureDept("CHINESE", "중국어학과");
+        Department archi = ensureDept("ARCHI", "건축학과");
+
+        userRepository.save(
+                User.builder()
+                        .role(UserRole.STUDENT)
+                        .email("student01@scms.com")
+                        .name("학생1")
+                        .password("student1!")
+                        .birthDate(LocalDate.of(2001, 4, 10))
+                        .grade(1)
+                        .department(econ)
+                        .build()
+        );
+
+        userRepository.save(
+                User.builder()
+                        .role(UserRole.STUDENT)
+                        .email("student02@scms.com")
+                        .name("학생2")
+                        .password("student1!")
+                        .birthDate(LocalDate.of(2001, 8, 21))
+                        .grade(2)
+                        .department(chinese)
+                        .build()
+        );
+
+        userRepository.save(
+                User.builder()
+                        .role(UserRole.STUDENT)
+                        .email("student03@scms.com")
+                        .name("학생3")
+                        .password("student1!")
+                        .birthDate(LocalDate.of(2001, 12, 3))
+                        .grade(3)
+                        .department(archi)
+                        .build()
+        );
+    }
+
 }
 
