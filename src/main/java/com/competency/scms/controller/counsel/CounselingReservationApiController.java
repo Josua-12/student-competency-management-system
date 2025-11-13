@@ -1,6 +1,7 @@
 package com.competency.scms.controller.counsel;
 
 import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.counsel.CounselingApprovalDto;
 import com.competency.scms.dto.counsel.CounselingReservationDto;
 import com.competency.scms.service.counsel.CounselingReservationService;
 
@@ -11,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/counseling/reservations")
@@ -68,11 +68,14 @@ public class CounselingReservationApiController {
     @PostMapping("/{reservationId}/approve")
     public ResponseEntity<Void> approveReservation(
             @PathVariable Long reservationId,
-            @RequestParam LocalDateTime confirmedDateTime,
-            @RequestParam(required = false) String memo,
+            @RequestBody @Valid CounselingApprovalDto.ApprovalRequest request,
             @AuthenticationPrincipal User currentUser) {
         
-        reservationService.approveReservation(reservationId, confirmedDateTime, memo, currentUser);
+        if (!reservationId.equals(request.getReservationId())) {
+            throw new IllegalArgumentException("URL의 reservationId와 요청 본문의 reservationId가 일치하지 않습니다");
+        }
+        
+        reservationService.approveReservation(request, currentUser);
         return ResponseEntity.ok().build();
     }
 

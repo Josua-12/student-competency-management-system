@@ -2,6 +2,7 @@ package com.competency.scms.service.counsel;
 
 import com.competency.scms.domain.counseling.CounselingRecord;
 import com.competency.scms.domain.counseling.CounselingReservation;
+import com.competency.scms.domain.counseling.ReservationStatus;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.domain.user.UserRole;
 import com.competency.scms.dto.counsel.CounselingRecordDto;
@@ -33,6 +34,10 @@ public class CounselingRecordService {
         if (!reservation.getCounselor().getId().equals(counselor.getId())) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
+
+        if(reservation.getStatus() != ReservationStatus.COMPLETED){   // 완료 상태일 때만 상담일지 작성하도록
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
         
         CounselingRecord record = new CounselingRecord();
         record.setReservation(reservation);
@@ -42,7 +47,7 @@ public class CounselingRecordService {
         record.setRecordContent(request.getRecordContent());
         record.setCounselorMemo(request.getCounselorMemo());
         record.setPublic(request.getIsPublic() != null ? request.getIsPublic() : false);
-        record.setCounselingDate(reservation.getReservationDateTime());
+        record.setCounselingDate(reservation.getRequestedDateTime());
         
         CounselingRecord saved = recordRepository.save(record);
         return saved.getId();
@@ -63,6 +68,19 @@ public class CounselingRecordService {
         if (request.getIsPublic() != null) {
             record.setPublic(request.getIsPublic());
         }
+    }
+
+    // CNSL-012: 상담일지 삭제 (Soft Delete)
+    @Transactional
+    public void deleteRecord(Long recordId, User counselor) {
+        CounselingRecord record = recordRepository.findById(recordId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
+        
+        if (!record.getCounselor().getId().equals(counselor.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
+        recordRepository.delete(record);
     }
 
     // CNSL-013: 상담일지 목록 조회

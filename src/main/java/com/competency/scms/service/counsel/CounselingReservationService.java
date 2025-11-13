@@ -5,6 +5,7 @@ import com.competency.scms.domain.counseling.CounselingSubField;
 import com.competency.scms.domain.counseling.ReservationStatus;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.domain.user.UserRole;
+import com.competency.scms.dto.counsel.CounselingApprovalDto;
 import com.competency.scms.dto.counsel.CounselingReservationDto;
 import com.competency.scms.exception.BusinessException;
 import com.competency.scms.exception.ErrorCode;
@@ -27,6 +28,7 @@ public class CounselingReservationService {
     private final CounselingReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final CounselingSubFieldRepository subFieldRepository;
+    private final CounselingMapper mapper = new CounselingMapper();
 
     // CNSL-001: 상담 예약 등록
     @Transactional
@@ -61,6 +63,9 @@ public class CounselingReservationService {
         
         if (initialStatus == ReservationStatus.CONFIRMED) {
             reservation.setConfirmedAt(LocalDateTime.now());
+            reservation.setConfirmedDate(request.getReservationDate());
+            reservation.setConfirmedStartTime(request.getStartTime());
+            reservation.setConfirmedEndTime(request.getEndTime());
         }
 
         CounselingReservation saved = reservationRepository.save(reservation);
@@ -70,7 +75,7 @@ public class CounselingReservationService {
     // CNSL-002: 상담 예약 목록 조회 (학생)
     public Page<CounselingReservationDto.ListResponse> getMyReservations(User student, CounselingReservationDto.SearchCondition condition, Pageable pageable) {
         Page<CounselingReservation> reservations = reservationRepository.findByStudentOrderByCreatedAtDesc(student, pageable);
-        return reservations.map(this::toListResponse);
+        return reservations.map(mapper::toListResponse);
     }
 
     // CNSL-003: 상담 예약 상세 조회
@@ -79,7 +84,7 @@ public class CounselingReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         
         validateAccessPermission(reservation, currentUser);
-        return toDetailResponse(reservation);
+        return mapper.toDetailResponse(reservation);
     }
 
     // CNSL-004: 상담 예약 취소
@@ -103,8 +108,8 @@ public class CounselingReservationService {
 
     // CNSL-008, CNSL-009: 상담 승인 (관리자/상담사)
     @Transactional
-    public void approveReservation(Long reservationId, LocalDateTime confirmedDateTime, String memo, User currentUser) {
-        CounselingReservation reservation = reservationRepository.findById(reservationId)
+    public void approveReservation(CounselingApprovalDto.ApprovalRequest request, User currentUser) {
+        CounselingReservation reservation = reservationRepository.findById(request.getReservationId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         
         if (reservation.getStatus() != ReservationStatus.PENDING) {
@@ -112,11 +117,19 @@ public class CounselingReservationService {
         }
         
         reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setConfirmedDate(request.getConfirmedDate());
+        reservation.setConfirmedStartTime(request.getConfirmedStartTime());
+        reservation.setConfirmedEndTime(request.getConfirmedEndTime());
         reservation.setConfirmedAt(LocalDateTime.now());
-        reservation.setMemo(memo);
+        reservation.setMemo(request.getMemo());
         
         if (currentUser.getRole() == UserRole.COUNSELOR) {
             reservation.setCounselor(currentUser);
+        }
+
+        // CONFIRMED 상태에서는 counselor 필수
+        if (reservation.getStatus() == ReservationStatus.CONFIRMED && reservation.getCounselor() == null) {
+            throw new BusinessException(ErrorCode.COUNSELOR_REQUIRED_FOR_CONFIRMED);
         }
     }
 
@@ -139,7 +152,7 @@ public class CounselingReservationService {
     public Page<CounselingReservationDto.ListResponse> getAssignedReservations(User counselor, Pageable pageable) {
         Page<CounselingReservation> reservations = reservationRepository.findByCounselorAndStatusOrderByConfirmedDateTimeAsc(
                 counselor, ReservationStatus.CONFIRMED, pageable);
-        return reservations.map(this::toListResponse);
+        return reservations.map(mapper::toListResponse);
     }
 
     private void validateCounselorOrAdminRole(User user) {
@@ -180,35 +193,4 @@ public class CounselingReservationService {
         }
     }
 
-    private CounselingReservationDto.ListResponse toListResponse(CounselingReservation reservation) {
-        CounselingReservationDto.ListResponse response = new CounselingReservationDto.ListResponse();
-        response.setId(reservation.getId());
-        response.setStudentName(reservation.getStudent().getName());
-        response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getSubfieldName());
-        response.setReservationDate(reservation.getReservationDate());
-        response.setStartTime(reservation.getStartTime());
-        response.setEndTime(reservation.getEndTime());
-        response.setStatus(reservation.getStatus());
-        response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
-        return response;
-    }
-
-    private CounselingReservationDto.DetailResponse toDetailResponse(CounselingReservation reservation) {
-        CounselingReservationDto.DetailResponse response = new CounselingReservationDto.DetailResponse();
-        response.setId(reservation.getId());
-        response.setStudentName(reservation.getStudent().getName());
-        response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getSubfieldName());
-        response.setReservationDate(reservation.getReservationDate());
-        response.setStartTime(reservation.getStartTime());
-        response.setEndTime(reservation.getEndTime());
-        response.setRequestContent(reservation.getRequestContent());
-        response.setStatus(reservation.getStatus());
-        response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
-        response.setMemo(reservation.getMemo());
-        response.setRejectReason(reservation.getRejectReason());
-        response.setCancelReason(reservation.getCancelReason());
-        return response;
-    }
 }

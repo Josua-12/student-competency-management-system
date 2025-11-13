@@ -44,12 +44,15 @@ public class CounselingReservation {
     @JoinColumn(name = "sub_field_id")
     private CounselingSubField subField;
 
+    /** 학생이 요청한 예약 날짜*/
     @Column(nullable = false)
     private LocalDate reservationDate;
 
+    /** 학생이 요청한 시작 시간*/
     @Column(nullable = false)
     private LocalTime startTime;    //09:00, 10:00 등 (1시간 단위)
 
+    /** 학생이 요청한 종료 시간*/
     @Column(nullable = false)
     private LocalTime endTime;    //10:00, 11:00 등 (1시간 단위)
 
@@ -85,23 +88,55 @@ public class CounselingReservation {
     private LocalDateTime cancelledAt;  // 취소 시각
     private LocalDateTime rejectedAt;   // 거절 시각
 
+    /**관리자/상담사가 확정한 날짜*/
+    private LocalDate confirmedDate;
+    /**관리자/상담사가 확정한 시작 시간*/
+    private LocalTime confirmedStartTime;   // 확정된 시작시간
+    /**관리자/상담사가 확정한 종료 시간*/
+    private LocalTime confirmedEndTime;     // 확정된 종료시간
 
-    // 예약 시작 시간을 LocalDateTime으로 반환 (편의 메서드)
-    public LocalDateTime getReservationDateTime() {
+    private static final int cancellable_hours = 24;
+
+
+    /** 예약 시작 시간을 LocalDateTime으로 반환 (편의 메서드)*/
+    public LocalDateTime getRequestedDateTime() {
+        if (reservationDate == null || startTime == null) {
+            return null;
+        }
         return LocalDateTime.of(reservationDate, startTime);
+    }
+
+    /** 확정된 상담 시작 시간 구하기*/
+    public LocalDateTime getConfirmedDateTime() {
+        if (confirmedDate == null || confirmedStartTime == null) {
+            return null;
+        }
+        return LocalDateTime.of(confirmedDate, confirmedStartTime);
     }
 
     // 예약 시간이 지났는지 확인
     public boolean isPast() {
-        return getReservationDateTime().isBefore(LocalDateTime.now());
+        return getConfirmedDateTime
+                ().isBefore(LocalDateTime.now());
     }
 
-    // 취소 가능한지 확인 (예: 예약 24시간 전까지만 취소 가능)
+    // 취소 가능한지 확인 (예: 확정된 예약 24시간 전까지만 취소 가능)
     public boolean isCancellable() {
-        if (status != ReservationStatus.CONFIRMED) {
+        if (status != ReservationStatus.PENDING && status != ReservationStatus.CONFIRMED) {
             return false;
         }
-        LocalDateTime cancelDeadline = getReservationDateTime().minusHours(24);
+
+        if (status == ReservationStatus.PENDING) {
+            return true;
+        }
+
+        LocalDateTime confirmedDateTime = getConfirmedDateTime();
+        if (confirmedDateTime == null || confirmedDateTime.isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
+        LocalDateTime cancelDeadline = confirmedDateTime.minusHours(cancellable_hours);
         return LocalDateTime.now().isBefore(cancelDeadline);
+
     }
 }
