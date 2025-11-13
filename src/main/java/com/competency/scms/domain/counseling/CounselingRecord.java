@@ -4,8 +4,9 @@ import com.competency.scms.domain.user.User;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
 
 
 @SQLDelete(sql = "UPDATE counseling_records SET deleted_at = NOW() WHERE id = ?") //soft delete
-@Where(clause = "deleted_at IS NULL") // 조회 시 자동으로 제외
+@FilterDef(name = "notDeleted", defaultCondition = "deleted_at IS NULL")
+@Filter(name = "notDeleted")// 조회 시 자동으로 제외
 @Entity
 @Table(name = "counseling_records")
 @Getter

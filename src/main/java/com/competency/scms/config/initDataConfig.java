@@ -95,19 +95,41 @@ public class initDataConfig implements CommandLineRunner {
         userRepository.save(User.builder().role(UserRole.ADMIN).userNum(130001).name("강지윤").email("kangjiyun@pureum.ac.kr").phone("010-3399-5747")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1971, 12, 4)).department(deptCompetencyAdmin).build());
 
-        // 상담 서브필드 5개
-        counselingSubFieldRepository.save(CounselingSubField.builder()
-                .counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("우울/불안").description("우울증 및 불안장애 관련 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder()
-                .counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("대인관계").description("대인관계 문제 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder()
-                .counselingField(CounselingField.CAREER).subfieldName("진로탐색").description("진로 방향 설정 및 탐색").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder()
-                .counselingField(CounselingField.EMPLOYMENT).subfieldName("이력서/자소서").description("이력서 및 자기소개서 작성 지도").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder()
-                .counselingField(CounselingField.ACADEMIC).subfieldName("학습전략").description("효과적인 학습 방법 및 전략").build());
+        // 심리상담 서브필드
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("스트레스 관리").description("스트레스 관리 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("불안 상담").description("불안 관련 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("우울감 상담").description("우울감 관련 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("대인관계 상담").description("대인관계 문제 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("학업 스트레스").description("학업 스트레스 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.PSYCHOLOGICAL).subfieldName("기타").description("기타 심리상담").build());
 
-        log.info("✅ 상담 서브필드 초기 데이터 5건이 생성되었습니다.");
+        // 진로상담 서브필드
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("진로탐색").description("진로 방향 설정 및 탐색").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("전공선택").description("전공 선택 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("진로계획").description("진로 계획 수립").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("적성검사").description("적성검사 및 분석").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("미래준비").description("미래 준비 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("기타").description("기타 진로상담").build());
+
+        // 취업상담 서브필드
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("일반 서류면접").description("일반 서류면접 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("외국계").description("외국계 기업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("이공계").description("이공계 취업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("콘텐츠엔터").description("콘텐츠엔터 취업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("공기업").description("공기업 취업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("임원면접").description("임원면접 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("국문 이력서 또는 자기소개서").description("국문 이력서 또는 자기소개서 첨삭").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("영문 이력서 또는 자기소개서").description("영문 이력서 또는 자기소개서 첨삭").build());
+
+        // 학습상담 서브필드
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("학습방법 상담").description("학습방법 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("시간관리 상담").description("시간관리 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("시험준비 상담").description("시험준비 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("집중력 향상").description("집중력 향상 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("학습동기 부여").description("학습동기 부여 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("기타").description("기타 학습상담").build());
+
+        log.info("✅ 상담 서브필드 초기 데이터 27건이 생성되었습니다.");
 
         // 상담사 12명 (학생상담센터)
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150001).name("정준호").email("jungjoonho@pureum.ac.kr").phone("010-3191-1123")

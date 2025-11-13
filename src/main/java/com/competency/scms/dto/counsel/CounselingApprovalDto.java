@@ -16,8 +16,12 @@ public class CounselingApprovalDto {
     // 승인/배정 요청용
     @Data
     public static class ApprovalRequest {
-        @NotNull(message = "상담사는 필수입니다")
+        @NotNull(message = "예약 정보는 필수입니다")
+        private Long reservationId;
+        @NotNull(message = "상담사 정보는 필수입니다")
         private Long counselorId;
+        @NotNull(message = "학생정보는 필수입니다")
+        private Long studentId;
         @NotNull(message = "확정 날짜는 필수입니다")
         private LocalDate confirmedDate;
         @NotNull(message = "시작 시간은 필수입니다")
@@ -25,6 +29,13 @@ public class CounselingApprovalDto {
         @NotNull(message = "종료 시간은 필수입니다")
         private LocalTime confirmedEndTime;
         private String memo;
+
+        public LocalDateTime getConfirmedStartDateTime(){
+            return confirmedDate.atTime(confirmedStartTime);
+        }
+        public LocalDateTime getConfirmedEndDateTime(){
+            return confirmedDate.atTime(confirmedEndTime);
+        }
     }
     
     // 거부 요청용

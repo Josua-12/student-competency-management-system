@@ -2,6 +2,7 @@ package com.competency.scms.repository.counseling;
 
 import com.competency.scms.domain.counseling.CounselingField;
 import com.competency.scms.domain.counseling.CounselingReservation;
+import com.competency.scms.domain.counseling.Counselor;
 import com.competency.scms.domain.counseling.ReservationStatus;
 import com.competency.scms.domain.user.User;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     Page<CounselingReservation> findByCounselorAndStatusOrderByCreatedAtAsc(User counselor, ReservationStatus status, Pageable pageable);
 
     // CNSL-011: 상담사별 특정상태의 상담 일정 조회 (배정된 상태:CONFIRMED)
-    @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status = :status ORDER BY cr.reservationDate ASC, cr.startTime ASC")
+    @Query("SELECT cr FROM CounselingReservation cr WHERE cr.counselor = :counselor AND cr.status = :status ORDER BY cr.confirmedDate ASC, cr.confirmedStartTime ASC")
     Page<CounselingReservation> findByCounselorAndStatusOrderByConfirmedDateTimeAsc(@Param("counselor") User counselor, @Param("status") ReservationStatus status, Pageable pageable);
 
     // CNSL-015: 전체 상담 이력 조회 (검색 기능 포함)
@@ -65,9 +66,7 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     @Query("SELECT cr FROM CounselingReservation cr WHERE cr.createdAt BETWEEN :startDate AND :endDate ORDER BY cr.createdAt DESC")
     Page<CounselingReservation> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
-    // 테스트용: createdAt 직접 업데이트
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE counseling_reservations SET created_at = :createdAt WHERE id = :id", nativeQuery = true)
-    void updateCreatedAt(@Param("id") Long id, @Param("createdAt") LocalDateTime createdAt);
+    // 중복 예약 방지용 쿼리 메서드 추가
+    boolean existsByCounselorAndReservationDateTime(Counselor counselor, LocalDateTime time);
+
 }

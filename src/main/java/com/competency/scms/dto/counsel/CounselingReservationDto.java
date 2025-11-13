@@ -41,6 +41,9 @@ public class CounselingReservationDto {
         private LocalDate reservationDate;
         private LocalTime startTime;
         private LocalTime endTime;
+        private LocalDate confirmedDate;
+        private LocalTime confirmedStartTime;
+        private LocalTime confirmedEndTime;
         private ReservationStatus status;
         private String counselorName;
     }
@@ -116,6 +119,9 @@ public class CounselingReservationDto {
         private LocalDate reservationDate;
         private LocalTime startTime;
         private LocalTime endTime;
+        private LocalDate confirmedDate;
+        private LocalTime confirmedStartTime;
+        private LocalTime confirmedEndTime;
         private String requestContent;
         private ReservationStatus status;
         private String counselorName;
