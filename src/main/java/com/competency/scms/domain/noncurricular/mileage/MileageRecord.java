@@ -25,7 +25,7 @@ public class MileageRecord extends BaseEntity {
 
     /** 학생 ID */
     @Column(name = "user_id", nullable = false)
-    private Long student;
+    private User student;
 
     /** 관련 프로그램 (없을 수도 있음) */
     @ManyToOne(fetch = FetchType.LAZY)

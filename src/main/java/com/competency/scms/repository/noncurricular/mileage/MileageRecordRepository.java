@@ -11,6 +11,27 @@ import java.util.*;
 public interface MileageRecordRepository
         extends JpaRepository<MileageRecord, Long>, JpaSpecificationExecutor<MileageRecord> {
 
+    // 특정 프로그램(및 선택 회차)의 이력 조회
+    @Query("""
+        select mr
+          from MileageRecord mr
+         where mr.program.progId = :progId
+           and (:schdId is null or mr.schedule.schdId = :schdId)
+         order by mr.createdAt asc
+    """)
+    List<MileageRecord> findHistory(@Param("progId") Long programId,
+                                    @Param("schdId") Long scheduleId);
+
+    // 학생/프로그램 기준 누적 포인트
+    @Query("""
+        select coalesce(sum(mr.pointsSigned), 0)
+          from MileageRecord mr
+         where mr.program.progId = :progId
+           and mr.student.userId = :studentId
+    """)
+    Integer sumPointsByProgramAndStudent(@Param("progId") Long programId,
+                                         @Param("studentId") Long studentId);
+
     /** 단일 값 필드(Long student) 기준 조회 */
     List<MileageRecord> findByStudentOrderByCreatedAtDesc(Long studentId);
     Page<MileageRecord> findByStudentOrderByMileageIdDesc(Long studentId, Pageable pageable);
