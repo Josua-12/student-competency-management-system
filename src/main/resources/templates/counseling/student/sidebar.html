@@ -1,0 +1,36 @@
+<!-- 페이지 상단 영역 -->
+<div th:fragment="sidebar (selectedTab)">
+<div class="row mt-4 mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold mb-4">일반상담·컨설팅</h2>
+
+        <!-- 라디오 탭 -->
+        <div class="d-flex flex-wrap gap-3 mb-4">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="counselingType" id="radio1" value="state">
+                <label class="form-check-label" for="radio1">신청현황</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="counselingType" id="radio2" value="GeneralCnsl">
+                <label class="form-check-label" for="radio2">일반상담·컨설팅 안내</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="counselingType" id="radio3" value="psycho">
+                <label class="form-check-label" for="radio3">심리상담</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="counselingType" id="radio4" value="career">
+                <label class="form-check-label" for="radio4">진로상담</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="counselingType" id="radio5" value="job" checked>
+                <label class="form-check-label" for="radio5">취업상담</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="counselingType" id="radio6" value="learning">
+                <label class="form-check-label" for="radio6">학습상담</label>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
