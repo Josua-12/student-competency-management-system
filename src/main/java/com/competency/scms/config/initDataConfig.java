@@ -1,11 +1,13 @@
 package com.competency.scms.config;
 
+import com.competency.scms.domain.competency.AssessmentSection;
 import com.competency.scms.domain.counseling.*;
 import com.competency.scms.domain.noncurricular.mileage.*;
 import com.competency.scms.domain.noncurricular.operation.*;
 import com.competency.scms.domain.noncurricular.program.*;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.domain.user.UserRole;
+import com.competency.scms.repository.competency.AssessmentSectionRepository;
 import com.competency.scms.repository.counseling.*;
 import com.competency.scms.repository.noncurricular.mileage.MileageRecordRepository;
 import com.competency.scms.repository.noncurricular.operation.ProgramApplicationRepository;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -37,6 +40,7 @@ public class initDataConfig implements CommandLineRunner {
     private final SatisfactionQuestionRepository satisfactionQuestionRepository;
     private final QuestionOptionRepository questionOptionRepository;
     private final ProgramApplicationRepository programApplicationRepository;
+    private final AssessmentSectionRepository assessmentSectionRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
 
@@ -528,7 +532,52 @@ public class initDataConfig implements CommandLineRunner {
         log.info("✅ 상담 후 만족도 조사 질문 4건(시스템 기본)이 생성되었습니다.");
         log.info("✅ QuestionOption 초기 데이터 4건이 생성되었습니다.");
 
+        // 진단 세션(AssessmentSection) 초기화 데이터
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // 1. [진행 중]
+        AssessmentSection activeSection = AssessmentSection.builder()
+                .title("2025학년도 1학기 정기 핵심역량 진단")
+                .description("재학생 전체를 대상으로 하는 정기 진단입니다. 성실히 응답해 주세요.")
+                .startDate(now.minusDays(7))
+                .endDate(now.plusDays(7))
+                .isActive(true)
+                .build();
+
+        // 2. [종료됨]
+        AssessmentSection expiredSection = AssessmentSection.builder()
+                .title("2024학년도 2학기 정기 핵심역량 진단")
+                .description("지난 학기 진단 결과입니다.")
+                .startDate(now.minusMonths(2))
+                .endDate(now.minusMonths(1))
+                .isActive(true)
+                .build();
+
+        // 3. [예정됨]
+        AssessmentSection upcomingSection = AssessmentSection.builder()
+                .title("2025학년도 여름방학 특별 진단")
+                .description("여름방학 프로그램 참여자를 위한 사전 진단입니다.")
+                .startDate(now.plusMonths(1))
+                .endDate(now.plusMonths(2))
+                .isActive(true)
+                .build();
+
+        // 4. [비활성]
+        AssessmentSection inactiveSection = AssessmentSection.builder()
+                .title("(임시) 관리자 테스트용 진단")
+                .description("학생들에게는 보이지 않는 테스트 항목입니다.")
+                .startDate(now.minusDays(1))
+                .endDate(now.plusDays(1))
+                .isActive(false)
+                .build();
+
+        assessmentSectionRepository.saveAll(List.of(activeSection, expiredSection, upcomingSection, inactiveSection));
+        log.info("✅ AssessmentSection 초기 데이터 4건이 생성되었습니다.");
+
         log.info("테스트 데이터 초기화 완료");
+
+
     }
 
     private Department ensureDept(String code, String name) {

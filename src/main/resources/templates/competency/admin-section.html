@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+        th:replace="~{layout :: layout(
+                      title= '진단 회차 관리',
+                      content=~{::main},
+                      css=~{::#page-css},
+                      scripts=~{::#page-scripts}
+        )}">
+<th:block th:fragment="css" id="page-css">
+    <link th:href="@{/css/competency/admin-section.css}" rel="stylesheet">
+</th:block>
+
+<main th:fragment="content" class="container-xl my-5">
+
+    <div class="page-header d-flec justify-content-between align-items-center mb-4">
+        <h2 class="page-title">진단 회차 관리</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item">관리자</li>
+                <li class="breadcrumb-item active">진단 회차 관리</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center py-3">
+            <h5 class="card-title mb-0"><i class="fas fa-list me-2"></i>등록된 진단 목록</h5>
+            <button type="button" class="btn btn-primary" id="btnOpenCreateModal">
+                <i class="fas fa-plus me-1"></i> 새 진단 등록
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table-light">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">ID</th>
+                            <th style="width: 30%">진단명</th>
+                            <th style="width: 25%">진단 기간</th>
+                            <th style="width: 10%">상태</th>
+                            <th style="width: 10%">활성 여부</th>
+                            <th style="width: 20%">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionListBody">
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+                                데이터 로딩 중...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="sectionModal" tabindex="-1" aria-labelledby="sectionModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sectionModalLabel">새 진단 등록</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"aria-label="close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sectionForm">
+                        <input type="hidden" id="setionId" name="id">
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">진단명 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title"
+                                   placeholder="예: 2025학년도 1학기 정기 진단" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">설명</label>
+                            <textarea class="form-control" id="description" name="description"
+                                      rows="3" placeholder="학생들에게 표시될 간단한 안내 문구"></textarea>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label for="startDate" class="form-label">시작 일시 <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="startDate" name="startDate" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="endDate" class="form-label">종료 일시 <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="endDate" name="endDate" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                       id="isActive" name="isActive" checked>
+                                <label class="form-check-label" for="isActive">활성화 (학생에게 공개)</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveSection">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<th:block th:fragment="scripts" id="page-scripts">
+    <script th:src="@{/js/competency/admin-section.js}"></script>
+</th:block>
+</html>

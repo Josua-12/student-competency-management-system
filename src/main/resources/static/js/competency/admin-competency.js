@@ -16,9 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // '문항 관리' 탭의 테이블 body 캐시
     const questionListBody = document.getElementById('questionListBody');
 
-    // 1-2. CSRF 토큰
-    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+    // 1-2. 공통 헤더 생성 함수
+    function getAuthHeaders() {
+        const token = localStorage.getItem('accessToken');
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': token ? 'Bearer ' + token : ''
+        };
+    }
 
     let tree;
 
@@ -102,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch('/admin/competency/api/competencies', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
+            headers: getAuthHeaders(),
             body: JSON.stringify(formData)
         })
             .then(response => response.json())
@@ -133,7 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(`/admin/competency/api/competencies/${competencyId}`, {
             method: 'DELETE',
-            headers: { [csrfHeader]: csrfToken }
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+            }
         })
             .then(response => response.json())
             .then(data => {
@@ -201,10 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(`/admin/competency/api/competencies/${competencyId}/questions`)
             .then(response => {
-
-
-
-
+                if (!response.ok) {
+                    throw new Error('문항 목록을 불러오는데 실패했습니다.');
+                }
+                return response.json();
             })
             .then(questions => {
                 if (questions.length === 0) {
@@ -261,7 +268,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetch(`/admin/competency/api/questions/${questionId}`, {
                 method: 'DELETE',
-                headers: { [csrfHeader]: csrfToken }
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
+                }
             })
                 .then(response => {
                     if (!response.ok) return response.json().then(err => { throw new Error(err.error) });
@@ -397,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. API 호출
         fetch('/admin/competency/api/questions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
+            headers: getAuthHeaders(),
             body: JSON.stringify(formData)
         })
             .then(response => {
