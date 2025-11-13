@@ -5,6 +5,7 @@ import com.competency.scms.domain.counseling.CounselingSubField;
 import com.competency.scms.domain.counseling.ReservationStatus;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.domain.user.UserRole;
+import com.competency.scms.dto.counsel.CounselingApprovalDto;
 import com.competency.scms.dto.counsel.CounselingReservationDto;
 import com.competency.scms.repository.counseling.CounselingReservationRepository;
 import com.competency.scms.repository.counseling.CounselingSubFieldRepository;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -62,6 +62,42 @@ public class CounselingReservationServiceTest {
     }
 
     @Test
+    void createReservation_상담사가학생위해생성시_CONFIRMED상태() {
+        // Given
+        User counselor = new User();
+        counselor.setRole(UserRole.COUNSELOR);
+        User student = new User();
+        student.setId(2L);
+        student.setRole(UserRole.STUDENT);
+        CounselingSubField subField = new CounselingSubField();
+        when(userRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(counselingFieldRepository.findById(1L)).thenReturn(Optional.of(subField));
+        CounselingReservation saved = new CounselingReservation();
+        saved.setId(1L);
+        when(reservationRepository.save(any(CounselingReservation.class))).thenReturn(saved);
+        
+        CounselingReservationDto.CreateRequest request = new CounselingReservationDto.CreateRequest();
+        request.setStudentId(2L);
+        request.setSubFieldId(1L);
+        request.setReservationDate(java.time.LocalDate.now());
+        request.setStartTime(java.time.LocalTime.of(9, 0));
+        request.setEndTime(java.time.LocalTime.of(10, 0));
+        
+        // When
+        Long result = counselingReservationService.createReservation(request, counselor);
+        
+        // Then
+        assertThat(result).isEqualTo(1L);
+        verify(reservationRepository).save(argThat(reservation -> 
+            reservation.getStatus() == ReservationStatus.CONFIRMED &&
+            reservation.getConfirmedDate() != null &&
+            reservation.getConfirmedStartTime() != null &&
+            reservation.getConfirmedEndTime() != null &&
+            reservation.getConfirmedAt() != null
+        ));
+    }
+
+    @Test
     void cancelReservation_void반환() {
         // Given
         User student = new User();
@@ -89,8 +125,16 @@ public class CounselingReservationServiceTest {
         reservation.setStatus(ReservationStatus.PENDING);
         when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
         
+        CounselingApprovalDto.ApprovalRequest request = new CounselingApprovalDto.ApprovalRequest();
+        request.setReservationId(1L);
+        request.setConfirmedDate(java.time.LocalDate.now());
+        request.setConfirmedStartTime(java.time.LocalTime.of(9, 0));
+        request.setConfirmedEndTime(java.time.LocalTime.of(10, 0));
+        request.setCounselorId(1L);
+        request.setStudentId(1L);
+        
         // When
-        counselingReservationService.approveReservation(1L, LocalDateTime.now(), "승인", counselor);
+        counselingReservationService.approveReservation(request, counselor);
         
         // Then
         verify(reservationRepository).findById(1L);
