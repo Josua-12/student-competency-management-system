@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProgramApplicationRepository
@@ -58,5 +59,18 @@ public interface ProgramApplicationRepository
     Page<ProgramApplication> findByStudent_IdOrderByApplicationIdDesc(Long studentId, Pageable pageable);
 
     long countByProgram_ProgramIdAndStatus(Long programId, ApplicationStatus status);
+
+    @Query("""
+      select pa
+        from ProgramApplication pa
+        join fetch pa.student s
+        join fetch pa.program p
+        left join fetch pa.schedule sch
+       where p.programId = :progId
+         and (:schdId is null or sch.scheduleId = :schdId)
+    """)
+    List<ProgramApplication> findEligibleForMileage(
+            @Param("progId") Long progId,
+            @Param("schdId") Long schdId);
 }
 
