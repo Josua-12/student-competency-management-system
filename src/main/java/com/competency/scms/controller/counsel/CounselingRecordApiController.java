@@ -38,6 +38,16 @@ public class CounselingRecordApiController {
         recordService.updateRecord(recordId, request, currentUser);
         return ResponseEntity.ok().build();
     }
+    
+    // CNSL-012: 상담일지 삭제
+    @DeleteMapping("/{recordId}")
+    public ResponseEntity<Void> deleteRecord(
+            @PathVariable Long recordId,
+            @AuthenticationPrincipal User currentUser) {
+        
+        recordService.deleteRecord(recordId, currentUser);
+        return ResponseEntity.ok().build();
+    }
 
     // CNSL-013: 상담일지 목록 조회
     @GetMapping

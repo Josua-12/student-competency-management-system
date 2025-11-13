@@ -49,21 +49,40 @@ public class CounselingScheduleService {
         return convertToTimeSlotResponses(schedule.get());
     }
 
-    private void updateScheduleSlots(CounselingBaseSchedule existing, CounselingBaseSchedule newSchedule) {
-        existing.setSlot0910(newSchedule.getSlot0910());
-        existing.setSlot1011(newSchedule.getSlot1011());
-        existing.setSlot1112(newSchedule.getSlot1112());
-        existing.setSlot1213(newSchedule.getSlot1213());
-        existing.setSlot1314(newSchedule.getSlot1314());
-        existing.setSlot1415(newSchedule.getSlot1415());
-        existing.setSlot1516(newSchedule.getSlot1516());
-        existing.setSlot1617(newSchedule.getSlot1617());
-        existing.setSlot1718(newSchedule.getSlot1718());
+    private void updateScheduleSlots(CounselingBaseSchedule baseSchedule, CounselingBaseSchedule newSchedule) {
+        baseSchedule.setSlot0910(newSchedule.getSlot0910());
+        baseSchedule.setSlot1011(newSchedule.getSlot1011());
+        baseSchedule.setSlot1112(newSchedule.getSlot1112());
+        baseSchedule.setSlot1213(newSchedule.getSlot1213());
+        baseSchedule.setSlot1314(newSchedule.getSlot1314());
+        baseSchedule.setSlot1415(newSchedule.getSlot1415());
+        baseSchedule.setSlot1516(newSchedule.getSlot1516());
+        baseSchedule.setSlot1617(newSchedule.getSlot1617());
+        baseSchedule.setSlot1718(newSchedule.getSlot1718());
     }
 
     private List<CounselingScheduleDto.TimeSlotResponse> convertToTimeSlotResponses(CounselingBaseSchedule schedule) {
-        // 구현 필요: 시간대별 응답 변환
-        return List.of();
+        return List.of(
+            createTimeSlotResponse(schedule.getId(), 9, 10, schedule.getSlot0910()),
+            createTimeSlotResponse(schedule.getId(), 10, 11, schedule.getSlot1011()),
+            createTimeSlotResponse(schedule.getId(), 11, 12, schedule.getSlot1112()),
+            createTimeSlotResponse(schedule.getId(), 12, 13, schedule.getSlot1213()),
+            createTimeSlotResponse(schedule.getId(), 13, 14, schedule.getSlot1314()),
+            createTimeSlotResponse(schedule.getId(), 14, 15, schedule.getSlot1415()),
+            createTimeSlotResponse(schedule.getId(), 15, 16, schedule.getSlot1516()),
+            createTimeSlotResponse(schedule.getId(), 16, 17, schedule.getSlot1617()),
+            createTimeSlotResponse(schedule.getId(), 17, 18, schedule.getSlot1718())
+        );
+    }
+
+    private CounselingScheduleDto.TimeSlotResponse createTimeSlotResponse(Long scheduleId, int startHour, int endHour, Boolean isAvailable) {
+        CounselingScheduleDto.TimeSlotResponse response = new CounselingScheduleDto.TimeSlotResponse();
+        response.setId(scheduleId);
+        response.setStartTime(java.time.LocalTime.of(startHour, 0));
+        response.setEndTime(java.time.LocalTime.of(endHour, 0));
+        response.setIsAvailable(isAvailable);
+        response.setIsReserved(false);
+        return response;
     }
 
     // 상담사별 일정 조회 (요일순)

@@ -116,7 +116,8 @@
                                         <th>예약번호</th>
                                         <th>학생명</th>
                                         <th>상담유형</th>
-                                        <th>희망일시</th>
+                                        <th>요청일시</th>
+                                        <th>확정일시</th>
                                         <th>신청일</th>
                                         <th>상담사</th>
                                         <th>상태</th>
@@ -130,6 +131,7 @@
                                         <td>김학생</td>
                                         <td>진로상담</td>
                                         <td>2024-01-15 14:00</td>
+                                        <td>-</td>
                                         <td>2024-01-10</td>
                                         <td>-</td>
                                         <td><span class="badge bg-warning">대기중</span></td>
@@ -145,6 +147,7 @@
                                         <td>이학생</td>
                                         <td>학업상담</td>
                                         <td>2024-01-16 10:00</td>
+                                        <td>2024-01-16 10:00</td>
                                         <td>2024-01-11</td>
                                         <td>김상담</td>
                                         <td><span class="badge bg-success">승인됨</span></td>
@@ -159,6 +162,7 @@
                                         <td>박학생</td>
                                         <td>심리상담</td>
                                         <td>2024-01-17 15:00</td>
+                                        <td>-</td>
                                         <td>2024-01-12</td>
                                         <td>-</td>
                                         <td><span class="badge bg-danger">거부됨</span></td>
@@ -211,11 +215,17 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">확정 날짜</label>
-                            <input type="date" class="form-control" required>
+                            <input type="date" class="form-control" name="confirmedDate" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">확정 시간</label>
-                            <input type="time" class="form-control" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">확정 시작 시간</label>
+                                <input type="time" class="form-control" name="confirmedStartTime" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">확정 종료 시간</label>
+                                <input type="time" class="form-control" name="confirmedEndTime" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">메모</label>
@@ -280,8 +290,12 @@
                         <div class="col-sm-9">진로상담</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-sm-3"><strong>희망일시:</strong></div>
+                        <div class="col-sm-3"><strong>요청일시:</strong></div>
                         <div class="col-sm-9">2024년 1월 15일 14:00</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>확정일시:</strong></div>
+                        <div class="col-sm-9">-</div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>상담내용:</strong></div>

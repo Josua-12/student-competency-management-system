@@ -60,7 +60,8 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND("CNSL-007", "상담 분류를 찾을 수 없습니다."),
     COUNSELOR_NOT_FOUND("CNSL-008", "상담사를 찾을 수 없습니다."),
     CANNOT_MODIFY_SYSTEM_QUESTION("CNSL-009", "시스템 기본 질문은 수정할 수 없습니다."),
-    CANNOT_DELETE_SYSTEM_QUESTION("CNSL-010", "시스템 기본 질문은 삭제할 수 없습니다.");
+    CANNOT_DELETE_SYSTEM_QUESTION("CNSL-010", "시스템 기본 질문은 삭제할 수 없습니다."),
+    COUNSELOR_REQUIRED_FOR_CONFIRMED("CNSL-011", "상담 예약 확정시에는 상담사 정보가 필요합니다.");
 
     private final String code;
     private final String message;

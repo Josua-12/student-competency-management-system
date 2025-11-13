@@ -48,6 +48,10 @@ async function loadPendingApprovals() {
 
 function renderPendingTable(reservations) {
     const tbody = document.querySelector('.table tbody');
+    if (reservations.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">승인 대기 내역이 없습니다.</td></tr>';
+        return;
+    }
     tbody.innerHTML = reservations.slice(0, 5).map(r => `
         <tr>
             <td>${r.studentName}</td>
@@ -77,6 +81,10 @@ async function loadCounselorStats() {
 function renderCounselorTable(counselors) {
     const tbody = document.querySelectorAll('.table')[1]?.querySelector('tbody');
     if (tbody) {
+        if (counselors.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">상담사 데이터가 없습니다.</td></tr>';
+            return;
+        }
         tbody.innerHTML = counselors.slice(0, 5).map(c => `
             <tr>
                 <td>${c.name}</td>

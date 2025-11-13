@@ -45,6 +45,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
     @Autowired
     private CounselingSubFieldRepository subFieldRepository;
     @Autowired
+    private TestCounselingReservationRepository testCounselingReservationRepository;
     private DepartmentRepository departmentRepository;
 
     //--쿼리문 있는 Repos--//
@@ -56,6 +57,8 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private CounselingScheduleRepository counselingScheduleRepository;
     @Autowired
     private SatisfactionAnswerRepository satisfactionAnswerRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     private User testStudent;
     private User testCounselor;
@@ -79,7 +82,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .phone("010-1234-5678")
                 .password("password")
                 .birthDate(LocalDate.of(2000,1,1))
-                .department(ensureDept("ECONOMICS", "경제학과"))
+                .department(ensureDept("ECONOMICS", "경제학과")
                 .grade(1)
                 .build();
         userRepository.save(testStudent);
@@ -386,7 +389,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .status(ReservationStatus.NO_SHOW)
                 .build();
         counselingReservationRepository.saveAndFlush(testReservation3);
-        counselingReservationRepository.updateCreatedAt(testReservation3.getId(), LocalDateTime.of(2025,10,11,9,10));
+        testCounselingReservationRepository.updateCreatedAt(testReservation3.getId(), LocalDateTime.of(2025,10,11,9,10));
 
         CounselingReservation testReservation4 = CounselingReservation.builder()
                 .student(testStudent)
@@ -400,10 +403,10 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .status(ReservationStatus.NO_SHOW)
                 .build();
         counselingReservationRepository.saveAndFlush(testReservation4);
-        counselingReservationRepository.updateCreatedAt(testReservation4.getId(), LocalDateTime.of(2025,11,11,9,10));
+        testCounselingReservationRepository.updateCreatedAt(testReservation4.getId(), LocalDateTime.of(2025,11,11,9,10));
 
-        counselingReservationRepository.updateCreatedAt(testReservation.getId(), LocalDateTime.of(2025,10,10,9,10));
-        counselingReservationRepository.updateCreatedAt(testReservation2.getId(), LocalDateTime.of(2025,10,20,9,10));
+        testCounselingReservationRepository.updateCreatedAt(testReservation.getId(), LocalDateTime.of(2025,10,10,9,10));
+        testCounselingReservationRepository.updateCreatedAt(testReservation2.getId(), LocalDateTime.of(2025,10,20,9,10));
 
         //WHEN
         LocalDateTime startDate = LocalDateTime.of(2025,10,11,0,0);
@@ -418,7 +421,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
 
     @Test
     @DisplayName("테스트 6 - 공개된 상담 기록 기간별 조회")
-    void testFindByCounselingByIsPublicTrueDateBetween(){
+    void testFindByIsPublicTrueAndCounselingDateBetween(){
         // GIVEN
         CounselingRecord testCounselingRecord1 = CounselingRecord.builder()
                 .reservation(testReservation)
@@ -447,7 +450,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
         //WHEN
         LocalDateTime startDate = LocalDateTime.of(2025,10,11,0,0);
         LocalDateTime endDate = LocalDateTime.of(2025,11,20,23,59);
-        Page<CounselingRecord> result = counselingRecordRepository.findByCounselingByIsPublicTrueDateBetween(startDate, endDate, Pageable.unpaged());
+        Page<CounselingRecord> result = counselingRecordRepository.findByIsPublicTrueAndCounselingDateBetween(startDate, endDate, Pageable.unpaged());
 
         //THEN
         assertThat(result.getContent()).hasSize(2);
@@ -614,7 +617,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
         List<Object[]> result = counselingReservationRepository.countByStatusGroupByCounselingField(ReservationStatus.COMPLETED);
 
         //THEN
-        assertThat(result).hasSize(1);      // counselingField = CARRER 로 한 개
+        assertThat(result).hasSize(1);      // counselingField = CAREER 로 한 개
         assertThat(result.get(0)[0]).isEqualTo(CounselingField.CAREER);
         assertThat(result.get(0)[1]).isEqualTo(2L);
     }
@@ -643,7 +646,11 @@ public class CounselingRepositoryTest { //@Query문만 검사
     void testFindByCounselorAndStatusOrderByConfirmedDateTimeAsc(){
         //GIVEN
         testReservation.setStatus(ReservationStatus.CONFIRMED);
+        testReservation.setConfirmedDate(LocalDate.of(2025,11,11));
+        testReservation.setConfirmedStartTime(LocalTime.of(11,0));
         testReservation2.setStatus(ReservationStatus.CONFIRMED);
+        testReservation2.setConfirmedDate(LocalDate.of(2025,11,15));
+        testReservation2.setConfirmedStartTime(LocalTime.of(9,0));
         counselingReservationRepository.save(testReservation);
         counselingReservationRepository.save(testReservation2);
 
@@ -698,6 +705,8 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .orElseGet(() -> departmentRepository.save(
                         Department.builder().code(code).name(name).build()));
     }
+
+
 
 
 
