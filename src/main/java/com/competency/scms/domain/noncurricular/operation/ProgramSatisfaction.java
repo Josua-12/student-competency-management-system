@@ -7,11 +7,16 @@ import com.competency.scms.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter @Setter
 @Entity
 @Table(name = "program_satisfaction",
         uniqueConstraints = @UniqueConstraint(name="uq_satis_unique",
                 columnNames={"prog_id","schd_id","user_id"}))
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProgramSatisfaction extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="satisfaction_id")
@@ -29,7 +34,12 @@ public class ProgramSatisfaction extends BaseEntity {
     private User student;
 
     @Column(nullable=false) private Integer rating;   // 1~5
-    @Column(length=500)     private String comment;
+
+    @Column(columnDefinition = "text")
+    private String feedback;
+
+    @Column(name = "submitted_at", nullable = false)
+    private LocalDateTime submittedAt;
 }
 
 

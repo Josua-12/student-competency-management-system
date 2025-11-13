@@ -135,9 +135,9 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
                 ))
                 .studentNameMasked("익명")
                 .rating(s.getRating())
-                .feedback(s.getComment())
-                // 엔티티에 submittedAt이 없으므로 createdAt 사용
-                .submittedAt(s.getCreatedAt())
+                .feedback(s.getFeedback())
+                // 엔티티에 submittedAt이 없으므로 null 사용
+                .submittedAt(s.getSubmittedAt())
                 .build();
     }
 
@@ -160,8 +160,8 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
                 ))
                 .studentNameMasked("익명")
                 .rating(s.getRating())
-                .feedback(s.getComment())
-                .submittedAt(s.getCreatedAt())
+                .feedback(s.getFeedback())
+                .submittedAt(null)
                 .build();
     }
 
@@ -287,7 +287,7 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
         }
 
         // 평균/카운트 (Typed)
-        String q1 = "select avg(s.rating), count(s) from Satisfaction s" + where;
+        String q1 = "select avg(s.rating), count(s) from ProgramSatisfaction s" + where;
         Object[] a1 = createQuery(q1, Object[].class, p).getSingleResult();
         ag.avgRating = a1[0] != null ? ((Number) a1[0]).doubleValue() : null;
         ag.count     = a1[1] != null ? ((Number) a1[1]).longValue()    : 0L;
@@ -305,7 +305,7 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
         // 회차별 평균평점: name(Transient) 사용 금지 → sessionNo 등으로 받아서 라벨은 자바에서 조립
         String q2 =
                 "select s.schedule.sessionNo, s.schedule.date, s.schedule.startTime, avg(s.rating) " +
-                        "from Satisfaction s " + where +
+                        "from ProgramSatisfaction s " + where +
                         " group by s.schedule.sessionNo, s.schedule.date, s.schedule.startTime " +
                         " order by min(s.schedule.sessionNo) asc";
 
@@ -323,7 +323,7 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
         // 히스토그램 (1~5)
         List<Long> hist = new ArrayList<>(Arrays.asList(0L,0L,0L,0L,0L));
         for (int rv = 1; rv <= 5; rv++) {
-            String qh = "select count(s) from Satisfaction s " + where + " and s.rating = :rv";
+            String qh = "select count(s) from ProgramSatisfaction s " + where + " and s.rating = :rv";
             Map<String,Object> ph = new HashMap<>(p); ph.put("rv", rv);
             Long cnt = createQuery(qh, Long.class, ph).getSingleResult();
             hist.set(rv-1, cnt == null ? 0L : cnt);
@@ -349,7 +349,7 @@ public class SatisfactionResultServiceImpl implements SatisfactionResultService 
     private Double ratioCount(String cond, String baseWhere, Map<String,Object> baseParams, Long total) {
         if (total == null || total == 0) return null;
 
-        String q = "select count(s) from Satisfaction s " + baseWhere + " and " + cond;
+        String q = "select count(s) from ProgramSatisfaction s " + baseWhere + " and " + cond;
 
         // 원본 맵을 건드리지 않도록 복사본 사용
         Map<String,Object> params = (baseParams != null) ? new HashMap<>(baseParams) : new HashMap<>();

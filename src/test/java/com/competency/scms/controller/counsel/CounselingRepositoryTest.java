@@ -1,7 +1,9 @@
 package com.competency.scms.controller.counsel;
 
+import com.competency.scms.domain.Department;
 import com.competency.scms.domain.counseling.*;
 import com.competency.scms.domain.user.UserRole;
+import com.competency.scms.repository.DepartmentRepository;
 import com.competency.scms.repository.counseling.*;
 import com.competency.scms.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,8 @@ import java.util.List;
 @Transactional      // 각 테스트 후 롤백하여 DB 정리
 public class CounselingRepositoryTest { //@Query문만 검사
 
+
+
     //--테스트에 필수적 Repos--//
     @Autowired
     private UserRepository userRepository;
@@ -40,6 +44,8 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private SatisfactionQuestionRepository satisfactionQuestionRepository;
     @Autowired
     private CounselingSubFieldRepository subFieldRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     //--쿼리문 있는 Repos--//
     @Autowired
@@ -73,7 +79,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .phone("010-1234-5678")
                 .password("password")
                 .birthDate(LocalDate.of(2000,1,1))
-                .department("경제학과")
+                .department(ensureDept("ECONOMICS", "경제학과"))
                 .grade(1)
                 .build();
         userRepository.save(testStudent);
@@ -687,7 +693,11 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 r[0].equals(testCounselor) && r[1] == ReservationStatus.COMPLETED && (Long) r[2] == 1L);
     }
 
-
+    private Department ensureDept(String code, String name) {
+        return departmentRepository.findByCode(code)
+                .orElseGet(() -> departmentRepository.save(
+                        Department.builder().code(code).name(name).build()));
+    }
 
 
 

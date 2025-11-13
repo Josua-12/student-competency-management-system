@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Department extends BaseEntity {
+public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

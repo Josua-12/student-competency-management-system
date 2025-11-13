@@ -53,7 +53,6 @@ public class initDataConfig implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         if(userRepository.count() > 0) {
-
             log.info("➡️ 데이터가 이미 존재합니다. 초기화를 건너뜁니다.");
             return;
         }
@@ -531,17 +530,11 @@ public class initDataConfig implements CommandLineRunner {
         log.info("테스트 데이터 초기화 완료");
     }
 
-    // ---------------------------------------------------------
-    // 1) 부서 엔티티 생성 (중복 방지)
-    // ---------------------------------------------------------
     private Department ensureDept(String code, String name) {
         return departmentRepository.findByCode(code)
                 .orElseGet(() -> departmentRepository.save(
-                        Department.builder()
-                                .code(code)
-                                .name(name)
-                                .build()
-                ));
+                    Department.builder().code(code).name(name).build()));
     }
+
 }
 
