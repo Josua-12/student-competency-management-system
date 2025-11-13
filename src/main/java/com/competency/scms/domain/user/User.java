@@ -1,5 +1,6 @@
 package com.competency.scms.domain.user;
 
+import com.competency.scms.domain.Department;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,8 +38,9 @@ public class User {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "department", length = 100)
-    private String department;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Column(name = "grade")
     private Integer grade;
@@ -147,7 +149,7 @@ public class User {
     }
 
     // ========== 프로필 관련 메서드 ==========
-    public void updateProfile(String phone, String department, Integer grade) {
+    public void updateProfile(String phone, Department department, Integer grade) {
         this.phone = phone;
         this.department = department;
         this.grade = grade;
