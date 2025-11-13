@@ -14,26 +14,55 @@
         </a>
 
         <!-- 햄버거 토글 버튼 (모바일) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNay">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggle-icon"></span>
+            <span class="navbar-toggler-icon"></span>
         </button>
 
         <!-- 네비게이션 메뉴 -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" th:href="@{/main}">홈</a>
+                    <a class="nav-link" th:href="@{/main}">홈</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/assessment}">역량진단</a>
+
+                <!-- 역량진단 드롭다운 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        역량진단
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/assessment}">역량진단 시작</a></li>
+                        <li><a class="dropdown-item" th:href="@{/competency/result}">진단 결과 확인</a></li>
+                    </ul>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/competency}">핵심역량</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/program}">비교과 프로그램</a>
+
+                <!-- 상담 드롭다운 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        상담
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/consultation/reserve}">상담 예약</a></li>
+                        <li><a class="dropdown-item" th:href="@{/consultation/history}">내 예약 조회</a></li>
+                    </ul>
                 </li>
+
+                <!-- 비교과 프로그램 드롭다운 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        비교과 프로그램
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/dashboard?type=internal}">교내 프로그램</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard?type=external}">교외 프로그램</a></li>
+                    </ul>
+                </li>
+
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
                 </li>
