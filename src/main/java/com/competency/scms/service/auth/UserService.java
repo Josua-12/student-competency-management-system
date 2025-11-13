@@ -32,7 +32,7 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final LoginHistoryRepository loginHistoryRepository;
@@ -53,8 +53,16 @@ public class AuthService {
      * 로그인 (AUTH-001)
      */
     public LoginResponseDto login(LoginRequestDto request, String ipAddress, String userAgent) {
+        log.info("로그인 시도 - userNum: {}, password: {}",
+                request.getUserNum(),
+                request.getUserNum().getClass().getSimpleName(),
+                request.getPassword());
+
         User user = userRepository.findByUserNum(request.getUserNum())
                 .orElseThrow(() -> new UserNotFoundException("등록된 사용자가 없습니다."));
+
+        log.info("DB에서 찾은 사용자 - userNum: {}, 암호화된 비밀번호 길이: {}",
+                user.getUserNum(), user.getPassword().length());
 
         if (user.getLocked()) {
             loginHistoryRepository.save(LoginHistory.builder()

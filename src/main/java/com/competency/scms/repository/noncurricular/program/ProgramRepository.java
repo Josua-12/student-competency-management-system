@@ -3,6 +3,7 @@ package com.competency.scms.repository.noncurricular.program;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
+import com.competency.scms.dto.noncurricular.mileage.ProgramSearchRowDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
@@ -81,6 +82,28 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
             "((:from is null or p.recruitStartAt <= :to) and (:to is null or p.recruitEndAt >= :from))")
     Page<Program> findRecruitingBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to, Pageable pageable);
 
+    @Query("""
+      select new com.competency.scms.dto.noncurricular.mileage.ProgramSearchRowDto(
+         p.programId,
+         p.title,
+         p.department.name,
+         concat(function('date_format', p.programStartAt, '%Y-%m-%d'),
+                ' ~ ',
+                function('date_format', p.programEndAt, '%Y-%m-%d')),
+         p.status
+      )
+        from Program p
+       where (:status is null or p.status = :status)
+         and ( :q is null
+            or lower(p.title) like concat('%', lower(:q), '%')
+            or lower(p.description) like concat('%', lower(:q), '%')
+       )
+       order by p.programStartAt desc, p.programId desc
+    """)
+    Page<ProgramSearchRowDto> searchForMileage(
+            @Param("q") String keyword,
+            @Param("status") ProgramStatus status,
+            Pageable pageable);
 //    // 부서/카테고리만 즉시 로딩(프로젝션용)
 //    @EntityGraph(attributePaths = {"department", "category"})
 //    Optional<Program> findWithDeptAndCategoryById(Long id);

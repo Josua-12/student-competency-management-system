@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import com.competency.scms.dto.user.*;
-import com.competency.scms.service.auth.AuthService;
+import com.competency.scms.service.auth.UserService;
 import com.competency.scms.service.user.PasswordResetService;
 import com.competency.scms.service.user.PhoneVerificationService;
 import jakarta.validation.Valid;
@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 public class UserController {
 
-    private final AuthService authenticationService;
+    private final UserService authenticationService;
     private final PhoneVerificationService phoneVerificationService;
     private final PasswordResetService passwordResetService;
     private final JwtUtil jwtUtil;
@@ -38,7 +38,7 @@ public class UserController {
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         log.info("로그인 요청 - 학번: {}", request.getUserNum());
 
-        // ✓ 수정: HttpServletRequest에서 IP와 User-Agent 추출
+
         HttpServletRequest httpRequest = getHttpServletRequest();
         String ipAddress = getClientIpAddress(httpRequest);
         String userAgent = httpRequest.getHeader("User-Agent");

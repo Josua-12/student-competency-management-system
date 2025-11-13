@@ -40,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+        long startTime = System.currentTimeMillis();
+
         try {
             String token = resolveToken(request);
             if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
@@ -51,21 +53,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             log.debug("JWT filter skipped due to: {}", e.getMessage());
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            if (duration > 100) {
+                log.warn("JWT 토큰 검증 시간 초과: {}ms (목표: 100ms 이내)", duration);
+            } else {
+                log.debug("JWT 토큰 검증 완료: {}ms", duration);
+            }
         }
+
         chain.doFilter(request, response);
     }
 
+
     private String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
+        log.info("JWT 필터 - Authorization 헤더: {}", bearer);
+
         if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
+
         Cookie[] cookies = request.getCookies();
+        log.info("JWT 필터 - 쿠키 개수: {}", cookies != null ? cookies.length : 0);
+
         if (cookies != null) {
             for (Cookie c : cookies) {
-                if ("ACCESS-TOKEN".equals(c.getName())) return c.getValue();
+                log.info("JWT 필터 - 쿠키: {}={}", c.getName(), c.getValue().length() > 20 ? c.getValue().substring(0, 20) + "..." : c.getValue());
+                if ("accessToken".equals(c.getName())) {
+                    log.info("JWT 필터 - accessToken 쿠키 발견!");
+                    return c.getValue();
+                }
             }
         }
+
+        log.info("JWT 필터 - 토큰을 찾을 수 없음");
         return null;
     }
 }

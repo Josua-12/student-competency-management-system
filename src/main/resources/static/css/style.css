@@ -383,3 +383,19 @@ a:focus-visible {
         border: 1px solid var(--border-color);
     }
 }
+
+/* 드롭다운 호버 효과 */
+.navbar-nav .dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu {
+    margin-top: 0;
+}
+
+/* 모바일에서는 호버 효과 비활성화 */
+@media (max-width: 991.98px) {
+    .navbar-nav .dropdown:hover .dropdown-menu {
+        display: none;
+    }
+}

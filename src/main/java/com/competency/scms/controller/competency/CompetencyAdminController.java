@@ -88,7 +88,7 @@ public class CompetencyAdminController {
     /**
      * 6. 특정 역량에 속한 '문앙 목록' 조회
      */
-    @GetMapping("/api/competecies/{id}/questions")
+    @GetMapping("/api/competencies/{id}/questions")
     @ResponseBody
     public ResponseEntity<List<QuestionListDto>> getQuestionsByCompetency(@PathVariable("id") Long competencyId) {
         try {

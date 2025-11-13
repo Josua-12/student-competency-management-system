@@ -9,7 +9,7 @@ public interface ProgramSatisfactionRepository
         extends JpaRepository<ProgramSatisfaction, Long>, JpaSpecificationExecutor<ProgramSatisfaction> {
 
     /** 단건 조회: programId + scheduleId + studentId(값 타입) */
-    Optional<ProgramSatisfaction> findByProgram_ProgramIdAndSchedule_ScheduleIdAndStudentId(
+    Optional<ProgramSatisfaction> findByProgram_ProgramIdAndSchedule_ScheduleIdAndStudent_Id(
             Long programId, Long scheduleId, Long studentId);
 
     /** 목록 조회: programId + scheduleId (정렬 필드는 존재하는 필드로 선택) */

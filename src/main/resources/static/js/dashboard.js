@@ -1,90 +1,122 @@
-/**
- * 메인 대시보드 JavaScript
- */
+// /js/dashboard.js
 
-document.addEventListener('DOMContentLoaded', function() {
-
-    // 1️⃣ 핵심역량 그래프 초기화
-    initCompetencyChart();
-
-    // 2️⃣ 상담 이력 스크롤 설정
-    setupConsultationHistory();
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await Promise.all([
+            loadUserInfo(),
+            loadCompetency(),
+            loadConsultations(),
+            loadRecentPrograms()
+        ]);
+    } catch (e) {
+        console.error('대시보드 초기화 실패', e);
+//        location.href = '/auth/login';
+    }
 });
 
-/**
- * 핵심역량 Radar 차트 초기화
- * Chart.js 사용
- */
-function initCompetencyChart() {
-    const chartCanvas = document.getElementById('competencyChart');
-    if (!chartCanvas) return;
+async function loadUserInfo() {
+    const res = await Api.getJson('/api/dashboard/user'); // Api.get → Api.getJson
+    const { name, email, mileage, programCount } = res;
+    setText('#user-name', name || '');
+    setText('#user-email', email || '');
+    setText('#user-mileage', (mileage ?? 0) + '점');
+    setText('#user-program-count', (programCount ?? 0) + '건');
+    setInitial('#user-initial', name);
+}
 
-    // 서버에서 전달받은 역량 데이터 추출
-    const competencyData = [];
-    const competencyLabels = [];
-    const competencyColors = [];
+async function loadCompetency() {
+    const res = await Api.getJson('/api/dashboard/competency'); // Api.get → Api.getJson
+    renderCompetencyChart('competencyChart', res.chart);
+    renderCompetencyList('#competency-list', res.list);
+}
 
-    document.querySelectorAll('.score-item').forEach((item) => {
-        const name = item.querySelector('.score-name').textContent;
-        const value = parseFloat(item.querySelector('.score-value').textContent);
-        const colorDiv = item.style.backgroundColor || '#667eea';
+async function loadConsultations() {
+    const res = await Api.getJson('/api/dashboard/consultations'); // Api.get → Api.getJson
+    const wrap = document.querySelector('#consultation-history');
+    wrap.innerHTML = (res || []).map(toConsultationItem).join('');
+}
 
-        competencyLabels.push(name);
-        competencyData.push(value);
-        competencyColors.push(colorDiv);
-    });
+async function loadRecentPrograms() {
+    const res = await Api.getJson('/api/dashboard/programs'); // Api.get → Api.getJson
+    const wrap = document.querySelector('#recent-programs');
+    wrap.innerHTML = (res || []).map(toProgramCard).join('');
+}
 
-    // Chart.js 설정
-    const ctx = chartCanvas.getContext('2d');
+function setText(sel, v) {
+    const el = document.querySelector(sel);
+    if (el) el.textContent = v;
+}
+
+function setInitial(sel, name) {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const ch = (name || '').trim().charAt(0);
+    el.textContent = ch ? ch.toUpperCase() : '';
+}
+
+function renderCompetencyChart(canvasId, data) {
+    if (!data) return;
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
     new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: competencyLabels,
-            datasets: [{
-                label: '역량 점수',
-                data: competencyData,
-                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+            labels: data.labels || [],
+            datasets: (data.datasets || []).map(ds => ({
+                label: ds.label,
+                data: ds.data,
+                backgroundColor: 'rgba(102,126,234,0.2)',
                 borderColor: '#667eea',
-                borderWidth: 2,
-                pointBackgroundColor: '#667eea',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-            }]
+                pointBackgroundColor: '#667eea'
+            }))
         },
         options: {
+            scales: { r: { beginAtZero: true, suggestedMax: 5 } },
+            plugins: { legend: { display: false } },
             responsive: true,
-            maintainAspectRatio: true,
-            scales: {
-                r: {
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        stepSize: 20,
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
+            maintainAspectRatio: false
         }
     });
 }
 
-/**
- * 상담 이력 스크롤 설정
- */
-function setupConsultationHistory() {
-    const historyContainer = document.querySelector('.consultation-history');
-    if (!historyContainer) return;
+function renderCompetencyList(sel, list) {
+    const wrap = document.querySelector(sel);
+    if (!wrap) return;
+    wrap.innerHTML = (list || []).map(item => `
+    <div class="score-item">
+      <span class="score-label">${escapeHtml(item.name)}</span>
+      <span class="score-value">${Number(item.score ?? 0).toFixed(1)}</span>
+    </div>
+  `).join('');
+}
 
-    // 스크롤 시 shadow 표시
-    historyContainer.addEventListener('scroll', function() {
-        if (this.scrollTop > 0) {
-            this.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.1)';
-        }
-    });
+function toConsultationItem(c) {
+    const date = escapeHtml(c.date || '');
+    const title = escapeHtml(c.title || '');
+    const status = escapeHtml(c.status || '');
+    return `
+    <div class="history-item">
+      <div class="history-title">${title}</div>
+      <div class="history-meta">
+        <span>${date}</span>
+        <span class="badge">${status}</span>
+      </div>
+    </div>
+  `;
+}
+
+function toProgramCard(p) {
+    const title = escapeHtml(p.title || '');
+    const period = escapeHtml(p.period || '');
+    const link = `/programs/${encodeURIComponent(p.id)}`;
+    return `
+    <a class="program-card" href="${link}">
+      <div class="program-title">${title}</div>
+      <div class="program-period">${period}</div>
+    </a>
+  `;
+}
+
+function escapeHtml(s) {
+    return (s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }

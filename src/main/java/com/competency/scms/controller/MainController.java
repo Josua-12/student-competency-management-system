@@ -1,12 +1,11 @@
 package com.competency.scms.controller;
 
-import com.competency.scms.dto.dashboard.DashboardResponseDto;
 import com.competency.scms.service.main.DashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -17,25 +16,50 @@ public class MainController {
     private final DashboardService mainDashboardService;
 
     @GetMapping({"/", "/main"})
-    public String getMainDashboard(Model model, Authentication authentication) {
-        
-        log.info("[MainController] 메인 대시보드 페이지 요청 - userId: {}",
-                authentication.getName());
-
-        try {
-            String userNum = authentication.getName();
-            DashboardResponseDto dashboard = mainDashboardService.getMainDashboardData(userNum);
-
-            model.addAttribute("userInfo", dashboard);
-            model.addAttribute("competencies", dashboard.getCompetencyScore());
-            model.addAttribute("consultations", java.util.Collections.emptyList());
-            model.addAttribute("recentPrograms", dashboard.getRecentPrograms());
-
-            return "main/dashboard";
-        } catch (Exception e) {
-            log.error("[MainController] 메인 대시보드 로드 실패", e);
-            model.addAttribute("errorMessage", "메인 대시보드를 불러올 수 없습니다.");
-            return "error";
+    public String mainRedirect(Authentication auth) {
+        if (auth == null) {
+            return "redirect:/auth/login";
         }
+
+        // 사용자 역할에 따른 대시보드 리다이렉트
+        String role = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_STUDENT");
+
+        return switch (role) {
+            case "ROLE_ADMIN" -> "redirect:/admin/dashboard";
+            case "ROLE_COUNSELOR" -> "redirect:/counselor/dashboard";
+            case "ROLE_OPERATOR" -> "redirect:/operator/dashboard";
+            default -> "redirect:/main/dashboard"; // 학생용
+        };
+    }
+
+    @GetMapping("/main/dashboard")
+    public String dashboard() {
+        log.info("학생 대시보드 페이지 접근");
+        return "main/dashboard";
+    }
+
+    @GetMapping("/counselor/dashboard")
+    public String counselorDashboard() {
+        log.info("상담사 대시보드 페이지 접근");
+        return "counseling/counselor/counselor-main";
+    }
+
+    @GetMapping("/operator/dashboard")
+    public String operatorDashboard() {
+        log.info("운영자 대시보드 페이지 접근");
+        return "noncurricular/operator/operator-main";
+    }
+
+    @GetMapping("/auth/login")
+    public String loginPage() {
+        return "auth/login";
+    }
+
+    @GetMapping("/login")
+    public String loginRedirect() {
+        return "redirect:/auth/login";
     }
 }

@@ -31,6 +31,8 @@ import java.util.List;
 @Transactional      // 각 테스트 후 롤백하여 DB 정리
 public class CounselingRepositoryTest { //@Query문만 검사
 
+
+
     //--테스트에 필수적 Repos--//
     @Autowired
     private UserRepository userRepository;
@@ -44,6 +46,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private CounselingSubFieldRepository subFieldRepository;
     @Autowired
     private TestCounselingReservationRepository testCounselingReservationRepository;
+    private DepartmentRepository departmentRepository;
 
     //--쿼리문 있는 Repos--//
     @Autowired
