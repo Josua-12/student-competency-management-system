@@ -70,7 +70,7 @@ public class AssessmentQuestion extends CompetencyBaseEntity {
      * 문항이 속한 역량
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "competency_id", nullable = false)
+    @JoinColumn(name = "comp_id", nullable = false)
     private Competency competency;
 
     /**
