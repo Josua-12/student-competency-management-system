@@ -66,8 +66,8 @@ public interface ProgramApplicationRepository
         join fetch pa.student s
         join fetch pa.program p
         left join fetch pa.schedule sch
-       where p.progId = :progId
-         and (:schdId is null or sch.schdId = :schdId)
+       where p.programId = :progId
+         and (:schdId is null or sch.scheduleId = :schdId)
     """)
     List<ProgramApplication> findEligibleForMileage(
             @Param("progId") Long progId,

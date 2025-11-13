@@ -2,6 +2,7 @@ package com.competency.scms.repository.noncurricular.mileage;
 
 import com.competency.scms.domain.noncurricular.mileage.MileageRecord;
 import com.competency.scms.domain.noncurricular.mileage.MileageType;
+import com.competency.scms.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -15,8 +16,7 @@ public interface MileageRecordRepository
     @Query("""
         select mr
           from MileageRecord mr
-         where mr.program.progId = :progId
-           and (:schdId is null or mr.schedule.schdId = :schdId)
+         where mr.program.programId = :progId
          order by mr.createdAt asc
     """)
     List<MileageRecord> findHistory(@Param("progId") Long programId,
@@ -24,26 +24,26 @@ public interface MileageRecordRepository
 
     // 학생/프로그램 기준 누적 포인트
     @Query("""
-        select coalesce(sum(mr.pointsSigned), 0)
+        select coalesce(sum(mr.points), 0)
           from MileageRecord mr
-         where mr.program.progId = :progId
-           and mr.student.userId = :studentId
+         where mr.program.programId = :progId
+           and mr.student = :studentId
     """)
     Integer sumPointsByProgramAndStudent(@Param("progId") Long programId,
-                                         @Param("studentId") Long studentId);
+                                         @Param("studentId") User student);
 
     /** 단일 값 필드(Long student) 기준 조회 */
-    List<MileageRecord> findByStudentOrderByCreatedAtDesc(Long studentId);
-    Page<MileageRecord> findByStudentOrderByMileageIdDesc(Long studentId, Pageable pageable);
-    List<MileageRecord> findByStudentAndType(Long studentId, MileageType type);
+    List<MileageRecord> findByStudentOrderByCreatedAtDesc(User student);
+    Page<MileageRecord> findByStudentOrderByMileageIdDesc(User student, Pageable pageable);
+    List<MileageRecord> findByStudentAndType(User student, MileageType type);
 
     /** 합계 (JPQL) — 정수 SUM은 Long으로 받는 게 안전 */
     @Query("""
         select coalesce(sum(m.points), 0)
           from MileageRecord m
-         where m.student = :studentId
+         where m.student = :student
     """)
-    Long sumPointsByStudent(@Param("studentId") Long studentId);
+    Long sumPointsByStudent(@Param("student") User student);
 
     /** 프로그램 기준 조회 (Program 연관의 PK는 programId) */
     List<MileageRecord> findAllByProgram_ProgramId(Long programId);

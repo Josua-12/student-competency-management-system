@@ -36,7 +36,7 @@ public class MileageServiceImpl implements MileageService {
                 .map(pa -> {
                     var s = pa.getStudent();
                     Integer existing = mileageRecordRepository
-                            .sumPointsByProgramAndStudent(pa.getProgram().getProgramId(), s.getUserNum().longValue());
+                            .sumPointsByProgramAndStudent(pa.getProgram().getProgramId(), pa.getStudent());
                     return MileageEligibleRowDto.builder()
                             .applicationId(pa.getApplicationId())
                             .studentId(s.getId())

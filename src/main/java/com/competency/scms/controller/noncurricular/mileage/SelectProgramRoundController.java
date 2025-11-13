@@ -39,6 +39,7 @@ public class SelectProgramRoundController {
     // 회차 콤보
     @GetMapping("/{progId}/schedules")
     public List<ProgramSchedule> findSchedules(@PathVariable Long progId) {
-        return scheduleRepository.findAllByProgram_ProgIdOrderByStartDateAsc(progId);
+        return scheduleRepository.findAllByProgram_ProgramIdOrderByDateAsc(progId);
+
     }
 }

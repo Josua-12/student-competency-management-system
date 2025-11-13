@@ -11,4 +11,12 @@ public class ProgramSearchRowDto {
     String deptName;    // 부서명
     String periodText;  // 기간(문자열)
     String status;      // 상태(DRAFT/APPROVED/COMPLETED...)
+    
+    public ProgramSearchRowDto(Long id, String title, String deptName, String periodText, Object status) {
+        this.id = id;
+        this.title = title;
+        this.deptName = deptName;
+        this.periodText = periodText;
+        this.status = status != null ? status.toString() : null;
+    }
 }

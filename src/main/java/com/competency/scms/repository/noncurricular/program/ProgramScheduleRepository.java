@@ -40,7 +40,7 @@ public interface ProgramScheduleRepository extends JpaRepository<ProgramSchedule
             @Param("toTime")   LocalTime toTime
     );
 
-    List<ProgramSchedule> findAllByProgram_ProgIdOrderByStartDateAsc(Long progId);
+    List<ProgramSchedule> findAllByProgram_ProgramIdOrderByDateAsc(Long programId);
 }
 
 //    List<ProgramSchedule> findByProgram_ProgramIdOrderByStartDateTimeAsc(Long programId);

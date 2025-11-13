@@ -83,13 +83,13 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
     Page<Program> findRecruitingBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to, Pageable pageable);
 
     @Query("""
-      select new com.competency.SCMS.dto.noncurricular.operation.ProgramSearchRowDto(
-         p.progId,
+      select new com.competency.scms.dto.noncurricular.mileage.ProgramSearchRowDto(
+         p.programId,
          p.title,
          p.department.name,
-         concat(function('date_format', p.startDate, '%Y-%m-%d'),
+         concat(function('date_format', p.programStartAt, '%Y-%m-%d'),
                 ' ~ ',
-                function('date_format', p.endDate, '%Y-%m-%d')),
+                function('date_format', p.programEndAt, '%Y-%m-%d')),
          p.status
       )
         from Program p
@@ -98,7 +98,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
             or lower(p.title) like concat('%', lower(:q), '%')
             or lower(p.description) like concat('%', lower(:q), '%')
        )
-       order by p.startDate desc, p.progId desc
+       order by p.programStartAt desc, p.programId desc
     """)
     Page<ProgramSearchRowDto> searchForMileage(
             @Param("q") String keyword,
