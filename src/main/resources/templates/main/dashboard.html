@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{common/layout :: layout(
+      th:replace="~{layout :: layout(
         ~{::title},
         ~{::content},
         ~{::css},
@@ -18,8 +18,7 @@
 <body>
 <th:block th:fragment="content">
     <div class="main-dashboard-container">
-
-        <!-- 사용자 정보 카드 -->
+        <!-- 사용자 정보 -->
         <section class="user-info-section">
             <div class="user-info-card">
                 <div class="user-header">
@@ -48,7 +47,7 @@
 
         <!-- 메인 배너 -->
         <section class="main-banner">
-            <img th:src="@{/images/main-banner.jpg}" alt="메인 배너" class="banner-image">
+            <img src="/images/main-banner.png" alt="메인 배너" class="banner-image">
         </section>
 
         <!-- 핵심역량 -->
@@ -57,9 +56,7 @@
                 <h3 class="section-title"><i class="fas fa-chart-radar"></i> 핵심역량</h3>
                 <a href="/competency" class="section-link">더보기 →</a>
             </div>
-            <div class="competency-chart">
-                <canvas id="competencyChart"></canvas>
-            </div>
+            <div class="competency-chart"><canvas id="competencyChart"></canvas></div>
             <div id="competency-list" class="competency-scores"></div>
         </section>
 
@@ -77,9 +74,7 @@
                     <i class="fas fa-history"></i> 내 예약 조회
                 </a>
             </div>
-            <div id="consultation-history" class="consultation-history">
-                <!-- JS로 채움 -->
-            </div>
+            <div id="consultation-history" class="consultation-history"></div>
         </section>
 
         <!-- 비교과 프로그램 -->
@@ -88,17 +83,25 @@
                 <h3 class="section-title"><i class="fas fa-book"></i> 비교과 프로그램</h3>
                 <a href="/dashboard" class="section-link">전체보기 →</a>
             </div>
-            <div id="recent-programs" class="programs-container">
-                <!-- JS로 채움 -->
-            </div>
+            <div id="recent-programs" class="programs-container"></div>
         </section>
-
     </div>
 </th:block>
 
 <th:block th:fragment="scripts">
-    <script th:src="@{/js/app.js}"></script>
     <script th:src="@{/js/dashboard.js}"></script>
 </th:block>
 </body>
 </html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>테스트</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>대시보드 테스트 - 여기까지 오면 성공!</h1>-->
+<!--</body>-->
+<!--</html>-->

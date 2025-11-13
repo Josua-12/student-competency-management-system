@@ -1,12 +1,9 @@
 package com.competency.scms.controller;
 
-import com.competency.scms.dto.dashboard.DashboardResponseDto;
 import com.competency.scms.service.main.DashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -23,6 +20,17 @@ public class MainController {
 
     @GetMapping("/main/dashboard")
     public String dashboard() {
+        log.info("대시보드 페이지 접근");
         return "main/dashboard";
+    }
+
+    @GetMapping("/auth/login")
+    public String loginPage() {
+        return "auth/login";
+    }
+
+    @GetMapping("/login")
+    public String loginRedirect() {
+        return "redirect:/auth/login";
     }
 }

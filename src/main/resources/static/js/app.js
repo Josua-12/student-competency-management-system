@@ -1,5 +1,6 @@
 // 공통 API 유틸
 const Api = (() => {
+    // LocalStorage 토큰 유틸
     const getAccess = () => localStorage.getItem('accessToken');
     const getRefresh = () => localStorage.getItem('refreshToken');
     const setAccess = (t) => localStorage.setItem('accessToken', t);
@@ -8,7 +9,7 @@ const Api = (() => {
         localStorage.removeItem('refreshToken');
     };
 
-    // 기본 요청: Authorization 자동 첨부
+    // 401 처리 포함 공통 request
     async function request(input, init = {}, retry = true) {
         const headers = new Headers(init.headers || {});
         const token = getAccess();
@@ -17,12 +18,12 @@ const Api = (() => {
             headers.set('Content-Type', 'application/json');
         }
 
-        const resp = await fetch(input, { ...init, headers });
+        const resp = await fetch(input, { ...init, headers, credentials: 'same-origin' });
 
-        // 정상 또는 401 외 상태는 그대로 반환
+        // 401 외 상태는 그대로 반환
         if (resp.status !== 401) return resp;
 
-        // 이미 재시도 했거나 refresh 토큰 없음 -> 그대로 반환
+        // 재시도 불가 또는 리프레시 없음
         if (!retry || !getRefresh()) return resp;
 
         // 액세스 토큰 갱신 시도
@@ -47,20 +48,24 @@ const Api = (() => {
         return resp.json();
     }
 
-    // 파일 업로드
+    // 파일 업로드 (FormData 사용시 Content-Type 자동)
     async function upload(url, formData) {
         const resp = await request(url, { method: 'POST', body: formData, headers: {} });
         if (!resp.ok) throw await buildError(resp);
         return resp.json();
     }
 
-    // 401용: 액세스 토큰 갱신
+    // 401 시 토큰 갱신
     async function refreshAccessToken() {
         try {
+            const refreshToken = getRefresh();
+            if (!refreshToken) return false;
+
             const resp = await fetch('/api/user/refresh', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refreshToken: getRefresh() }),
+                body: JSON.stringify({ refreshToken }),
+                credentials: 'same-origin',
             });
             if (!resp.ok) {
                 clearTokens();
@@ -73,12 +78,13 @@ const Api = (() => {
             }
             clearTokens();
             return false;
-        } catch (e) {
+        } catch (_) {
             clearTokens();
             return false;
         }
     }
 
+    // 에러 객체 표준화
     async function buildError(resp) {
         let payload = null;
         try { payload = await resp.json(); } catch (_) {}
@@ -88,22 +94,21 @@ const Api = (() => {
         return err;
     }
 
-    async function getJson(url, opts={}) {
-        const token = getAccessToken();
-        const headers = { 'Content-Type': 'application/json', ...(opts.headers||{}) };
-        if (token) headers.Authorization = `Bearer ${token}`;
-        const res = await fetch(url, { ...opts, headers, credentials: 'same-origin' });
-        if (res.status === 401) {
-            const ok = await tryRefresh(); // /api/user/refresh 호출
-            if (ok) return getJson(url, opts);
-            // 실패 시 로그인 이동
-            window.location.href = '/auth/login';
-            throw Object.assign(new Error('Unauthorized'), { status: 401 });
-        }
-        if (!res.ok) throw Object.assign(new Error('HTTP '+res.status), { status: res.status });
-        return res.json();
-    }
-
     return { request, getJson, postJson, upload };
 })();
+
 window.Api = Api;
+
+// 모든 fetch 요청에 JWT 토큰 자동 추가
+const originalFetch = window.fetch;
+window.fetch = function(url, options = {}) {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        options.headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`
+        };
+    }
+    return originalFetch(url, options);
+};
+

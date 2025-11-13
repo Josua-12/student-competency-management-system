@@ -26,7 +26,11 @@ async function handleLogin(e) {
         const response = await fetch('/api/user/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userNum: studentNum, password })
+            body: JSON.stringify({
+                userNum: parseInt(studentNum),
+                password: String(password)
+            })
+
         });
 
         const data = await safeJson(response);
@@ -54,10 +58,20 @@ async function safeJson(resp) {
 /**
  * 토큰 저장
  */
+/**
+ * 토큰 저장
+ */
 function persistTokens(data) {
-    if (data?.accessToken) localStorage.setItem('accessToken', data.accessToken);
-    if (data?.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
+    console.log('토큰 저장:', data);
+    if (data?.accessToken) {
+        localStorage.setItem('accessToken', data.accessToken);
+        document.cookie = `accessToken=${data.accessToken}; path=/; samesite=strict`;
+    }
+    if (data?.refreshToken) {
+        localStorage.setItem('refreshToken', data.refreshToken);
+    }
 }
+
 
 /**
  * 로그인 에러 처리

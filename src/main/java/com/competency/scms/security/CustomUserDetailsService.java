@@ -20,29 +20,43 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String userNum) throws UsernameNotFoundException {
-        log.info("사용자 정보 로드 시도 - 학번: '{}', 길이: {}", userNum, userNum.length());
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info("사용자 정보 로드 시도 - username: '{}', 길이: {}", username, username.length());
 
-        if (userNum == null || userNum.trim().isEmpty()) {
-            log.warn("빈 학번으로 로그인 시도");
-            throw new UsernameNotFoundException("Empty userNum");
+        if (username == null || username.trim().isEmpty()) {
+            log.warn("빈 username으로 로그인 시도");
+            throw new UsernameNotFoundException("Empty username");
         }
 
-        try {
-            Integer userNumber = Integer.parseInt(userNum.trim());
-            log.info("파싱된 학번: {}", userNumber);
-            
-            User user = userRepository.findByUserNum(userNumber)
+        User user;
+
+        // 이메일 형식인지 확인
+        if (username.contains("@")) {
+            log.info("이메일로 사용자 조회: {}", username);
+            user = userRepository.findByEmail(username)
                     .orElseThrow(() -> {
-                        log.warn("사용자를 찾을 수 없음 - 학번: {}", userNumber);
-                        return new UsernameNotFoundException("User not found with userNum: " + userNumber);
+                        log.warn("사용자를 찾을 수 없음 - 이메일: {}", username);
+                        return new UsernameNotFoundException("User not found with email: " + username);
                     });
+        } else {
+            // 학번으로 조회 (기존 로직)
+            try {
+                Integer userNumber = Integer.parseInt(username.trim());
+                log.info("파싱된 학번: {}", userNumber);
 
-            log.info("사용자 정보 로드 완료 - 학번: {}, 이름: {}", userNumber, user.getName());
-            return new CustomUserDetails(user);
-        } catch (NumberFormatException e) {
-            log.warn("잘못된 학번 형식: '{}'", userNum);
-            throw new UsernameNotFoundException("Invalid userNum format: " + userNum);
+                user = userRepository.findByUserNum(userNumber)
+                        .orElseThrow(() -> {
+                            log.warn("사용자를 찾을 수 없음 - 학번: {}", userNumber);
+                            return new UsernameNotFoundException("User not found with userNum: " + userNumber);
+                        });
+            } catch (NumberFormatException e) {
+                log.warn("잘못된 username 형식: '{}'", username);
+                throw new UsernameNotFoundException("Invalid username format: " + username);
+            }
         }
+
+        log.info("사용자 정보 로드 완료 - 학번: {}, 이름: {}", user.getUserNum(), user.getName());
+        return new CustomUserDetails(user);
     }
+
 }
