@@ -8,3 +8,5 @@ public interface ProgramApplicationRepository extends JpaRepository<ProgramAppli
 
     int countByProgram_IdAndStatus(Long programId, ApprovalStatus status);
 }
+
+

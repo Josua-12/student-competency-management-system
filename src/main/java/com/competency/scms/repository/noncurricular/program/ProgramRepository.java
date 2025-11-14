@@ -1,5 +1,6 @@
 package com.competency.scms.repository.noncurricular.program;
 
+import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
@@ -126,7 +127,8 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
     @Query("""
            select p
            from Program p
-           where p.visibleToStudent = true
+           where p.deleted = false
+             and (:approvalStatus is null or p.approvalStatus = :approvalStatus)
              and (:keyword is null or :keyword = '' or p.title like concat('%', :keyword, '%'))
              and (:category is null or p.category = :category)
              and (:status is null or p.status = :status)
@@ -139,8 +141,9 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
             @Param("category") ProgramCategoryType category,
             @Param("status") ProgramStatus status,
             @Param("deptCode") String deptCode,
-            @Param("from") LocalDate from,
-            @Param("to") LocalDate to,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("approvalStatus") ApprovalStatus approvalStatus,
             Pageable pageable
     );
 }

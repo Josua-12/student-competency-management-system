@@ -8,15 +8,16 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @AllArgsConstructor
 public class ProgramStudentListResponse {
 
-    private Long id;
-    private String title;
-    private String deptName;
+    private Long id;                  // prog_id
+    private String title;             // 프로그램명
+    private String deptName;          // 운영부서명
     private ProgramCategoryType category;
 
     private LocalDate recruitStart;
@@ -25,28 +26,33 @@ public class ProgramStudentListResponse {
     private LocalDate programStart;
     private LocalDate programEnd;
 
-    private int applied;      // 신청 인원
-    private int capacity;     // 정원
+    private int applied;              // 신청 인원
+    private int capacity;             // 정원 (maxParticipants 기준)
 
-    private ProgramStatus status;
+    private ProgramStatus status;     // 그대로 내려보냄 (JS에서 badge 매핑)
 
-    private String thumbnailUrl;
+    private String thumbnailUrl;      // 대표 이미지
+
+    private static LocalDate toDate(LocalDateTime dt) {
+        return dt == null ? null : dt.toLocalDate();
+    }
 
     public static ProgramStudentListResponse from(Program program, int appliedCount) {
         return ProgramStudentListResponse.builder()
                 .id(program.getProgramId())
                 .title(program.getTitle())
-                .deptName(program.getDepartment().getName()) // Department 엔티티에 맞게 수정
+                .deptName(program.getDepartment() != null ? program.getDepartment().getName() : null)
                 .category(program.getCategory())
-                .recruitStart(program.getRecruitStartAt().toLocalDate())
-                .recruitEnd(program.getRecruitEndAt().toLocalDate())
-                .programStart(program.getProgramStartAt().toLocalDate())
-                .programEnd(program.getProgramEndAt().toLocalDate())
+                .recruitStart(toDate(program.getRecruitStartAt()))
+                .recruitEnd(toDate(program.getRecruitEndAt()))
+                .programStart(toDate(program.getProgramStartAt()))
+                .programEnd(toDate(program.getProgramEndAt()))
                 .applied(appliedCount)
-                .capacity(program.getCapacity())             // Program에 정원 필드 이름 맞춰서 수정
+                .capacity(program.getMaxParticipants() != null
+                        ? program.getMaxParticipants()
+                        : (program.getCapacity() != null ? program.getCapacity() : 0))
                 .status(program.getStatus())
-                .thumbnailUrl(program.getThumbnailUrl())     // Program에 썸네일 경로 필드 하나 두는 걸 추천
+                .thumbnailUrl(program.getThumbnailUrl())
                 .build();
     }
 }
-

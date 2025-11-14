@@ -1,5 +1,6 @@
 package com.competency.scms.controller.noncurricular.program;
 
+
 import com.competency.scms.dto.noncurricular.program.student.ProgramStudentListResponse;
 import com.competency.scms.dto.noncurricular.program.student.ProgramStudentSearchRequest;
 import com.competency.scms.service.noncurricular.program.ProgramStudentService;
@@ -27,5 +28,14 @@ public class ProgramStudentController {
                                                            @PageableDefault(size = 9) Pageable pageable) {
         return programStudentService.getProgramListForStudent(condition, pageable);
     }
+
+    // ▼ 이하는 추후 상세/신청 API 연동용 시그니처 예시
+
+//    @GetMapping("/{programId}")
+//    public ProgramStudentDetailResponse getProgramDetail(@PathVariable Long programId) { … }
+//
+//    @PostMapping("/{programId}/apply")
+//    public ResponseEntity<Void> apply(@PathVariable Long programId, @AuthenticationPrincipal UserPrincipal user) { … }
 }
+
 
