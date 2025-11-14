@@ -6,7 +6,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop # 테스트 시작 시 테이블 생성, 종료 시 삭제
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true

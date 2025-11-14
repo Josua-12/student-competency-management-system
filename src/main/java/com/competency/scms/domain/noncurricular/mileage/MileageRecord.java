@@ -10,7 +10,7 @@ import lombok.*;
 @Entity
 @Table(name = "mileage_records",
         indexes = {
-                @Index(name = "ix_mileage_student", columnList = "student_id"),
+                @Index(name = "ix_mileage_student", columnList = "user_id"),
                 @Index(name = "ix_mileage_program", columnList = "prog_id"),
                 @Index(name = "ix_mileage_type", columnList = "type")
         }
@@ -20,7 +20,7 @@ public class MileageRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mileage_id")
+    @Column(name = "user_id")
     private Long mileageId;
 
     // 학생

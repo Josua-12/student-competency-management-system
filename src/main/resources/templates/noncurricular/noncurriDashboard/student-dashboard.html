@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>학생 대시보드</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root{
+            --bg:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --card:#f9fafb;
+            --pri: #094081;
+            --pri-soft:#eff6ff;
+            --radius-lg:16px;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{
+            font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:var(--bg);
+            color:var(--fg);
+            line-height:1.4;
+        }
+        .layout{
+            max-width:1100px;
+            margin:0 auto;
+            padding:24px 16px 40px;
+        }
+        header{
+            margin-bottom:24px;
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:8px;
+        }
+        header h1{
+            font-size:24px;
+            font-weight:700;
+        }
+        header .sub{
+            font-size:13px;
+            color:var(--muted);
+        }
+        .last-update{
+            font-size:12px;
+            color:var(--muted);
+        }
+
+        .grid{
+            display:grid;
+            gap:16px;
+        }
+        @media(min-width:900px){
+            .grid-2{
+                grid-template-columns:2fr 3fr;
+            }
+            .grid-3{
+                grid-template-columns:repeat(3,1fr);
+            }
+        }
+
+        .card{
+            background:var(--card);
+            border-radius:var(--radius-lg);
+            border:1px solid var(--line);
+            padding:16px 18px;
+        }
+        .card-title{
+            font-size:14px;
+            font-weight:600;
+            margin-bottom:8px;
+        }
+        .card-sub{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+
+        /* 요약 카드 */
+        .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:8px;
+        }
+        @media(min-width:700px){
+            .summary-grid{
+                grid-template-columns:repeat(4,1fr);
+            }
+        }
+        .summary-item{
+            background:#ffffff;
+            border-radius:12px;
+            padding:10px 12px;
+            border:1px solid var(--line);
+        }
+        .summary-label{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+        .summary-value{
+            font-size:18px;
+            font-weight:700;
+        }
+
+        /* 버튼 */
+        .btn-row{
+            margin-top:8px;
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+        .btn{
+            border-radius:999px;
+            padding:6px 12px;
+            font-size:12px;
+            border:1px solid var(--line);
+            background:#ffffff;
+            cursor:pointer;
+        }
+        .btn-primary{
+            background:var(--pri);
+            border-color:var(--pri);
+            color:#ffffff;
+        }
+        .btn:hover{opacity:.9;}
+        .btn:active{transform:scale(.98);}
+
+        /* 신청 프로그램 카드 */
+        .program-list{
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            margin-top:6px;
+        }
+        .program-card{
+            background:#ffffff;
+            border-radius:12px;
+            border:1px solid var(--line);
+            padding:10px 12px;
+        }
+        .program-title{
+            font-size:13px;
+            font-weight:600;
+            margin-bottom:4px;
+        }
+        .program-meta{
+            font-size:11px;
+            color:var(--muted);
+        }
+        .status-badge{
+            display:inline-flex;
+            padding:2px 6px;
+            border-radius:999px;
+            font-size:11px;
+            margin-left:4px;
+        }
+        .status-approved{background:#dcfce7;color:#166534;}
+        .status-pending{background:#fef3c7;color:#92400e;}
+        .status-completed{background:#e0f2fe;color:#0369a1;}
+
+        /* 추천 프로그램 */
+        .recommend-grid{
+            display:grid;
+            grid-template-columns:1fr;
+            gap:8px;
+            margin-top:6px;
+        }
+        @media(min-width:700px){
+            .recommend-grid{
+                grid-template-columns:repeat(3,1fr);
+            }
+        }
+        .recommend-card{
+            background:#ffffff;
+            border-radius:12px;
+            border:1px solid var(--line);
+            padding:10px 12px;
+        }
+        .recommend-tag{
+            display:inline-flex;
+            font-size:10px;
+            padding:2px 6px;
+            border-radius:999px;
+            background:var(--pri-soft);
+            color:var(--pri);
+            margin-bottom:4px;
+        }
+        .recommend-title{
+            font-size:13px;
+            font-weight:600;
+            margin-bottom:4px;
+        }
+        .recommend-meta{
+            font-size:11px;
+            color:var(--muted);
+        }
+
+        /* 역량 진단 간이 레이더(막대형으로 표현) */
+        .competency-list{
+            margin-top:8px;
+        }
+        .comp-row{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-bottom:6px;
+        }
+        .comp-label{
+            width:80px;
+            font-size:11px;
+            color:var(--muted);
+        }
+        .comp-track{
+            flex:1;
+            height:8px;
+            border-radius:999px;
+            background:#e5e7eb;
+            overflow:hidden;
+        }
+        .comp-fill{
+            height:100%;
+            border-radius:999px;
+            background:var(--pri);
+            width:0;
+            transition:width .5s ease;
+        }
+        .comp-value{
+            width:40px;
+            font-size:11px;
+            text-align:right;
+            color:var(--muted);
+        }
+
+        .muted{color:var(--muted);font-size:12px;}
+    </style>
+</head>
+<body>
+<div class="layout">
+    <header>
+        <div>
+            <h1>나의 대시보드</h1>
+            <p class="sub">신청한 비교과, 이수 현황, 포인트, 추천 프로그램을 한 번에 확인하세요.</p>
+        </div>
+        <div class="last-update" id="stu-lastUpdate">-</div>
+    </header>
+
+    <!-- 상단 요약 영역 -->
+    <section class="card" style="margin-bottom:16px;">
+        <div class="card-title">나의 비교과 요약</div>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-label">총 신청 프로그램</div>
+                <div class="summary-value" id="sum-totalApplied">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">참여중</div>
+                <div class="summary-value" id="sum-active">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">이수 완료</div>
+                <div class="summary-value" id="sum-completed">0</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-label">누적 비교과 포인트</div>
+                <div class="summary-value" id="sum-mileage">0</div>
+            </div>
+        </div>
+        <div class="btn-row">
+            <button class="btn-primary btn" onclick="goToUrl('/student/applications')">신청 내역 전체보기</button>
+            <button class="btn btn" onclick="goToUrl('/student/programs')">비교과 프로그램 전체보기</button>
+        </div>
+    </section>
+
+    <!-- 중간: 왼쪽 신청 프로그램, 오른쪽 추천 프로그램 -->
+    <section class="grid grid-2" style="margin-bottom:16px;">
+        <div class="card">
+            <div class="card-title">최근 신청한 프로그램</div>
+            <div class="card-sub">최근 신청 기준 3개</div>
+            <div class="program-list" id="stu-latestApps">
+                <!-- JS 렌더링 -->
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">추천 비교과 프로그램</div>
+            <div class="card-sub">나의 역량/관심사 기반 추천</div>
+            <div class="recommend-grid" id="stu-recommendations">
+                <!-- JS 렌더링 -->
+            </div>
+<!--            <div class="btn-row">-->
+<!--                <button class="btn btn" onclick="goToUrl('/student/programs/recommend')">추천 더보기</button>-->
+<!--            </div>-->
+        </div>
+    </section>
+
+    <!-- 하단: 역량 진단 -->
+    <section class="card">
+        <div class="card-title">나의 역량 진단 현황</div>
+        <div class="card-sub" id="stu-assessInfo">최근 진단 정보가 없습니다.</div>
+        <div class="competency-list" id="stu-competencyChart">
+            <!-- JS 렌더링 -->
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="goToUrl('/assessment')">역량 진단하러 가기</button>
+        </div>
+    </section>
+</div>
+
+<script>
+    const STU_API = {
+        dashboard: '/api/student/dashboard'
+    };
+
+    // TODO: 실제 연동 시 fetch 사용
+    async function fetchStudentDashboard(){
+        try{
+            const res = await fetch(STU_API.dashboard);
+            if(!res.ok) throw new Error('API error');
+            return await res.json();
+        }catch(e){
+            console.warn('학생 대시보드 API 실패, 더미 데이터 사용', e);
+            // ----- 더미 데이터 -----
+            return {
+                lastUpdated: new Date().toISOString(),
+                summary:{
+                    totalApplied:12,
+                    active:2,
+                    completed:5,
+                    mileage:150
+                },
+                latestApplications:[
+                    {
+                        title:'진로캠프 1기',
+                        periodText:'2025-11-20 ~ 2025-11-22',
+                        status:'APPROVED'
+                    },
+                    {
+                        title:'리더십 향상 프로그램',
+                        periodText:'2025-12-01 ~ 2025-12-10',
+                        status:'PENDING'
+                    },
+                    {
+                        title:'글로벌 역량 강화 워크숍',
+                        periodText:'2025-11-05 ~ 2025-11-06',
+                        status:'COMPLETED'
+                    }
+                ],
+                recommendations:[
+                    {
+                        title:'진로 설계 집중 워크숍',
+                        category:'진로·취업',
+                        periodText:'2025-12-15 ~ 2025-12-16',
+                        reason:'진로탐색 역량 보완 추천'
+                    },
+                    {
+                        title:'리더십 역량 강화 캠프',
+                        category:'리더십',
+                        periodText:'2026-01-05 ~ 2026-01-07',
+                        reason:'팀워크/리더십 점수 보완'
+                    },
+                    {
+                        title:'글로벌 마인드 특강',
+                        category:'글로벌',
+                        periodText:'2025-12-01',
+                        reason:'글로벌 역량 관심도 기반'
+                    }
+                ],
+                competency:{
+                    lastAssessmentDate:'2025-11-01',
+                    scores:[
+                        { name:'진로설계', score:65 },
+                        { name:'의사소통', score:75 },
+                        { name:'리더십', score:55 },
+                        { name:'문제해결', score:70 },
+                        { name:'글로벌', score:40 }
+                    ]
+                }
+            };
+        }
+    }
+
+    function goToUrl(url){
+        // 실제 적용 시: location.href = url;
+        console.log('goToUrl:', url);
+    }
+
+    function renderSummary(data){
+        const sum = data.summary || {};
+        document.getElementById('sum-totalApplied').textContent = sum.totalApplied ?? 0;
+        document.getElementById('sum-active').textContent = sum.active ?? 0;
+        document.getElementById('sum-completed').textContent = sum.completed ?? 0;
+        document.getElementById('sum-mileage').textContent = sum.mileage ?? 0;
+
+        const last = new Date(data.lastUpdated || Date.now());
+        document.getElementById('stu-lastUpdate').textContent =
+        `최종 업데이트: ${last.toLocaleString('ko-KR')}`;
+    }
+
+    function statusBadgeClass(status){
+        switch((status || '').toUpperCase()){
+            case 'APPROVED': return 'status-badge status-approved';
+            case 'COMPLETED': return 'status-badge status-completed';
+            default: return 'status-badge status-pending';
+        }
+    }
+    function statusText(status){
+        switch((status || '').toUpperCase()){
+            case 'APPROVED': return '승인';
+            case 'COMPLETED': return '이수';
+            case 'PENDING': return '승인대기';
+            case 'CANCELLED': return '취소';
+            default: return status || '상태없음';
+        }
+    }
+
+    function renderLatestApps(data){
+        const box = document.getElementById('stu-latestApps');
+        box.innerHTML = '';
+        const list = data.latestApplications || [];
+        if(list.length === 0){
+            box.innerHTML = '<p class="muted">신청한 프로그램이 없습니다.</p>';
+            return;
+        }
+        list.forEach(app => {
+            const div = document.createElement('div');
+            div.className = 'program-card';
+            div.innerHTML = `
+                <div class="program-title">
+                    ${app.title}
+                    <span class="${statusBadgeClass(app.status)}">${statusText(app.status)}</span>
+                </div>
+                <div class="program-meta">
+                    기간: ${app.periodText || '-'}
+                </div>
+            `;
+            box.appendChild(div);
+        });
+    }
+
+    function renderRecommendations(data){
+        const box = document.getElementById('stu-recommendations');
+        box.innerHTML = '';
+        const list = data.recommendations || [];
+        if(list.length === 0){
+            box.innerHTML = '<p class="muted">추천 프로그램이 없습니다. 먼저 역량 진단을 진행해 주세요.</p>';
+            return;
+        }
+        list.forEach(rec => {
+            const div = document.createElement('div');
+            div.className = 'recommend-card';
+            div.innerHTML = `
+                <div class="recommend-tag">${rec.category || '추천'}</div>
+                <div class="recommend-title">${rec.title}</div>
+                <div class="recommend-meta">
+                    기간: ${rec.periodText || '-'}<br/>
+                    추천 사유: ${rec.reason || '-'}
+                </div>
+            `;
+            box.appendChild(div);
+        });
+    }
+
+    function renderCompetency(data){
+        const container = document.getElementById('stu-competencyChart');
+        const info = document.getElementById('stu-assessInfo');
+        container.innerHTML = '';
+
+        if(!data.competency || !data.competency.scores || data.competency.scores.length === 0){
+            info.textContent = '역량 진단 내역이 없습니다. 진단을 진행해 주세요.';
+            return;
+        }
+
+        const comp = data.competency;
+        if(comp.lastAssessmentDate){
+            info.textContent = `최근 진단일: ${comp.lastAssessmentDate}`;
+        }
+
+        const maxScore = Math.max(...comp.scores.map(s => s.score || 0), 1);
+        comp.scores.forEach(row => {
+            const wrap = document.createElement('div');
+            wrap.className = 'comp-row';
+
+            const label = document.createElement('div');
+            label.className = 'comp-label';
+            label.textContent = row.name;
+            wrap.appendChild(label);
+
+            const track = document.createElement('div');
+            track.className = 'comp-track';
+            const fill = document.createElement('div');
+            fill.className = 'comp-fill';
+            fill.style.width = ((row.score || 0) / maxScore * 100) + '%';
+            track.appendChild(fill);
+            wrap.appendChild(track);
+
+            const value = document.createElement('div');
+            value.className = 'comp-value';
+            value.textContent = (row.score || 0) + '점';
+            wrap.appendChild(value);
+
+            container.appendChild(wrap);
+        });
+    }
+
+    async function initStudentDashboard(){
+        const data = await fetchStudentDashboard();
+        renderSummary(data);
+        renderLatestApps(data);
+        renderRecommendations(data);
+        renderCompetency(data);
+    }
+
+    document.addEventListener('DOMContentLoaded', initStudentDashboard);
+</script>
+</body>
+</html>

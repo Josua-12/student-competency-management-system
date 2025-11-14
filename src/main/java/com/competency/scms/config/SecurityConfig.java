@@ -51,24 +51,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // 공개 경로: 초기 로그인 화면 및 정적 리소스
+                        // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
                                 "/", "/index.html",
-                                "/auth/login", "/login", "/error",
+                                "/auth/**", "/login", "/error",
                                 "/favicon.ico", "/manifest.json",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()
-                        // 인증 관련 공개 API (로그인/토큰/비번재설정/본인인증)
-                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**").permitAll()
 
-                        // 역할 기반 접근 제어 (AUTH-007, AUTH-008)
+                        // 인증 관련 공개 API
+                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**", "/api/auth/**").permitAll()
+
+                        // 역할 기반 접근 제어
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/counselor/**").hasRole("COUNSELOR")
                         .requestMatchers("/operator/**").hasRole("OPERATOR")
-                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/user/**").hasRole("STUDENT")
 
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()

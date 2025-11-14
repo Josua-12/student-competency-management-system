@@ -35,7 +35,7 @@ public class MainController {
         };
     }
 
-    @GetMapping("/main/dashboard")
+    @GetMapping("/user/dashboard")
     public String dashboard() {
         log.info("학생 대시보드 페이지 접근");
         return "main/dashboard";
@@ -61,5 +61,20 @@ public class MainController {
     @GetMapping("/login")
     public String loginRedirect() {
         return "redirect:/auth/login";
+    }
+
+    @GetMapping("/auth/find-password")
+    public String findPasswordPage() {
+        return "auth/find-password";
+    }
+
+    @GetMapping("/auth/verify-email")
+    public String verifyEmailPage() {
+        return "auth/verify-email";
+    }
+
+    @GetMapping("/auth/reset-password")
+    public String resetPasswordPage() {
+        return "auth/reset-password";
     }
 }

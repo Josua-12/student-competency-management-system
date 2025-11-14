@@ -4,6 +4,8 @@ import com.competency.scms.domain.competency.AssessmentResult;
 import com.competency.scms.domain.competency.AssessmentResultStatus;
 import com.competency.scms.domain.competency.AssessmentSection;
 import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentCompetencyScoreDto;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,4 +51,16 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
     Optional<AssessmentResult> findByAssessmentSectionIdAndUserIdAndStatus(
             Long sectionId, Long userId, AssessmentResultStatus status
     );
+
+    // 비교과 대시보드관련 필요에 의한 추가 - 2025.11.14 11:36 JHE
+    // 학생 최신 진단 1건
+    @Query("""
+        select ar
+        from AssessmentResult ar
+        where ar.student.id = :studentId
+        order by ar.submittedAt desc
+        """)
+    List<AssessmentResult> findLatestResult(Long studentId, Pageable pageable);
+
+    List<StudentCompetencyScoreDto> findScoresByResultId(Long id);
 }

@@ -158,7 +158,7 @@ public class initDataConfig implements CommandLineRunner {
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 9, 16)).department(deptCounselCenter).build());
 
         // 학생 데이터 50명
-        userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213901).name("김서윤").email("20213901@school.edu").phone("010-2958-4213")
+        userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213901).name("김서윤").email("jsua86268@gmail.com").phone("010-2857-1311")
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 5)).department(ensureDept("KOREAN_LANG", "국어국문학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212802).name("이준호").email("20212802@school.edu").phone("010-4135-9920")
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 4, 24)).department(ensureDept("PSYCHOLOGY", "심리학과")).grade(3).build());
