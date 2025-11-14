@@ -10,12 +10,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/user/noncurricular")
+@RequestMapping("/noncurricular")
 public class NoncurricularEntryController {
 
     @GetMapping("/dashboard")
     public String redirectDashboardByRole(Authentication authentication) {
 
+        // 1) 인증 안 되어 있으면 로그인 화면으로
+        if (authentication == null || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+            return "redirect:/login";   // 실제 로그인 URL에 맞게 수정
+        }
+
+        // 2) 여기까지 왔다는 건 인증 완료 → 역할 꺼내기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         UserRole role = userDetails.getUser().getRole(); // STUDENT / OPERATOR / DEPARTMENT_ADMIN ...
 

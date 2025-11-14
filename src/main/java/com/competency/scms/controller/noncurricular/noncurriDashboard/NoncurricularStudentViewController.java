@@ -9,14 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/user/noncurricular")
 public class NoncurricularStudentViewController {
 
-    // 학생 대시보드: GET /user/noncurricular/dashboard
-    @GetMapping("/dashboard")
-    public String studentDashboard(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
-        model.addAttribute("content",
-                "noncurricular/noncurriDashboard/student-dashboard :: content");
-        return "noncurricular/fix-screen/noncurricular-layout";
-    }
+    // 학생 대시보드는 NoncurricularEntryController에서 처리
 
     // 프로그램 조회(학생): GET /user/noncurricular/programs
     @GetMapping("/programs")

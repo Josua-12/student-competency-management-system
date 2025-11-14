@@ -18,7 +18,7 @@ public interface ProgramCompetencyRepository
     @Query("""
         select pc.program.id as programId,
                count(pc) as matchedCount
-        from ProgramCompetency pc
+        from LinkCompetency pc
         where pc.competency.id in :competencyIds
         group by pc.program.id
         order by matchedCount desc
