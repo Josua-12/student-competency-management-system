@@ -69,6 +69,6 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     Page<CounselingReservation> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
     // 중복 예약 방지용 쿼리 메서드 추가
-    boolean existsByCounselorAndReservationDateAndStartTime(Counselor counselor, LocalDate reservationDate, LocalTime startTime);
+    boolean existsByCounselorAndReservationDateAndStartTime(User counselor, LocalDate reservationDate, LocalTime startTime);
 
 }

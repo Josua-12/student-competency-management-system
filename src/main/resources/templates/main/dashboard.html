@@ -64,7 +64,15 @@
         <section class="dashboard-section consultation-section">
             <div class="section-header">
                 <h3 class="section-title"><i class="fas fa-comments"></i> 상담</h3>
-                <a href="/counseling/student" class="section-link">더보기 →</a>
+                <th:block sec:authorize="hasRole('ROLE_STUDENT')">
+                    <a href="/counseling/student" class="section-link">더보기 →</a>
+                </th:block>
+                <th:block sec:authorize="hasRole('ROLE_COUNSELOR')">
+                    <a href="/counseling/counselor" class="section-link">더보기 →</a>
+                </th:block>
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a href="/counseling/admin" class="section-link">더보기 →</a>
+                </th:block>
             </div>
             <div class="consultation-actions">
                 <a href="/counseling/student" class="action-btn primary-btn">
