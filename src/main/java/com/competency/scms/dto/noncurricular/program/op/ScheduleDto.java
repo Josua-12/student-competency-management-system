@@ -1,4 +1,4 @@
-package com.competency.scms.dto.noncurricular.program;
+package com.competency.scms.dto.noncurricular.program.op;
 
 import com.competency.scms.domain.noncurricular.program.AttendanceType;
 import jakarta.validation.constraints.NotNull;

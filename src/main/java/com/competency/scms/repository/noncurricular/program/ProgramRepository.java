@@ -7,6 +7,7 @@ import com.competency.scms.dto.noncurricular.mileage.ProgramSearchRowDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
@@ -120,4 +121,26 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
     // 권한 체크용 예시 (owner 연관관계 사용 시)
     boolean existsByProgramIdAndOwner_Id(Long programId, Long ownerId);
+
+    //학생용
+    @Query("""
+           select p
+           from Program p
+           where p.visibleToStudent = true
+             and (:keyword is null or :keyword = '' or p.title like concat('%', :keyword, '%'))
+             and (:category is null or p.category = :category)
+             and (:status is null or p.status = :status)
+             and (:deptCode is null or :deptCode = '' or p.department.code = :deptCode)
+             and (:from is null or p.recruitStartAt >= :from)
+             and (:to   is null or p.recruitEndAt   <= :to)
+           """)
+    Page<Program> searchStudentPrograms(
+            @Param("keyword") String keyword,
+            @Param("category") ProgramCategoryType category,
+            @Param("status") ProgramStatus status,
+            @Param("deptCode") String deptCode,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to,
+            Pageable pageable
+    );
 }

@@ -2,7 +2,7 @@ package com.competency.scms.service.noncurricular.program;
 
 
 import com.competency.scms.domain.noncurricular.program.Program;
-import com.competency.scms.dto.noncurricular.program.ProgramOpenRequestDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramOpenRequestDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

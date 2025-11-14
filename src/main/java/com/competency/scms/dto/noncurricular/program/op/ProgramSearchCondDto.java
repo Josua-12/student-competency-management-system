@@ -1,6 +1,7 @@
-package com.competency.scms.dto.noncurricular.program;
+package com.competency.scms.dto.noncurricular.program.op;
 
 import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
+import com.competency.scms.dto.noncurricular.program.ProgramSort;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;

@@ -1,8 +1,8 @@
 package com.competency.scms.controller.noncurricular.program;
 
 
-import com.competency.scms.dto.noncurricular.program.ProgramPageResponseDto;
-import com.competency.scms.dto.noncurricular.program.ProgramSearchCondDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramPageResponseDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramSearchCondDto;
 import com.competency.scms.service.noncurricular.program.ProgramCommandService;
 import com.competency.scms.service.noncurricular.program.ProgramQueryService;
 import lombok.RequiredArgsConstructor;

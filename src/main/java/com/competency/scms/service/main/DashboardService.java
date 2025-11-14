@@ -5,7 +5,7 @@ import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.competency.CompetencyScoreDto;
 import com.competency.scms.dto.dashboard.DashboardResponseDto;
-import com.competency.scms.dto.noncurricular.program.ProgramBasicDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramBasicDto;
 import com.competency.scms.repository.competency.CompetencyRepository;
 import com.competency.scms.repository.counseling.CounselorRepository;
 import com.competency.scms.repository.noncurricular.program.ProgramRepository;
