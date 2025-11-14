@@ -154,4 +154,9 @@ public class User {
         this.department = department;
         this.grade = grade;
     }
+
+    public void updateInfo(String email, String phone) {
+        if (email != null) this.email = email;
+        if (phone != null) this.phone = phone;
+    }
 }
