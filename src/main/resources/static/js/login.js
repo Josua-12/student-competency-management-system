@@ -60,9 +60,6 @@ async function safeJson(resp) {
 /**
  * 토큰 저장
  */
-/**
- * 토큰 저장
- */
 function persistTokens(data) {
     console.log('토큰 저장:', data);
     if (data?.accessToken) {
