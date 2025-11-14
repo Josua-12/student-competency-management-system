@@ -31,4 +31,8 @@ public interface CompetencyRepository extends JpaRepository<Competency, Long> {
             "AND (sq IS NULL OR sq.isActive = true) " +
             "ORDER BY c.displayOrder, sc.displayOrder, sq.displayOrder, so.displayOrder")
     List<Competency> findActiveRootCompetenciesForAssessment();
+
+    // 담당자 조회 메서드
+    List<Competency> findAllByAdminId(Long adminId); // CompetencyRepository
+
 }
