@@ -166,14 +166,14 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
     // 카테고리별 프로그램 수 (top5)
     @Query("""
-        select new com.competency.scms.dto.dashboard.OperatorCategoryStatDto(
-            p.categoryName,
-            count(p.id)
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorCategoryStatDto(
+            p.category,
+            count(p),
+            coalesce(sum(p.currentParticipantCount), 0)
         )
         from Program p
-        where p.deletedAt is null
-        group by p.categoryName
-        order by count(p.id) desc
+        group by p.category
+        order by count(p) desc
         """)
     List<OperatorCategoryStatDto> findTopCategoryStats(org.springframework.data.domain.Pageable pageable);
 
