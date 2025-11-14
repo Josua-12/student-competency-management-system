@@ -35,7 +35,7 @@ public class MainController {
         };
     }
 
-    @GetMapping("/main/dashboard")
+    @GetMapping("/user/dashboard")
     public String dashboard() {
         log.info("학생 대시보드 페이지 접근");
         return "main/dashboard";
