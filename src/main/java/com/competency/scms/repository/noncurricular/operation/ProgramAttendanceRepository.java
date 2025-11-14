@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.*;
 
 // src/main/java/com/competency/scms/repository/noncurricular/operation/ProgramAttendanceRepository.java
@@ -47,5 +48,14 @@ public interface ProgramAttendanceRepository extends JpaRepository<ProgramAttend
     boolean existsBySchedule_ScheduleIdAndStudent_IdAndAttendedAtBetween(
             Long scheduleId, Long studentId,
             java.time.LocalDateTime from, java.time.LocalDateTime to);
+
+
+    // 금일 출석 관리 대상 건수
+    long countByAttendDate(LocalDate attendDate);
+
+    // 이수처리 대기(예: 출석은 했는데 이수반영 X) → 실제 비즈니스 규칙에 맞게 수정
+    long countByStatusAndCompletedFalse(String status);
+
+
 }
 
