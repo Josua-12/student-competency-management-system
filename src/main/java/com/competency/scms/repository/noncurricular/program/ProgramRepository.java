@@ -5,12 +5,14 @@ import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import com.competency.scms.dto.noncurricular.mileage.ProgramSearchRowDto;
+import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorCategoryStatDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -146,4 +148,44 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
             @Param("approvalStatus") ApprovalStatus approvalStatus,
             Pageable pageable
     );
+
+    // 최근 n개월 월별 개설 수 + 참여자 수 (참여자 수는 join으로 집계)
+    @Query("""
+        select new com.competency.scms.dto.dashboard.OperatorMonthlyProgramStatDto(
+            concat(function('date_format', p.programStartAt, '%Y-%m')),
+            count(distinct p.id),
+            count(distinct app.id)
+        )
+        from Program p
+        left join p.applications app
+        where p.programStartAt >= :fromDate
+        group by function('date_format', p.programStartAt, '%Y-%m')
+        order by function('date_format', p.programStartAt, '%Y-%m')
+        """)
+    List<com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorMonthlyProgramStatDto> findMonthlyProgramStats(LocalDate fromDate);
+
+    // 카테고리별 프로그램 수 (top5)
+    @Query("""
+        select new com.competency.scms.dto.dashboard.OperatorCategoryStatDto(
+            p.categoryName,
+            count(p.id)
+        )
+        from Program p
+        where p.deletedAt is null
+        group by p.categoryName
+        order by count(p.id) desc
+        """)
+    List<OperatorCategoryStatDto> findTopCategoryStats(org.springframework.data.domain.Pageable pageable);
+
+    // 학생 추천용(간단 버전): 앞으로 진행 예정 + 모집중 프로그램 중 일부
+    @Query("""
+        select p
+        from Program p
+        where p.recruitStartAt <= current_date
+          and p.recruitEndAt >= current_date
+          and p.deletedAt is null
+        order by p.recruitEndAt asc
+        """)
+    List<Program> findRecommendablePrograms(org.springframework.data.domain.Pageable pageable);
+
 }
