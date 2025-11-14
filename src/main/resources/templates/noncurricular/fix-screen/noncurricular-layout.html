@@ -18,7 +18,8 @@
 
     <div class="layout">
         <!-- 왼쪽 사이드바 -->
-        <div th:replace="fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+        <div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+
 
         <!-- 오른쪽 컨텐츠 -->
         <main class="content">
@@ -34,7 +35,7 @@
 <!--<script th:src="@{/js/main.js}"></script>-->
 
 <!-- 사이드바 스크립트 -->
-<div th:replace="fix-screen/noncurricular-sidebar :: noncurricularSidebarScript"></div>
+<div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebarScript"></div>
 
 <!-- 페이지별 스크립트 (선택) -->
 <div th:if="${pageScript != null}"

@@ -11,25 +11,25 @@ public class NoncurricularDashboardViewController {
 
     @GetMapping("/personal")
     public String personalDashboard(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 개인 대시보드");
+        model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
         model.addAttribute("content",
-                "noncurricular/dashboard/personal-dashboard :: content");
-        return "layouts/noncurricular-layout";
+                "noncurricular/noncurriDashboard/student-dashboard :: content");
+        return "noncurricular/fix-screen/noncurricular-layout";
     }
 
     @GetMapping("/operator")
     public String operatorDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 운영자 대시보드");
         model.addAttribute("content",
-                "noncurricular/dashboard/operator-dashboard :: content");
-        return "layouts/noncurricular-layout";
+                "noncurricular/noncurriDashboard/operator-dashboard :: content");
+        return "noncurricular/fix-screen/noncurricular-layout";
     }
 
     @GetMapping("/department")
     public String departmentDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 부서관리자 대시보드");
         model.addAttribute("content",
-                "noncurricular/dashboard/department-dashboard :: content");
-        return "layouts/noncurricular-layout";
+                "noncurricular/noncurriDashboard/department-dashboard :: content");
+        return "noncurricular/fix-screen/noncurricular-layout";
     }
 }

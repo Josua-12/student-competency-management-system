@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8" />
     <title>학생 대시보드</title>
@@ -237,7 +239,7 @@
     </style>
 </head>
 <body>
-<div class="layout">
+<div th:fragment="content" class="layout">
     <header>
         <div>
             <h1>나의 대시보드</h1>
@@ -308,7 +310,7 @@
     </section>
 </div>
 
-<script>
+<script th:inline="javascript">
     const STU_API = {
         dashboard: '/api/student/dashboard'
     };

@@ -20,7 +20,7 @@ public class StudentDashboardController {
     public StudentDashboardResponse getDashboard(
             @AuthenticationPrincipal CustomUserDetails user // 실제 Principal 타입에 맞게 수정
     ) {
-        Long studentId = user.getUser().getId();; // or user.getUserId()
+        Long studentId = user.getUser().getId(); // or user.getUserId()
         return studentDashboardService.getDashboard(studentId);
     }
 }

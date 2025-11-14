@@ -1,6 +1,5 @@
 package com.competency.scms.controller.noncurricular.noncurriDashboard;
 
-
 import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorDashboardResponse;
 import com.competency.scms.service.noncurricular.noncurriDashboard.OperatorDashboardService;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +20,16 @@ public class OperatorDashboardController {
         return operatorDashboardService.getDashboard();
     }
 
-    @GetMapping("/noncurricular/programs")
-    public String programList(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 조회");
-        model.addAttribute("content", "noncurricular/program-list :: content");
-        return "layouts/noncurricular-layout";
-    }
+    // 화면 리턴 쓰고 싶을 때 참고용 (현재는 주석 처리 상태)
+    //
+    // @GetMapping("/noncurricular/programs")
+    // public String programList(Model model) {
+    //     model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 조회");
+    //     model.addAttribute("content",
+    //             "noncurricular/program/list_Op :: content");
+    //     return "noncurricular/fix-screen/noncurricular-layout";
+    // }
 }
+
+
 
