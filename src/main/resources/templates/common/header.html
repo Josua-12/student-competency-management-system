@@ -52,16 +52,21 @@
                     </ul>
                 </li>
 
-                <!-- 비교과 프로그램 드롭다운 -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <!-- 비교과 프로그램 -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/noncurricular/dashboard}">
                         비교과 프로그램
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/dashboard?type=internal}">교내 프로그램</a></li>
-                        <li><a class="dropdown-item" th:href="@{/dashboard?type=external}">교외 프로그램</a></li>
-                    </ul>
                 </li>
+<!--                <li class="nav-item dropdown">-->
+<!--                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">-->
+<!--                        비교과 프로그램-->
+<!--                    </a>-->
+<!--                    <ul class="dropdown-menu">-->
+<!--                        <li><a class="dropdown-item" th:href="@{/dashboard?type=internal}">교내 프로그램</a></li>-->
+<!--                        <li><a class="dropdown-item" th:href="@{/dashboard?type=external}">교외 프로그램</a></li>-->
+<!--                    </ul>-->
+<!--                </li>-->
 
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
