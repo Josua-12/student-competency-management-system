@@ -17,6 +17,10 @@ public class MainController {
 
     @GetMapping({"/", "/main"})
     public String mainRedirect(Authentication auth) {
+        // 개발용: 바로 학생 대시보드로 이동
+        return "redirect:/user/dashboard";
+
+        /* 운영용 (개발 완료 후 주석 해제)
         if (auth == null) {
             return "redirect:/auth/login";
         }
@@ -31,8 +35,9 @@ public class MainController {
             case "ROLE_ADMIN" -> "redirect:/admin/dashboard";
             case "ROLE_COUNSELOR" -> "redirect:/counselor/dashboard";
             case "ROLE_OPERATOR" -> "redirect:/operator/dashboard";
-            default -> "redirect:/main/dashboard"; // 학생용
+            default -> "redirect:/user/dashboard"; // 학생용
         };
+        */
     }
 
     @GetMapping("/user/dashboard")

@@ -50,11 +50,12 @@ public interface ProgramAttendanceRepository extends JpaRepository<ProgramAttend
             java.time.LocalDateTime from, java.time.LocalDateTime to);
 
 
-    // 금일 출석 관리 대상 건수
-    long countByAttendDate(LocalDate attendDate);
+    // 금일 출석 관리 대상 건수 - attendedAt 기반으로 수정
+    @Query("SELECT COUNT(a) FROM ProgramAttendance a WHERE DATE(a.attendedAt) = :attendDate")
+    long countByAttendDate(@Param("attendDate") LocalDate attendDate);
 
-    // 이수처리 대기(예: 출석은 했는데 이수반영 X) → 실제 비즈니스 규칙에 맞게 수정
-    long countByStatusAndCompletedFalse(String status);
+    // 특정 상태의 출석 건수
+    long countByStatus(AttendanceStatus status);
 
 
 }
