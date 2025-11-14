@@ -32,7 +32,7 @@ public class AssessmentSectionAdminController {
     }
 
     // 3. API: 섹션 상세 조회
-    @GetMapping("/api/section/{id}")
+    @GetMapping("/api/sections/{id}")
     @ResponseBody
     public ResponseEntity<AssessmentSectionFormDto> getSectionDetails(@PathVariable("id") Long id) {
         AssessmentSectionFormDto dto = sectionAdminService.getSectionDetails(id);

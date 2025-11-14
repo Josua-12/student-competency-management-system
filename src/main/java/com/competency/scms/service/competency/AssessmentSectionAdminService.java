@@ -31,6 +31,7 @@ public class AssessmentSectionAdminService {
     }
 
     // 3. 생성 및 수정
+    @Transactional
     public Long saveOrUpdateSection(AssessmentSectionFormDto dto) {
         AssessmentSection section;
         if (dto.getId() == null) {
@@ -60,6 +61,7 @@ public class AssessmentSectionAdminService {
     }
 
     // 4. 삭제
+    @Transactional
     public void deleteSection(Long id) {
         if (!sectionRepository.existsById(id)) {
             throw new IllegalArgumentException("존재하지 않는 섹션입니다.");

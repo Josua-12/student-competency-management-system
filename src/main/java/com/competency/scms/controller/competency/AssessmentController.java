@@ -5,17 +5,20 @@ import com.competency.scms.dto.competency.*;
 import com.competency.scms.security.CustomUserDetails;
 import com.competency.scms.service.competency.AssessmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/assessment")
+@RequestMapping("/user/assessment")
 public class AssessmentController {
     private final AssessmentService assessmentService;
 
@@ -62,7 +65,7 @@ public class AssessmentController {
 
         // 2. 생성되거나 찾아낸 Result의 PK를 가지고
         //    실제 '진단 수행 페이지'로 리다이렉트
-        return "redirect:/assessment/page/" + result.getId();
+        return "redirect:/user/assessment/page/" + result.getId();
     }
 
     /**
@@ -84,14 +87,14 @@ public class AssessmentController {
             AssessmentPageDto pageData = assessmentService.getAssessmentPageData(resultId, currentUserId);
 
             // 2. 모델에 DTO 추가
-            model.addAttribute("assessmentPage", pageData);
+            model.addAttribute("diagnosisForm", pageData);
 
             // 3. 뷰 반환
             return "competency/assessmentStart";
         } catch (IllegalArgumentException e) {
-            return "redirect:/assessment/result/" + resultId;
+            return "redirect:/user/assessment/result/" + resultId;
         } catch (SecurityException | IllegalStateException e) {
-            return "redirect:/assessment";
+            return "redirect:/user/assessment";
         }
     }
 
@@ -99,36 +102,49 @@ public class AssessmentController {
      * 임시저장 / 최종제출 처리
      * @param submitDto
      * @param userDetails
-     * @param ra
      * @return
      */
     @PostMapping("/submit")
-    public String handleSubmitAssessment(@ModelAttribute AssessmentSubmitDto submitDto,
-                                         @AuthenticationPrincipal CustomUserDetails userDetails,
-                                         RedirectAttributes ra) {
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> handleSubmitAssessment(
+            @RequestBody AssessmentSubmitDto submitDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Long currentId = userDetails.getUser().getId();
 
             // 1. 서비스 호출 (핵심 로직 실행)
             assessmentService.saveOrSubmitResponses(submitDto, currentId);
 
-            // 2. DTO의 'action' 값에 따라 분기
+            // 2. 성공 응답 생성
+            response.put("status", "success");
+
+            // 3. DTO의 'action' 값에 따라 분기
             if ("submit".equals(submitDto.getAction())) {
-                // 2-1. 최종제출 -> 결과 페이지로 리다이렉트
-                ra.addFlashAttribute("message", "진단을 성공적으로 제출했습니다.");
-                return "redirect:/assessment/result/" + submitDto.getResultId();
+                response.put("message", "진단을 성공적으로 제출했습니다.");
+                response.put("redirectUrl", "/user/assessment/result/" + submitDto.getResultId());
             } else {
-                // 2-2. 임시저장 -> 기존 진단 페이지로 리다이렉트
-                ra.addFlashAttribute("message", "답변이 임시저장되었습니다.");
-                return "redirect:/assessment/page" + submitDto.getResultId();
+                response.put("message", "답변이 임시저장되었습니다.");
+                response.put("redirectUrl", "/user/assessment/page/" + submitDto.getResultId()) ;
             }
+
+            return ResponseEntity.ok(response);
+
         } catch (SecurityException | IllegalArgumentException e) {
-            // 3. 권한이 없거나, 존재하지 않는 진단
-            ra.addFlashAttribute("error", "오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/assessment";
+            // 4. 권한이 없거나, 존재하지 않는 진단
+            response.put("status", "error");
+            response.put("message", "오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         } catch (IllegalStateException e) {
-            ra.addFlashAttribute("error", "이미 제출이 완료된 진단입니다. ");
-            return "redirect:/assessment/result/" + submitDto.getResultId();
+            response.put("status", "error");
+            response.put("message", "이미 제출이 완료된 진단입니다.");
+            response.put("redirectUrl", "/user/assessment/result/" + submitDto.getResultId());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         }
     }
 
@@ -156,10 +172,10 @@ public class AssessmentController {
             return "competency/assessmentResult";
         } catch (IllegalStateException e) {
             // 아직 완료되지 않은 진단
-            return "redirect:/assessment/page/" + resultId;
+            return "redirect:/user/assessment/page/" + resultId;
         } catch (SecurityException | IllegalArgumentException e) {
             // 권한 없거나 존재하지 않는 진단
-            return "redirect:/assessment";
+            return "redirect:/user/assessment";
         }
     }
 }

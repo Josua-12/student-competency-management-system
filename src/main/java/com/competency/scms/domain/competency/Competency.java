@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 @Table(name = "competencies")
 @SQLDelete(sql = "UPDATE competencies SET deleted_at = CURRENT_TIMESTAMP, " +
         "is_active = false WHERE comp_id = ?")
+@SQLRestriction("deleted_at is NULL")
 public class Competency extends CompetencyBaseEntity {
 
     /**
