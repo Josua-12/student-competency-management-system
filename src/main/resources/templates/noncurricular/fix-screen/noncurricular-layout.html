@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle} ?: '비교과 프로그램'">비교과 프로그램</title>
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/noncurricular.css}">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <header th:replace="common/header :: header"></header>
+
+    <div class="layout">
+        <!-- 왼쪽 사이드바 -->
+        <div th:replace="fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+
+        <!-- 오른쪽 컨텐츠 -->
+        <main class="content">
+            <div th:replace="${content}">컨텐츠</div>
+        </main>
+    </div>
+
+    <!-- footer fragment (있다고 가정) -->
+    <footer th:replace="common/footer :: footer"></footer>
+</div>
+
+<!-- 공통 JS -->
+<!--<script th:src="@{/js/main.js}"></script>-->
+
+<!-- 사이드바 스크립트 -->
+<div th:replace="fix-screen/noncurricular-sidebar :: noncurricularSidebarScript"></div>
+
+<!-- 페이지별 스크립트 (선택) -->
+<div th:if="${pageScript != null}"
+     th:replace="${pageScript}"></div>
+
+</body>
+</html>

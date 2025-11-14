@@ -57,10 +57,17 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
     @Query("""
         select ar
         from AssessmentResult ar
-        where ar.student.id = :studentId
+        where ar.user.id = :studentId
         order by ar.submittedAt desc
         """)
     List<AssessmentResult> findLatestResult(Long studentId, Pageable pageable);
 
+    @Query("""
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentCompetencyScoreDto(
+            'competency', 0.0
+        )
+        from AssessmentResult ar
+        where ar.id = :id
+        """)
     List<StudentCompetencyScoreDto> findScoresByResultId(Long id);
 }

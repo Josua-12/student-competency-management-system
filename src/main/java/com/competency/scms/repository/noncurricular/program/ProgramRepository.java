@@ -151,13 +151,13 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
     // 최근 n개월 월별 개설 수 + 참여자 수 (참여자 수는 join으로 집계)
     @Query("""
-        select new com.competency.scms.dto.dashboard.OperatorMonthlyProgramStatDto(
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorMonthlyProgramStatDto(
             concat(function('date_format', p.programStartAt, '%Y-%m')),
-            count(distinct p.id),
-            count(distinct app.id)
+            count(distinct p.programId),
+            count(distinct app.applicationId)
         )
         from Program p
-        left join p.applications app
+        left join p.programApplications app
         where p.programStartAt >= :fromDate
         group by function('date_format', p.programStartAt, '%Y-%m')
         order by function('date_format', p.programStartAt, '%Y-%m')
@@ -166,14 +166,14 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
     // 카테고리별 프로그램 수 (top5)
     @Query("""
-        select new com.competency.scms.dto.dashboard.OperatorCategoryStatDto(
-            p.categoryName,
-            count(p.id)
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorCategoryStatDto(
+            p.category,
+            count(p),
+            coalesce(sum(p.currentParticipants), 0)
         )
         from Program p
-        where p.deletedAt is null
-        group by p.categoryName
-        order by count(p.id) desc
+        group by p.category
+        order by count(p) desc
         """)
     List<OperatorCategoryStatDto> findTopCategoryStats(org.springframework.data.domain.Pageable pageable);
 
@@ -183,7 +183,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
         from Program p
         where p.recruitStartAt <= current_date
           and p.recruitEndAt >= current_date
-          and p.deletedAt is null
+          and p.deleted = false
         order by p.recruitEndAt asc
         """)
     List<Program> findRecommendablePrograms(org.springframework.data.domain.Pageable pageable);

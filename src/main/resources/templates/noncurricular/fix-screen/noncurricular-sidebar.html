@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root{
+            --bg:#f9fafb;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --card:#ffffff;
+            --accent:#2563eb;
+            --accent-soft:#e5edff;
+            --radius:12px;
+        }
+        .sidebar{
+            position:fixed; top:0; left:0; bottom:0;
+            width:260px;
+            background:#ffffff;
+            border-right:1px solid var(--line);
+            padding:20px 16px;
+            overflow-y:auto;
+        }
+        .sidebar-header{
+            padding:0 8px 16px;
+            border-bottom:1px solid var(--line);
+            margin-bottom:16px;
+        }
+        .sidebar-title{font-size:18px;font-weight:700;}
+        .sidebar-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+        .menu-section{margin-bottom:12px;}
+        .menu-section-toggle{
+            width:100%;display:flex;align-items:center;justify-content:space-between;
+            padding:8px 10px;border:none;background:transparent;
+            font-size:14px;font-weight:600;cursor:pointer;
+            border-radius:var(--radius);transition:background .15s;
+        }
+        .menu-section-toggle:hover{background:var(--accent-soft);}
+        .menu-section-toggle .caret{font-size:11px;color:var(--muted);transition:transform .15s;}
+        .menu-section.open .menu-section-toggle .caret{transform:rotate(90deg);}
+        .menu-list{
+            list-style:none;margin-top:4px;margin-left:8px;padding-left:6px;
+            border-left:1px solid var(--line);display:none;
+        }
+        .menu-section.open .menu-list{display:block;}
+
+        .menu-link{
+            display:block;width:100%;text-align:left;
+            padding:6px 10px;font-size:13px;color:var(--muted);
+            border-radius:var(--radius);border:none;background:transparent;
+            cursor:pointer;transition:background .15s,color .15s;
+        }
+        .menu-link:hover{background:var(--accent-soft);color:var(--accent);}
+        .menu-link.active{background:var(--accent);color:#fff;}
+    </style>
+</head>
+<body>
+
+<!-- ========= 실제 사이드바 ========== -->
+<aside class="sidebar" th:fragment="noncurricularSidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-title">비교과 프로그램</div>
+        <div class="sidebar-sub">Non-curricular Program</div>
+    </div>
+
+    <!-- 대시보드 (공통) -->
+    <section class="menu-section open">
+        <button class="menu-section-toggle" type="button">
+            <span>대시보드</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li sec:authorize="hasRole('STUDENT')">
+                <button class="menu-link" data-href="/noncurricular/dashboard/personal">개인 대시보드</button>
+            </li>
+            <li sec:authorize="hasRole('OPERATOR')">
+                <button class="menu-link" data-href="/noncurricular/dashboard/operator">운영자 대시보드</button>
+            </li>
+            <li sec:authorize="hasRole('DEPARTMENT_ADMIN')">
+                <button class="menu-link" data-href="/noncurricular/dashboard/department">부서관리자 대시보드</button>
+            </li>
+        </ul>
+    </section>
+
+    <!-- 목록 (학생/운영자 공통이라 가정) -->
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>목록</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <button class="menu-link" data-href="/noncurricular/programs">프로그램 조회</button>
+            </li>
+        </ul>
+    </section>
+
+    <!-- 신청 (학생만) -->
+    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+        <button class="menu-section-toggle" type="button">
+            <span>신청</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/apply">프로그램 신청/ 취소</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/applications">신청 이력 조회</button></li>
+        </ul>
+    </section>
+
+    <!-- 참여 (학생만) -->
+    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+        <button class="menu-section-toggle" type="button">
+            <span>참여</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/participation/satisfaction">만족도 설문 응답</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/participation/reports">결과보고서 등록</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/participation/completions">이수내역 조회</button></li>
+        </ul>
+    </section>
+
+    <!-- 비교과 포인트 (학생만) -->
+    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+        <button class="menu-section-toggle" type="button">
+            <span>비교과 포인트</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/points">비교과 포인트 조회</button></li>
+        </ul>
+    </section>
+
+    <!-- 과정/참여/포인트/관리/알림 (운영자 / 부서관리자) -->
+    <section class="menu-section" sec:authorize="hasAnyRole('OPERATOR','DEPARTMENT_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>과정 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/admin/programs">프로그램 과정 개설/수정/삭제</button></li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasAnyRole('OPERATOR','DEPARTMENT_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>참여 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/admin/participants">참가자 관리</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/admin/satisfaction/results">만족도 결과 조회</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/admin/completion/status">이수현황 관리</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/admin/reports/register">결과보고서 등록</button></li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasAnyRole('OPERATOR','DEPARTMENT_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>비교과 포인트 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/admin/points">비교과 포인트 조회</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/admin/points/register">비교과 포인트 등록</button></li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasAnyRole('OPERATOR','DEPARTMENT_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/admin/config/program">프로그램 일정/분류/재원 관리</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/admin/reports/manage">결과보고서 관리</button></li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasAnyRole('OPERATOR','DEPARTMENT_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>알림</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li><button class="menu-link" data-href="/noncurricular/admin/notifications/approve-email">신청 승인 이메일</button></li>
+            <li><button class="menu-link" data-href="/noncurricular/admin/notifications/cancel-email">신청 취소 이메일</button></li>
+        </ul>
+    </section>
+</aside>
+
+<!-- ========= 스크립트 프래그먼트 ========== -->
+<script th:fragment="noncurricularSidebarScript">
+    // 섹션 접기/펼치기
+    document.querySelectorAll('.menu-section-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const section = btn.closest('.menu-section');
+            section.classList.toggle('open');
+        });
+    });
+
+    // 메뉴 클릭 → 이동 + active 표시
+    document.querySelectorAll('.menu-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const url = link.dataset.href;
+            if (!url) return;
+
+            document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+
+            window.location.href = url;
+        });
+    });
+
+    // 현재 URL 기준 active 처리
+    ;(function setActiveByLocation() {
+        const current = window.location.pathname;
+        const links = document.querySelectorAll('.menu-link');
+        let matched = null;
+
+        links.forEach(l => {
+            if (current.startsWith(l.dataset.href)) {
+                if (!matched || l.dataset.href.length > matched.dataset.href.length) {
+                    matched = l;
+                }
+            }
+        });
+
+        if (matched) {
+            matched.classList.add('active');
+            const section = matched.closest('.menu-section');
+            if (section) section.classList.add('open');
+        }
+    })();
+</script>
+
+</body>
+</html>
