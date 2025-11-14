@@ -10,7 +10,7 @@ public class CounselingMapper {
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getSubfieldName());
+        response.setSubFieldName(reservation.getSubField() != null ? reservation.getSubField().getSubfieldName() : null);
         response.setReservationDate(reservation.getReservationDate());
         response.setStartTime(reservation.getStartTime());
         response.setEndTime(reservation.getEndTime());
@@ -19,6 +19,8 @@ public class CounselingMapper {
         response.setConfirmedEndTime(reservation.getConfirmedEndTime());
         response.setStatus(reservation.getStatus());
         response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
+        response.setRequestContent(reservation.getRequestContent());
+        response.setCreatedAt(reservation.getCreatedAt());
         return response;
     }
 
@@ -27,7 +29,7 @@ public class CounselingMapper {
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getSubfieldName());
+        response.setSubFieldName(reservation.getSubField() != null ? reservation.getSubField().getSubfieldName() : null);
         response.setReservationDate(reservation.getReservationDate());
         response.setStartTime(reservation.getStartTime());
         response.setEndTime(reservation.getEndTime());

@@ -46,6 +46,8 @@ public class CounselingReservationDto {
         private LocalTime confirmedEndTime;
         private ReservationStatus status;
         private String counselorName;
+        private String requestContent;
+        private java.time.LocalDateTime createdAt;
     }
     
     // 예약 목록 검색 조건
@@ -55,6 +57,7 @@ public class CounselingReservationDto {
         private CounselingField counselingField;
         private LocalDate startDate;
         private LocalDate endDate;
+        private String dateType = "regDate"; // regDate 또는 schdlDate
         private Integer page = 0;
         private Integer size = 10;
     }

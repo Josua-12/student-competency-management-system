@@ -1,6 +1,9 @@
 package com.competency.scms.controller.counsel;
 
+import com.competency.scms.domain.counseling.CounselingField;
+import com.competency.scms.repository.counseling.CounselingSubFieldRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,16 +15,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class CounselingController {
 
+    private final CounselingSubFieldRepository subFieldRepository;
+
     // 학생 상담 메인 페이지
     @GetMapping("/student")
-    public String studentCounselingMain() {
+    public String studentCounselingMain(Model model) {
+        model.addAttribute("selectedTab", "GeneralCnsl");
         return "counseling/student/main";
     }
 
     // 학생 상담 신청 현황
     @GetMapping("/student/status")
-    public String studentCounselingStatus() {
+    public String studentCounselingStatus(Model model) {
+        model.addAttribute("selectedTab", "state");
         return "counseling/student/state";
+    }
+
+    // 학생 심리상담 페이지
+    @GetMapping("/student/psycho")
+    public String studentCounselingPsycho(Model model) {
+        model.addAttribute("selectedTab", "psycho");
+
+        return "counseling/student/psychological";
+    }
+
+    // 학생 진로상담 페이지
+    @GetMapping("/student/career")
+    public String studentCounselingCareer(Model model) {
+        model.addAttribute("selectedTab", "career");
+        return "counseling/student/career";
+    }
+
+    // 학생 취업상담 페이지
+    @GetMapping("/student/job")
+    public String studentCounselingJob(Model model) {
+        model.addAttribute("selectedTab", "job");
+        var subFields = subFieldRepository.findByCounselingFieldAndIsActiveTrueOrderBySubfieldNameAsc(
+            CounselingField.EMPLOYMENT, Pageable.unpaged());
+        model.addAttribute("subFields", subFields.getContent());
+        return "counseling/student/job";
+    }
+    
+    // 학생 서면첨삭 페이지
+    @GetMapping("/student/written-editing")
+    public String studentWrittenEditing(Model model) {
+        model.addAttribute("selectedTab", "written-editing");
+        var subFields = subFieldRepository.findByCounselingFieldAndIsActiveTrueOrderBySubfieldNameAsc(
+            CounselingField.EMPLOYMENT, Pageable.unpaged());
+        model.addAttribute("subFields", subFields.getContent());
+        return "counseling/student/written-editing";
+    }
+
+    // 학생 학습상담 페이지
+    @GetMapping("/student/learning")
+    public String studentCounselingLearning(Model model) {
+        model.addAttribute("selectedTab", "learning");
+        return "counseling/student/learning";
     }
 
     // 상담사 메인 페이지

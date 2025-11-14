@@ -33,6 +33,10 @@ public class CounselingReservationService {
     // CNSL-001: 상담 예약 등록
     @Transactional
     public Long createReservation(CounselingReservationDto.CreateRequest request, User currentUser) {
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
         User student;
         ReservationStatus initialStatus;
         User assignedCounselor = null;
@@ -42,8 +46,7 @@ public class CounselingReservationService {
             student = findStudentById(request.getStudentId());
             initialStatus = ReservationStatus.CONFIRMED;
             assignedCounselor = currentUser.getRole() == UserRole.COUNSELOR ? currentUser : null; //상담사가 생성 시 본인 자동 배정
-        } else { // 학생이 본인을 위해 예약 생성하는 경우
-            validateStudentRole(currentUser);
+        } else { // 본인을 위해 예약 생성하는 경우
             student = currentUser;
             initialStatus = ReservationStatus.PENDING;
         }
@@ -157,12 +160,6 @@ public class CounselingReservationService {
 
     private void validateCounselorOrAdminRole(User user) {
         if (user.getRole() != UserRole.COUNSELOR && user.getRole() != UserRole.ADMIN) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-    }
-
-    private void validateStudentRole(User user) {
-        if (user.getRole() != UserRole.STUDENT) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
     }

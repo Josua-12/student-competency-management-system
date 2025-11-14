@@ -1,6 +1,7 @@
 package com.competency.scms.dto.counsel;
 
 import com.competency.scms.domain.counseling.ReservationStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotEmpty;
@@ -85,5 +86,32 @@ public class CounselingScheduleDto {
                 private String offReason;
             }
         }
+    }
+
+    // 예약 가능한 시간대 조회용
+    @Data
+    public static class AvailableSlot {
+        private LocalDate date;
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime startTime;
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime endTime;
+        private Long counselorId;
+        private String counselorName;
+    }
+
+    // 월간 일정 조회용
+    @Data
+    public static class MonthlySchedule {
+        private String date;
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime startTime;
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime endTime;
+        private Long counselorId;
+        private String counselorName;
+        private Long subfieldId;
+        private String subfieldName;
+        private Boolean isAvailable;
     }
 }

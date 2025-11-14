@@ -82,7 +82,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .phone("010-1234-5678")
                 .password("password")
                 .birthDate(LocalDate.of(2000,1,1))
-                .department(ensureDept("ECONOMICS", "경제학과")
+                .department(ensureDept("ECONOMICS", "경제학과"))
                 .grade(1)
                 .build();
         userRepository.save(testStudent);

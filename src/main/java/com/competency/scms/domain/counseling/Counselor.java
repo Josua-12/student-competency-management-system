@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import org.hibernate.annotations.SQLDelete;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "counselors")
@@ -37,8 +39,16 @@ public class Counselor {
     @Column(nullable = false)
     private CounselingField counselingField;
     
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "counselor_subfields",
+        joinColumns = @JoinColumn(name = "counselor_id"),
+        inverseJoinColumns = @JoinColumn(name = "subfield_id")
+    )
+    private List<CounselingSubField> specializations = new ArrayList<>();
+    
     @Column(columnDefinition = "TEXT")
-    private String specialization;
+    private String specialization;  // 기존 호환성 유지
 
     @Column(nullable = false)
     @Builder.Default

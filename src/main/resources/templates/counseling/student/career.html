@@ -14,39 +14,7 @@
         <div class="container-fluid">
             <div class="container">
                 <!-- 페이지 상단 영역 -->
-                <div class="row mt-4 mb-4">
-                    <div class="col-12">
-                        <h2 class="fw-bold mb-4">일반상담·컨설팅</h2>
-
-                        <!-- 라디오 탭 -->
-                        <div class="d-flex flex-wrap gap-3 mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="counselingType" id="radio1" value="state">
-                                <label class="form-check-label" for="radio1">신청현황</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="counselingType" id="radio2" value="GeneralCnsl">
-                                <label class="form-check-label" for="radio2">일반상담·컨설팅 안내</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="counselingType" id="radio3" value="psycho">
-                                <label class="form-check-label" for="radio3">심리상담</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="counselingType" id="radio4" value="career" checked>
-                                <label class="form-check-label" for="radio4">진로상담</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="counselingType" id="radio5" value="job">
-                                <label class="form-check-label" for="radio5">취업상담</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="counselingType" id="radio6" value="learning">
-                                <label class="form-check-label" for="radio6">학습상담</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div th:replace="~{counseling/student/sidebar :: sidebar(selectedTab=${selectedTab})}"></div>
 
                 <!-- 메인 콘텐츠 -->
                 <div class="row">
@@ -94,14 +62,14 @@
                                     </div>
 
                                     <!-- 캘린더 -->
-                                    <div class="col-lg-8 mb-4">
+                                    <div class="col-12 mb-4">
                                         <div class="card">
                                             <div class="card-header d-flex justify-content-between align-items-center">
-                                                <button class="btn btn-outline-primary btn-sm">
+                                                <button class="btn btn-outline-primary btn-sm" id="prevWeek">
                                                     <i class="bi bi-chevron-left"></i>
                                                 </button>
-                                                <h5 class="mb-0">2025/01</h5>
-                                                <button class="btn btn-outline-primary btn-sm">
+                                                <h5 class="mb-0" id="weekRange">2025년 1월 6일 - 1월 10일</h5>
+                                                <button class="btn btn-outline-primary btn-sm" id="nextWeek">
                                                     <i class="bi bi-chevron-right"></i>
                                                 </button>
                                             </div>
@@ -109,69 +77,18 @@
                                                 <table class="table table-bordered mb-0">
                                                     <thead class="table-light">
                                                         <tr>
-                                                            <th class="text-center">일</th>
+                                                            <th class="text-center" style="width: 100px;">시간</th>
                                                             <th class="text-center">월</th>
                                                             <th class="text-center">화</th>
                                                             <th class="text-center">수</th>
                                                             <th class="text-center">목</th>
                                                             <th class="text-center">금</th>
-                                                            <th class="text-center">토</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="text-center p-2">29</td>
-                                                            <td class="text-center p-2">30</td>
-                                                            <td class="text-center p-2">31</td>
-                                                            <td class="text-center p-2">01</td>
-                                                            <td class="text-center p-2">02</td>
-                                                            <td class="text-center p-2">03</td>
-                                                            <td class="text-center p-2">04</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-center p-2">05</td>
-                                                            <td class="text-center p-2">06</td>
-                                                            <td class="text-center p-2">07</td>
-                                                            <td class="text-center p-2">08</td>
-                                                            <td class="text-center p-2">09</td>
-                                                            <td class="text-center p-2">10</td>
-                                                            <td class="text-center p-2">11</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-center p-2">12</td>
-                                                            <td class="text-center p-2 bg-success text-white">13<br><small>10:00 진로개발</small></td>
-                                                            <td class="text-center p-2">14</td>
-                                                            <td class="text-center p-2 bg-warning">15<br><small>11:00 진로개발</small></td>
-                                                            <td class="text-center p-2">16</td>
-                                                            <td class="text-center p-2">17</td>
-                                                            <td class="text-center p-2">18</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-center p-2">19</td>
-                                                            <td class="text-center p-2">20</td>
-                                                            <td class="text-center p-2">21</td>
-                                                            <td class="text-center p-2 bg-primary text-white">22<br><small>14:00 진로개발</small></td>
-                                                            <td class="text-center p-2">23</td>
-                                                            <td class="text-center p-2">24</td>
-                                                            <td class="text-center p-2">25</td>
-                                                        </tr>
+                                                    <tbody id="scheduleBody">
+                                                        <!-- 동적으로 생성됨 -->
                                                     </tbody>
                                                 </table>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- 일정 목록 -->
-                                    <div class="col-lg-4 mb-4">
-                                        <div class="card h-100">
-                                            <div class="card-body d-flex align-items-center justify-content-center">
-                                                <div class="text-center">
-                                                    <i class="bi bi-calendar-event fs-1 mb-3 text-muted"></i>
-                                                    <p class="mb-3 text-muted">캘린더에서 일정을 선택해 주세요.</p>
-                                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reservationModal">
-                                                        <i class="bi bi-plus-circle me-2"></i>진로상담 신청
-                                                    </button>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -261,6 +178,8 @@
     </th:block>
     <th:block th:fragment="scripts">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/counseling/student-sidebar.js}"></script>
+        <script th:src="@{/js/counseling/student-counseling.js}"></script>
     </th:block>
 </body>
 </html>

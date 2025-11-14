@@ -16,6 +16,8 @@ import com.competency.scms.repository.user.UserRepository;
 import com.competency.scms.repository.DepartmentRepository;
 import com.competency.scms.domain.Department;
 
+import java.time.DayOfWeek;
+
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ public class initDataConfig implements CommandLineRunner {
     private final CounselingReservationRepository counselingReservationRepository;
     private final CounselorRepository counselorRepository;
     private final CounselingSubFieldRepository counselingSubFieldRepository;
+    private final CounselingScheduleRepository counselingScheduleRepository;
     private final ProgramRepository programRepository;
     private final MileageRecordRepository mileageRecordRepository;
     private final SatisfactionQuestionRepository satisfactionQuestionRepository;
@@ -311,6 +314,34 @@ public class initDataConfig implements CommandLineRunner {
                 .specialization("진로 및 취업상담 전문").isActive(true).build());
 
         log.info("✅ Counselor 초기 데이터 12건이 생성되었습니다.");
+
+        // 상담사별 기본 스케줄 생성 (월-금)
+        List<User> counselorUsers = List.of(
+            getUser(150001), getUser(150002), getUser(150003), getUser(150004),
+            getUser(150005), getUser(150006), getUser(150007), getUser(150008),
+            getUser(150009), getUser(150010), getUser(150011), getUser(150012)
+        );
+        
+        for (User counselor : counselorUsers) {
+            for (DayOfWeek day : List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)) {
+                CounselingBaseSchedule schedule = new CounselingBaseSchedule();
+                schedule.setCounselor(counselor);
+                schedule.setDayOfWeek(day);
+                schedule.setSlot0910(true);
+                schedule.setSlot1011(true);
+                schedule.setSlot1112(true);
+                schedule.setSlot1213(false); // 점심시간
+                schedule.setSlot1314(true);
+                schedule.setSlot1415(true);
+                schedule.setSlot1516(true);
+                schedule.setSlot1617(true);
+                schedule.setSlot1718(false); // 마감시간
+                
+                counselingScheduleRepository.save(schedule);
+            }
+        }
+        
+        log.info("✅ 상담사 기본 스케줄 60건이 생성되었습니다.");
 
         // 상담 예약 데이터 (완료된 상담)
         counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20213901)).counselor(getUser(150001)).counselingField(CounselingField.PSYCHOLOGICAL).subField(counselingSubFieldRepository.findAll().get(0)).reservationDate(LocalDate.of(2025, 3, 15)).startTime(LocalTime.of(10, 0)).endTime(LocalTime.of(11, 0)).requestContent("학업 스트레스 상담").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 10, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 10, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 15, 11, 0)).build());

@@ -33,6 +33,10 @@ public class CounselingBaseSchedule { // 기본 근무 시간표
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subfield_id")
+    private CounselingSubField subField;  // EMPLOYMENT 상담사의 경우 시간대별 subfield 할당
+    
     @Column(nullable = false)
     private Boolean slot0910 = true;
     
