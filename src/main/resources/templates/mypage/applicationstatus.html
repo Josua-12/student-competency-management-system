@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비교과 프로그램 신청 현황</title>
+    <!-- Tailwind CSS 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap 5 CSS 로드 (카드, 테이블, 뱃지 등 컴포넌트 사용을 위해 유지) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 아이콘 로드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- 사용자 정의 스타일 로드 -->
+    <link rel="stylesheet" href="applicationstatus.css" />
+
+    <!-- CSS (Styles) 영역: 모든 스타일을 여기에 통합합니다. -->
+    <style>
+        /* 기본 스타일 정의 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* gray-100 */
+        }
+
+        /* 1. 사이드바 스타일 정의 */
+        .sidebar {
+            width: 260px; /* 고정 너비 설정 */
+        }
+
+        /* 2. 활성 링크 스타일 정의 */
+        .active-link {
+            /* 활성 링크에 배경색을 지정하여 텍스트가 잘 보이도록 함 */
+            background-color: #4f46e5 !important; /* Tailwind Indigo-600 */
+            color: white !important; /* 활성 링크 텍스트를 흰색으로 */
+        }
+
+        /* 3. 호버 및 전환 효과 정의 */
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .hover-bg-light:hover {
+            background-color: #f1f3f5; /* Light gray for hover */
+            color: #495057 !important; /* Dark text on hover */
+        }
+        .text-muted-hover:hover {
+            color: #4f46e5 !important; /* Indigo color on hover for breadcrumb link */
+        }
+        .text-indigo {
+            color: #4f46e5 !important; /* Custom indigo color */
+        }
+
+        /* 테이블 디자인 개선 */
+        .application-table th {
+            letter-spacing: 0.05em;
+            color: #6c757d;
+        }
+        .application-table td {
+            font-size: 0.95rem;
+        }
+
+        /* 상태 뱃지 스타일 */
+        .badge-status {
+            min-width: 70px;
+            padding: 0.5em 0.8em;
+            font-weight: 600;
+        }
+
+        /* 모바일 뷰에서 사이드바 숨김 */
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none !important;
+            }
+        }
+
+        /* 커스텀 모달 스타일: alert() 대신 사용 */
+        #custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+        }
+        #modal-content {
+            background-color: white;
+            padding: 25px 30px; /* 패딩 증가 */
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 강화 */
+            max-width: 380px;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Custom Modal Structure (alert() 대체, 확인 버튼 재도입) -->
+<div id="custom-modal">
+    <div id="modal-content">
+        <!-- 메시지 아래에 버튼을 위한 간격 확보 -->
+        <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
+        <!-- 확인 버튼 재도입 -->
+        <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
+    </div>
+</div>
+
+<div id="app" class="d-flex min-vh-100">
+
+    <!-- 사이드바 네비게이션 -->
+    <aside class="sidebar bg-white border-end shadow-sm d-none d-md-block flex-shrink-0">
+        <div class="p-4 border-bottom">
+            <h3 class="fs-5 fw-bolder text-dark">역량진단 시스템</h3>
+        </div>
+        <nav class="p-3 space-y-2">
+            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3">메뉴</h4>
+            <a href="#" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition">
+                <i class="fas fa-chart-bar fa-fw me-3"></i>
+                <span>나의 역량 현황</span>
+            </a>
+            <!-- 현재 페이지 (활성) -->
+            <a href="#" class="nav-link p-3 rounded-3 active-link">
+                <i class="fas fa-list-check fa-fw me-3"></i>
+                <span>신청 프로그램 현황</span>
+            </a>
+            <!-- 산출물 메뉴 -->
+            <a href="#" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition">
+                <i class="fas fa-file-alt fa-fw me-3"></i>
+                <span>역량진단 산출물</span>
+            </a>
+            <a href="#" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition">
+                <i class="fas fa-cog fa-fw me-3"></i>
+                <span>설정</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-grow-1 p-3 p-md-5 main-content">
+        <div class="container-fluid">
+
+            <!-- 페이지 헤더 및 Breadcrumb -->
+            <header class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
+                <h2 class="h3 fw-bolder text-dark mb-2 mb-sm-0">비교과 프로그램 신청 현황</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 small text-muted">
+                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted-hover"><i class="fas fa-home"></i> 홈</a></li>
+                        <li class="breadcrumb-item">비교과</li>
+                        <li class="breadcrumb-item active text-dark fw-medium" aria-current="page">신청 현황</li>
+                    </ol>
+                </nav>
+            </header>
+
+            <!-- 프로그램 리스트 카드 -->
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-white p-4 border-bottom-0 rounded-top-4">
+                    <h5 class="card-title fs-5 fw-semibold text-dark d-flex align-items-center mb-0">
+                        <i class="fas fa-calendar-check text-indigo me-3"></i> 내가 신청한 프로그램 목록
+                    </h5>
+                </div>
+                <div class="card-body p-0 rounded-bottom-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 application-table">
+                            <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="py-3 px-4 small fw-bold text-uppercase" style="width: 25%;">프로그램명</th>
+                                <th scope="col" class="py-3 px-4 small fw-bold text-uppercase" style="width: 20%;">운영 기간</th>
+                                <th scope="col" class="py-3 px-4 small fw-bold text-uppercase">신청일</th>
+                                <th scope="col" class="py-3 px-4 small fw-bold text-uppercase text-center" style="width: 15%;">신청 상태</th>
+                                <th scope="col" class="py-3 px-4 small fw-bold text-uppercase text-center" style="width: 15%;">산출물</th>
+                                <th scope="col" class="py-3 px-4 small fw-bold text-uppercase text-center" style="width: 10%;">관리</th>
+                            </tr>
+                            </thead>
+                            <tbody id="applicationTableBody">
+                            <!-- 샘플 데이터 -->
+                            <tr data-program="글로벌 리더십 캠프" data-status="신청 완료">
+                                <td class="py-3 px-4 fw-medium">글로벌 리더십 캠프</td>
+                                <td class="py-3 px-4 text-muted">2024.08.01 ~ 2024.08.03</td>
+                                <td class="py-3 px-4 text-muted">2024.07.15</td>
+                                <td class="py-3 px-4 text-center">
+                                    <span class="badge bg-primary rounded-pill badge-status">신청 완료</span>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill" disabled>등록 불가</button>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-danger rounded-pill action-btn" data-action="cancel">취소</button>
+                                </td>
+                            </tr>
+                            <tr data-program="AI 기반 코딩 능력 향상 워크샵" data-status="이수 완료">
+                                <td class="py-3 px-4 fw-medium">AI 기반 코딩 능력 향상 워크샵</td>
+                                <td class="py-3 px-4 text-muted">2024.09.10 ~ 2024.11.30</td>
+                                <td class="py-3 px-4 text-muted">2024.09.01</td>
+                                <td class="py-3 px-4 text-center">
+                                    <span class="badge bg-success rounded-pill badge-status">이수 완료</span>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-primary rounded-pill action-btn" data-action="register">산출물 등록</button>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-secondary rounded-pill" disabled>완료</button>
+                                </td>
+                            </tr>
+                            <tr data-program="대학 생활 적응 심리 상담" data-status="이수 중">
+                                <td class="py-3 px-4 fw-medium">대학 생활 적응 심리 상담</td>
+                                <td class="py-3 px-4 text-muted">2024.03.01 ~ 2024.06.30</td>
+                                <td class="py-3 px-4 text-muted">2024.02.20</td>
+                                <td class="py-3 px-4 text-center">
+                                    <span class="badge bg-warning text-dark rounded-pill badge-status">이수 중</span>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill" disabled>등록 불가</button>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-secondary rounded-pill" disabled>진행 중</button>
+                                </td>
+                            </tr>
+                            <tr data-program="취업 멘토링 프로그램" data-status="신청 취소">
+                                <td class="py-3 px-4 fw-medium">취업 멘토링 프로그램</td>
+                                <td class="py-3 px-4 text-muted">2024.06.01 ~ 2024.06.15</td>
+                                <td class="py-3 px-4 text-muted">2024.05.05</td>
+                                <td class="py-3 px-4 text-center">
+                                    <span class="badge bg-danger rounded-pill badge-status">신청 취소</span>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill" disabled>등록 불가</button>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <button class="btn btn-sm btn-secondary rounded-pill" disabled>취소됨</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Bootstrap 5 JS Bundle 로드 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript (Script) 영역: 모든 스크립트를 여기에 통합합니다. -->
+<script>
+    // alert() 대신 사용할 커스텀 모달 기능
+    const customModal = document.getElementById('custom-modal');
+    const modalMessage = document.getElementById('modal-message');
+    const modalCloseBtn = document.getElementById('modal-close-btn'); // 확인 버튼 요소 재정의
+
+    /**
+     * 커스텀 모달을 표시하는 함수
+     * @param {string} message - 모달에 표시할 메시지
+     */
+    function showCustomModal(message) {
+        modalMessage.textContent = message;
+        customModal.style.display = 'flex';
+    }
+
+    // 모달 닫기 버튼 이벤트 리스너: 확인 버튼 클릭 시 닫기
+    modalCloseBtn.addEventListener('click', () => {
+        customModal.style.display = 'none';
+    });
+
+    // 이전에 있던 배경 클릭으로 닫는 로직은 제거됨.
+
+    // 테이블 상호작용 로직
+    document.addEventListener('DOMContentLoaded', () => {
+        const tableBody = document.getElementById('applicationTableBody');
+
+        // 테이블 본문 클릭 이벤트 리스너
+        tableBody.addEventListener('click', (event) => {
+            const target = event.target;
+
+            // 클릭된 요소가 'action-btn' 클래스를 가지는지 확인
+            if (target.classList.contains('action-btn')) {
+                const action = target.getAttribute('data-action');
+                const row = target.closest('tr');
+                const programName = row.getAttribute('data-program');
+                const status = row.getAttribute('data-status');
+
+                // '취소' 버튼 클릭 시 로직
+                if (action === 'cancel') {
+                    if (status === '신청 완료') {
+                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
+                        showCustomModal(`'${programName}' 프로그램 신청을 정말로 취소하시겠습니까? (기능 구현 필요). 닫으려면 확인 버튼을 클릭하세요.`);
+                    } else {
+                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
+                        showCustomModal(`'${programName}' 프로그램은 현재 '${status}' 상태이므로 취소할 수 없습니다. 닫으려면 확인 버튼을 클릭하세요.`);
+                    }
+                }
+                // '산출물 등록' 버튼 클릭 시 로직
+                else if (action === 'register') {
+                    if (status === '이수 완료') {
+                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
+                        showCustomModal(`'${programName}' 프로그램의 산출물 등록 페이지로 이동합니다. (기능 구현 필요). 닫으려면 확인 버튼을 클릭하세요.`);
+                    } else {
+                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
+                        showCustomModal(`'${programName}' 프로그램은 아직 이수 완료 상태가 아닙니다. 산출물 등록이 불가능합니다. 닫으려면 확인 버튼을 클릭하세요.`);
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
