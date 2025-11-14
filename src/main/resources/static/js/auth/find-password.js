@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                showAlert('사용자 확인 완료', 'success');
+                showAlert(`인증번호가 ${data.email}로 발송되었습니다`, 'success');
                 setTimeout(() => {
-                    window.location.href = `/auth/verify-phone?userNum=${encodeURIComponent(userNum)}`;
+                    window.location.href = `/auth/verify-email?userNum=${encodeURIComponent(userNum)}&email=${encodeURIComponent(data.email)}&realEmail=${encodeURIComponent(data.realEmail)}&userName=${encodeURIComponent(userName)}`;
                 }, 1000);
             } else {
                 showAlert(data.message || '사용자 정보를 찾을 수 없습니다', 'danger');
