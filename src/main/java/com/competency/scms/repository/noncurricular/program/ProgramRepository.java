@@ -189,7 +189,7 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
     List<Program> findRecommendablePrograms(org.springframework.data.domain.Pageable pageable);
 
     // 대시보드 분리용 조회 메서드
-    List<Program> findAllByOperatorId(Long operatorId); // ProgramRepository
+    List<Program> findAllByOrganizerUserId(Long operatorId); // ProgramRepository
 
 
 }

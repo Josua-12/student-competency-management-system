@@ -1,5 +1,6 @@
 package com.competency.scms.domain.competency;
 
+import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.competency.CompetencyFormDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -46,6 +47,13 @@ public class Competency extends CompetencyBaseEntity {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Competency> children = new ArrayList<>();
+
+    /**
+     * 담당 관리자
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User admin;
 
     /**
      * 역량명

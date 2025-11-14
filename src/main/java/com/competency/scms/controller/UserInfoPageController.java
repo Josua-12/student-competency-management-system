@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/mypage")
 public class UserInfoPageController {
     
-    @GetMapping("/user-info")
+    @GetMapping("/user-info-edit")
     public String userInfoPage() {
         return "mypage/user-info-edit";
     }

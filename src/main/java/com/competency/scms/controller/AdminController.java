@@ -6,9 +6,6 @@ import com.competency.scms.repository.noncurricular.program.ProgramRepository;
 import com.competency.scms.repository.user.LoginHistoryRepository;
 import com.competency.scms.repository.user.UserRepository;
 import com.competency.scms.repository.competency.CompetencyRepository;
-import com.competency.scms.repository.counsel.CounselRepository;
-import com.competency.scms.repository.program.ProgramRepository;
-import com.competency.scms.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,7 +49,7 @@ public class AdminController {
             model.addAttribute("monthNewStudentCount", monthNewStudentCount);
 
             // 담당자 역할 확인
-            String role = user.getRole();
+            String role = String.valueOf(user.getRole());
 
             if ("ADMIN".equals(role)) {
                 // 역량진단 담당: 본인이 등록한 역량진단 결과만 조회
@@ -62,7 +59,7 @@ public class AdminController {
                 model.addAttribute("counselList", counselorRepository.findAllByCounselorId(user.getId()));
             } else if ("OPERATOR".equals(role)) {
                 // 비교과프로그램 담당: 본인이 담당하는 프로그램만 조회
-                model.addAttribute("programList", programRepository.findAllByOperatorId(user.getId()));
+                model.addAttribute("programList", programRepository.findAllByOrganizerUserId(user.getId()));
             }
 
             log.info("[AdminController] 대시보드 데이터 - 학생수 {}, 오늘 로그인 {}, 이달 신규 {}, 역할 {}", studentCount, todayLoginCount, monthNewStudentCount, role);

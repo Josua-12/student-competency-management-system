@@ -36,3 +36,6 @@ Thumbs.db
 problems-report.html
 application-jwt.yml
 application-gmail.yml
+
+*.log
+*.log.*.gz

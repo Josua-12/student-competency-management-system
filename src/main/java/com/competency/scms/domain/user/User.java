@@ -39,7 +39,7 @@ public class User {
     private LocalDate birthDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department")
+    @JoinColumn(name = "department_id")
     private Department department;
 
     @Column(name = "grade")
