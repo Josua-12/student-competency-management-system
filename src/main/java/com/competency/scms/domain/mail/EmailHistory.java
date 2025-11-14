@@ -1,5 +1,6 @@
 package com.competency.scms.domain.mail;
 
+import com.competency.scms.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,42 +8,44 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "email_history")
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class EmailHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "email_id")
+    private Long emailId;
 
-    @Column(name = "recipient", nullable = false)
-    private String recipient;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "subject", nullable = false)
+    @Column(name = "recipient_email", nullable = false, length = 255)
+    private String recipientEmail;
+
+    @Column(name = "subject", nullable = false, length = 500)
     private String subject;
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "sent_at")
+    @Column(name = "email_type", length = 50)
+    private String emailType; // "PASSWORD_RESET", "NOTIFICATION" 등
+
+    @Column(name = "sent_at", nullable = false)
     private LocalDateTime sentAt;
 
-    @Column(name = "success", nullable = false)
+    @Column(name = "is_success", nullable = false)
     @Builder.Default
-    private Boolean success = false;
+    private Boolean isSuccess = true;
 
-    @Column(name = "error_message")
+    @Column(name = "error_message", length = 1000)
     private String errorMessage;
-
-    @Column(name = "email_type")
-    private String emailType; // PROGRAM_APPROVAL, COUNSELING_CONFIRMATION
 
     @PrePersist
     protected void onCreate() {
-        if (sentAt == null) {
-            sentAt = LocalDateTime.now();
+        if (this.sentAt == null) {
+            this.sentAt = LocalDateTime.now();
         }
     }
 }

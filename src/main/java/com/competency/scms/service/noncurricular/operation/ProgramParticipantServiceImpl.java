@@ -3,9 +3,11 @@ package com.competency.scms.service.noncurricular.operation;
 import com.competency.scms.domain.noncurricular.operation.ApplicationStatus;
 import com.competency.scms.domain.noncurricular.operation.ProgramApplication;
 import com.competency.scms.dto.noncurricular.operation.*;
+import com.competency.scms.event.StatusChangeEvent;
 import com.competency.scms.repository.noncurricular.operation.ProgramApplicationRepository;
 import com.competency.scms.repository.noncurricular.operation.ProgramApplicationSpecsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,8 @@ import java.util.List;
 public class ProgramParticipantServiceImpl implements ProgramParticipantService {
 
     private final ProgramApplicationRepository applicationRepository;
-
+    // JSA 이메일 자동 발송 로직 수정
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -65,10 +68,18 @@ public class ProgramParticipantServiceImpl implements ProgramParticipantService 
     @Override
     public void approve(Long programId, Long applicationId, String reason) {
         ProgramApplication pa = getOwned(programId, applicationId);
-        if (pa.getStatus() == ApplicationStatus.CANCELED) return; // 정책에 맞게 처리
+        if (pa.getStatus() == ApplicationStatus.CANCELED) return;
         pa.setStatus(ApplicationStatus.APPROVED);
         pa.setReasonText(reason);
-        // 도메인 이벤트/로그 기록 필요시 추가
+
+        // JSA 이메일 자동 발송 로직 수정
+        eventPublisher.publishEvent(new StatusChangeEvent(
+                pa.getStudent().getEmail(),
+                "PROGRAM",
+                pa.getProgram().getTitle(),
+                "APPROVED",
+                null
+        ));
     }
 
     @Override
@@ -76,6 +87,15 @@ public class ProgramParticipantServiceImpl implements ProgramParticipantService 
         ProgramApplication pa = getOwned(programId, applicationId);
         pa.setStatus(ApplicationStatus.REJECTED);
         pa.setReasonText(reason);
+
+        // JSA 이메일 자동 발송 로직 수정
+        eventPublisher.publishEvent(new StatusChangeEvent(
+                pa.getStudent().getEmail(),
+                "PROGRAM",
+                pa.getProgram().getTitle(),
+                "REJECTED",
+                null
+        ));
     }
 
     @Override
@@ -83,12 +103,19 @@ public class ProgramParticipantServiceImpl implements ProgramParticipantService 
         ProgramApplication pa = getOwned(programId, applicationId);
         pa.setStatus(ApplicationStatus.CANCELED);
         pa.setReasonText(reason);
+
+        // JSA 이메일 자동 발송 로직 수정
+        eventPublisher.publishEvent(new StatusChangeEvent(
+                pa.getStudent().getEmail(),
+                "PROGRAM",
+                pa.getProgram().getTitle(),
+                "CANCELLED",
+                null
+        ));
     }
 
     @Override
     public void notifyToApplicants(Long programId, NotifyRequestDto req) {
-        // 실제로는 이메일/SMS 발송 Queue/프로바이더 연동
-        // 여기서는 존재 검증 정도만
         if (req.getApplicationIds() == null || req.getApplicationIds().isEmpty()) return;
         applicationRepository.findAllById(req.getApplicationIds())
                 .forEach(pa -> {
@@ -102,7 +129,6 @@ public class ProgramParticipantServiceImpl implements ProgramParticipantService 
     @Override
     @Transactional(readOnly = true)
     public byte[] exportExcel(Long programId, ParticipantSearchConditionDto cond) {
-        // 간단 CSV (엑셀에서 열림). 실제로는 Apache POI로 xlsx 생성 추천
         Page<ProgramApplication> page = applicationRepository.findAll(
                 ProgramApplicationSpecsRepository.filter(programId, cond.getStatus(), cond.getScheduleId(), cond.getQ()),
                 Pageable.unpaged()

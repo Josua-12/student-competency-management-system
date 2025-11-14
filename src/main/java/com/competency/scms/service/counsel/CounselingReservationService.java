@@ -7,12 +7,14 @@ import com.competency.scms.domain.user.User;
 import com.competency.scms.domain.user.UserRole;
 import com.competency.scms.dto.counsel.CounselingApprovalDto;
 import com.competency.scms.dto.counsel.CounselingReservationDto;
+import com.competency.scms.event.StatusChangeEvent;
 import com.competency.scms.exception.BusinessException;
 import com.competency.scms.exception.ErrorCode;
 import com.competency.scms.repository.user.UserRepository;
 import com.competency.scms.repository.counseling.CounselingSubFieldRepository;
 import com.competency.scms.repository.counseling.CounselingReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,8 @@ public class CounselingReservationService {
     private final UserRepository userRepository;
     private final CounselingSubFieldRepository subFieldRepository;
     private final CounselingMapper mapper = new CounselingMapper();
+    // JSA 이메일 자동 발송 로직 수정
+    private final ApplicationEventPublisher eventPublisher;
 
     // CNSL-001: 상담 예약 등록
     @Transactional
@@ -49,7 +53,7 @@ public class CounselingReservationService {
         }
 
         CounselingSubField subField = findSubFieldById(request.getSubFieldId());
-        
+
         CounselingReservation reservation = new CounselingReservation();
         reservation.setStudent(student);
         reservation.setCounselingField(request.getCounselingField());
@@ -60,7 +64,7 @@ public class CounselingReservationService {
         reservation.setRequestContent(request.getRequestContent());
         reservation.setStatus(initialStatus);
         reservation.setCounselor(assignedCounselor);
-        
+
         if (initialStatus == ReservationStatus.CONFIRMED) {
             reservation.setConfirmedAt(LocalDateTime.now());
             reservation.setConfirmedDate(request.getReservationDate());
@@ -82,7 +86,7 @@ public class CounselingReservationService {
     public CounselingReservationDto.DetailResponse getReservationDetail(Long reservationId, User currentUser) {
         CounselingReservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-        
+
         validateAccessPermission(reservation, currentUser);
         return mapper.toDetailResponse(reservation);
     }
@@ -92,15 +96,15 @@ public class CounselingReservationService {
     public void cancelReservation(Long reservationId, CounselingReservationDto.CancelRequest request, User currentUser) {
         CounselingReservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-        
+
         if (!reservation.getStudent().getId().equals(currentUser.getId())) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
-        
+
         if (reservation.getStatus() != ReservationStatus.PENDING && reservation.getStatus() != ReservationStatus.CONFIRMED) {
             throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
         }
-        
+
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservation.setCancelReason(request.getCancelReason());
         reservation.setCancelledAt(LocalDateTime.now());
@@ -111,18 +115,18 @@ public class CounselingReservationService {
     public void approveReservation(CounselingApprovalDto.ApprovalRequest request, User currentUser) {
         CounselingReservation reservation = reservationRepository.findById(request.getReservationId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-        
+
         if (reservation.getStatus() != ReservationStatus.PENDING) {
             throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
         }
-        
+
         reservation.setStatus(ReservationStatus.CONFIRMED);
         reservation.setConfirmedDate(request.getConfirmedDate());
         reservation.setConfirmedStartTime(request.getConfirmedStartTime());
         reservation.setConfirmedEndTime(request.getConfirmedEndTime());
         reservation.setConfirmedAt(LocalDateTime.now());
         reservation.setMemo(request.getMemo());
-        
+
         if (currentUser.getRole() == UserRole.COUNSELOR) {
             reservation.setCounselor(currentUser);
         }
@@ -131,6 +135,15 @@ public class CounselingReservationService {
         if (reservation.getStatus() == ReservationStatus.CONFIRMED && reservation.getCounselor() == null) {
             throw new BusinessException(ErrorCode.COUNSELOR_REQUIRED_FOR_CONFIRMED);
         }
+
+        // JSA 이메일 자동 발송 로직 수정
+        eventPublisher.publishEvent(new StatusChangeEvent(
+                reservation.getStudent().getEmail(),
+                "COUNSELING",
+                reservation.getCounselingField().getDisplayName(),
+                "APPROVED",
+                reservation.getConfirmedDate() + " " + reservation.getConfirmedStartTime()
+        ));
     }
 
     // CNSL-010: 상담 거부
@@ -138,14 +151,23 @@ public class CounselingReservationService {
     public void rejectReservation(Long reservationId, String rejectReason, User currentUser) {
         CounselingReservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
-        
+
         if (reservation.getStatus() != ReservationStatus.PENDING) {
             throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
         }
-        
+
         reservation.setStatus(ReservationStatus.REJECTED);
         reservation.setRejectReason(rejectReason);
         reservation.setRejectedAt(LocalDateTime.now());
+
+        // JSA 이메일 자동 발송 로직 수정
+        eventPublisher.publishEvent(new StatusChangeEvent(
+                reservation.getStudent().getEmail(),
+                "COUNSELING",
+                reservation.getCounselingField().getDisplayName(),
+                "REJECTED",
+                reservation.getReservationDate() + " " + reservation.getStartTime()
+        ));
     }
 
     // CNSL-011: 배정된 상담 일정 조회 (상담사)
@@ -170,11 +192,11 @@ public class CounselingReservationService {
     private User findStudentById(Long studentId) {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        
+
         if (student.getRole() != UserRole.STUDENT) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
-        
+
         return student;
     }
 
@@ -187,7 +209,7 @@ public class CounselingReservationService {
         boolean isStudent = currentUser.getId().equals(reservation.getStudent().getId());
         boolean isCounselor = reservation.getCounselor() != null && currentUser.getId().equals(reservation.getCounselor().getId());
         boolean isAdmin = currentUser.getRole() == UserRole.ADMIN;
-        
+
         if (!isStudent && !isCounselor && !isAdmin) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
