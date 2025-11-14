@@ -1,422 +1,398 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <title>비교과 프로그램 상세 (운영자)</title>
     <style>
         :root{
-            --bg:#f7f8fa; --card:#fff; --text:#222; --muted:#6b7280;
-            --line:#e5e7eb; --brand:#2563eb; --brand-weak:#dbeafe;
-            --danger:#ef4444; --warning:#f59e0b; --success:#10b981;
+            --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
+            --card:#fafafa; --chip:#f3f4f6;
+            --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
+            --ok:#16a34a; --warn:#d97706; --err:#dc2626;
             --radius:14px;
         }
         *{box-sizing:border-box}
-        body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
-        .wrap{max-width:1160px;margin:24px auto;padding:0 16px}
-        .page-title{display:flex;align-items:center;gap:10px;margin:6px 0 18px}
-        .page-title h1{font-size:22px;margin:0}
-        .badge{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600}
-        .badge.draft{background:#e5e7eb}
-        .badge.pending{background:#fff7ed}
-        .badge.approved{background:#ecfeff}
-        .badge.rejected{background:#fee2e2}
-        .badge.ongoing{background:#ecfccb}
-        .badge.completed{background:#e9d5ff}
-        .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
-        .btn{appearance:none;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
-        .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+        body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;}
+        a{color:inherit;text-decoration:none}
+        .wrap{max-width:1160px;margin:20px auto 100px;padding:0 16px}
+
+        .page-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+        .titlebox{display:flex;flex-direction:column;gap:4px}
+        .title{font-size:22px;margin:0}
+        .sub{color:var(--muted);font-size:13px;margin:0}
+        .status{padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid transparent}
+        .status.draft{background:#f3f4f6;color:#6b7280;border-color:var(--line)}
+        .status.pending{background:#fff7ed;color:#9a3412;border-color:#fed7aa}
+        .status.approved{background:#ecfeff;color:#155e75;border-color:#bae6fd}
+        .status.ongoing{background:#eaf7ef;color:var(--ok);border-color:#b9e6c5}
+        .status.completed{background:#eef2ff;color:#4338ca;border-color:#c7d2fe}
+        .status.rejected{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+
+        .toolbar{display:flex;flex-wrap:wrap;gap:8px}
+        .btn{border-radius:10px;border:1px solid var(--line);padding:9px 14px;background:#fff;cursor:pointer}
+        .btn.primary{background:var(--pri);border-color:var(--pri);color:#fff}
         .btn.warn{background:#fff8f1;border-color:#fed7aa;color:#9a3412}
         .btn.danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}
-        .btn:disabled{opacity:.6;cursor:not-allowed}
-        .tabs{display:flex;gap:6px;overflow:auto hidden;padding-bottom:6px}
-        .tab{border:none;background:transparent;padding:12px 14px;border-radius:10px;cursor:pointer;white-space:nowrap}
-        .tab[aria-selected="true"]{background:var(--brand-weak);color:#1e40af;font-weight:700}
-        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
-        .grid{display:grid;gap:12px}
-        .grid.cols-2{grid-template-columns:repeat(2,1fr)}
-        .grid.cols-3{grid-template-columns:repeat(3,1fr)}
-        @media (max-width:900px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}}
-        .field{display:flex;flex-direction:column;gap:6px}
-        .label{font-weight:700;color:#374151}
-        .value{background:#fafafa;border:1px solid var(--line);border-radius:10px;padding:10px;min-height:40px}
-        .inline{display:flex;gap:8px;flex-wrap:wrap}
-        .muted{color:var(--muted)}
-        .table{width:100%;border-collapse:separate;border-spacing:0 8px}
-        .table th{font-weight:700;text-align:left;color:#374151}
-        .table td,.table th{padding:10px 12px;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-        .table tr td:first-child,.table tr th:first-child{border-left:1px solid var(--line);border-top-left-radius:10px;border-bottom-left-radius:10px}
-        .table tr td:last-child,.table tr th:last-child{border-right:1px solid var(--line);border-top-right-radius:10px;border-bottom-right-radius:10px}
-        .chip{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px}
-        .files{display:flex;gap:10px;flex-wrap:wrap}
-        .file{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;background:#fafafa}
-        /* toast */
-        .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:9999}
-        .toast.show{opacity:1;transform:translate(-50%,0)}
-        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;border:0;clip:rect(0,0,0,0)}
-        .hr{height:1px;background:var(--line);margin:12px 0}
+        .btn.ghost{background:transparent}
+
+        .hero{display:grid;grid-template-columns:2fr 3fr;gap:16px;margin:14px 0 18px}
+        .thumb{background:#f3f4f6;border-radius:var(--radius);min-height:260px;overflow:hidden}
+        .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+
+        .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px;font-size:13px}
+        .info-item{display:flex;flex-direction:column;gap:2px}
+        .info-label{color:var(--muted);font-size:11px}
+        .info-value{font-weight:500}
+
+        .section{margin-top:16px}
+        .section-title{font-size:15px;font-weight:700;margin:0 0 8px;display:flex;align-items:center;gap:6px}
+        .small{font-size:11px;color:var(--muted);font-weight:400}
+
+        .chips{display:flex;gap:6px;flex-wrap:wrap}
+        .chip{background:var(--chip);border-radius:999px;padding:4px 8px;font-size:11px;color:var(--muted)}
+
+        .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+        .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+        .kpi b{display:block;font-size:18px;margin-top:2px}
+
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+        th{background:#f9fafb;font-weight:600}
+
+        .file-list{list-style:none;margin:0;padding:0}
+        .file-list li{display:flex;justify-content:space-between;align-items:center;border:1px dashed var(--line);background:#fff;border-radius:12px;padding:8px 10px;margin-bottom:6px}
+        .file-actions{display:flex;gap:6px}
+        .file-actions .btn{padding:6px 8px;font-size:12px}
+
+        .approval{display:grid;grid-template-columns:1fr 2fr 1fr 2fr;gap:8px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:6px}
+
+        .sticky-actions{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:10px 16px;z-index:10}
+        .sticky-inner{max-width:1160px;margin:0 auto;display:flex;gap:8px}
+        .spacer{flex:1}
+
+        .toast{position:fixed;right:16px;bottom:64px;background:#111827;color:#fff;padding:10px 12px;border-radius:10px;font-size:12px;opacity:.96;z-index:20}
+        [hidden]{display:none!important}
+
+        @media (max-width:900px){
+            .hero{grid-template-columns:1fr}
+            .info-grid{grid-template-columns:1fr}
+            .kpis{grid-template-columns:repeat(2,1fr)}
+            .sticky-actions{position:static;margin-top:14px}
+        }
     </style>
 </head>
 <body>
 <div class="wrap">
-    <!-- 페이지 헤더 -->
-    <div class="page-title" role="group" aria-label="프로그램 식별 및 상태">
-        <h1 id="pgTitle">비교과 프로그램 상세</h1>
-        <span id="statusBadge" class="badge draft" aria-live="polite">DRAFT</span>
-        <span class="muted" id="progCode">PRG-2025-000123</span>
+    <!-- 헤더 -->
+    <div class="page-head">
+        <div class="titlebox">
+            <h1 class="title" id="title">프로그램명</h1>
+            <p class="sub" id="codeText">PRG-2025-000123</p>
+        </div>
+        <div class="toolbar">
+            <span id="statusBadge" class="status draft">DRAFT</span>
+            <button class="btn" id="btnEdit">수정</button>
+            <button class="btn primary" id="btnSave">저장</button>
+            <button class="btn warn" id="btnRequest">제출(승인요청)</button>
+            <button class="btn danger" id="btnDelete">삭제</button>
+            <a class="btn ghost" id="btnList" href="/operator/noncurricular/programs">목록</a>
+        </div>
     </div>
 
-    <!-- 상단 툴바 -->
-    <div class="toolbar" role="toolbar" aria-label="프로그램 액션">
-        <button class="btn" id="btnEdit">수정</button>
-        <button class="btn primary" id="btnSave">저장</button>
-        <button class="btn warn" id="btnRequest">제출(승인요청)</button>
-        <button class="btn danger" id="btnDelete">삭제</button>
-        <button class="btn" id="btnBack">목록</button>
-    </div>
+    <!-- 히어로: 대표 이미지 + 기본정보 -->
+    <section class="hero">
+        <div class="thumb"><img id="thumbnail" alt="대표 이미지"></div>
+        <aside class="card">
+            <div class="info-grid">
+                <div class="info-item"><span class="info-label">운영부서</span><span class="info-value" id="deptName">-</span></div>
+                <div class="info-item"><span class="info-label">카테고리</span><span class="info-value" id="categoryName">-</span></div>
+                <div class="info-item"><span class="info-label">모집기간</span><span class="info-value" id="recruitPeriod">-</span></div>
+                <div class="info-item"><span class="info-label">운영기간</span><span class="info-value" id="programPeriod">-</span></div>
+                <div class="info-item"><span class="info-label">운영형태</span><span class="info-value" id="runType">-</span></div>
+                <div class="info-item"><span class="info-label">장소</span><span class="info-value" id="locationText">-</span></div>
+                <div class="info-item"><span class="info-label">비교과 포인트</span><span class="info-value" id="pointsText">-</span></div>
+                <div class="info-item"><span class="info-label">담당자</span><span class="info-value" id="ownerText">-</span></div>
+            </div>
+            <div class="chips" style="margin-top:10px">
+                <span class="chip" id="categoryChip"></span>
+                <span class="chip" id="deptChip"></span>
+            </div>
+        </aside>
+    </section>
 
-    <!-- 탭 -->
-    <div class="tabs" role="tablist" aria-label="프로그램 상세 탭">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="tab-basic" id="tabBtn-basic">기본정보</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-schedule" id="tabBtn-schedule">일정·회차</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-apply" id="tabBtn-apply">모집·신청</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-competency" id="tabBtn-competency">역량·성과</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-files" id="tabBtn-files">파일</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-approval" id="tabBtn-approval">승인이력</button>
-    </div>
-
-    <!-- 패널: 기본정보 -->
-    <section class="card" id="tab-basic" role="tabpanel" aria-labelledby="tabBtn-basic">
-        <div class="grid cols-2">
-            <div class="field">
-                <div class="label">프로그램명</div>
-                <div class="value" id="v-title"><!-- th:text="${program.title}" -->창의융합 해커톤</div>
-            </div>
-            <div class="field f-thumb">
-                <div class="label">대표 이미지</div>
-                <div class="thumb"><img id="v-thumb" alt="프로그램 대표 이미지"></div>
-            </div>
-            <div class="field">
-                <div class="label">운영부서</div>
-                <div class="value" id="v-dept"><!-- th:text="${program.department}" -->SW중심대학사업단</div>
-            </div>
-            <div class="field">
-                <div class="label">카테고리</div>
-                <div class="value" id="v-category"><!-- th:text="${program.categoryName}" -->경진대회</div>
-            </div>
-
-<!--            <div class="field inline">-->
-                <div class="field" style="flex:1 1 220px">
-                    <div class="label">상태</div>
-                    <div class="value" id="v-status">DRAFT</div>
-                </div>
-                <div class="field" style="flex:1 1 220px">
-                    <div class="label">마일리지(점)</div>
-                    <div class="value" id="v-mileage">50</div>
-                </div>
-<!--            </div>-->
-
-            <div class="field">
-                <div class="label">운영기간</div>
-                <div class="value" id="v-period"><!-- ${#temporals.format(...)} -->2025-11-20 ~ 2025-11-22</div>
-            </div>
-            <div class="field">
-                <div class="label">장소</div>
-                <div class="value" id="v-location">공학관 101호</div>
-            </div>
-
-            <div class="field" style="grid-column:1/-1">
-                <div class="label">프로그램 소개</div>
-                <div class="value" id="v-desc" style="min-height:80px">
-                    교내 창의융합 해커톤으로 기획·개발·디자인 협업 역량을 기르는 프로그램입니다.
-                </div>
-            </div>
+    <!-- KPI / 현황 -->
+    <section class="section">
+        <h2 class="section-title">모집·운영 현황</h2>
+        <div class="kpis">
+            <div class="kpi"><span class="small">정원</span><b id="capMax">0</b></div>
+            <div class="kpi"><span class="small">최소인원</span><b id="capMin">0</b></div>
+            <div class="kpi"><span class="small">신청</span><b id="applied">0</b></div>
+            <div class="kpi"><span class="small">승인</span><b id="approved">0</b></div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <a class="btn" id="btnApplicants" href="#">신청자 목록</a>
+            <a class="btn" id="btnAttendance" href="#">출석 관리</a>
+            <a class="btn" id="btnSatisfaction" href="#">만족도 관리</a>
+            <a class="btn" id="btnCompletion" href="#">이수 현황</a>
+            <a class="btn" id="btnMileage" href="#">포인트 등록</a>
         </div>
     </section>
 
-    <!-- 패널: 일정·회차 -->
-    <section class="card" id="tab-schedule" role="tabpanel" aria-labelledby="tabBtn-schedule" hidden>
-        <table class="table" aria-describedby="schdHelp">
-            <thead>
-            <tr>
-                <th>회차</th>
-                <th>일자</th>
-                <th>시작~종료</th>
-                <th>세부내용</th>
-            </tr>
-            </thead>
-            <tbody id="tbody-schedules">
-            <!-- th:each="s, i : ${schedules}" -->
-            <tr>
-                <td>1</td><td>2025-11-20</td><td>10:00 ~ 17:00</td><td>오리엔테이션 & 팀빌딩</td>
-            </tr>
-            <tr>
-                <td>2</td><td>2025-11-21</td><td>09:00 ~ 21:00</td><td>개발 스프린트</td>
-            </tr>
-            <tr>
-                <td>3</td><td>2025-11-22</td><td>09:00 ~ 18:00</td><td>발표 & 시상</td>
-            </tr>
-            </tbody>
+    <!-- 개요 -->
+    <section class="card section">
+        <h2 class="section-title">프로그램 개요</h2>
+        <p id="summary" style="margin:0 0 6px;color:var(--muted)"></p>
+        <p id="description" style="white-space:pre-line;margin:0"></p>
+    </section>
+
+    <!-- 일정·회차 -->
+    <section class="card section">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <h2 class="section-title">일정·회차</h2>
+            <a class="btn" id="btnManageSchedule" href="#">회차 관리</a>
+        </div>
+        <table id="scheduleTable">
+            <thead><tr><th>회차</th><th>일자</th><th>시간</th><th>장소</th><th>내용</th></tr></thead>
+            <tbody></tbody>
         </table>
-        <p id="schdHelp" class="muted">회차는 출석/참여/이수 관리의 기준이 됩니다.</p>
     </section>
 
-    <!-- 패널: 모집·신청 -->
-    <section class="card" id="tab-apply" role="tabpanel" aria-labelledby="tabBtn-apply" hidden>
-        <div class="grid cols-3">
-            <div class="field">
-                <div class="label">신청기간</div>
-                <div class="value" id="v-app-period">2025-11-01 09:00 ~ 2025-11-18 23:59</div>
-            </div>
-            <div class="field">
-                <div class="label">모집정원(최대/최소)</div>
-                <div class="value" id="v-capacity">30 / 10</div>
-            </div>
-            <div class="field">
-                <div class="label">현재 신청</div>
-                <div class="value" id="v-current">19 명</div>
-            </div>
-        </div>
-        <div class="hr"></div>
-        <div class="grid">
-            <div class="field">
-                <div class="label">신청 안내문</div>
-                <div class="value" id="v-apply-desc">참가 신청 시 팀 구성 여부를 선택합니다.</div>
-            </div>
+    <!-- 역량·성과 -->
+    <section class="card section">
+        <h2 class="section-title">연계 역량·성과</h2>
+        <div class="chips" id="competencyChips"></div>
+        <div style="margin-top:8px">
+            <p class="small">이수 기준</p>
+            <p id="completionCriteria" style="margin:0"></p>
         </div>
     </section>
 
-    <!-- 패널: 역량·성과 -->
-    <section class="card" id="tab-competency" role="tabpanel" aria-labelledby="tabBtn-competency" hidden>
-        <div class="grid">
-            <div class="field">
-                <div class="label">연계 핵심역량</div>
-                <div class="value" id="v-comps">
-                    <!-- th:each="c : ${program.competencies}" -->
-                    <span class="chip">문제해결</span>
-                    <span class="chip">협업</span>
-                    <span class="chip">의사소통</span>
-                </div>
-            </div>
-            <div class="field">
-                <div class="label">성과지표(예)</div>
-                <div class="value">
-                    <ul style="margin:0 0 0 16px;padding:0">
-                        <li>팀별 산출물 제출(필수)</li>
-                        <li>발표 심사 점수 70점 이상 시 이수</li>
-                    </ul>
-                </div>
-            </div>
+    <!-- 파일 -->
+    <section class="card section">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <h2 class="section-title">파일</h2>
+            <a class="btn" id="btnFileManage" href="#">파일 관리</a>
         </div>
+        <ul id="fileList" class="file-list"></ul>
     </section>
 
-    <!-- 패널: 파일 -->
-    <section class="card" id="tab-files" role="tabpanel" aria-labelledby="tabBtn-files" hidden>
-        <div class="files" id="files">
-            <!-- th:each="f : ${files}" -->
-            <div class="file">
-                <div><strong>운영계획서.pdf</strong></div>
-                <div class="muted">1.2MB · 2025-10-30</div>
-                <div class="inline" style="margin-top:6px">
-                    <button class="btn" data-action="download" data-filegrp="101" data-fileid="1">다운로드</button>
-                    <button class="btn" data-action="copy-link" data-url="/files/101/1">링크복사</button>
-                </div>
-            </div>
-            <div class="file">
-                <div><strong>참가신청서.hwp</strong></div>
-                <div class="muted">180KB · 2025-10-30</div>
-                <div class="inline" style="margin-top:6px">
-                    <button class="btn" data-action="download" data-filegrp="101" data-fileid="2">다운로드</button>
-                    <button class="btn" data-action="copy-link" data-url="/files/101/2">링크복사</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 패널: 승인 이력 -->
-    <section class="card" id="tab-approval" role="tabpanel" aria-labelledby="tabBtn-approval" hidden>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>상신일</th><th>상태</th><th>처리자</th><th>의견</th>
-            </tr>
-            </thead>
-            <tbody id="tbody-approval">
-            <!-- th:each="h : ${approvalHistories}" -->
-            <tr>
-                <td>2025-11-05 14:22</td>
-                <td><span class="badge pending">REQ(승인요청)</span></td>
-                <td>홍길동(부서관리자)</td>
-                <td class="muted">검토 예정</td>
-            </tr>
-            </tbody>
-        </table>
+    <!-- 승인 이력 -->
+    <section class="card section">
+        <h2 class="section-title">승인 이력</h2>
+        <div id="approvalList"></div>
     </section>
 </div>
 
-<!-- Toast -->
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<!-- 하단 고정 액션 -->
+<div class="sticky-actions">
+    <div class="sticky-inner">
+        <a href="/operator/noncurricular/programs" class="btn ghost">목록</a>
+        <div class="spacer"></div>
+        <button class="btn" id="stickyEdit">수정</button>
+        <button class="btn primary" id="stickySave">저장</button>
+        <button class="btn warn" id="stickyRequest">제출(승인요청)</button>
+        <button class="btn danger" id="stickyDelete">삭제</button>
+    </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
 
 <script>
-    // ---- 상태 뱃지 매핑 (programs.status + 운영 승인상태 enum 참조) ----
-    const statusMap = {
-        DRAFT: { cls:'draft', label:'DRAFT(임시저장)' },
-        PENDING: { cls:'pending', label:'PENDING(승인대기)' }, // = REQ/WAIT 단계
-        APPROVED: { cls:'approved', label:'APPROVED(승인완료)' }, // = DONE
-        REJECTED: { cls:'rejected', label:'REJECTED(반려)' }, // = REJ
-        ONGOING: { cls:'ongoing', label:'ONGOING(운영중)' },
-        COMPLETED: { cls:'completed', label:'COMPLETED(종료)' }
+    // ---- 설정 ----
+    const USE_MOCK_DETAIL = true;
+
+    const API = {
+        detail: id => `/operator/noncurricular/programs/${id}`,
+        save:   id => `/operator/noncurricular/programs/${id}`,
+        request:id => `/operator/noncurricular/programs/${id}/approval`,
+        delete: id => `/operator/noncurricular/programs/${id}`,
+        applicants: id => `/operator/noncurricular/programs/${id}/applications`,
+        attendance: id => `/operator/noncurricular/programs/${id}/attendance`,
+        satisfaction: id => `/operator/noncurricular/programs/${id}/satisfaction`,
+        completion: id => `/operator/noncurricular/programs/${id}/completion`,
+        mileage: id => `/operator/noncurricular/mileage?progId=${id}`,
+        schedule: id => `/operator/noncurricular/programs/${id}/schedules`,
+        files: id => `/operator/noncurricular/programs/${id}/files`
     };
 
-    // 서버에서 주입받을 programId/urls 예시
-    const programId = 123; // <!-- th:text="${program.id}" -->
-    const urls = {
-        detail: `/operator/noncurricular/programs/${programId}`,
-        save: `/operator/noncurricular/programs/${programId}`,
-        request: `/operator/noncurricular/programs/${programId}/approval`,
-        delete: `/operator/noncurricular/programs/${programId}`,
-        list: `/operator/noncurricular/programs`
-    };
+    // ---- 유틸 ----
+    const $ = s => document.querySelector(s);
+    function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; setTimeout(()=>t.hidden=true,1800); }
 
-    // 초기 상태 세팅 (템플릿 바인딩 시 제거 가능)
-    setStatus('DRAFT');
-
-    function setStatus(key){
-        const badge = document.getElementById('statusBadge');
-        badge.className = `badge ${statusMap[key]?.cls || 'draft'}`;
-        badge.textContent = statusMap[key]?.label || key;
-        document.getElementById('v-status').textContent = key;
+    function programIdFromPath(){
+        const parts = location.pathname.split('/').filter(Boolean);
+        return Number(parts[parts.length-1]) || 201;
     }
 
-    // ---- 탭 전환 ----
-    const tabButtons = [...document.querySelectorAll('.tab[role="tab"]')];
-    const tabPanels  = ['basic','schedule','apply','competency','files','approval']
-        .map(id => document.getElementById(`tab-${id}`));
+    function statusClass(s){
+        return ({
+            DRAFT:'status draft', PENDING:'status pending', APPROVED:'status approved',
+            ONGOING:'status ongoing', COMPLETED:'status completed', REJECTED:'status rejected'
+        })[s] || 'status';
+    }
 
-    tabButtons.forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-            tabButtons.forEach(b=>b.setAttribute('aria-selected','false'));
-            tabPanels.forEach(p=>p.hidden = true);
-            btn.setAttribute('aria-selected','true');
-            document.getElementById(btn.getAttribute('aria-controls')).hidden = false;
+    // ---- Mock 데이터 ----
+    function mockDetail(id){
+        return {
+            id, code:`PRG-2025-${String(id).padStart(6,'0')}`,
+            title:'창의융합 해커톤',
+            summary:'기획-개발-디자인 협업 프로젝트로 실전 문제 해결 경험 제공',
+            description:'- 오리엔테이션\n- 팀빌딩 & 멘토링\n- 개발 스프린트\n- 최종 발표 및 시상',
+            deptName:'SW중심대학사업단', category:'경진대회',
+            status:'DRAFT', runType:'OFFLINE', locationText:'공학관 101호',
+            recruitStart:'2025-11-01', recruitEnd:'2025-11-10',
+            programStart:'2025-11-20', programEnd:'2025-11-22',
+            capacityMax:30, capacityMin:10, applied:19, approved:17,
+            points:50, ownerName:'홍길동', ownerTel:'02-123-4567', ownerEmail:'hack@univ.ac.kr',
+            thumbnailUrl:'https://picsum.photos/seed/scms-operator/980/560',
+            schedules:[
+                {order:1, date:'2025-11-20', time:'10:00~17:00', place:'공학관 101호', content:'OT & 팀빌딩'},
+                {order:2, date:'2025-11-21', time:'09:00~21:00', place:'공학관 101호', content:'개발 스프린트'},
+                {order:3, date:'2025-11-22', time:'09:00~18:00', place:'공학관 101호', content:'발표 & 시상'}
+            ],
+            competencies:['문제해결','협업','의사소통'],
+            completionCriteria:'전 회차 참석 + 만족도 제출 + 발표 점수 70점 이상',
+            files:[
+                {id:1,name:'운영계획서.pdf',size:'1.2MB',date:'2025-10-30',url:'#'},
+                {id:2,name:'참가신청서.hwp',size:'180KB',date:'2025-10-30',url:'#'}
+            ],
+            approvals:[
+                {date:'2025-11-05 14:22', status:'PENDING', actor:'부서관리자 홍길동', comment:'검토 예정'},
+            ]
+        };
+    }
+
+    async function fetchDetail(id){
+        if(USE_MOCK_DETAIL) return mockDetail(id);
+        const res = await fetch(API.detail(id));
+        if(!res.ok) throw new Error('상세 조회 실패');
+        return res.json();
+    }
+
+    // ---- 렌더링 ----
+    function render(d){
+        // 헤더
+        $('#title').textContent = d.title;
+        $('#codeText').textContent = d.code || '';
+        const badge = $('#statusBadge'); badge.className = statusClass(d.status); badge.textContent = d.status;
+
+        // 이미지 + 기본 정보
+        $('#thumbnail').src = d.thumbnailUrl || 'https://picsum.photos/seed/noncurr-default/980/560';
+        $('#thumbnail').alt = `${d.title} 대표 이미지`;
+        $('#deptName').textContent = d.deptName || '-';
+        $('#categoryName').textContent = d.category || '-';
+        $('#recruitPeriod').textContent = d.recruitStart && d.recruitEnd ? `${d.recruitStart} ~ ${d.recruitEnd}` : '-';
+        $('#programPeriod').textContent = d.programStart && d.programEnd ? `${d.programStart} ~ ${d.programEnd}` : '-';
+        $('#runType').textContent = ({OFFLINE:'오프라인',ONLINE:'온라인',MIXED:'온·오프라인 혼합'})[d.runType] || '-';
+        $('#locationText').textContent = d.locationText || (d.runType==='ONLINE'?'온라인':'-');
+        $('#pointsText').textContent = d.points!=null ? `${d.points}점` : '-';
+        $('#ownerText').textContent = [d.ownerName,[d.ownerTel,d.ownerEmail].filter(Boolean).join(' / ')].filter(Boolean).join(' · ');
+        $('#categoryChip').textContent = d.category ? `분류: ${d.category}` : '';
+        $('#deptChip').textContent = d.deptName ? `부서: ${d.deptName}` : '';
+
+        // KPI
+        $('#capMax').textContent = d.capacityMax ?? 0;
+        $('#capMin').textContent = d.capacityMin ?? 0;
+        $('#applied').textContent = d.applied ?? 0;
+        $('#approved').textContent = d.approved ?? 0;
+
+        // 개요
+        $('#summary').textContent = d.summary || '';
+        $('#description').textContent = d.description || '-';
+        $('#completionCriteria').textContent = d.completionCriteria || '-';
+        const chips = $('#competencyChips'); chips.innerHTML='';
+        (d.competencies||[]).forEach(c=>{ const s=document.createElement('span'); s.className='chip'; s.textContent=c; chips.appendChild(s); });
+
+        // 일정
+        const tbody = $('#scheduleTable tbody'); tbody.innerHTML='';
+        (d.schedules||[]).forEach(s=>{
+            const tr=document.createElement('tr');
+            tr.innerHTML = `<td>${s.order??''}</td><td>${s.date??''}</td><td>${s.time??''}</td><td>${s.place??''}</td><td>${s.content??''}</td>`;
+            tbody.appendChild(tr);
         });
-    });
-
-    // ---- 액션 버튼 ----
-    const toast = (msg)=> {
-        const el = document.getElementById('toast');
-        el.textContent = msg;
-        el.classList.add('show');
-        setTimeout(()=> el.classList.remove('show'), 1600);
-    };
-
-    document.getElementById('btnEdit').addEventListener('click', ()=>{
-        toast('수정 모드로 전환합니다. (폼 바인딩 영역 연결)');
-        // 예: 폼 input 전환, contenteditable 등…
-    });
-
-    document.getElementById('btnSave').addEventListener('click', async ()=>{
-        // PUT 저장
-        try{
-            // const res = await fetch(urls.save,{method:'PUT',headers:{'Content-Type':'application/json'},body: JSON.stringify(payload)});
-            // if(!res.ok) throw new Error('save failed');
-            toast('저장되었습니다.');
-            setStatus('DRAFT');
-        }catch(e){ toast('저장 실패: ' + e.message); }
-    });
-
-    document.getElementById('btnRequest').addEventListener('click', async ()=>{
-        if(!confirm('본 프로그램을 승인요청 하시겠습니까?')) return;
-        try{
-            // const res = await fetch(urls.request,{method:'POST'});
-            // if(!res.ok) throw new Error('request failed');
-            setStatus('PENDING');
-            toast('승인요청이 접수되었습니다.');
-            // 승인 이력 테이블 갱신 로직…
-        }catch(e){ toast('승인요청 실패: ' + e.message); }
-    });
-
-    document.getElementById('btnDelete').addEventListener('click', async ()=>{
-        if(!confirm('삭제 후 복구할 수 없습니다. 삭제하시겠습니까?')) return;
-        try{
-            // const res = await fetch(urls.delete,{method:'DELETE'});
-            // if(!res.ok) throw new Error('delete failed');
-            toast('삭제되었습니다.');
-            location.href = urls.list;
-        }catch(e){ toast('삭제 실패: ' + e.message); }
-    });
-
-    document.getElementById('btnBack').addEventListener('click', ()=>{
-        location.href = urls.list;
-    });
-
-    // ---- 파일 액션 ----
-    document.getElementById('tab-files').addEventListener('click', (e)=>{
-        const t = e.target.closest('button[data-action]');
-        if(!t) return;
-        const action = t.dataset.action;
-        if(action === 'download'){
-            const grp = t.dataset.filegrp, id = t.dataset.fileid;
-            window.open(`/files/${grp}/${id}`,'_blank');
-        }else if(action === 'copy-link'){
-            const url = location.origin + t.dataset.url;
-            navigator.clipboard.writeText(url).then(()=> toast('링크가 복사되었습니다.'));
+        if(!d.schedules || d.schedules.length===0){
+            tbody.innerHTML = `<tr><td colspan="5">등록된 일정이 없습니다.</td></tr>`;
         }
-    });
 
-    // ---- 키보드 탭 순서 개선 (좌/우 화살표로 탭 이동) ----
-    document.querySelector('.tabs').addEventListener('keydown', (e)=>{
-        const idx = tabButtons.findIndex(b=>b.getAttribute('aria-selected')==='true');
-        if(e.key === 'ArrowRight'){ e.preventDefault(); tabButtons[(idx+1)%tabButtons.length].click(); }
-        if(e.key === 'ArrowLeft'){ e.preventDefault(); tabButtons[(idx-1+tabButtons.length)%tabButtons.length].click(); }
-    });
+        // 파일
+        const ul = $('#fileList'); ul.innerHTML='';
+        (d.files||[]).forEach(f=>{
+            const li=document.createElement('li');
+            li.innerHTML = `<span>${f.name} <span class="small">· ${f.size} · ${f.date}</span></span>
+        <span class="file-actions">
+          <a class="btn" href="${f.url}" target="_blank">다운로드</a>
+          <button class="btn" data-url="${f.url}" onclick="navigator.clipboard.writeText(this.dataset.url).then(()=>toast('링크 복사'))">링크복사</button>
+        </span>`;
+            ul.appendChild(li);
+        });
+        if(!d.files || d.files.length===0){
+            const li=document.createElement('li'); li.textContent='등록된 파일이 없습니다.'; li.style.padding='10px'; li.style.border='1px dashed var(--line)'; li.style.borderRadius='12px'; li.style.background='#fff';
+            ul.appendChild(li);
+        }
 
-    // window.PROGRAM이 미리 주입되지 않았다면 REST에서 받아와 채움
-    (async function boot(){
-        if (!window.PROGRAM) {
-            const programId = /* URL 에서 추출 */ location.pathname.split('/').pop();
-            const res = await fetch(`/api/operator/noncurricular/programs/${programId}`);
-            const dto = await res.json();
-            // DTO → 화면 채우기
-            const p = dto.program;
-            const $ = (id)=>document.getElementById(id);
-            $('#v-title').textContent = p.title ?? '-';
-            $('#v-dept').textContent = p.deptName ?? '-';
-            $('#v-category').textContent = p.categoryName ?? '-';
-            $('#v-status').textContent = p.status ?? '-';
-            $('#v-mileage').textContent = p.mileage ?? '-';
-            $('#v-period').textContent = p.periodText ?? '-';
-            $('#v-location').textContent = p.location ?? '-';
-            $('#v-desc').textContent = p.desc ?? '-';
-            const img = document.getElementById('v-thumb');
-            img.src = p.thumbnailUrl && p.thumbnailUrl.trim() ? p.thumbnailUrl : '/img/no-image.png';
-            img.onerror = ()=> img.src = '/img/no-image.png';
+        // 승인 이력
+        const appr = $('#approvalList'); appr.innerHTML='';
+        (d.approvals||[]).forEach(h=>{
+            const row=document.createElement('div');
+            row.className='approval';
+            row.innerHTML = `<div class="small">상신/처리일</div><div>${h.date||''}</div>
+                       <div class="small">상태</div><div>${h.status||''}</div>
+                       <div class="small">처리자</div><div>${h.actor||''}</div>
+                       <div class="small">의견</div><div>${h.comment||''}</div>`;
+            appr.appendChild(row);
+        });
+        if(!d.approvals || d.approvals.length===0){
+            const p=document.createElement('p'); p.className='small'; p.textContent='승인 이력이 없습니다.'; appr.appendChild(p);
+        }
 
-            // schedules
-            const tb = document.getElementById('tbody-schedules');
-            tb.innerHTML = dto.schedules.map(s=> `
-        <tr>
-          <td>${s.roundNo}</td>
-          <td>${s.date}</td>
-          <td>${s.timeRange}</td>
-          <td>${s.content??''}</td>
-        </tr>`).join('');
+        // 링크 목적지
+        const id = d.id;
+        $('#btnApplicants').href = API.applicants(id);
+        $('#btnAttendance').href = API.attendance(id);
+        $('#btnSatisfaction').href = API.satisfaction(id);
+        $('#btnCompletion').href = API.completion(id);
+        $('#btnMileage').href = API.mileage(id);
+        $('#btnManageSchedule').href = API.schedule(id);
+        $('#btnFileManage').href = API.files(id);
+    }
 
-            // competencies
-            const comp = document.getElementById('v-comps');
-            comp.innerHTML = dto.competencies.map(c=> `<span class="chip">${c.name}</span>`).join('');
+    // ---- 액션 바인딩 ----
+    function bindActions(id){
+        const save = async ()=>{
+            if(USE_MOCK_DETAIL){ toast('저장되었습니다. (모의)'); return; }
+            const res = await fetch(API.save(id),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({/*payload*/})});
+            if(!res.ok) throw new Error(); toast('저장되었습니다.');
+        };
+        const request = async ()=>{
+            if(!confirm('승인요청 하시겠습니까?')) return;
+            if(USE_MOCK_DETAIL){ toast('승인요청이 접수되었습니다. (모의)'); $('#statusBadge').className='status pending'; $('#statusBadge').textContent='PENDING'; return; }
+            const res = await fetch(API.request(id),{method:'POST'}); if(!res.ok) throw new Error(); toast('승인요청이 접수되었습니다.');
+        };
+        const remove = async ()=>{
+            if(!confirm('삭제 후 복구할 수 없습니다. 삭제하시겠습니까?')) return;
+            if(USE_MOCK_DETAIL){ toast('삭제되었습니다. (모의)'); location.href='/operator/noncurricular/programs'; return; }
+            const res = await fetch(API.delete(id),{method:'DELETE'}); if(!res.ok) throw new Error(); location.href='/operator/noncurricular/programs';
+        };
 
-            // files
-            const files = document.getElementById('files');
-            files.innerHTML = dto.files.map(f => `
-        <div class="file">
-          <div><strong>${f.name}</strong></div>
-          <div class="muted">${(f.size/1024).toFixed(0)}KB · ${f.uploadedAt}</div>
-          <div class="inline" style="margin-top:6px">
-            <a class="btn" href="${f.url}" target="_blank" rel="noopener">다운로드</a>
-            <button class="btn" data-action="copy-link" data-url="${f.url}">링크복사</button>
-          </div>
-        </div>`).join('');
+        // 상단/하단 버튼 동기화
+        ['btnSave','stickySave'].forEach(idBtn=>document.getElementById(idBtn).addEventListener('click',()=>save().catch(()=>toast('저장 실패'))));
+        ['btnRequest','stickyRequest'].forEach(idBtn=>document.getElementById(idBtn).addEventListener('click',()=>request().catch(()=>toast('요청 실패'))));
+        ['btnDelete','stickyDelete'].forEach(idBtn=>document.getElementById(idBtn).addEventListener('click',()=>remove().catch(()=>toast('삭제 실패'))));
+
+        ['btnEdit','stickyEdit'].forEach(idBtn=>document.getElementById(idBtn).addEventListener('click',()=>toast('수정 모드 (폼 바인딩 연결)')));
+    }
+
+    // ---- 시작 ----
+    (async function init(){
+        try{
+            const id = programIdFromPath();
+            const detail = await fetchDetail(id);
+            render(detail);
+            bindActions(detail.id);
+        }catch(e){
+            console.error(e); toast('상세 정보를 불러오지 못했습니다.');
         }
     })();
 </script>

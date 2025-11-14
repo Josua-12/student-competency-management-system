@@ -10,9 +10,9 @@ import java.util.List;
 @Repository
 public interface EmailHistoryRepository extends JpaRepository<EmailHistory, Long> {
 
-    List<EmailHistory> findByRecipientOrderBySentAtDesc(String recipient);
+    List<EmailHistory> findByRecipientEmailOrderBySentAtDesc(String recipientEmail);
 
     List<EmailHistory> findByEmailTypeAndSentAtBetween(String emailType, LocalDateTime start, LocalDateTime end);
 
-    long countBySuccessAndSentAtBetween(Boolean success, LocalDateTime start, LocalDateTime end);
+    long countByIsSuccessAndSentAtBetween(Boolean isSuccess, LocalDateTime start, LocalDateTime end);
 }
