@@ -1,0 +1,47 @@
+/* 폰트 및 기본 배경 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
+
+body {
+    font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    background-color: #f7f9fb;
+}
+
+/* 차트 컨테이너 높이 설정 */
+#historyChart {
+    width: 100%;
+    height: 400px;
+}
+
+/* 메인 콘텐츠 영역 최소 높이 설정 */
+.main-content {
+    min-height: 100vh;
+}
+
+/* 테이블 스타일 */
+.history-table th, .history-table td {
+    padding: 1rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+.history-table thead th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #374151;
+    /* 작은 화면에서 텍스트가 잘리지 않도록 강제 줄바꿈 방지 */
+    white-space: nowrap;
+}
+
+/* 사이드바 활성 링크 스타일 */
+.sidebar a.active {
+    background-color: #e5e7eb;
+    color: #1f2937;
+    font-weight: 600;
+    border-left: 4px solid #3b82f6;
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.5rem;
+}

@@ -1,14 +1,18 @@
 package com.competency.scms.repository.noncurricular.program;
 
+import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import com.competency.scms.dto.noncurricular.mileage.ProgramSearchRowDto;
+import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorCategoryStatDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -120,4 +124,72 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
     // 권한 체크용 예시 (owner 연관관계 사용 시)
     boolean existsByProgramIdAndOwner_Id(Long programId, Long ownerId);
+
+    //학생용
+    @Query("""
+           select p
+           from Program p
+           where p.deleted = false
+             and (:approvalStatus is null or p.approvalStatus = :approvalStatus)
+             and (:keyword is null or :keyword = '' or p.title like concat('%', :keyword, '%'))
+             and (:category is null or p.category = :category)
+             and (:status is null or p.status = :status)
+             and (:deptCode is null or :deptCode = '' or p.department.code = :deptCode)
+             and (:from is null or p.recruitStartAt >= :from)
+             and (:to   is null or p.recruitEndAt   <= :to)
+           """)
+    Page<Program> searchStudentPrograms(
+            @Param("keyword") String keyword,
+            @Param("category") ProgramCategoryType category,
+            @Param("status") ProgramStatus status,
+            @Param("deptCode") String deptCode,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("approvalStatus") ApprovalStatus approvalStatus,
+            Pageable pageable
+    );
+
+    // 최근 n개월 월별 개설 수 + 참여자 수 (참여자 수는 join으로 집계)
+    @Query("""
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorMonthlyProgramStatDto(
+            concat(function('date_format', p.programStartAt, '%Y-%m')),
+            count(distinct p.programId),
+            count(distinct app.applicationId)
+        )
+        from Program p
+        left join p.programApplications app
+        where p.programStartAt >= :fromDate
+        group by function('date_format', p.programStartAt, '%Y-%m')
+        order by function('date_format', p.programStartAt, '%Y-%m')
+        """)
+    List<com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorMonthlyProgramStatDto> findMonthlyProgramStats(LocalDate fromDate);
+
+    // 카테고리별 프로그램 수 (top5)
+    @Query("""
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorCategoryStatDto(
+            p.category,
+            count(p),
+            coalesce(sum(p.currentParticipants), 0)
+        )
+        from Program p
+        group by p.category
+        order by count(p) desc
+        """)
+    List<OperatorCategoryStatDto> findTopCategoryStats(org.springframework.data.domain.Pageable pageable);
+
+    // 학생 추천용(간단 버전): 앞으로 진행 예정 + 모집중 프로그램 중 일부
+    @Query("""
+        select p
+        from Program p
+        where p.recruitStartAt <= current_date
+          and p.recruitEndAt >= current_date
+          and p.deleted = false
+        order by p.recruitEndAt asc
+        """)
+    List<Program> findRecommendablePrograms(org.springframework.data.domain.Pageable pageable);
+
+    // 대시보드 분리용 조회 메서드
+    List<Program> findAllByOperatorId(Long operatorId); // ProgramRepository
+
+
 }

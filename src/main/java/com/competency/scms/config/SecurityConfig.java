@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -53,22 +51,30 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 개발용: 모든 경로 허용
                 .authorizeHttpRequests(authz -> authz
-                        // 공개 경로: 초기 로그인 화면 및 정적 리소스
+                        .anyRequest().permitAll()
+                )
+
+                /* 운영용 설정 (개발 완료 후 주석 해제)
+                .authorizeHttpRequests(authz -> authz
+                        // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
                                 "/", "/index.html",
-                                "/auth/login", "/login", "/error",
+                                "/auth/**", "/login", "/error",
                                 "/favicon.ico", "/manifest.json",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()
-                        // 인증 관련 공개 API (로그인/토큰/비번재설정/본인인증)
-                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**").permitAll()
 
-                        // 역할 기반 접근 제어 (AUTH-007, AUTH-008)
+                        // 인증 관련 공개 API
+                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**", "/api/auth/**").permitAll()
+
+                        // 역할 기반 접근 제어
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/counselor/**").hasRole("COUNSELOR")
                         .requestMatchers("/operator/**").hasRole("OPERATOR")
-                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/user/**").hasRole("STUDENT")
 
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
@@ -80,13 +86,15 @@ public class SecurityConfig {
                             response.sendRedirect("/auth/login");
                         })
                 )
+                */
+
                 // 폼로그인 비활성 (JWT 사용)
                 .formLogin(form -> form.disable())
                 // 사용자 인증 프로바이더
                 .authenticationProvider(authenticationProvider());
 
-        // JWT 필터 등록
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // JWT 필터 등록 (개발용으로 주석 처리, 운영시 주석 해제)
+        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

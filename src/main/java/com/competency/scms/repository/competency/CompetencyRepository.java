@@ -36,4 +36,8 @@ public interface CompetencyRepository extends JpaRepository<Competency, Long> {
      * 4. 역량 코드로 존재 여부 확인
      */
     boolean existsByCompCode(String compCode);
+  
+    // 담당자 조회 메서드
+    List<Competency> findAllByAdminId(Long adminId); // CompetencyRepository
+
 }

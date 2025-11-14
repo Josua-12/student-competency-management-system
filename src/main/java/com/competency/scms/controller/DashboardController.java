@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/dashboard")
+@RequestMapping("/api/user/dashboard")
 @RequiredArgsConstructor
 @Slf4j
 public class DashboardController {
 
     private final UserRepository userRepository;
 
-    @GetMapping("/user")
+    @GetMapping("/user-info")
     public ResponseEntity<Map<String, Object>> getUserInfo(Authentication auth) {
         String identifier = auth.getName(); // JWT에서 추출한 값
         log.info("JWT에서 추출한 식별자: {}", identifier);

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>상담 담당자 대시보드</title>
+</head>
+<body>
+
+<h1>상담 담당자 대시보드</h1>
+<p><b th:text="${user.name}"></b> 상담사님 환영합니다.</p>
+
+<h2>내 상담 목록</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th><th>학생</th><th>상태</th><th>일자</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="counsel : ${counselings}">
+    <td th:text="${counsel.id}"></td>
+    <td th:text="${counsel.student.name}"></td>
+    <td th:text="${counsel.status}"></td>
+    <td th:text="${#temporals.format(counsel.createdAt, 'yyyy-MM-dd')}"></td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>운영자 대시보드</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root{
+            --bg:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --card:#f9fafb;
+            --pri:#094081;
+            --pri-soft:#eff6ff;
+            --ok:#16a34a;
+            --warn:#d97706;
+            --err:#dc2626;
+            --radius-lg:16px;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{
+            font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:var(--bg);
+            color:var(--fg);
+            line-height:1.4;
+        }
+        .layout{
+            max-width:1200px;
+            margin:0 auto;
+            padding:24px 16px 40px;
+        }
+        header{
+            margin-bottom:24px;
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:8px;
+        }
+        header h1{
+            font-size:24px;
+            font-weight:700;
+        }
+        header .sub{
+            font-size:13px;
+            color:var(--muted);
+        }
+        .last-update{
+            font-size:12px;
+            color:var(--muted);
+        }
+
+        .grid{
+            display:grid;
+            gap:16px;
+        }
+        @media(min-width:900px){
+            .grid-2{
+                grid-template-columns:2fr 3fr;
+            }
+            .grid-3{
+                grid-template-columns:repeat(3,1fr);
+            }
+            .grid-4{
+                grid-template-columns:repeat(4,1fr);
+            }
+        }
+
+        .card{
+            background:var(--card);
+            border-radius:var(--radius-lg);
+            border:1px solid var(--line);
+            padding:16px 18px;
+        }
+        .card-title{
+            font-size:14px;
+            font-weight:600;
+            margin-bottom:8px;
+        }
+        .card-sub{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+
+        /* KPI 카드 */
+        .kpi-value{
+            font-size:22px;
+            font-weight:700;
+            margin-bottom:4px;
+        }
+        .kpi-label{
+            font-size:12px;
+            color:var(--muted);
+        }
+
+        .kpi-row{
+            display:flex;
+            gap:8px;
+            align-items:center;
+            margin-top:4px;
+        }
+        .kpi-badge{
+            font-size:11px;
+            padding:2px 6px;
+            border-radius:999px;
+            background:var(--pri-soft);
+            color:var(--pri);
+        }
+
+        /* 그래프 비주얼 (심플 바 차트) */
+        .chart-bar-row{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-bottom:6px;
+        }
+        .chart-label{
+            font-size:11px;
+            width:60px;
+            color:var(--muted);
+        }
+        .chart-bar-track{
+            flex:1;
+            height:8px;
+            border-radius:999px;
+            background:#e5e7eb;
+            overflow:hidden;
+        }
+        .chart-bar-fill{
+            height:100%;
+            border-radius:999px;
+            background:var(--pri);
+            width:0;
+            transition:width .5s ease;
+        }
+        .chart-value{
+            width:40px;
+            font-size:11px;
+            text-align:right;
+            color:var(--muted);
+        }
+
+        /* 테이블 */
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:8px;
+            font-size:12px;
+        }
+        th,td{
+            padding:6px 8px;
+            border-bottom:1px solid var(--line);
+        }
+        th{
+            text-align:left;
+            background:#f3f4f6;
+            font-weight:600;
+        }
+        tbody tr:hover{
+            background:#f9fafb;
+        }
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            padding:2px 6px;
+            border-radius:999px;
+            font-size:11px;
+        }
+        .tag-warn{background:#fef3c7;color:#92400e;}
+        .tag-ok{background:#dcfce7;color:#166534;}
+        .tag-info{background:#e0f2fe;color:#0369a1;}
+
+        /* 버튼 */
+        .btn-row{
+            margin-top:8px;
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+        .btn{
+            border-radius:999px;
+            padding:6px 12px;
+            font-size:12px;
+            border:1px solid var(--line);
+            background:#ffffff;
+            cursor:pointer;
+        }
+        .btn-primary{
+            background:var(--pri);
+            border-color:var(--pri);
+            color:#ffffff;
+        }
+        .btn:hover{opacity:.9;}
+        .btn:active{transform:scale(.98);}
+
+        .muted{color:var(--muted);font-size:12px;}
+
+        /* 스크롤 영역 */
+        .scroll-area{
+            max-height:260px;
+            overflow:auto;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="layout">
+        <header>
+            <div>
+                <h1>운영자 대시보드</h1>
+                <p class="sub">비교과 프로그램 운영 · 승인 · 성과/통계를 한눈에 관리하는 화면입니다.</p>
+            </div>
+            <div class="last-update" id="op-lastUpdate">-</div>
+        </header>
+
+        <!-- KPI 카드 4개 -->
+        <section class="grid grid-4" style="margin-bottom:16px;">
+            <div class="card">
+                <div class="card-title">승인 대기 프로그램</div>
+                <div class="kpi-value" id="kpi-pendingApproval">0</div>
+                <div class="kpi-label">승인 요청 상태(DRAFT → PENDING)</div>
+                <div class="btn-row">
+                    <button class="btn-primary btn" onclick="goToUrl('/operator/program/approval')">승인관리 바로가기</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">금일 출석 관리</div>
+                <div class="kpi-value" id="kpi-todayAttendance">0</div>
+                <div class="kpi-label">오늘 출석 체크 해야 할 일정 수</div>
+                <div class="btn-row">
+                    <button class="btn btn" onclick="goToUrl('/operator/attendance?today=true')">출석관리</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">결과보고서 검토</div>
+                <div class="kpi-value" id="kpi-pendingReports">0</div>
+                <div class="kpi-label">운영자 검토가 필요한 결과보고서</div>
+                <div class="btn-row">
+                    <button class="btn btn" onclick="goToUrl('/operator/result-reports')">결과보고서 목록</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">이수처리 대기</div>
+                <div class="kpi-value" id="kpi-pendingCompletion">0</div>
+                <div class="kpi-label">이수 기준 충족 후 미처리 건</div>
+                <div class="btn-row">
+                    <button class="btn btn" onclick="goToUrl('/operator/completion')">이수관리</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 그래프 2개 -->
+        <section class="grid grid-2" style="margin-bottom:16px;">
+            <div class="card">
+                <div class="card-title">월별 프로그램 운영 현황</div>
+                <div class="card-sub">최근 6개월 기준 (개설 수 / 참여자)</div>
+                <div id="op-programChart" style="margin-top:8px;"></div>
+            </div>
+            <div class="card">
+                <div class="card-title">비교과 분야 / 역량 통계</div>
+                <div class="card-sub">인기 카테고리 TOP5 기준</div>
+                <div id="op-competencyChart" style="margin-top:8px;"></div>
+            </div>
+        </section>
+
+        <!-- 업무 목록 -->
+        <section class="grid grid-2">
+            <div class="card">
+                <div class="card-title">승인 요청 프로그램</div>
+                <div class="card-sub">최근 요청 기준</div>
+                <div class="scroll-area">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>프로그램명</th>
+                            <th>요청일</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="op-approvalTableBody">
+                        <!-- JS 렌더링 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">미처리 업무 (출석/성과/결과보고)</div>
+                <div class="card-sub">처리가 필요한 항목들입니다.</div>
+                <div class="scroll-area">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>유형</th>
+                            <th>프로그램명</th>
+                            <th>기한</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="op-taskTableBody">
+                        <!-- JS 렌더링 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+    const OP_API = {
+        dashboard: '/api/operator/dashboard'
+    };
+
+    // TODO: 실제 연동 시 fetch 사용
+    async function fetchOperatorDashboard(){
+        try{
+            const res = await fetch(OP_API.dashboard);
+            if(!res.ok) throw new Error('API error');
+            return await res.json();
+        }catch(e){
+            console.warn('대시보드 API 실패, 더미 데이터 사용', e);
+            // ----- 더미 데이터 -----
+            return {
+                lastUpdated: new Date().toISOString(),
+                pendingApproval: 3,
+                todayAttendance: 2,
+                pendingReports: 5,
+                pendingCompletion: 4,
+                monthlyPrograms: [
+                    { month:'07월', programs:4, participants:80 },
+                    { month:'08월', programs:6, participants:120 },
+                    { month:'09월', programs:5, participants:95 },
+                    { month:'10월', programs:7, participants:150 }
+                ],
+                topCategories: [
+                    { name:'진로·취업', count:12 },
+                    { name:'리더십', count:9 },
+                    { name:'글로벌', count:7 },
+                    { name:'멘토링', count:5 },
+                    { name:'학습법', count:4 }
+                ],
+                approvalRequests: [
+                    { title:'진로캠프 1기', requestedAt:'2025-11-10', status:'PENDING' },
+                    { title:'리더십 향상 워크숍', requestedAt:'2025-11-11', status:'PENDING' }
+                ],
+                pendingTasks: [
+                    { type:'출석', title:'진로캠프 1기(2회차)', due:'2025-11-14', status:'미처리' },
+                    { type:'성과', title:'학습코칭 프로그램', due:'2025-11-15', status:'미등록' },
+                    { type:'결과보고', title:'글로벌 역량 강화 캠프', due:'2025-11-16', status:'미검토' }
+                ]
+            };
+        }
+    }
+
+    function goToUrl(url){
+        // 실제 적용 시: location.href = url;
+        console.log('goToUrl:', url);
+    }
+
+    function renderKpi(data){
+        document.getElementById('kpi-pendingApproval').textContent = data.pendingApproval ?? 0;
+        document.getElementById('kpi-todayAttendance').textContent = data.todayAttendance ?? 0;
+        document.getElementById('kpi-pendingReports').textContent = data.pendingReports ?? 0;
+        document.getElementById('kpi-pendingCompletion').textContent = data.pendingCompletion ?? 0;
+        const last = new Date(data.lastUpdated || Date.now());
+        document.getElementById('op-lastUpdate').textContent =
+        `최종 업데이트: ${last.toLocaleString('ko-KR')}`;
+    }
+
+    function renderProgramChart(data){
+        const box = document.getElementById('op-programChart');
+        box.innerHTML = '';
+        if(!data.monthlyPrograms || data.monthlyPrograms.length === 0){
+            box.innerHTML = '<p class="muted">데이터가 없습니다.</p>';
+            return;
+        }
+        const maxVal = Math.max(...data.monthlyPrograms.map(m => m.programs || 0), 1);
+        data.monthlyPrograms.forEach(row => {
+            const wrap = document.createElement('div');
+            wrap.className = 'chart-bar-row';
+
+            const label = document.createElement('div');
+            label.className = 'chart-label';
+            label.textContent = row.month;
+            wrap.appendChild(label);
+
+            const track = document.createElement('div');
+            track.className = 'chart-bar-track';
+            const fill = document.createElement('div');
+            fill.className = 'chart-bar-fill';
+            fill.style.width = ((row.programs || 0) / maxVal * 100) + '%';
+            track.appendChild(fill);
+            wrap.appendChild(track);
+
+            const value = document.createElement('div');
+            value.className = 'chart-value';
+            value.textContent = (row.programs || 0) + '개';
+            wrap.appendChild(value);
+
+            box.appendChild(wrap);
+        });
+    }
+
+    function renderCompetencyChart(data){
+        const box = document.getElementById('op-competencyChart');
+        box.innerHTML = '';
+        if(!data.topCategories || data.topCategories.length === 0){
+            box.innerHTML = '<p class="muted">데이터가 없습니다.</p>';
+            return;
+        }
+        const maxVal = Math.max(...data.topCategories.map(c => c.count || 0), 1);
+        data.topCategories.forEach(row => {
+            const wrap = document.createElement('div');
+            wrap.className = 'chart-bar-row';
+
+            const label = document.createElement('div');
+            label.className = 'chart-label';
+            label.textContent = row.name;
+            wrap.appendChild(label);
+
+            const track = document.createElement('div');
+            track.className = 'chart-bar-track';
+            const fill = document.createElement('div');
+            fill.className = 'chart-bar-fill';
+            fill.style.width = ((row.count || 0) / maxVal * 100) + '%';
+            track.appendChild(fill);
+            wrap.appendChild(track);
+
+            const value = document.createElement('div');
+            value.className = 'chart-value';
+            value.textContent = (row.count || 0) + '회';
+            wrap.appendChild(value);
+
+            box.appendChild(wrap);
+        });
+    }
+
+    function renderApprovalTable(data){
+        const tbody = document.getElementById('op-approvalTableBody');
+        tbody.innerHTML = '';
+        if(!data.approvalRequests || data.approvalRequests.length === 0){
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.className = 'muted';
+            td.textContent = '승인 요청된 프로그램이 없습니다.';
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
+        }
+        data.approvalRequests.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${r.title}</td>
+                <td>${r.requestedAt || '-'}</td>
+                <td><span class="tag tag-warn">${r.status || 'PENDING'}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderTaskTable(data){
+        const tbody = document.getElementById('op-taskTableBody');
+        tbody.innerHTML = '';
+        if(!data.pendingTasks || data.pendingTasks.length === 0){
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            td.colSpan = 4;
+            td.className = 'muted';
+            td.textContent = '미처리 업무가 없습니다.';
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            return;
+        }
+        data.pendingTasks.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${t.type}</td>
+                <td>${t.title}</td>
+                <td>${t.due || '-'}</td>
+                <td><span class="tag tag-info">${t.status || '미처리'}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function initOperatorDashboard(){
+        const data = await fetchOperatorDashboard();
+        renderKpi(data);
+        renderProgramChart(data);
+        renderCompetencyChart(data);
+        renderApprovalTable(data);
+        renderTaskTable(data);
+    }
+
+    document.addEventListener('DOMContentLoaded', initOperatorDashboard);
+</script>
+</body>
+</html>

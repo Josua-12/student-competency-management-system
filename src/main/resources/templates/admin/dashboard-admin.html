@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 대시보드</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+
+<h1>관리자 대시보드</h1>
+
+<div class="stats">
+  <div class="card">
+    <h3>전체 학생 수</h3>
+    <p th:text="${studentCount}"></p>
+  </div>
+
+  <div class="card">
+    <h3>오늘 로그인 수</h3>
+    <p th:text="${todayLoginCount}"></p>
+  </div>
+
+  <div class="card">
+    <h3>이번 달 신규 학생</h3>
+    <p th:text="${monthNewStudentCount}"></p>
+  </div>
+</div>
+
+</body>
+</html>

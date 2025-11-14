@@ -14,7 +14,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Repository
@@ -67,6 +69,6 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
     Page<CounselingReservation> findByCreatedAtBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
     // 중복 예약 방지용 쿼리 메서드 추가
-    boolean existsByCounselorAndReservationDateTime(Counselor counselor, LocalDateTime time);
+    boolean existsByCounselorAndReservationDateAndStartTime(User counselor, LocalDate reservationDate, LocalTime startTime);
 
 }

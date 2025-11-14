@@ -8,6 +8,7 @@ import com.competency.scms.exception.BusinessException;
 import com.competency.scms.exception.ErrorCode;
 import com.competency.scms.repository.user.PhoneVerificationRepository;
 import com.competency.scms.repository.user.UserRepository;
+import com.competency.scms.service.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,17 +27,38 @@ public class PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PhoneVerificationRepository phoneVerificationRepository;
+    private final EmailService emailService;
 
     // 1) 사용자 확인
     public VerifyUserResponseDto verifyUser(VerifyUserRequestDto request) {
         int userNum = Integer.parseInt(request.getUserNum());
-        userRepository.findByUserNumAndName(userNum, request.getUserName())
+        User user = userRepository.findByUserNumAndName(userNum, request.getUserName())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        // 인증번호 생성 및 이메일 발송
+        String code = generateCode(6);
+        emailService.sendVerificationCode(user.getEmail(), code);
+
+        // DB에 인증번호 저장 (이메일 기반으로)
+        LocalDateTime now = LocalDateTime.now();
+        PhoneVerification pv = PhoneVerification.builder()
+                .user(user)
+                .phone(user.getEmail()) // 이메일을 phone 필드에 저장
+                .receiverEmail(user.getEmail())
+                .verificationCode(code)
+                .status(VerificationStatus.PENDING)
+                .expiredAt(now.plusMinutes(10))
+                .build();
+
+        phoneVerificationRepository.save(pv);
+
         return VerifyUserResponseDto.builder()
                 .success(true)
-                .message("사용자 확인 완료")
+                .message("인증번호가 이메일로 발송되었습니다")
                 .userNum(request.getUserNum())
                 .userName(request.getUserName())
+                .email(emailService.maskEmail(user.getEmail())) // 마스킹된 이메일 반환
+                .realEmail(user.getEmail()) // 실제 이메일 반환
                 .build();
     }
 
@@ -57,6 +79,7 @@ public class PasswordResetService {
         PhoneVerification pv = PhoneVerification.builder()
                 .user(user)
                 .phone(user.getPhone() != null ? user.getPhone() : request.getPhoneNumber())
+                .receiverEmail(user.getEmail())
                 .verificationCode(code)
                 .status(VerificationStatus.PENDING)
                 .expiredAt(now.plusMinutes(10))
@@ -72,11 +95,25 @@ public class PasswordResetService {
                 .build();
     }
 
-    // 3) 인증번호 검증
+    // 3) 인증번호 검증 - 수정된 부분
     public VerifyCodeResponseDto verifyCode(VerifyCodeRequestDto request) {
+        // userNum으로 사용자 찾기
+        int userNum = Integer.parseInt(request.getUserNum());
+        User user = userRepository.findByUserNum(userNum)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        
+        // 디버깅 로그 추가
+        log.info("=== 인증번호 검증 디버깅 ===");
+        log.info("요청 userNum: {}", request.getUserNum());
+        log.info("요청 인증번호: {}", request.getVerificationCode());
+        log.info("사용자 이메일: {}", user.getEmail());
+
+        // 실제 이메일로 조회
         PhoneVerification pv = phoneVerificationRepository
                 .findTopByPhoneAndVerificationCodeAndStatusOrderByCreatedAtDesc(
-                        request.getPhoneNumber(), request.getVerificationCode(), VerificationStatus.PENDING)
+                        user.getEmail(), // 실제 이메일 사용
+                        request.getVerificationCode(),
+                        VerificationStatus.PENDING)
                 .orElseThrow(() -> new BusinessException(ErrorCode.VERIFICATION_CODE_MISMATCH));
 
         if (pv.getExpiredAt().isBefore(LocalDateTime.now())) {
@@ -113,7 +150,7 @@ public class PasswordResetService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         PhoneVerification lastVerified = phoneVerificationRepository
-                .findTopByPhoneAndStatusOrderByCreatedAtDesc(user.getPhone(), VerificationStatus.VERIFIED)
+                .findTopByPhoneAndStatusOrderByCreatedAtDesc(user.getEmail(), VerificationStatus.VERIFIED)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PHONE_NOT_VERIFIED));
 
         if (lastVerified.getExpiredAt().isBefore(LocalDateTime.now())) {

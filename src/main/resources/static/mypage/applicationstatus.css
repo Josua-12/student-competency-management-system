@@ -1,0 +1,78 @@
+ /* 기본 스타일 정의 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* gray-100 */
+        }
+
+        /* 1. 사이드바 스타일 정의 */
+        .sidebar {
+            width: 260px; /* 고정 너비 설정 */
+        }
+
+        /* 2. 활성 링크 스타일 정의 */
+        .active-link {
+            /* 활성 링크에 배경색을 지정하여 텍스트가 잘 보이도록 함 */
+            background-color: #4f46e5 !important; /* Tailwind Indigo-600 */
+            color: white !important; /* 활성 링크 텍스트를 흰색으로 */
+        }
+
+        /* 3. 호버 및 전환 효과 정의 */
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .hover-bg-light:hover {
+            background-color: #f1f3f5; /* Light gray for hover */
+            color: #495057 !important; /* Dark text on hover */
+        }
+        .text-muted-hover:hover {
+            color: #4f46e5 !important; /* Indigo color on hover for breadcrumb link */
+        }
+        .text-indigo {
+            color: #4f46e5 !important; /* Custom indigo color */
+        }
+
+        /* 테이블 디자인 개선 */
+        .application-table th {
+            letter-spacing: 0.05em;
+            color: #6c757d;
+        }
+        .application-table td {
+            font-size: 0.95rem;
+        }
+
+        /* 상태 뱃지 스타일 */
+        .badge-status {
+            min-width: 70px;
+            padding: 0.5em 0.8em;
+            font-weight: 600;
+        }
+
+        /* 모바일 뷰에서 사이드바 숨김 */
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none !important;
+            }
+        }
+
+        /* 커스텀 모달 스타일: alert() 대신 사용 */
+        #custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+        }
+        #modal-content {
+            background-color: white;
+            padding: 25px 30px; /* 패딩 증가 */
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 강화 */
+            max-width: 380px;
+            width: 90%;
+        }
