@@ -1,5 +1,5 @@
 // API 엔드포인트
-const USER_INFO_API = '/api/user/info';
+const USER_INFO_API = '/api/user-info';
 const PASSWORD_CHANGE_API = '/api/user/password';
 
 /**
@@ -60,11 +60,11 @@ async function fetchUserInfo() {
         const data = await response.json();
 
         // DTO에 맞춰 폼 필드 업데이트
-        document.getElementById('studentId').value = data.studentId || '';
+        document.getElementById('studentId').value = data.userNum || '';
         document.getElementById('name').value = data.name || '';
         document.getElementById('birthDate').value = data.birthDate || '';
         document.getElementById('email').value = data.email || '';
-        document.getElementById('address').value = data.address || '';
+        document.getElementById('phone').value = data.phone || '';
 
     } catch (error) {
         console.error('Fetch Error:', error);
@@ -80,16 +80,16 @@ async function updateUserInfo() {
     toggleButtonLoading(buttonId, true, '정보 수정');
 
     const email = document.getElementById('email').value.trim();
-    const address = document.getElementById('address').value.trim();
+    const phone = document.getElementById('phone').value.trim();
 
     // 간단한 클라이언트 측 유효성 검사
-    if (!email || !address) {
-        displayMessage('이메일과 주소는 필수 입력 항목입니다.', 'danger');
+    if (!email) {
+        displayMessage('이메일은 필수 입력 항목입니다.', 'danger');
         toggleButtonLoading(buttonId, false, '정보 수정');
         return;
     }
 
-    const requestBody = { email, address };
+    const requestBody = { email, phone };
 
     try {
         const response = await fetch(USER_INFO_API, {
@@ -99,10 +99,8 @@ async function updateUserInfo() {
         });
 
         if (response.ok) {
-            // 성공 시, 업데이트된 정보로 폼을 다시 채우고 성공 메시지 표시
-            const updatedData = await response.json();
-            document.getElementById('email').value = updatedData.email;
-            document.getElementById('address').value = updatedData.address;
+            // 성공 시 메시지 표시
+            const result = await response.json();
 
             displayMessage('정보가 성공적으로 수정되었습니다.', 'success');
             // 폼에서 is-invalid 클래스 제거 (Bootstrap 유효성 피드백 초기화)
