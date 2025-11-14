@@ -31,4 +31,9 @@ public interface CompetencyRepository extends JpaRepository<Competency, Long> {
             "AND (sq IS NULL OR sq.isActive = true) " +
             "ORDER BY c.displayOrder, sc.displayOrder, sq.displayOrder, so.displayOrder")
     List<Competency> findActiveRootCompetenciesForAssessment();
+
+    /**
+     * 4. 역량 코드로 존재 여부 확인
+     */
+    boolean existsByCompCode(String compCode);
 }

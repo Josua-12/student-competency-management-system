@@ -23,8 +23,8 @@
             </div>
         </div>
 
-        <form th:action="@{/assessment/submit}" th:object="${diagnosisForm}" method="post" id="diagnosisForm">
-            <input type="hidden" th:field="*{assessmentResultId}" />
+        <form th:action="@{/user/assessment/submit}" th:object="${diagnosisForm}" method="post" id="diagnosisForm">
+            <input type="hidden" th:field="*{resultId}" />
 
             <div class="question-list">
                 <div class="question-card" th:each="question, qStat : *{questions}">
@@ -51,15 +51,15 @@
             </div>
 
             <div class="submission-footer sticky-bottom">
-                <p>총 <span th:text="${#lists.size(questions)}">25</span>개 문항 중 <span id="answeredCount">0</span>개 응답</p>
+                <p>총 <span th:text="${#lists.size(diagnosisForm.questions)}">25</span>개 문항 중 <span id="answeredCount">0</span>개 응답</p>
                 <div>
                     <button type="submit" class="btn btn-secondary"
-                            formaction="@{/assessment/draft}"
+                            formaction="@{/user/assessment/draft}"
                             id="draftButton">
                         <i class="fas fa-save me-1"></i> 임시저장
                     </button>
                     <button type="submit" class="btn btn-primary"
-                            formaction="@{/assessment/submit}"
+                            formaction="@{/user/assessment/submit}"
                             id="submitButton">
                         <i class="fas fa-check-circle me-1"></i> 최종제출
                     </button>

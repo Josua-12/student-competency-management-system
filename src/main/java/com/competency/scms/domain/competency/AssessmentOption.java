@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -15,6 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 @Table(name = "assessment_options")
 @SQLDelete(sql = "UPDATE assessment_options SET deleted_at = CURRENT_TIMESTAMP " +
         "WHERE option_id = ?")
+@SQLRestriction("deleted_at is NULL")
 public class AssessmentOption extends CompetencyBaseEntity {
 
     @Id

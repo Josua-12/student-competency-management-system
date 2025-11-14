@@ -12,7 +12,9 @@ public class AssessmentPageDto {
     private String assessmentTitle;
     private List<RootCompetencyDto> rootCompetencies;
 
+    private List<QuestionDto> questions;
+
     // 사용자가 임시저장한 응답
     // Key: Question ID, Value: Option ID
-    private Map<Long, Long> savedResponses;
+    private Map<Long, Long> responses;
 }

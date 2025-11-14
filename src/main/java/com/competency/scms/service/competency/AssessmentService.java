@@ -167,23 +167,40 @@ public class AssessmentService {
         List<AssessmentResponse> responses = assessmentResponseRepository.findByAssessmentResultId(resultId);
 
         // 5. 응답을 (QuestionId, OptionId) 맵으로 변환 (나중에 DTO에 담기)
-        Map<Long, Long> savedResponseMap = responses.stream()
+        Map<Long, Long> responseMap = responses.stream()
                 .collect(Collectors.toMap(
                         resp -> resp.getQuestion().getId(), // Key: 문항 ID
                         resp -> resp.getAssessmentOption().getId()  // Value: 선택한 보기 ID
                 ));
 
-        // 6. [데이터 변환] Entity -> DTO
+        // 6. 계층형 DTO 변환 (Root -> Sub -> Question)
+        List<RootCompetencyDto> rootDtos = rootComps.stream()
+                .map(this::mapRootCompetencyToDto)
+                .toList();
+
+        // 7. 계층형 구조를 평탄화하여 '모든 문항 리스트' 추출
+        List<QuestionDto> allQuestions = new ArrayList<>();
+
+        for (RootCompetencyDto root : rootDtos) {
+            if (root.getSubCompetencies() != null) {
+                for (SubCompetencyDto sub : root.getSubCompetencies()) {
+                    if (sub.getQuestions() != null) {
+                        allQuestions.addAll(sub.getQuestions());
+                    }
+                }
+            }
+        }
+
+        // 8. [데이터 변환] Entity -> DTO
         AssessmentPageDto pageDto = new AssessmentPageDto();
         pageDto.setResultId(resultId);
         pageDto.setAssessmentTitle(result.getAssessmentSection().getTitle());
-        pageDto.setSavedResponses(savedResponseMap); // 5번 맵 설정
 
-        pageDto.setRootCompetencies(
-                rootComps.stream()
-                        .map(this::mapRootCompetencyToDto)
-                        .collect(Collectors.toList())
-        );
+        pageDto.setRootCompetencies(rootDtos);
+
+        pageDto.setQuestions(allQuestions);
+        pageDto.setResponses(responseMap); // 5번 맵 설정
+
 
         return pageDto;
     }

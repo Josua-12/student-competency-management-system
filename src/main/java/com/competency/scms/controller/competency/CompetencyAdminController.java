@@ -62,6 +62,9 @@ public class CompetencyAdminController {
         try {
             Long savedId = competencyAdminService.saveOrUpdateCompetency(dto);
             return ResponseEntity.ok(Map.of("message", "저장되었습니다.", "id", savedId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
