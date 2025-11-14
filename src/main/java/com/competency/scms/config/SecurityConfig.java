@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -53,6 +51,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 개발용: 모든 경로 허용
+                .authorizeHttpRequests(authz -> authz
+                        .anyRequest().permitAll()
+                )
+
+                /* 운영용 설정 (개발 완료 후 주석 해제)
                 .authorizeHttpRequests(authz -> authz
                         // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
@@ -81,13 +86,15 @@ public class SecurityConfig {
                             response.sendRedirect("/auth/login");
                         })
                 )
+                */
+
                 // 폼로그인 비활성 (JWT 사용)
                 .formLogin(form -> form.disable())
                 // 사용자 인증 프로바이더
                 .authenticationProvider(authenticationProvider());
 
-        // JWT 필터 등록
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // JWT 필터 등록 (개발용으로 주석 처리, 운영시 주석 해제)
+        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
