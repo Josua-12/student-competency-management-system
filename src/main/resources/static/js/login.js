@@ -15,6 +15,8 @@ async function handleLogin(e) {
     e.preventDefault();
 
     const studentNum = document.getElementById('studentNum').value.trim();
+
+
     const password = document.getElementById('password').value;
 
     if (!studentNum || !password) {
@@ -38,7 +40,7 @@ async function handleLogin(e) {
         if (response.ok) {
             persistTokens(data);
             showAlert('로그인 성공!', 'success');
-            window.location.replace('/main/dashboard');
+            window.location.replace('/user/dashboard');
         } else {
             handleLoginError(data);
         }
