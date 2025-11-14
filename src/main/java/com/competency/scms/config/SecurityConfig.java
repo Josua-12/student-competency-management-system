@@ -1,0 +1,93 @@
+package com.competency.scms.config;
+
+import com.competency.scms.security.CustomUserDetailsService;
+import com.competency.scms.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
+@Slf4j
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomUserDetailsService customUserDetailsService;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authz -> authz
+                        // 공개 경로: 초기 로그인 화면 및 정적 리소스
+                        .requestMatchers(
+                                "/", "/index.html",
+                                "/auth/login", "/login", "/error",
+                                "/favicon.ico", "/manifest.json",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
+                        ).permitAll()
+                        // 인증 관련 공개 API (로그인/토큰/비번재설정/본인인증)
+                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**").permitAll()
+
+                        // 역할 기반 접근 제어 (AUTH-007, AUTH-008)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/counselor/**").hasRole("COUNSELOR")
+                        .requestMatchers("/operator/**").hasRole("OPERATOR")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+
+                        // 나머지는 인증 필요
+                        .anyRequest().authenticated()
+                )
+
+                // 미인증 접근 시 /auth/login로 리다이렉트
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/auth/login");
+                        })
+                )
+                // 폼로그인 비활성 (JWT 사용)
+                .formLogin(form -> form.disable())
+                // 사용자 인증 프로바이더
+                .authenticationProvider(authenticationProvider());
+
+        // JWT 필터 등록
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+}

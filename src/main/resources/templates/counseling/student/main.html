@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일반상담·컨설팅</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    <div class="container-fluid">
+        <div class="container">
+            <!-- 페이지 상단 영역 -->
+            <div class="row mt-4 mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold mb-4">일반상담·컨설팅</h2>
+                    
+                    <!-- 라디오 탭 -->
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio1" value="state">
+                            <label class="form-check-label" for="radio1">신청현황</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio2" value="GeneralCnsl" checked>
+                            <label class="form-check-label" for="radio2">일반상담·컨설팅 안내</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio3" value="psycho">
+                            <label class="form-check-label" for="radio3">심리상담</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio4" value="career">
+                            <label class="form-check-label" for="radio4">진로상담</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio5" value="job">
+                            <label class="form-check-label" for="radio5">취업상담</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio6" value="learning">
+                            <label class="form-check-label" for="radio6">학습상담</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메인 콘텐츠 -->
+            <div class="row">
+                <div class="col-12">
+                    <!-- 상담신청 소개 -->
+                    <div class="bg-light p-4 rounded mb-5">
+                        <h3 class="fw-bold mb-3">상담신청</h3>
+                        <p class="mb-0">성공적인 사회 진출 및 학교 생활을 위하여 진로, 취업, 학업, 심리, 글쓰기 등에 대한<br class="d-none d-md-block"> 고민과 어려움을 교수님, 전문상담원과 상담할 수 있도록 하기 위하여 실시하고 있습니다.</p>
+                    </div>
+
+                    <!-- 전문상담 종류 및 상담방법 -->
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title h5 fw-bold mb-3">전문상담의 종류</h4>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="badge bg-primary text-wrap p-2 w-100">
+                                                <i class="bi bi-heart me-1"></i>심리상담
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="badge bg-success text-wrap p-2 w-100">
+                                                <i class="bi bi-compass me-1"></i>진로상담
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="badge bg-warning text-wrap p-2 w-100">
+                                                <i class="bi bi-briefcase me-1"></i>취업상담
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="badge bg-info text-wrap p-2 w-100">
+                                                <i class="bi bi-book me-1"></i>학습상담
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h4 class="card-title h5 fw-bold mb-3">상담방법</h4>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center p-3 border rounded">
+                                                <i class="bi bi-person-video2 fs-3 text-primary me-3"></i>
+                                                <div>
+                                                    <strong>대면</strong><br>
+                                                    <small class="text-muted">상담진행 및 결과를 대면(전화/ZOOM포함)을 통해 받을 수 있습니다.</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex align-items-center p-3 border rounded">
+                                                <i class="bi bi-laptop fs-3 text-success me-3"></i>
+                                                <div>
+                                                    <strong>온라인</strong><br>
+                                                    <small class="text-muted">상담 진행 및 결과를 비대면(게시판)을 통해 받을 수 있습니다.</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 상담안내 -->
+                    <h5 class="fw-bold mb-4">상담안내</h5>
+                    <div class="row g-4">
+                        <!-- 심리상담 -->
+                        <div class="col-lg-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h4 class="card-title h6 mb-0">
+                                        <i class="bi bi-heart me-2"></i>심리상담
+                                    </h4>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text flex-grow-1">전문 심리상담사와의 1:1 상담을 통해 학업, 대인관계, 진로 등으로 인한 심리적 어려움을 해결하고 정신건강 증진을 도모하는 프로그램입니다.</p>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mt-auto">신청하기</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 진로상담 -->
+                        <div class="col-lg-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h4 class="card-title h6 mb-0">
+                                        <i class="bi bi-compass me-2"></i>진로상담
+                                    </h4>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text flex-grow-1">진로 전문가와 함께 자신의 적성과 흥미를 탐색하고, 미래 진로 방향을 설정하여 체계적인 진로 계획을 수립하는 상담 프로그램입니다.</p>
+                                    <button type="button" class="btn btn-outline-success btn-sm mt-auto">신청하기</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 취업상담 -->
+                        <div class="col-lg-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h4 class="card-title h6 mb-0">
+                                        <i class="bi bi-briefcase me-2"></i>취업상담
+                                    </h4>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text flex-grow-1">취업 전문 컨설턴트와 함께 이력서 작성, 면접 준비, 취업 전략 수립 등 실질적인 취업 준비를 위한 맞춤형 상담 서비스입니다.</p>
+                                    <button type="button" class="btn btn-outline-warning btn-sm mt-auto">신청하기</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 학습상담 -->
+                        <div class="col-lg-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h4 class="card-title h6 mb-0">
+                                        <i class="bi bi-book me-2"></i>학습상담
+                                    </h4>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <p class="card-text flex-grow-1">학습 전문가와의 1:1 상담을 통해 효과적인 학습 방법을 찾고, 학습 계획 수립 및 학업 성취도 향상을 위한 맞춤형 학습 전략을 제공합니다.</p>
+                                    <button type="button" class="btn btn-outline-info btn-sm mt-auto">신청하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 퀵 메뉴 -->
+        <div class="position-fixed bottom-0 end-0 p-3">
+            <div class="d-flex flex-column gap-2">
+                <button class="btn btn-secondary btn-sm" title="매뉴얼 다운로드">
+                    <i class="bi bi-download"></i> 매뉴얼
+                </button>
+                <button class="btn btn-primary btn-sm" title="메인화면으로 이동">
+                    <i class="bi bi-house"></i> 메인화면
+                </button>
+                <button class="btn btn-light btn-sm" title="페이지 상단으로 이동" onclick="window.scrollTo(0,0)">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/counseling/student-main.js}"></script>
+</body>
+</html>

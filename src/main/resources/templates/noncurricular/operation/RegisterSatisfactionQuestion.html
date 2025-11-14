@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>만족도 설문 등록 | 비교과 프로그램 운영자</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root{
+            --bg:#f6f7fb; --card:#fff; --ink:#222; --muted:#666; --line:#e6e8ef;
+            --pri:#2d6cdf; --pri-weak:#e7efff; --warn:#e57b2e; --danger:#e5484d; --ok:#17a277;
+            --chip:#f0f3fa;
+            --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif}
+        .wrap{max-width:1080px;margin:32px auto;padding:0 16px}
+        .page-title{font-size:22px;font-weight:800;margin:0 0 18px}
+        .crumb{color:var(--muted);font-size:12px;margin-bottom:12px}
+        .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+        .card-head{padding:16px;border-bottom:1px solid var(--line);font-weight:700}
+        .card-body{padding:16px}
+        .row{display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:center;margin:10px 0}
+        label{font-weight:600}
+        input[type="text"], input[type="datetime-local"], select, textarea{
+            width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff
+        }
+        textarea{min-height:84px;resize:vertical}
+        .chips{display:flex;flex-wrap:wrap;gap:8px}
+        .chip{background:var(--chip);border:1px solid var(--line);padding:6px 10px;border-radius:999px;font-size:12px}
+        .hint{color:var(--muted);font-size:12px;margin-top:-4px}
+        .bar{display:flex;gap:8px;align-items:center;justify-content:flex-end;border-top:1px solid var(--line);padding:12px 16px}
+        .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
+        .btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+        .btn.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+        .btn.warn{background:var(--warn);color:#fff;border-color:var(--warn)}
+        .btn.ghost{background:#fff}
+        .section-title{font-weight:800;margin:0 0 8px}
+        /* Question builder */
+        .q-list{display:flex;flex-direction:column;gap:10px}
+        .q-item{border:1px solid var(--line);background:#fff;border-radius:12px;overflow:hidden}
+        .q-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--pri-weak);border-bottom:1px solid var(--line)}
+        .q-no{font-weight:900;width:28px;text-align:center}
+        .q-title{flex:1;font-weight:700}
+        .q-ctrls{display:flex;gap:6px}
+        .q-ctrls .icon{cursor:pointer;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:#fff}
+        .q-body{padding:12px}
+        .opt{display:flex;gap:8px;align-items:center;margin:6px 0}
+        .opt input[type="text"]{flex:1}
+        .opt .del{border:1px solid var(--line);padding:6px 10px;border-radius:8px;background:#fff;cursor:pointer}
+        .add-opt{margin-top:6px}
+        .pill{display:inline-flex;gap:6px;align-items:center;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:12px}
+        .switch{display:inline-flex;gap:8px;align-items:center}
+        .switch input{transform:scale(1.1)}
+        .q-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+        .empty{padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+        .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .preview-area{border:1px dashed var(--line);border-radius:12px;padding:12px;background:#fff}
+        .label-mini{font-size:12px;color:var(--muted)}
+        @media (max-width: 920px){
+            .grid{grid-template-columns:1fr}
+            .row{grid-template-columns:1fr}
+            label{margin-bottom:6px}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="crumb">비교과 프로그램 &rsaquo; 프로그램 상세 &rsaquo; <b>만족도 설문 등록</b></div>
+    <h1 class="page-title">만족도 설문 등록</h1>
+
+    <div class="grid">
+        <!-- 좌: 메타 영역 -->
+        <section class="card">
+            <div class="card-head">설문 기본정보</div>
+            <div class="card-body">
+                <div class="row">
+                    <label for="program">프로그램</label>
+                    <div>
+                        <!-- 서버 바인딩 예: <span th:text="${program.title}"></span> -->
+                        <input id="program" type="text" placeholder="예) 캡스톤디자인 특강" />
+                        <div class="hint">연결 대상 프로그램을 선택/확인하세요.</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="schedules">대상 회차</label>
+                    <div>
+                        <select id="schedules" multiple>
+                            <option value="ALL" selected>전체 회차</option>
+                            <option value="1">1회차 (2025-11-10 10:00)</option>
+                            <option value="2">2회차 (2025-11-17 10:00)</option>
+                        </select>
+                        <div class="hint">복수 선택 가능. 선택 없으면 ‘전체 회차’로 처리.</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="title">설문명</label>
+                    <div><input id="title" type="text" placeholder="예) [2025-2학기] 프로그램 만족도 설문" /></div>
+                </div>
+                <div class="row">
+                    <label>공개기간</label>
+                    <div class="inline">
+                        <input id="openStart" type="datetime-local" />
+                        <span>~</span>
+                        <input id="openEnd" type="datetime-local" />
+                    </div>
+                </div>
+                <div class="row">
+                    <label>옵션</label>
+                    <div class="inline">
+                        <label class="switch"><input id="isRequired" type="checkbox" checked /> <span>수료에 설문 필수</span></label>
+                        <label class="switch"><input id="isAnonymous" type="checkbox" checked /> <span>익명 수집</span></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="status">상태</label>
+                    <div>
+                        <select id="status">
+                            <option value="DRAFT" selected>초안</option>
+                            <option value="PUBLISHED">게시</option>
+                        </select>
+                        <div class="hint">[게시] 저장 시 즉시 응답을 받을 수 있어요.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 우: 도움말/미리보기 -->
+        <aside class="card">
+            <div class="card-head">미리보기</div>
+            <div class="card-body">
+                <div class="preview-area" id="preview"></div>
+                <p class="hint" style="margin-top:10px">
+                    * 학생 화면에서는 “평점(1~5)”과 “의견(자유서술)” 형태가 기본입니다. ERD의 <b>program_satisfaction</b>에 평점/의견이 저장됩니다. (확장 시 문항별 결과 테이블 추가 가능) :contentReference[oaicite:2]{index=2}
+                </p>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 문항 빌더 -->
+    <section class="card" style="margin-top:16px">
+        <div class="card-head">문항 구성</div>
+        <div class="card-body">
+            <div class="inline" style="justify-content:space-between; margin-bottom:8px">
+                <div class="label-mini">유형: 평점(1~5), 단일선택, 복수선택, 단답, 서술</div>
+                <div class="inline">
+                    <button id="add-rating" class="btn">+ 평점</button>
+                    <button id="add-single" class="btn">+ 단일선택</button>
+                    <button id="add-multi" class="btn">+ 복수선택</button>
+                    <button id="add-short" class="btn">+ 단답</button>
+                    <button id="add-long" class="btn">+ 서술</button>
+                </div>
+            </div>
+            <div id="qList" class="q-list"></div>
+            <div id="qEmpty" class="empty">추가된 문항이 없습니다. 위 버튼으로 문항을 추가하세요.</div>
+        </div>
+        <div class="bar">
+            <button id="btn-preview" class="btn ghost">미리보기</button>
+            <button id="btn-save" class="btn pri">저장(초안)</button>
+            <button id="btn-publish" class="btn ok">게시</button>
+            <button id="btn-cancel" class="btn">취소</button>
+        </div>
+    </section>
+</div>
+
+<script>
+    // ---------- State ----------
+    const state = {
+        programId: null, // 서버 바인딩: window.PROGRAM_ID 등
+        questions: []
+    };
+
+    // ---------- Helpers ----------
+    const el = sel => document.querySelector(sel);
+    const uid = () => Math.random().toString(36).slice(2,9);
+
+    function renderQuestions(){
+        const list = el('#qList');
+        const empty = el('#qEmpty');
+        list.innerHTML = '';
+        if(state.questions.length === 0){
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        state.questions.forEach((q, idx) => {
+            const root = document.createElement('div');
+            root.className = 'q-item';
+            root.dataset.id = q.id;
+
+            // head
+            const head = document.createElement('div');
+            head.className = 'q-head';
+            head.innerHTML = `
+          <div class="q-no">${idx+1}</div>
+          <div class="q-title">
+            <input type="text" value="${q.title ?? ''}" placeholder="문항 제목을 입력하세요" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff">
+          </div>
+          <span class="pill">${labelType(q.type)}</span>
+          <div class="q-ctrls">
+            <button class="icon" data-act="up">▲</button>
+            <button class="icon" data-act="down">▼</button>
+            <button class="icon" data-act="dup">복제</button>
+            <button class="icon" data-act="del" style="color:var(--danger)">삭제</button>
+          </div>
+        `;
+            // body
+            const body = document.createElement('div');
+            body.className = 'q-body';
+            body.appendChild(buildBody(q));
+
+            // foot
+            const foot = document.createElement('div');
+            foot.className = 'q-foot';
+            foot.innerHTML = `
+          <div class="inline">
+            <label class="switch"><input type="checkbox" ${q.required ? 'checked':''}> <span>필수</span></label>
+          </div>
+          <span class="label-mini">문항 ID: ${q.id}</span>
+        `;
+
+            // events
+            head.querySelector('input').addEventListener('input', e => { q.title = e.target.value; syncPreview(); });
+            head.querySelectorAll('.icon').forEach(btn=>{
+                btn.addEventListener('click', ()=>{
+                    const act = btn.dataset.act;
+                    if(act === 'up' && idx>0){
+                        const t = state.questions[idx-1]; state.questions[idx-1]=state.questions[idx]; state.questions[idx]=t;
+                        renderQuestions();
+                    }
+                    if(act === 'down' && idx<state.questions.length-1){
+                        const t = state.questions[idx+1]; state.questions[idx+1]=state.questions[idx]; state.questions[idx]=t;
+                        renderQuestions();
+                    }
+                    if(act === 'dup'){
+                        const copy = JSON.parse(JSON.stringify(q));
+                        copy.id = uid();
+                        state.questions.splice(idx+1,0,copy);
+                        renderQuestions();
+                    }
+                    if(act === 'del'){
+                        state.questions.splice(idx,1);
+                        renderQuestions();
+                    }
+                });
+            });
+            foot.querySelector('input[type="checkbox"]').addEventListener('change', e => { q.required = e.target.checked; });
+
+            root.appendChild(head);
+            root.appendChild(body);
+            root.appendChild(foot);
+            list.appendChild(root);
+        });
+        syncPreview();
+    }
+
+    function labelType(t){
+        return ({
+            rating: '평점(1~5)',
+            single: '단일선택',
+            multi:  '복수선택',
+            short:  '단답',
+            long:   '서술'
+        })[t] || t;
+    }
+
+    function buildBody(q){
+        const frag = document.createDocumentFragment();
+        if(q.type === 'rating'){
+            const info = document.createElement('div');
+            info.className='hint';
+            info.textContent='학생은 1~5점 중 하나를 선택합니다. (5점 최고)';
+            frag.appendChild(info);
+        }
+        if(q.type === 'single' || q.type === 'multi'){
+            const box = document.createElement('div');
+            (q.options||[]).forEach((opt, i)=>{
+                const line = document.createElement('div');
+                line.className='opt';
+                line.innerHTML = `
+            <span class="label-mini">${q.type==='single'?'○':'□'}</span>
+            <input type="text" value="${opt.text}" placeholder="보기 입력">
+            <button class="del">삭제</button>
+          `;
+                line.querySelector('input').addEventListener('input', e => { q.options[i].text = e.target.value; syncPreview(); });
+                line.querySelector('.del').addEventListener('click', ()=>{
+                    q.options.splice(i,1); rerender();
+                });
+                box.appendChild(line);
+            });
+            const add = document.createElement('button');
+            add.className='btn add-opt';
+            add.textContent = '+ 보기 추가';
+            add.addEventListener('click', ()=>{
+                q.options.push({id: uid(), text: ''}); rerender();
+            });
+            frag.appendChild(box);
+            frag.appendChild(add);
+        }
+        if(q.type === 'short'){
+            const ph = document.createElement('div');
+            ph.innerHTML = `<input type="text" placeholder="단답 예시(학생 입력란 미리보기)" disabled />`;
+            frag.appendChild(ph);
+        }
+        if(q.type === 'long'){
+            const ph = document.createElement('div');
+            ph.innerHTML = `<textarea placeholder="서술형 예시(학생 입력란 미리보기)" disabled></textarea>`;
+            frag.appendChild(ph);
+        }
+        function rerender(){ renderQuestions(); }
+        return frag;
+    }
+
+    // ---------- Add Question ----------
+    function addQuestion(type){
+        const base = { id: uid(), title: '', type, required: true };
+        if(type === 'single' || type === 'multi') base.options = [{id:uid(), text:''}];
+        if(type === 'rating') base.scale = 5;
+        state.questions.push(base);
+        renderQuestions();
+    }
+
+    // ---------- Preview ----------
+    function syncPreview(){
+        const box = document.querySelector('#preview');
+        const title = document.querySelector('#title').value || '설문 제목';
+        let html = `<div style="font-weight:800;margin-bottom:6px">${title}</div>`;
+
+        if(state.questions.length===0){
+            html += `<div class="hint">문항이 없습니다.</div>`;
+        }else{
+            html += `<ol style="padding-left:18px;margin:0">`;
+            state.questions.forEach(q=>{
+                const requiredTag = q.required ? '<span class="label-mini" style="margin-left:6px;color:#d33">*필수</span>' : '';
+                html += `<li style="margin:6px 0">
+        <div><b>${q.title || '(제목 없음)'}</b> ${requiredTag}</div>`;
+
+                // ★ 라디오/체크박스 포함 미리보기
+                if(q.type==='rating'){
+                    const scale = q.scale || 5;
+                    html += `<div class="inline" style="margin-top:6px">`;
+                    for(let i=1;i<=scale;i++){
+                        html += `
+            <label class="inline" style="display:inline-flex;align-items:center;gap:4px;margin-right:10px">
+              <input type="radio" name="pv_${q.id}" value="${i}" disabled>
+              <span>${i}</span>
+            </label>`;
+                    }
+                    html += `</div>`;
+                } else if(q.type==='single'){
+                    html += `<div class="inline" style="margin-top:6px">` +
+                    (q.options||[]).map((o, idx)=>`
+            <label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px">
+              <input type="radio" name="pv_${q.id}" value="${idx}" disabled>
+              <span>${o.text || ''}</span>
+            </label>`).join('') +
+                    `</div>`;
+                } else if(q.type==='multi'){
+                    html += `<div class="inline" style="margin-top:6px">` +
+                    (q.options||[]).map((o, idx)=>`
+            <label style="display:inline-flex;align-items:center;gap:4px;margin-right:14px">
+              <input type="checkbox" name="pv_${q.id}_${idx}" value="${idx}" disabled>
+              <span>${o.text || ''}</span>
+            </label>`).join('') +
+                    `</div>`;
+                } else if(q.type==='short'){
+                    html += `<input disabled placeholder="단답 입력란" style="margin-top:6px;width:100%;padding:8px;border:1px solid var(--line);border-radius:8px">`;
+                } else if(q.type==='long'){
+                    html += `<textarea disabled placeholder="서술 입력란" style="margin-top:6px;width:100%;padding:8px;border:1px solid var(--line);border-radius:8px"></textarea>`;
+                }
+
+                html += `</li>`;
+            });
+            html += `</ol>`;
+        }
+        box.innerHTML = html;
+    }
+
+
+    // ---------- Payload ----------
+    function collectPayload(statusOverride){
+        const getMulti = (sel)=>Array.from(el(sel).selectedOptions).map(o=>o.value);
+        const payload = {
+            programId: state.programId || null,
+            scheduleIds: getMulti('#schedules').includes('ALL') ? [] : getMulti('#schedules'),
+            title: el('#title').value.trim(),
+            openStart: el('#openStart').value || null,
+            openEnd: el('#openEnd').value || null,
+            anonymous: el('#isAnonymous').checked,
+            requiredToComplete: el('#isRequired').checked,
+            status: statusOverride || el('#status').value || 'DRAFT',
+            questions: state.questions.map((q, idx)=>({
+                id: q.id,
+                order: idx+1,
+                type: q.type,             // rating | single | multi | short | long
+                title: q.title,
+                required: !!q.required,
+                options: (q.options||[]).map((o, i)=>({ id: o.id, order:i+1, text:o.text }))
+            }))
+        };
+        return payload;
+    }
+
+    async function postJSON(url, data){
+        const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        return res.json().catch(()=> ({}));
+    }
+
+    // ---------- Events ----------
+    el('#add-rating').addEventListener('click', ()=> addQuestion('rating'));
+    el('#add-single').addEventListener('click', ()=> addQuestion('single'));
+    el('#add-multi').addEventListener('click',  ()=> addQuestion('multi'));
+    el('#add-short').addEventListener('click',  ()=> addQuestion('short'));
+    el('#add-long').addEventListener('click',   ()=> addQuestion('long'));
+    ['#title', '#openStart', '#openEnd'].forEach(s => el(s).addEventListener('input', syncPreview));
+    el('#btn-preview').addEventListener('click', syncPreview);
+
+    // 초안 저장
+    el('#btn-save').addEventListener('click', async ()=>{
+        try{
+            const payload = collectPayload('DRAFT');
+            console.log('[SAVE DRAFT]', payload);
+            // 실제 연동
+            // const api = `/api/op/programs/${payload.programId}/surveys/satisfaction`;
+            // const result = await postJSON(api, payload);
+            alert('초안으로 저장할 payload가 콘솔에 출력되었습니다.');
+        }catch(e){ alert('저장 실패: '+e.message); }
+    });
+
+    // 게시
+    el('#btn-publish').addEventListener('click', async ()=>{
+        try{
+            const payload = collectPayload('PUBLISHED');
+            console.log('[PUBLISH]', payload);
+            // 실제 연동
+            // const api = `/api/op/programs/${payload.programId}/surveys/satisfaction/publish`;
+            // const result = await postJSON(api, payload);
+            alert('게시할 payload가 콘솔에 출력되었습니다.');
+        }catch(e){ alert('게시 실패: '+e.message); }
+    });
+
+    // 취소
+    el('#btn-cancel').addEventListener('click', ()=>{
+        // 실제 이동: location.href = `/op/programs/${state.programId}/detail`;
+        history.back();
+    });
+
+    // ---------- Defaults ----------
+    // 서버에서 바인딩 예시
+    // state.programId = /*[[${programId}]]*/ 101;
+    // 초기 샘플 문항
+    state.questions = [
+        { id: uid(), type:'rating', title:'전반적인 만족도는 어떠셨나요?', required:true, scale:5 },
+        { id: uid(), type:'single', title:'프로그램 난이도는 적절했나요?', required:true, options:[{id:uid(),text:'매우 낮음'},{id:uid(),text:'적절함'},{id:uid(),text:'매우 높음'}] },
+        { id: uid(), type:'long',   title:'개선이 필요한 점을 자유롭게 작성해주세요.', required:false }
+    ];
+    renderQuestions();
+</script>
+</body>
+</html>

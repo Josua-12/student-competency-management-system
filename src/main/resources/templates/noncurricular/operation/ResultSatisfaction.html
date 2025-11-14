@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>OP-005 만족도 결과 조회</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Chart.js (순수 JS 라이브러리) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root{
+            --bg:#f6f8fb; --card:#fff; --txt:#242a31; --muted:#6b7280; --line:#e5e7eb;
+            --brand:#2563eb; --brand-weak:#dbeafe; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+            --radius:14px;
+        }
+        html,body{height:100%}
+        body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,'Noto Sans KR',Roboto,Arial,sans-serif}
+        .wrap{max-width:1200px;margin:28px auto;padding:0 16px}
+        .hstack{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+        .grid{display:grid;gap:16px}
+        .grid.cols-2{grid-template-columns:1fr 1fr}
+        .grid.cols-4{grid-template-columns:repeat(4,1fr)}
+        @media (max-width:1024px){.grid.cols-4{grid-template-columns:repeat(2,1fr)}}
+        @media (max-width:768px){.grid.cols-2,.grid.cols-4{grid-template-columns:1fr}}
+
+        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 4px 18px rgba(0,0,0,.04)}
+        .card .hd{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
+        .card .bd{padding:16px}
+        .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .toolbar .right{margin-left:auto;display:flex;gap:8px}
+
+        /* 폼 */
+        .form-grid{display:grid;gap:12px;grid-template-columns:repeat(12,1fr)}
+        .form-item{display:flex;flex-direction:column;gap:6px}
+        .form-item label{font-size:12px;color:var(--muted)}
+        .form-item select,.form-item input{
+            padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:14px
+        }
+        .form-item.x2{grid-column:span 2}
+        .form-item.x3{grid-column:span 3}
+        .form-item.x6{grid-column:span 6}
+        .form-item.x12{grid-column:span 12}
+        @media (max-width:768px){.form-item{grid-column:span 12 !important}}
+
+        /* 버튼 */
+        .btn{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer}
+        .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+        .btn.ghost{background:#fff}
+        .btn.success{background:var(--ok);border-color:var(--ok);color:#fff}
+
+        /* KPI */
+        .kpi{display:flex;flex-direction:column;gap:8px;padding:14px}
+        .kpi .label{color:var(--muted);font-size:12px}
+        .kpi .value{font-size:28px;font-weight:800}
+        .kpi .meta{font-size:12px;color:var(--muted)}
+
+        /* 표 */
+        table{width:100%;border-collapse:collapse}
+        thead th{font-size:12px;color:#6b7280;text-align:left;padding:12px;border-bottom:1px solid var(--line);background:#fafafa}
+        tbody td{padding:12px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}
+        tbody tr:hover{background:#fafcff}
+        .ellipsis{max-width:380px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+        .stars{font-size:18px;letter-spacing:2px;color:#f59e0b}
+        .muted{color:var(--muted)}
+
+        /* 페이징 */
+        .pagination{display:flex;gap:6px;justify-content:center;padding:16px}
+        .pagination button{min-width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer}
+        .pagination button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+        /* 모달 */
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+        .modal.open{display:flex}
+        .modal .dialog{background:#fff;max-width:720px;width:100%;border-radius:14px;overflow:hidden}
+        .dialog .dh{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
+        .dialog .dc{padding:16px;max-height:70vh;overflow:auto}
+        .dialog .df{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+
+        /* Toast */
+        .toast-wrap{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:60}
+        .toast{background:#111827;color:#f9fafb;padding:10px 14px;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.2);opacity:.98;transition:transform .2s ease, opacity .2s ease}
+        .toast.success{background:#065f46}
+        .toast.warn{background:#7c2d12}
+        .toast.info{background:#1f2937}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <!-- 검색/필터 -->
+    <div class="card">
+        <div class="hd">검색/필터</div>
+        <div class="bd">
+            <form id="filterForm" class="form-grid" onsubmit="return false;">
+                <div class="form-item x3">
+                    <label for="programId">프로그램</label>
+                    <select id="programId"><option value="">전체</option></select>
+                </div>
+                <div class="form-item x3">
+                    <label for="scheduleId">회차(일자)</label>
+                    <select id="scheduleId"><option value="">전체</option></select>
+                </div>
+                <div class="form-item x2">
+                    <label for="dept">운영부서</label>
+                    <select id="dept"><option value="">전체</option></select>
+                </div>
+                <div class="form-item x2">
+                    <label for="category">카테고리</label>
+                    <select id="category"><option value="">전체</option></select>
+                </div>
+                <div class="form-item x2">
+                    <label for="status">상태</label>
+                    <select id="status">
+                        <option value="">전체</option>
+                        <option value="ONGOING">진행중</option>
+                        <option value="COMPLETED">종료</option>
+                    </select>
+                </div>
+
+                <div class="form-item x3">
+                    <label for="submittedFrom">제출일(From)</label>
+                    <input type="date" id="submittedFrom">
+                </div>
+                <div class="form-item x3">
+                    <label for="submittedTo">제출일(To)</label>
+                    <input type="date" id="submittedTo">
+                </div>
+                <div class="form-item x3">
+                    <label for="ratingMin">평점(최소)</label>
+                    <input type="number" id="ratingMin" min="1" max="5" step="1" placeholder="1~5">
+                </div>
+                <div class="form-item x3">
+                    <label for="ratingMax">평점(최대)</label>
+                    <input type="number" id="ratingMax" min="1" max="5" step="1" placeholder="1~5">
+                </div>
+                <div class="form-item x6">
+                    <label for="keyword">키워드(피드백 본문)</label>
+                    <input type="text" id="keyword" placeholder="예: 강의실, 강사, 만족, 개선">
+                </div>
+
+                <div class="form-item x12 toolbar" style="margin-top:4px">
+                    <div class="hstack">
+                        <button class="btn primary" id="btnSearch">조회</button>
+                        <button class="btn ghost" id="btnReset">초기화</button>
+                    </div>
+                    <div class="right">
+                        <button class="btn" id="btnExcel">엑셀 다운로드</button>
+                        <button class="btn" id="btnPdf">PDF 리포트</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="grid cols-4" style="margin-top:16px">
+        <div class="card kpi"><div class="label">평균 평점</div><div class="value" id="kpiAvg">-</div><div class="meta">최근 조회조건 기준</div></div>
+        <div class="card kpi"><div class="label">응답 수</div><div class="value" id="kpiCount">-</div><div class="meta">제출건수</div></div>
+        <div class="card kpi"><div class="label">응답률</div><div class="value" id="kpiRate">-</div><div class="meta">응답 / 참여자</div></div>
+        <div class="card kpi"><div class="label">긍/부정 비율</div><div class="value" id="kpiSentiment">-</div><div class="meta">평점 4↑ / 2↓ 기준</div></div>
+    </div>
+
+    <!-- 차트 -->
+    <div class="grid cols-2" style="margin-top:16px">
+        <div class="card">
+            <div class="hd">회차별 평균 평점</div>
+            <div class="bd"><canvas id="chartBySchedule" height="140"></canvas></div>
+        </div>
+        <div class="card">
+            <div class="hd">평점 분포(빈도)</div>
+            <div class="bd"><canvas id="chartHistogram" height="140"></canvas></div>
+        </div>
+    </div>
+
+    <!-- 결과 목록 -->
+    <div class="card" style="margin-top:16px">
+        <div class="hd">결과 목록</div>
+        <div class="bd">
+            <div class="hstack" style="justify-content:space-between;margin-bottom:8px">
+                <div class="muted">총 <span id="totalCount">0</span>건</div>
+                <div class="hstack">
+                    <span class="muted">페이지 크기</span>
+                    <select id="pageSize" class="btn" style="padding:6px 10px;margin-left:6px">
+                        <option>10</option><option>20</option><option>50</option>
+                    </select>
+                </div>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:64px">No</th>
+                    <th>프로그램</th>
+                    <th style="width:140px">회차</th>
+                    <th style="width:120px">학번</th>
+                    <th style="width:100px">학생</th>
+                    <th style="width:90px">평점</th>
+                    <th>피드백</th>
+                    <th style="width:160px">제출일시</th>
+                    <th style="width:120px">행동</th>
+                </tr>
+                </thead>
+                <tbody id="resultBody"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="modal" id="detailModal" aria-hidden="true" role="dialog" aria-labelledby="detailTitle">
+    <div class="dialog">
+        <div class="dh" id="detailTitle">응답 상세</div>
+        <div class="dc">
+            <div class="grid cols-2">
+                <div>
+                    <div class="muted">프로그램/회차</div>
+                    <div id="dProgram" style="margin:4px 0 10px;font-weight:700">-</div>
+                    <div class="muted">학생</div>
+                    <div id="dStudent">-</div>
+                </div>
+                <div>
+                    <div class="muted">평점</div>
+                    <div class="stars" id="dStars" aria-label="rating">★★★★★</div>
+                    <div class="muted" style="margin-top:10px">제출일시</div>
+                    <div id="dSubmitted">-</div>
+                </div>
+            </div>
+            <div style="margin-top:14px">
+                <div class="muted">피드백 전문</div>
+                <div id="dFeedback" style="white-space:pre-wrap;margin-top:6px">-</div>
+            </div>
+        </div>
+        <div class="df">
+            <a class="btn" id="btnGoProgram" href="#" target="_blank" rel="noopener">프로그램 상세</a>
+            <button class="btn primary" onclick="closeDetail()">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+    /* =========================
+       순수 JS: 상태/유틸/이벤트/렌더
+       백엔드 엔드포인트 규약 (필요시 그대로 쓰면 됨)
+       - GET  /api/programs?mine=true
+       - GET  /api/programs/{pid}/schedules
+       - GET  /api/satisfaction-results
+       - GET  /api/satisfaction-results/{id}
+       - GET  /api/satisfaction-results/export
+       - POST /api/satisfaction-results/report
+    ========================= */
+
+    const USE_DEMO_DATA = true; // ← 백엔드 없을 때 true로 두면 더미 데이터로 동작
+
+    const state = {
+        page: 0,
+        size: 10,
+        total: 0,
+        chartBySchedule: null,
+        chartHistogram: null
+    };
+
+    const $ = (sel,root=document)=>root.querySelector(sel);
+    const $$= (sel,root=document)=>Array.from(root.querySelectorAll(sel));
+
+    /* ---------- Toast ---------- */
+    function toast(msg, type='info', ms=2200){
+        const box = $('#toastWrap');
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.textContent = msg;
+        box.appendChild(t);
+        setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateY(8px)'; }, ms);
+        setTimeout(()=>{ t.remove(); }, ms+280);
+    }
+
+    /* ---------- 유틸 ---------- */
+    function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[m])); }
+    function starText(n){ const v = Math.max(0, Math.min(5, Math.round(n||0))); return '★★★★★'.slice(0,v) + '☆☆☆☆☆'.slice(0,5-v); }
+    function renderStars(n){ const t = starText(n); const title = (n!=null) ? Number(n).toFixed(1) : '-'; return `<span class="stars" title="${title}">${t}</span>`; }
+    function pad(n){ return (n<10?'0':'')+n }
+    function formatDateTime(iso){
+        if (!iso) return '-';
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return iso;
+        const yyyy=d.getFullYear(), mm=pad(d.getMonth()+1), dd=pad(d.getDate());
+        const hh=pad(d.getHours()), mi=pad(d.getMinutes());
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    /* ---------- 초기화 ---------- */
+    document.addEventListener('DOMContentLoaded', async () => {
+        bindEvents();
+        await initSelects();
+        await search();
+        toast('만족도 결과 조회 화면이 로드되었습니다.', 'success');
+    });
+
+    function bindEvents(){
+        $('#btnSearch').addEventListener('click', search);
+        $('#btnReset').addEventListener('click', resetFilters);
+        $('#programId').addEventListener('change', onProgramChange);
+        $('#pageSize').addEventListener('change', (e)=>{ state.size=+e.target.value; state.page=0; search(); });
+        $('#btnExcel').addEventListener('click', downloadExcel);
+        $('#btnPdf').addEventListener('click', downloadPdf);
+
+        $('#detailModal').addEventListener('click', (e)=>{ if(e.target.id==='detailModal') closeDetail(); });
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDetail(); });
+    }
+
+    /* ---------- 셀렉트 데이터 ---------- */
+    async function initSelects(){
+        // 프로그램/부서/카테고리는 실제로는 API 연동. DEMO 데이터로 채움.
+        const programs = USE_DEMO_DATA ? [
+            {id:10, title:'면접 스킬업 특강'}, {id:11, title:'취업 컨설팅 데이'}, {id:12, title:'AI 프롬프트 캠프'}
+        ] : await getJson('/api/programs?mine=true', []);
+        fillSelect($('#programId'), programs, 'id', 'title', true);
+
+        const depts = USE_DEMO_DATA ? [
+            {code:'STU', name:'학생지원팀'}, {code:'JOB', name:'취업전략팀'}
+        ] : await getJson('/api/departments', []);
+        fillSelect($('#dept'), depts, 'code', 'name', true);
+
+        const cats = USE_DEMO_DATA ? [
+            {code:'CAREER', name:'진로/취업'}, {code:'GLOBAL', name:'국제교류'}, {code:'SW', name:'소프트웨어'}
+        ] : await getJson('/api/categories', []);
+        fillSelect($('#category'), cats, 'code', 'name', true);
+
+        await onProgramChange();
+    }
+
+    function fillSelect(sel, list, vKey, tKey, keepFirst=false){
+        if (!keepFirst) sel.innerHTML='';
+        if (keepFirst && sel.firstElementChild && sel.firstElementChild.value==='') {
+            // 첫 옵션(전체) 유지
+            sel.length = 1;
+        }
+        list.forEach(x=>{
+            const o=document.createElement('option'); o.value=x[vKey]; o.textContent=x[tKey]; sel.appendChild(o);
+        });
+    }
+
+    async function onProgramChange(){
+        const pid = $('#programId').value;
+        const sel = $('#scheduleId');
+        sel.innerHTML = '<option value="">전체</option>';
+        if (!pid) return;
+        const list = USE_DEMO_DATA ? [
+            {id:301, name:'1회차(2025-11-10 10:00)'},
+            {id:302, name:'2회차(2025-11-12 14:00)'},
+            {id:303, name:'3회차(2025-11-14 10:00)'}
+        ] : await getJson(`/api/programs/${pid}/schedules`, []);
+        fillSelect(sel, list, 'id', 'name', true);
+    }
+
+    /* ---------- 조회/가공 ---------- */
+    function getFilters(){
+        const f = {
+            programId: $('#programId').value || null,
+            scheduleId: $('#scheduleId').value || null,
+            dept: $('#dept').value || null,
+            category: $('#category').value || null,
+            status: $('#status').value || null,
+            submittedFrom: $('#submittedFrom').value || null,
+            submittedTo: $('#submittedTo').value || null,
+            ratingMin: $('#ratingMin').value || null,
+            ratingMax: $('#ratingMax').value || null,
+            keyword: $('#keyword').value.trim() || null,
+            page: state.page,
+            size: state.size
+        };
+        return Object.fromEntries(Object.entries(f).filter(([_,v])=>v!==null && v!==''));
+    }
+
+    async function search(){
+        const params = new URLSearchParams(getFilters());
+        let data;
+        if (USE_DEMO_DATA){
+            data = demoListResponse(state.page, state.size);
+        } else {
+            const res = await fetch(`/api/satisfaction-results?${params.toString()}`);
+            if(!res.ok){ toast('조회 중 오류가 발생했습니다.','warn'); return; }
+            data = await res.json();
+        }
+        renderKpis(data);
+        renderTable(data.content || []);
+        renderPagination(data.totalElements || 0);
+        renderCharts(data.chart);
+    }
+
+    function renderKpis(d){
+        $('#kpiAvg').textContent = isFinite(d.avgRating) ? d.avgRating.toFixed(2) : '-';
+        $('#kpiCount').textContent = d.count ?? 0;
+        $('#kpiRate').textContent = d.responseRate!=null ? (d.responseRate*100).toFixed(1)+'%' : '-';
+        const pos = d.posRatio!=null ? Math.round(d.posRatio*100) : null;
+        const neg = d.negRatio!=null ? Math.round(d.negRatio*100) : null;
+        $('#kpiSentiment').textContent = (pos!=null && neg!=null) ? `${pos}% / ${neg}%` : '-';
+        $('#totalCount').textContent = d.totalElements ?? (d.count ?? 0);
+    }
+
+    function renderTable(list){
+        const tbody = $('#resultBody');
+        tbody.innerHTML = '';
+        if (!list.length){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="9" class="muted" style="text-align:center;padding:28px">검색조건에 해당하는 결과가 없습니다.</td>`;
+            tbody.appendChild(tr);
+            return;
+        }
+        list.forEach((row, idx)=>{
+            const no = state.page*state.size + idx + 1;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+      <td>${no}</td>
+      <td><a class="badge" href="/operator/programs/${row.programId}" target="_blank" style="text-decoration:none;background:var(--brand-weak);padding:4px 8px;border-radius:20px;color:#1e40af">${esc(row.programTitle)}</a></td>
+      <td>${esc(row.scheduleName ?? '-')}</td>
+      <td>${esc(row.studentNoMasked ?? '-')}</td>
+      <td>${esc(row.studentNameMasked ?? '-')}</td>
+      <td>${renderStars(row.rating)}</td>
+      <td class="ellipsis" title="${esc(row.feedback ?? '')}">${esc(row.feedback ?? '')}</td>
+      <td>${formatDateTime(row.submittedAt)}</td>
+      <td><button class="btn" data-id="${row.id}">상세보기</button></td>
+    `;
+            tr.querySelector('button').addEventListener('click', ()=> openDetailById(row.id, row.programId));
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderPagination(total){
+        state.total = total;
+        const totalPages = Math.ceil(total / state.size);
+        const box = $('#pagination');
+        box.innerHTML = '';
+        if (totalPages<=1) return;
+        const mk = (label, page, active=false, disabled=false)=>{
+            const b = document.createElement('button');
+            b.textContent = label;
+            if (active) b.classList.add('active');
+            if (disabled) b.disabled = true;
+            b.addEventListener('click', ()=>{ state.page=page; search(); });
+            return b;
+        };
+        box.appendChild(mk('«', 0, false, state.page===0));
+        box.appendChild(mk('‹', Math.max(0,state.page-1), false, state.page===0));
+
+        const span = 2;
+        const totalPagesClamped = Math.max(1,totalPages);
+        const start = Math.max(0, state.page - span);
+        const end = Math.min(totalPagesClamped-1, state.page + span);
+        for (let p=start; p<=end; p++){
+            box.appendChild(mk(String(p+1), p, p===state.page));
+        }
+
+        box.appendChild(mk('›', Math.min(totalPagesClamped-1,state.page+1), false, state.page>=totalPagesClamped-1));
+        box.appendChild(mk('»', totalPagesClamped-1, false, state.page>=totalPagesClamped-1));
+    }
+
+    function renderCharts(chart){
+        const ctx1 = $('#chartBySchedule');
+        const labels1 = chart?.bySchedule?.labels ?? [];
+        const values1 = chart?.bySchedule?.values ?? [];
+        if (state.chartBySchedule){ state.chartBySchedule.destroy(); }
+        state.chartBySchedule = new Chart(ctx1, {
+            type: 'bar',
+            data: { labels: labels1, datasets: [{ label:'평균 평점', data: values1 }]},
+            options: {
+                responsive:true,
+                scales:{ y:{ beginAtZero:true, suggestedMax:5, ticks:{ stepSize:1 } } },
+                plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:(ctx)=>` ${Number(ctx.parsed.y).toFixed(2)}` } } }
+            }
+        });
+
+        const ctx2 = $('#chartHistogram');
+        const labels2 = chart?.histogram?.labels ?? [1,2,3,4,5];
+        const values2 = chart?.histogram?.values ?? [0,0,0,0,0];
+        if (state.chartHistogram){ state.chartHistogram.destroy(); }
+        state.chartHistogram = new Chart(ctx2, {
+            type:'bar',
+            data:{ labels: labels2, datasets:[{ label:'빈도', data: values2 }]},
+            options:{ responsive:true, scales:{ y:{ beginAtZero:true } }, plugins:{ legend:{ display:false } } }
+        });
+    }
+
+    /* ---------- 상세 ---------- */
+    async function openDetailById(id, programId){
+        let r;
+        if (USE_DEMO_DATA){
+            r = demoDetail(id);
+        } else {
+            const res = await fetch(`/api/satisfaction-results/${id}`);
+            if(!res.ok){ toast('상세 조회 실패','warn'); return; }
+            r = await res.json();
+        }
+        $('#detailTitle').textContent = '응답 상세';
+        $('#dProgram').textContent = `${r.programTitle ?? '-'} / ${r.scheduleName ?? '-'}`;
+        $('#dStudent').textContent = `${r.studentNoMasked ?? '-'} · ${r.studentNameMasked ?? '-'}`;
+        $('#dStars').textContent = starText(r.rating);
+        $('#dSubmitted').textContent = formatDateTime(r.submittedAt);
+        $('#dFeedback').textContent = r.feedback ?? '-';
+        $('#btnGoProgram').setAttribute('href', `/operator/programs/${programId ?? r.programId}`);
+        openDetail();
+    }
+    function openDetail(){ $('#detailModal').classList.add('open'); $('#detailModal').setAttribute('aria-hidden','false'); }
+    function closeDetail(){ $('#detailModal').classList.remove('open'); $('#detailModal').setAttribute('aria-hidden','true'); }
+
+    /* ---------- 초기화/리셋/다운로드 ---------- */
+    function resetFilters(){
+        $('#filterForm').reset();
+        state.page = 0;
+        state.size = +$('#pageSize').value || 10;
+        search();
+        toast('필터가 초기화되었습니다.','info');
+    }
+    function downloadExcel(){
+        const params = new URLSearchParams(getFilters());
+        if (USE_DEMO_DATA){ toast('데모 모드: 엑셀 다운로드 API를 흉내냅니다.','info'); return; }
+        window.location.href = `/api/satisfaction-results/export?${params.toString()}`;
+    }
+    async function downloadPdf(){
+        if (USE_DEMO_DATA){ toast('데모 모드: PDF 리포트를 흉내냅니다.','info'); return; }
+        const res = await fetch('/api/satisfaction-results/report', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(getFilters())});
+        if(!res.ok){ toast('리포트 생성 실패','warn'); return; }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='satisfaction-report.pdf'; a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    /* ---------- 공통 fetch ---------- */
+    async function getJson(url, fallback=[]){
+        try{
+            const res = await fetch(url);
+            if (!res.ok) return fallback;
+            return await res.json();
+        }catch(e){ return fallback; }
+    }
+
+    /* ---------- DEMO 데이터 ---------- */
+    function demoListResponse(page, size){
+        const all = [
+            {id:101, programId:10, programTitle:'면접 스킬업 특강', scheduleId:301, scheduleName:'1회차(2025-11-10 10:00)', studentNoMasked:'2020****', studentNameMasked:'김*현', rating:5, feedback:'강사님 예시가 실무적이었어요', submittedAt:'2025-11-07T09:31:00+09:00'},
+            {id:102, programId:10, programTitle:'면접 스킬업 특강', scheduleId:302, scheduleName:'2회차(2025-11-12 14:00)', studentNoMasked:'2019****', studentNameMasked:'박*호', rating:4, feedback:'조금 더 실습이 많았으면', submittedAt:'2025-11-07T09:50:00+09:00'},
+            {id:103, programId:11, programTitle:'취업 컨설팅 데이', scheduleId:401, scheduleName:'1회차(2025-11-08 13:00)', studentNoMasked:'2021****', studentNameMasked:'이*아', rating:3, feedback:'상담 대기 시간이 길었어요', submittedAt:'2025-11-06T16:10:00+09:00'},
+            {id:104, programId:12, programTitle:'AI 프롬프트 캠프', scheduleId:501, scheduleName:'1회차(2025-11-09 10:00)', studentNoMasked:'2022****', studentNameMasked:'최*린', rating:5, feedback:'실습 중심이라 이해가 쉬웠습니다', submittedAt:'2025-11-06T11:00:00+09:00'},
+            {id:105, programId:12, programTitle:'AI 프롬프트 캠프', scheduleId:501, scheduleName:'1회차(2025-11-09 10:00)', studentNoMasked:'2023****', studentNameMasked:'정*윤', rating:2, feedback:'노트북 성능 이슈로 랩타임 지연', submittedAt:'2025-11-06T11:05:00+09:00'},
+            {id:106, programId:11, programTitle:'취업 컨설팅 데이', scheduleId:402, scheduleName:'2회차(2025-11-10 15:00)', studentNoMasked:'2018****', studentNameMasked:'한*주', rating:4, feedback:'이력서 피드백 도움 됨', submittedAt:'2025-11-05T10:00:00+09:00'}
+        ];
+        const total = all.length;
+        const start = page*size, end = Math.min(total, start+size);
+        const content = all.slice(start, end);
+
+        // 차트용 집계(간단 버전)
+        const byScheduleMap = {};
+        all.forEach(x=>{
+            const k = x.scheduleName || '회차';
+            byScheduleMap[k] = byScheduleMap[k] || {sum:0, cnt:0};
+            byScheduleMap[k].sum += (+x.rating || 0);
+            byScheduleMap[k].cnt += 1;
+        });
+        const labels = Object.keys(byScheduleMap);
+        const values = labels.map(k=> byScheduleMap[k].cnt ? +(byScheduleMap[k].sum/byScheduleMap[k].cnt).toFixed(2) : 0);
+
+        const hist = [0,0,0,0,0];
+        all.forEach(x=>{ const r=Math.round(x.rating||0); if (r>=1 && r<=5) hist[r-1]++; });
+
+        const avg = all.reduce((a,c)=>a+(c.rating||0),0)/total;
+        const pos = all.filter(x=>x.rating>=4).length / total;
+        const neg = all.filter(x=>x.rating<=2).length / total;
+
+        return {
+            content, totalElements: total,
+            avgRating: +avg.toFixed(2),
+            count: total,
+            responseRate: 0.82, // 데모 값
+            posRatio: +pos.toFixed(2),
+            negRatio: +neg.toFixed(2),
+            chart: { bySchedule: {labels, values}, histogram:{labels:[1,2,3,4,5], values:hist} }
+        };
+    }
+
+    function demoDetail(id){
+        const base = demoListResponse(0,50).content.find(x=>x.id===id) || demoListResponse(0,50).content[0];
+        return base;
+    }
+</script>
+</body>
+</html>

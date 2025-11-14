@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>만족도 결과 조회</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>상담사 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/schedule}">
+                                <i class="bi bi-calendar3"></i> 일정 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/reservations}">
+                                <i class="bi bi-check-circle"></i> 예약 승인
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/records}">
+                                <i class="bi bi-journal-text"></i> 상담일지
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/counselor/history}">
+                                <i class="bi bi-clock-history"></i> 상담 이력
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/counselor/satisfaction}">
+                                <i class="bi bi-star"></i> 만족도 결과
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">만족도 결과 조회</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">엑셀 다운로드</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 만족도 요약 -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            전체 평균 만족도</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.5/5.0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-star-fill text-primary" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            응답률</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">85%</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-clipboard-check text-success" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            총 응답 수</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">36건</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-chat-square-text text-info" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            재이용 의향</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">92%</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-arrow-repeat text-warning" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 필터 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <label class="form-label">상담 유형</label>
+                                <select class="form-select" id="counselingType">
+                                    <option value="">전체</option>
+                                    <option value="CAREER">진로상담</option>
+                                    <option value="ACADEMIC">학업상담</option>
+                                    <option value="PSYCHOLOGICAL">심리상담</option>
+                                    <option value="EMPLOYMENT">취업상담</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">세부 분류</label>
+                                <select class="form-select" id="subField">
+                                    <option value="">전체</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">기간</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control">
+                                    <span class="input-group-text">~</span>
+                                    <input type="date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">만족도</label>
+                                <select class="form-select">
+                                    <option value="">전체</option>
+                                    <option value="5">5점 (매우 만족)</option>
+                                    <option value="4">4점 (만족)</option>
+                                    <option value="3">3점 (보통)</option>
+                                    <option value="2">2점 (불만족)</option>
+                                    <option value="1">1점 (매우 불만족)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary w-100">검색</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 차트 영역 -->
+                <div class="row mb-4">
+                    <div class="col-lg-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">만족도 분포</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="satisfactionChart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">월별 만족도 추이</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="monthlyChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 상세 만족도 결과 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">문항별 만족도 결과</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>문항</th>
+                                        <th>평균 점수</th>
+                                        <th>5점</th>
+                                        <th>4점</th>
+                                        <th>3점</th>
+                                        <th>2점</th>
+                                        <th>1점</th>
+                                        <th>응답률</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>전반적인 상담 만족도</td>
+                                        <td><strong>4.5</strong></td>
+                                        <td>20건 (55%)</td>
+                                        <td>12건 (33%)</td>
+                                        <td>3건 (8%)</td>
+                                        <td>1건 (3%)</td>
+                                        <td>0건 (0%)</td>
+                                        <td>36/42 (86%)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>상담사의 전문성</td>
+                                        <td><strong>4.7</strong></td>
+                                        <td>25건 (69%)</td>
+                                        <td>9건 (25%)</td>
+                                        <td>2건 (6%)</td>
+                                        <td>0건 (0%)</td>
+                                        <td>0건 (0%)</td>
+                                        <td>36/42 (86%)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>문제 해결 도움 정도</td>
+                                        <td><strong>4.3</strong></td>
+                                        <td>18건 (50%)</td>
+                                        <td>13건 (36%)</td>
+                                        <td>4건 (11%)</td>
+                                        <td>1건 (3%)</td>
+                                        <td>0건 (0%)</td>
+                                        <td>36/42 (86%)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 만족도 상세 목록 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">만족도 조사 목록</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>상담일</th>
+                                        <th>학생명</th>
+                                        <th>상담유형</th>
+                                        <th>전반만족도</th>
+                                        <th>전문성</th>
+                                        <th>도움정도</th>
+                                        <th>재이용의향</th>
+                                        <th>제출일</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2024-01-15</td>
+                                        <td>김학생</td>
+                                        <td>진로상담</td>
+                                        <td><span class="badge bg-success">5점</span></td>
+                                        <td><span class="badge bg-success">5점</span></td>
+                                        <td><span class="badge bg-primary">4점</span></td>
+                                        <td><span class="badge bg-success">예</span></td>
+                                        <td>2024-01-16</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#satisfactionDetailModal" data-id="1">상세</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024-01-14</td>
+                                        <td>이학생</td>
+                                        <td>학업상담</td>
+                                        <td><span class="badge bg-primary">4점</span></td>
+                                        <td><span class="badge bg-success">5점</span></td>
+                                        <td><span class="badge bg-primary">4점</span></td>
+                                        <td><span class="badge bg-success">예</span></td>
+                                        <td>2024-01-15</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#satisfactionDetailModal" data-id="2">상세</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2024-01-10</td>
+                                        <td>최학생</td>
+                                        <td>취업상담</td>
+                                        <td><span class="badge bg-success">5점</span></td>
+                                        <td><span class="badge bg-success">5점</span></td>
+                                        <td><span class="badge bg-success">5점</span></td>
+                                        <td><span class="badge bg-success">예</span></td>
+                                        <td>2024-01-11</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#satisfactionDetailModal" data-id="3">상세</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 페이지네이션 -->
+                        <nav>
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">이전</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">다음</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 만족도 상세 조회 모달 -->
+    <div class="modal fade" id="satisfactionDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">만족도 조사 상세 결과</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>학생명:</strong> 김학생 (202012345)
+                        </div>
+                        <div class="col-md-6">
+                            <strong>상담일:</strong> 2024년 1월 15일
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>상담유형:</strong> 진로상담
+                        </div>
+                        <div class="col-md-6">
+                            <strong>제출일:</strong> 2024년 1월 16일
+                        </div>
+                    </div>
+                    <hr>
+                    
+                    <div class="mb-4">
+                        <h6><strong>1. 전반적인 상담 만족도는 어떠셨나요?</strong></h6>
+                        <p class="ms-3">
+                            <span class="badge bg-success fs-6">5점 (매우 만족)</span>
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><strong>2. 상담사의 전문성은 어떠셨나요?</strong></h6>
+                        <p class="ms-3">
+                            <span class="badge bg-success fs-6">5점 (매우 우수)</span>
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><strong>3. 상담이 문제 해결에 도움이 되었나요?</strong></h6>
+                        <p class="ms-3">
+                            <span class="badge bg-primary fs-6">4점 (도움됨)</span>
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6><strong>4. 향후 상담 서비스를 다시 이용하실 의향이 있나요?</strong></h6>
+                        <p class="ms-3">
+                            <span class="badge bg-success">예, 다시 이용하겠습니다</span>
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6><strong>5. 추가 의견이나 개선사항</strong></h6>
+                        <div class="border p-3 bg-light">
+                            상담사님이 친절하고 전문적이어서 많은 도움이 되었습니다. 
+                            구체적인 조언을 주셔서 감사합니다. 
+                            다음에도 진로 관련 고민이 있으면 꼭 상담받고 싶습니다.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <script>
+        // 만족도 분포 차트
+        const satisfactionChart = toastui.Chart.pieChart({
+            el: document.getElementById('satisfactionChart'),
+            data: {
+                categories: ['5점', '4점', '3점', '2점', '1점'],
+                series: [
+                    { name: '5점', data: 20 },
+                    { name: '4점', data: 12 },
+                    { name: '3점', data: 3 },
+                    { name: '2점', data: 1 },
+                    { name: '1점', data: 0 }
+                ]
+            },
+            options: {
+                chart: { width: 400, height: 300 }
+            }
+        });
+
+        // 월별 만족도 추이 차트
+        const monthlyChart = toastui.Chart.lineChart({
+            el: document.getElementById('monthlyChart'),
+            data: {
+                categories: ['10월', '11월', '12월', '1월'],
+                series: [{
+                    name: '평균 만족도',
+                    data: [4.2, 4.3, 4.4, 4.5]
+                }]
+            },
+            options: {
+                chart: { width: 400, height: 300 },
+                yAxis: { min: 3.5, max: 5 },
+                series: { spline: true }
+            }
+        });
+
+        // 상담 유형 변경 시 세부 분류 업데이트
+        document.getElementById('counselingType').addEventListener('change', function() {
+            const subField = document.getElementById('subField');
+            const selectedType = this.value;
+            
+            // 기존 옵션 제거
+            subField.innerHTML = '<option value="">전체</option>';
+            
+            // 선택된 유형에 따른 세부 분류 추가
+            const subFields = {
+                'PSYCHOLOGICAL': ['스트레스 관리', '대인관계'],
+                'CAREER': ['전공 선택', '진로 계획'],
+                'EMPLOYMENT': ['이력서 작성', '면접 준비'],
+                'LEARNING': ['학습법', '시간 관리']
+            };
+            
+            if (subFields[selectedType]) {
+                subFields[selectedType].forEach(field => {
+                    const option = document.createElement('option');
+                    option.value = field;
+                    option.textContent = field;
+                    subField.appendChild(option);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

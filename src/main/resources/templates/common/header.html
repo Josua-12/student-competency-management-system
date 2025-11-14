@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<header th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <!-- 로고/웹사이트명 -->
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <img th:src="@{/images/scms-logo.png}"
+                 alt="scms 로고"
+                 class="me-2"
+                 style="height: 30px;">
+            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
+        </a>
+
+        <!-- 햄버거 토글 버튼 (모바일) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- 네비게이션 메뉴 -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/main}">홈</a>
+                </li>
+
+                <!-- 역량진단 드롭다운 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        역량진단
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/assessment}">역량진단 시작</a></li>
+                        <li><a class="dropdown-item" th:href="@{/competency/result}">진단 결과 확인</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/competency}">핵심역량</a>
+                </li>
+
+                <!-- 상담 드롭다운 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        상담
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/consultation/reserve}">상담 예약</a></li>
+                        <li><a class="dropdown-item" th:href="@{/consultation/history}">내 예약 조회</a></li>
+                    </ul>
+                </li>
+
+                <!-- 비교과 프로그램 드롭다운 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        비교과 프로그램
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/dashboard?type=internal}">교내 프로그램</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard?type=external}">교외 프로그램</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}">로그아웃</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+</html>

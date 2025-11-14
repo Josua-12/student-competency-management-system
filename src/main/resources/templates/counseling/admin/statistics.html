@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상담 통계</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sortable { cursor: pointer; }
+        .sortable:hover { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>관리자 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/approvals}">
+                                <i class="bi bi-check-circle"></i> 상담 승인 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/admin/statistics}">
+                                <i class="bi bi-bar-chart"></i> 상담 통계
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/settings}">
+                                <i class="bi bi-gear"></i> 기초 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/schedules}">
+                                <i class="bi bi-calendar-week"></i> 상담사 일정 관리
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">상담 통계</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">엑셀 다운로드</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 기간 선택 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label">조회 기간</label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" value="2024-01-01">
+                                    <span class="input-group-text">~</span>
+                                    <input type="date" class="form-control" value="2024-01-31">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100">조회</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 전체 현황 카드 -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            총 상담 건수</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">156건</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-chat-dots text-primary" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            완료된 상담</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">142건</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            평균 만족도</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.3/5.0</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-star-fill text-info" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            활성 상담사</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">8명</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-people text-warning" style="font-size: 2rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 차트 영역 -->
+                <div class="row mb-4">
+                    <!-- 상담 유형별 통계 -->
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">상담 유형별 통계</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="typeChart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 월별 상담 현황 -->
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">월별 상담 현황</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="monthlyChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 상담사별 현황 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold text-primary">상담사별 현황</h6>
+                                <div>
+                                    <select class="form-select form-select-sm d-inline-block" style="width: auto;" id="viewType">
+                                        <option value="ALL">전체보기</option>
+                                        <option value="COUNSELOR">상담사별</option>
+                                        <option value="FIELD">전문분야별</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="counselorTable">
+                                        <thead>
+                                            <tr>
+                                                <th>상담사명</th>
+                                                <th>전문분야</th>
+                                                <th class="sortable" data-sort="total">총 상담 건수 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="completed">완료 건수 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="cancelled">취소 건수 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="rejected">거부 건수 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="satisfaction">평균 만족도 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="response">만족도 응답률 <i class="bi bi-arrow-down-up"></i></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>김상담</td>
+                                                <td>진로상담</td>
+                                                <td>45</td>
+                                                <td>42</td>
+                                                <td>2</td>
+                                                <td>1</td>
+                                                <td>4.5</td>
+                                                <td>85</td>
+                                            </tr>
+                                            <tr>
+                                                <td>이상담</td>
+                                                <td>학업상담</td>
+                                                <td>38</td>
+                                                <td>35</td>
+                                                <td>1</td>
+                                                <td>2</td>
+                                                <td>4.2</td>
+                                                <td>78</td>
+                                            </tr>
+                                            <tr>
+                                                <td>박상담</td>
+                                                <td>심리상담</td>
+                                                <td>32</td>
+                                                <td>30</td>
+                                                <td>1</td>
+                                                <td>1</td>
+                                                <td>4.6</td>
+                                                <td>90</td>
+                                            </tr>
+                                            <tr>
+                                                <td>최상담</td>
+                                                <td>취업상담</td>
+                                                <td>41</td>
+                                                <td>35</td>
+                                                <td>3</td>
+                                                <td>3</td>
+                                                <td>4.1</td>
+                                                <td>72</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- 페이지네이션 -->
+                                <nav>
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">이전</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">다음</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 만족도 상세 통계 -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">상담 만족도 분포</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="satisfactionChart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">상담 상태별 현황</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="statusChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <script>
+        // 상담 유형별 통계 차트
+        const typeChart = toastui.Chart.pieChart({
+            el: document.getElementById('typeChart'),
+            data: {
+                categories: ['진로상담', '학업상담', '심리상담', '취업상담'],
+                series: [
+                    { name: '진로상담', data: 45 },
+                    { name: '학업상담', data: 38 },
+                    { name: '심리상담', data: 32 },
+                    { name: '취업상담', data: 41 }
+                ]
+            },
+            options: {
+                chart: { width: 400, height: 300 }
+            }
+        });
+
+        // 월별 상담 현황 차트
+        const monthlyChart = toastui.Chart.lineChart({
+            el: document.getElementById('monthlyChart'),
+            data: {
+                categories: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                series: [{
+                    name: '상담 건수',
+                    data: [25, 30, 28, 35, 32, 38]
+                }]
+            },
+            options: {
+                chart: { width: 400, height: 300 },
+                series: { spline: true }
+            }
+        });
+
+        // 만족도 분포 차트
+        const satisfactionChart = toastui.Chart.columnChart({
+            el: document.getElementById('satisfactionChart'),
+            data: {
+                categories: ['1점', '2점', '3점', '4점', '5점'],
+                series: [{
+                    name: '응답 수',
+                    data: [2, 5, 15, 45, 55]
+                }]
+            },
+            options: {
+                chart: { width: 400, height: 200 }
+            }
+        });
+
+        // 상담 상태별 현황 차트
+        const statusChart = toastui.Chart.pieChart({
+            el: document.getElementById('statusChart'),
+            data: {
+                categories: ['완료', '진행중', '취소', '거부'],
+                series: [
+                    { name: '완료', data: 142 },
+                    { name: '진행중', data: 8 },
+                    { name: '취소', data: 4 },
+                    { name: '거부', data: 2 }
+                ]
+            },
+            options: {
+                chart: { width: 400, height: 200 }
+            }
+        });
+
+        // 테이블 정렬 기능
+        document.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', function() {
+                const sortType = this.getAttribute('data-sort');
+                const table = document.getElementById('counselorTable');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                const isAsc = this.classList.contains('asc');
+                
+                // 모든 헤더에서 정렬 클래스 제거
+                document.querySelectorAll('.sortable').forEach(h => {
+                    h.classList.remove('asc', 'desc');
+                });
+                
+                // 현재 헤더에 정렬 클래스 추가
+                this.classList.add(isAsc ? 'desc' : 'asc');
+                
+                rows.sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    switch(sortType) {
+                        case 'total':
+                            aVal = parseInt(a.cells[2].textContent);
+                            bVal = parseInt(b.cells[2].textContent);
+                            break;
+                        case 'completed':
+                            aVal = parseInt(a.cells[3].textContent);
+                            bVal = parseInt(b.cells[3].textContent);
+                            break;
+                        case 'cancelled':
+                            aVal = parseInt(a.cells[4].textContent);
+                            bVal = parseInt(b.cells[4].textContent);
+                            break;
+                        case 'rejected':
+                            aVal = parseInt(a.cells[5].textContent);
+                            bVal = parseInt(b.cells[5].textContent);
+                            break;
+                        case 'satisfaction':
+                            aVal = parseFloat(a.cells[6].textContent);
+                            bVal = parseFloat(b.cells[6].textContent);
+                            break;
+                        case 'response':
+                            aVal = parseInt(a.cells[7].textContent);
+                            bVal = parseInt(b.cells[7].textContent);
+                            break;
+                    }
+                    
+                    return isAsc ? bVal - aVal : aVal - bVal;
+                });
+                
+                // 정렬된 행들을 다시 추가
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    </script>
+</body>
+</html>

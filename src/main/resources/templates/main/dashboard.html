@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(
+        ~{::title},
+        ~{::content},
+        ~{::css},
+        ~{::scripts}
+      )}">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 대시보드</title>
+    <th:block th:fragment="css">
+        <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="main-dashboard-container">
+        <!-- 사용자 정보 -->
+        <section class="user-info-section">
+            <div class="user-info-card">
+                <div class="user-header">
+                    <div style="width:80px;height:80px;background:linear-gradient(135deg,#8ca0f4 0%,#bec7f3 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:1rem;box-shadow:0 4px 12px rgba(102,126,234,0.3);">
+                        <span id="user-initial" style="color:white;font-size:2rem;font-weight:bold;"></span>
+                    </div>
+                    <div class="user-text">
+                        <h2 id="user-name" class="user-name"></h2>
+                        <p id="user-email" class="user-email"></p>
+                    </div>
+                </div>
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">마일리지</span>
+                        <span id="user-mileage" class="stat-value">0점</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">나의 비교과</span>
+                        <span id="user-program-count" class="stat-value">0건</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 메인 배너 -->
+        <section class="main-banner">
+            <img src="/images/main-banner.png" alt="메인 배너" class="banner-image">
+        </section>
+
+        <!-- 핵심역량 -->
+        <section class="dashboard-section competency-section">
+            <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-chart-radar"></i> 핵심역량</h3>
+                <a href="/competency" class="section-link">더보기 →</a>
+            </div>
+            <div class="competency-chart"><canvas id="competencyChart"></canvas></div>
+            <div id="competency-list" class="competency-scores"></div>
+        </section>
+
+        <!-- 상담 -->
+        <section class="dashboard-section consultation-section">
+            <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-comments"></i> 상담</h3>
+                <th:block sec:authorize="hasRole('ROLE_STUDENT')">
+                    <a href="/counseling/student" class="section-link">더보기 →</a>
+                </th:block>
+                <th:block sec:authorize="hasRole('ROLE_COUNSELOR')">
+                    <a href="/counseling/counselor" class="section-link">더보기 →</a>
+                </th:block>
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a href="/counseling/admin" class="section-link">더보기 →</a>
+                </th:block>
+            </div>
+            <div class="consultation-actions">
+                <a href="/counseling/student" class="action-btn primary-btn">
+                    <i class="fas fa-calendar-plus"></i> 상담 예약 및 안내
+                </a>
+                <a href="/counseling/student/status" class="action-btn secondary-btn">
+                    <i class="fas fa-history"></i> 내 예약 조회
+                </a>
+            </div>
+            <div id="consultation-history" class="consultation-history"></div>
+        </section>
+
+        <!-- 비교과 프로그램 -->
+        <section class="dashboard-section program-section">
+            <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-book"></i> 비교과 프로그램</h3>
+                <a href="/dashboard" class="section-link">전체보기 →</a>
+            </div>
+            <div id="recent-programs" class="programs-container"></div>
+        </section>
+    </div>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/dashboard.js}"></script>
+</th:block>
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>테스트</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>대시보드 테스트 - 여기까지 오면 성공!</h1>-->
+<!--</body>-->
+<!--</html>-->

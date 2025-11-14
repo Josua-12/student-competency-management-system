@@ -1,0 +1,93 @@
+/* ===== admin/competency.css ===== */
+
+/* 1. 페이지 헤더 (assessment-history.css 재사용) */
+.page-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+.breadcrumb .breadcrumb-item a {
+    color: #6c757d;
+}
+
+/* 2. 역량 트리 카드 */
+.competency-tree-card .card-body {
+    /* 트리가 길어질 경우 카드 내에서 스크롤 */
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* 3. Toast UI Tree 아이콘 커스텀 (Font Awesome 사용) */
+.tui-tree-ico-opened::before,
+.tui-tree-ico-closed::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 0.9em;
+}
+.tui-tree-ico-opened::before {
+    content: "\f07c"; /* fas fa-folder-open */
+}
+.tui-tree-ico-closed::before {
+    content: "\f07b"; /* fas fa-folder */
+}
+.tui-tree-ico-file::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 400;
+    content: "\f15c"; /* far fa-file-alt */
+    font-size: 0.9em;
+}
+.tui-tree-node.tui-tree-selected > .tui-tree-content {
+    background-color: var(--bs-primary-light, #e0e7ff) !important;
+    border: 1px solid var(--bs-primary, #667eea);
+}
+
+/* 4. 상세정보 Placeholder 카드 */
+.placeholder-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px; /* 최소 높이 */
+    border-style: dashed;
+    background-color: #f8f9fa;
+}
+
+/* 5. 관리자용 테이블 (assessment-history.css와 유사) */
+.admin-table thead th {
+    background-color: #f0f2f5;
+    color: #555;
+    font-weight: 600;
+    vertical-align: middle;
+}
+.admin-table tbody td {
+    vertical-align: middle;
+}
+.admin-table .text-start {
+    text-align: left !important;
+}
+
+/* 6. 폼 스타일 */
+.form-label {
+    font-weight: 600;
+}
+
+/* 모달 내부 폼 섹션 제목 */
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--bs-primary, #667eea);
+    border-bottom: 2px solid var(--bs-primary-light, #e0e7ff);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+/* 문항 항목(보기) 한 줄 */
+.option-row {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>진로상담</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    <div class="container-fluid">
+        <div class="container">
+            <!-- 페이지 상단 영역 -->
+            <div class="row mt-4 mb-4">
+                <div class="col-12">
+                    <h2 class="fw-bold mb-4">일반상담·컨설팅</h2>
+                    
+                    <!-- 라디오 탭 -->
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio1" value="state">
+                            <label class="form-check-label" for="radio1">신청현황</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio2" value="GeneralCnsl">
+                            <label class="form-check-label" for="radio2">일반상담·컨설팅 안내</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio3" value="psycho">
+                            <label class="form-check-label" for="radio3">심리상담</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio4" value="career" checked>
+                            <label class="form-check-label" for="radio4">진로상담</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio5" value="job">
+                            <label class="form-check-label" for="radio5">취업상담</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="counselingType" id="radio6" value="learning">
+                            <label class="form-check-label" for="radio6">학습상담</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메인 콘텐츠 -->
+            <div class="row">
+                <div class="col-12">
+                    <!-- 진로상담 소개 -->
+                    <div class="bg-light p-4 rounded mb-4">
+                        <h3 class="fw-bold mb-3">진로상담이란?</h3>
+                        <p class="mb-0">진로 전문가와의 1:1 상담을 통해 자신의 적성과 흥미를 탐색하고, 미래 진로 방향을 설정하여 체계적인 진로 계획을 수립하는 상담 프로그램입니다.<br>진로를 설정하거나 취업 방향에 대한 가이드가 필요한 경우 실시간 40분 진행됩니다.</p>
+                    </div>
+
+                    <!-- 유의사항 -->
+                    <div class="alert alert-warning mb-4">
+                        <h4 class="alert-heading h5">진로상담 유의사항</h4>
+                        <div class="fw-bold mb-2">
+                            - 1인당 월 2회 신청 가능<br>
+                            - 매주 월요일 오전 8시 차주 컨설팅 일정 신청 오픈<br>
+                            - 진로개발 사전설문지 제출 필수(공지사항에서 다운 가능)
+                        </div>
+                        <div class="text-danger">
+                            * 제출하시는 서류는 개인정보(전화번호,집주소,주민번호,이메일 등)을 반드시 삭제바랍니다.<br>
+                            개인정보가 포함된 서류로는 컨설팅 진행 불가합니다.
+                        </div>
+                        <div class="mt-2">
+                            ✔ 서류보완 및 컨설팅 취소는 신청하신 컨설팅 일정의 하루 전날 오전 9시까지 가능합니다.<br>
+                            보완 기한이 지난 후 서류 변경은 불가하며, 필수 서류요건이 반영되지 않은 경우 신청이 취소됩니다.<br>
+                            기한 이후 취소 또는 컨설팅 시작 시간 이후 10분 간 부재 시 '불참'으로 간주되며, 불참일로 부터 30일간 컨설팅 신청 제한 패널티가 부과됩니다.
+                        </div>
+                    </div>
+
+                    <!-- 일정 선택 -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h3 class="fw-bold mb-4">컨설팅이 가능한 일정을 확인해 주세요.</h3>
+                            
+                            <!-- 필터 버튼 -->
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <button class="btn btn-outline-secondary btn-sm active">전체</button>
+                                <button class="btn btn-outline-secondary btn-sm">진로개발</button>
+                            </div>
+                            
+                            <div class="row">
+                                <!-- 대기신청 버튼 -->
+                                <div class="col-12 mb-3">
+                                    <button class="btn btn-outline-primary">대기신청</button>
+                                </div>
+                                
+                                <!-- 캘린더 -->
+                                <div class="col-lg-8 mb-4">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <button class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </button>
+                                            <h5 class="mb-0">2025/01</h5>
+                                            <button class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <table class="table table-bordered mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th class="text-center">일</th>
+                                                        <th class="text-center">월</th>
+                                                        <th class="text-center">화</th>
+                                                        <th class="text-center">수</th>
+                                                        <th class="text-center">목</th>
+                                                        <th class="text-center">금</th>
+                                                        <th class="text-center">토</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="text-center p-2">29</td>
+                                                        <td class="text-center p-2">30</td>
+                                                        <td class="text-center p-2">31</td>
+                                                        <td class="text-center p-2">01</td>
+                                                        <td class="text-center p-2">02</td>
+                                                        <td class="text-center p-2">03</td>
+                                                        <td class="text-center p-2">04</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center p-2">05</td>
+                                                        <td class="text-center p-2">06</td>
+                                                        <td class="text-center p-2">07</td>
+                                                        <td class="text-center p-2">08</td>
+                                                        <td class="text-center p-2">09</td>
+                                                        <td class="text-center p-2">10</td>
+                                                        <td class="text-center p-2">11</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center p-2">12</td>
+                                                        <td class="text-center p-2 bg-success text-white">13<br><small>10:00 진로개발</small></td>
+                                                        <td class="text-center p-2">14</td>
+                                                        <td class="text-center p-2 bg-warning">15<br><small>11:00 진로개발</small></td>
+                                                        <td class="text-center p-2">16</td>
+                                                        <td class="text-center p-2">17</td>
+                                                        <td class="text-center p-2">18</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center p-2">19</td>
+                                                        <td class="text-center p-2">20</td>
+                                                        <td class="text-center p-2">21</td>
+                                                        <td class="text-center p-2 bg-primary text-white">22<br><small>14:00 진로개발</small></td>
+                                                        <td class="text-center p-2">23</td>
+                                                        <td class="text-center p-2">24</td>
+                                                        <td class="text-center p-2">25</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 일정 목록 -->
+                                <div class="col-lg-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body d-flex align-items-center justify-content-center">
+                                            <div class="text-center">
+                                                <i class="bi bi-calendar-event fs-1 mb-3 text-muted"></i>
+                                                <p class="mb-3 text-muted">캘린더에서 일정을 선택해 주세요.</p>
+                                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reservationModal">
+                                                    <i class="bi bi-plus-circle me-2"></i>진로상담 신청
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 퀵 메뉴 -->
+        <div class="position-fixed bottom-0 end-0 p-3">
+            <div class="d-flex flex-column gap-2">
+                <button class="btn btn-secondary btn-sm" title="매뉴얼 다운로드">
+                    <i class="bi bi-download"></i> 매뉴얼
+                </button>
+                <button class="btn btn-primary btn-sm" title="메인화면으로 이동">
+                    <i class="bi bi-house"></i> 메인화면
+                </button>
+                <button class="btn btn-light btn-sm" title="페이지 상단으로 이동" onclick="window.scrollTo(0,0)">
+                    <i class="bi bi-arrow-up"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 예약 신청 모달 -->
+    <div class="modal fade" id="reservationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">진로상담 예약 신청</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <!-- 상담 유형 선택 -->
+                        <div class="mb-3">
+                            <label for="counselingCategory" class="form-label">상담 유형</label>
+                            <select class="form-select" id="counselingCategory" required>
+                                <option value="">상담 유형을 선택하세요</option>
+                                <option value="career-exploration">진로탐색</option>
+                                <option value="major-selection">전공선택</option>
+                                <option value="career-planning">진로계획</option>
+                                <option value="aptitude-test">적성검사</option>
+                                <option value="future-preparation">미래준비</option>
+                                <option value="other">기타</option>
+                            </select>
+                        </div>
+
+                        <!-- 상담 날짜 선택 -->
+                        <div class="mb-3">
+                            <label for="counselingDate" class="form-label">상담 날짜</label>
+                            <input type="date" class="form-control" id="counselingDate" required>
+                        </div>
+
+                        <!-- 상담 시간 선택 -->
+                        <div class="mb-3">
+                            <label for="counselingTime" class="form-label">상담 시간</label>
+                            <select class="form-select" id="counselingTime" required>
+                                <option value="">시간을 선택하세요</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                            </select>
+                        </div>
+
+                        <!-- 상담 내용 -->
+                        <div class="mb-3">
+                            <label for="counselingContent" class="form-label">상담 내용</label>
+                            <textarea class="form-control" id="counselingContent" rows="4" placeholder="상담받고 싶은 내용을 자세히 작성해주세요" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success">예약 신청</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

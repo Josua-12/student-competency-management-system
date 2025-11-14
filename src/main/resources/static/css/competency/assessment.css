@@ -1,0 +1,208 @@
+/* ===== assessment/dashboard.html 전용 스타일 ===== */
+
+.main-content-wrapper {
+    max-width: 1200px; /* 전체 컨테이너 너비 */
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+/* 페이지 헤더 (제목 + Breadcrumb) */
+.page-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: #6c757d;
+    text-decoration: none;
+}
+.breadcrumb .breadcrumb-item a:hover {
+    color: var(--primary-color, #007bff);
+}
+.breadcrumb .breadcrumb-item.active {
+    color: #495057;
+}
+
+/* 탭 스타일 */
+.assessment-tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-bottom: none; /* 하단 border는 .assessment-tabs에서 처리 */
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.tab-button.active {
+    color: var(--primary-color, #667eea);
+    background-color: #fff;
+    border-color: #ddd;
+    border-bottom-color: #fff; /* 활성화 탭 아래만 흰색으로 */
+    position: relative;
+    z-index: 1; /* 활성화 탭이 밑줄 위로 오도록 */
+}
+
+.tab-button:not(.active):hover {
+    color: #555;
+    background-color: #f8f9fa;
+}
+
+/* 탭 콘텐츠 wrapper */
+.tab-content-wrapper {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-top: none; /* 탭 버튼과 연결되도록 상단 border 제거 */
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    padding: 20px;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* 테이블 스타일 */
+.assessment-table {
+    width: 100%;
+    margin-bottom: 0; /* Bootstrap 기본 마진 제거 */
+    border-collapse: collapse; /* 셀 경계선 겹치지 않게 */
+}
+
+.assessment-table thead th {
+    background-color: #f0f2f5;
+    color: #555;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.assessment-table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+    color: #444;
+}
+
+.assessment-table tbody tr:last-child td {
+    border-bottom: none; /* 마지막 행 하단 border 제거 */
+}
+
+.assessment-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.assessment-table tbody td a {
+    color: var(--primary-color, #007bff);
+    text-decoration: none;
+}
+
+.assessment-table tbody td a:hover {
+    text-decoration: underline;
+}
+
+.assessment-table .btn-sm {
+    padding: 5px 12px;
+    font-size: 0.85rem;
+}
+
+/* 페이징 */
+.pagination {
+    --bs-pagination-color: #6c757d;
+    --bs-pagination-active-bg: var(--primary-color, #667eea);
+    --bs-pagination-active-border-color: var(--primary-color, #667eea);
+    --bs-pagination-hover-color: var(--primary-color, #667eea);
+    --bs-pagination-focus-bg: #e9ecef;
+    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+
+}
+.pagination .page-item.active .page-link {
+    z-index: 1; /* 활성 페이지 링크가 다른 링크 위에 오도록 */
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .main-content-wrapper {
+        padding: 20px 15px;
+    }
+    .page-title {
+        font-size: 1.5rem;
+    }
+    .assessment-tabs {
+        flex-direction: column;
+        border-bottom: none;
+    }
+    .tab-button {
+        width: 100%;
+        border-bottom: 1px solid #ddd;
+        border-radius: 0;
+    }
+    .tab-button:first-child {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+    .tab-button.active {
+        border-bottom-color: #ddd; /* 모바일에서는 활성 탭 아래에도 border 유지 */
+    }
+    .tab-content-wrapper {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    .assessment-table thead {
+        display: none; /* 모바일에서 테이블 헤더 숨김 */
+    }
+    .assessment-table tbody, .assessment-table tr, .assessment-table td {
+        display: block;
+        width: 100%;
+    }
+    .assessment-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .assessment-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    .assessment-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: calc(50% - 30px);
+        text-align: left;
+        font-weight: 600;
+        color: #555;
+    }
+    .assessment-table td:nth-of-type(1)::before { content: "번호"; }
+    .assessment-table td:nth-of-type(2)::before { content: "진단명"; }
+    .assessment-table td:nth-of-type(3)::before { content: "진단기간"; }
+    .assessment-table td:nth-of-type(4)::before { content: "진단하기"; }
+}

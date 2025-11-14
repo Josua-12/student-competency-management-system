@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기초 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{common/header :: header}"></div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>관리자 메뉴</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin}">
+                                <i class="bi bi-house-door"></i> 메인 대시보드
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/approvals}">
+                                <i class="bi bi-check-circle"></i> 상담 승인 관리
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/counseling/admin/statistics}">
+                                <i class="bi bi-bar-chart"></i> 상담 통계
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" th:href="@{/counseling/admin/settings}">
+                                <i class="bi bi-gear"></i> 기초 관리
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">기초 관리</h1>
+                </div>
+
+                <!-- 탭 네비게이션 -->
+                <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab">
+                            상담분류 관리
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="counselors-tab" data-bs-toggle="tab" data-bs-target="#counselors" type="button" role="tab">
+                            상담원 관리
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="satisfaction-tab" data-bs-toggle="tab" data-bs-target="#satisfaction" type="button" role="tab">
+                            만족도 문항 관리
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- 탭 콘텐츠 -->
+                <div class="tab-content" id="settingsTabContent">
+                    <!-- 상담분류 관리 -->
+                    <div class="tab-pane fade show active" id="categories" role="tabpanel">
+                        <div class="row">
+                            <!-- 심리상담 -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">심리상담</h6>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#subfieldModal" data-field="PSYCHOLOGICAL">
+                                            <i class="bi bi-plus"></i> 세부분류 추가
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>스트레스 관리</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>대인관계</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 진로상담 -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">진로상담</h6>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#subfieldModal" data-field="CAREER">
+                                            <i class="bi bi-plus"></i> 세부분류 추가
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>전공 선택</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>진로 계획</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox">
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 취업상담 -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">취업상담</h6>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#subfieldModal" data-field="EMPLOYMENT">
+                                            <i class="bi bi-plus"></i> 세부분류 추가
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>이력서 작성</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>면접 준비</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 학습상담 -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">학습상담</h6>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#subfieldModal" data-field="LEARNING">
+                                            <i class="bi bi-plus"></i> 세부분류 추가
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>학습법</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>시간 관리</span>
+                                                <div>
+                                                    <div class="form-check form-switch d-inline-block me-2">
+                                                        <input class="form-check-input" type="checkbox" checked>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 상담원 관리 -->
+                    <div class="tab-pane fade" id="counselors" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">상담원 관리</h5>
+                                <div>
+                                    <select class="form-select form-select-sm d-inline-block me-2" style="width: auto;" id="counselorFieldFilter">
+                                        <option value="">전체 분야</option>
+                                        <option value="PSYCHOLOGICAL">심리상담</option>
+                                        <option value="CAREER">진로상담</option>
+                                        <option value="EMPLOYMENT">취업상담</option>
+                                        <option value="LEARNING">학습상담</option>
+                                    </select>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">
+                                        <i class="bi bi-plus"></i> 상담원 추가
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="counselorTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="sortable" data-sort="name">이름 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="email">이메일 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th>전문분야</th>
+                                                <th>전문영역</th>
+                                                <th class="sortable" data-sort="status">활성상태 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th class="sortable" data-sort="date">등록일 <i class="bi bi-arrow-down-up"></i></th>
+                                                <th>관리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr data-field="CAREER">
+                                                <td>김상담</td>
+                                                <td>kim.counselor@university.ac.kr</td>
+                                                <td>진로상담</td>
+                                                <td>IT, 공학계열 진로 지도</td>
+                                                <td><span class="badge bg-success">활성</span></td>
+                                                <td>2024-01-01</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
+                                                    <button class="btn btn-sm btn-outline-warning">비활성</button>
+                                                </td>
+                                            </tr>
+                                            <tr data-field="LEARNING">
+                                                <td>이상담</td>
+                                                <td>lee.counselor@university.ac.kr</td>
+                                                <td>학습상담</td>
+                                                <td>학습법, 시간관리, 학업계획</td>
+                                                <td><span class="badge bg-success">활성</span></td>
+                                                <td>2024-01-01</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
+                                                    <button class="btn btn-sm btn-outline-warning">비활성</button>
+                                                </td>
+                                            </tr>
+                                            <tr data-field="PSYCHOLOGICAL">
+                                                <td>박상담</td>
+                                                <td>park.counselor@university.ac.kr</td>
+                                                <td>심리상담</td>
+                                                <td>스트레스 관리, 대인관계</td>
+                                                <td><span class="badge bg-danger">비활성</span></td>
+                                                <td>2024-01-01</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
+                                                    <button class="btn btn-sm btn-outline-success">활성</button>
+                                                </td>
+                                            </tr>
+                                            <tr data-field="EMPLOYMENT">
+                                                <td>최상담</td>
+                                                <td>choi.counselor@university.ac.kr</td>
+                                                <td>취업상담</td>
+                                                <td>이력서 작성, 면접 준비</td>
+                                                <td><span class="badge bg-success">활성</span></td>
+                                                <td>2024-01-02</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
+                                                    <button class="btn btn-sm btn-outline-warning">비활성</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- 페이지네이션 -->
+                                <nav>
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">이전</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">다음</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 만족도 문항 관리 -->
+                    <div class="tab-pane fade" id="satisfaction" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">만족도 문항 관리</h5>
+                                <div>
+                                    <select class="form-select d-inline-block me-2" style="width: auto;" id="fieldFilter">
+                                        <option value="ALL">전체 분야</option>
+                                        <option value="PSYCHOLOGICAL">심리상담</option>
+                                        <option value="CAREER">진로상담</option>
+                                        <option value="EMPLOYMENT">취업상담</option>
+                                        <option value="LEARNING">학습상담</option>
+                                    </select>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#questionModal">
+                                        <i class="bi bi-plus"></i> 문항 추가
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> 시스템 기본 질문은 모든 분야에 공통으로 적용되며, 수정 및 삭제가 불가능합니다.
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>순서</th>
+                                                <th>분야</th>
+                                                <th>문항 내용</th>
+                                                <th>문항 유형</th>
+                                                <th>시스템 기본</th>
+                                                <th>사용여부</th>
+                                                <th>관리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td><span class="badge bg-secondary">공통</span></td>
+                                                <td>전반적인 상담 만족도는 어떠셨나요?</td>
+                                                <td>5점 척도</td>
+                                                <td><i class="bi bi-check-circle text-success"></i></td>
+                                                <td><span class="badge bg-success">사용</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>수정 불가</button>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>삭제 불가</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td><span class="badge bg-secondary">공통</span></td>
+                                                <td>상담사의 전문성은 어떠셨나요?</td>
+                                                <td>5점 척도</td>
+                                                <td><i class="bi bi-check-circle text-success"></i></td>
+                                                <td><span class="badge bg-success">사용</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>수정 불가</button>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>삭제 불가</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td><span class="badge bg-info">심리상담</span></td>
+                                                <td>심리적 안정감을 얻으셨나요?</td>
+                                                <td>5점 척도</td>
+                                                <td><i class="bi bi-x-circle text-muted"></i></td>
+                                                <td><span class="badge bg-success">사용</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#questionModal">수정</button>
+                                                    <button class="btn btn-sm btn-outline-danger">삭제</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>4</td>
+                                                <td><span class="badge bg-warning">진로상담</span></td>
+                                                <td>진로 방향성이 명확해졌나요?</td>
+                                                <td>5점 척도</td>
+                                                <td><i class="bi bi-x-circle text-muted"></i></td>
+                                                <td><span class="badge bg-success">사용</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#questionModal">수정</button>
+                                                    <button class="btn btn-sm btn-outline-danger">삭제</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>5</td>
+                                                <td><span class="badge bg-secondary">공통</span></td>
+                                                <td>추가 의견이나 개선사항이 있다면 자유롭게 작성해주세요</td>
+                                                <td>주관식</td>
+                                                <td><i class="bi bi-check-circle text-success"></i></td>
+                                                <td><span class="badge bg-success">사용</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>수정 불가</button>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>삭제 불가</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 세부 상담분류 모달 -->
+    <div class="modal fade" id="subfieldModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">세부 상담분류 등록/수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">상위 분야</label>
+                            <input type="text" class="form-control" id="parentField" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">세부분류명 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">설명</label>
+                            <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="subfieldActive" checked>
+                                <label class="form-check-label" for="subfieldActive">
+                                    활성화
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상담원 모달 -->
+    <div class="modal fade" id="counselorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담원 등록/수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">이름 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">이메일 <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">전문분야 <span class="text-danger">*</span></label>
+                            <select class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="PSYCHOLOGICAL">심리상담</option>
+                                <option value="CAREER">진로상담</option>
+                                <option value="EMPLOYMENT">취업상담</option>
+                                <option value="LEARNING">학습상담</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">전문영역</label>
+                            <textarea class="form-control" rows="3" placeholder="상담사의 전문영역을 상세히 입력하세요"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="counselorActive" checked>
+                                <label class="form-check-label" for="counselorActive">
+                                    활성 상태
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 만족도 문항 모달 -->
+    <div class="modal fade" id="questionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">만족도 문항 등록/수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">순서 <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" min="1" required>
+                            </div>
+                            <div class="col-md-9 mb-3">
+                                <label class="form-label">문항 유형 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="questionType" required>
+                                    <option value="">선택하세요</option>
+                                    <option value="SCALE">5점 척도</option>
+                                    <option value="MULTIPLE">객관식</option>
+                                    <option value="TEXT">주관식</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">적용 분야 <span class="text-danger">*</span></label>
+                            <select class="form-select" required>
+                                <option value="">선택하세요</option>
+                                <option value="ALL">전체 분야 (공통)</option>
+                                <option value="PSYCHOLOGICAL">심리상담</option>
+                                <option value="CAREER">진로상담</option>
+                                <option value="EMPLOYMENT">취업상담</option>
+                                <option value="LEARNING">학습상담</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">문항 내용 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3" id="optionsSection" style="display: none;">
+                            <label class="form-label">선택지 (객관식인 경우)</label>
+                            <div id="optionsList">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" placeholder="선택지 입력">
+                                    <button class="btn btn-outline-danger" type="button">삭제</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="addOption">선택지 추가</button>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="questionActive" checked>
+                                <label class="form-check-label" for="questionActive">
+                                    사용 여부
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 세부분류 모달 열기
+        document.querySelectorAll('[data-bs-target="#subfieldModal"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const field = this.getAttribute('data-field');
+                const fieldNames = {
+                    'PSYCHOLOGICAL': '심리상담',
+                    'CAREER': '진로상담', 
+                    'EMPLOYMENT': '취업상담',
+                    'LEARNING': '학습상담'
+                };
+                document.getElementById('parentField').value = fieldNames[field] || field;
+            });
+        });
+
+        // 문항 유형 변경 시 선택지 섹션 표시/숨김
+        document.getElementById('questionType').addEventListener('change', function() {
+            const optionsSection = document.getElementById('optionsSection');
+            if (this.value === 'MULTIPLE') {
+                optionsSection.style.display = 'block';
+            } else {
+                optionsSection.style.display = 'none';
+            }
+        });
+
+        // 선택지 추가
+        document.getElementById('addOption').addEventListener('click', function() {
+            const optionsList = document.getElementById('optionsList');
+            const newOption = document.createElement('div');
+            newOption.className = 'input-group mb-2';
+            newOption.innerHTML = `
+                <input type="text" class="form-control" placeholder="선택지 입력">
+                <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">삭제</button>
+            `;
+            optionsList.appendChild(newOption);
+        });
+
+        // 상담원 필터링
+        document.getElementById('counselorFieldFilter').addEventListener('change', function() {
+            const selectedField = this.value;
+            const rows = document.querySelectorAll('#counselorTable tbody tr');
+            
+            rows.forEach(row => {
+                if (!selectedField || row.getAttribute('data-field') === selectedField) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // 상담원 테이블 정렬
+        document.querySelectorAll('#counselorTable .sortable').forEach(header => {
+            header.addEventListener('click', function() {
+                const sortType = this.getAttribute('data-sort');
+                const table = document.getElementById('counselorTable');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                const isAsc = this.classList.contains('asc');
+                
+                document.querySelectorAll('#counselorTable .sortable').forEach(h => {
+                    h.classList.remove('asc', 'desc');
+                });
+                
+                this.classList.add(isAsc ? 'desc' : 'asc');
+                
+                rows.sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    switch(sortType) {
+                        case 'name':
+                            aVal = a.cells[0].textContent;
+                            bVal = b.cells[0].textContent;
+                            break;
+                        case 'email':
+                            aVal = a.cells[1].textContent;
+                            bVal = b.cells[1].textContent;
+                            break;
+                        case 'status':
+                            aVal = a.cells[4].textContent;
+                            bVal = b.cells[4].textContent;
+                            break;
+                        case 'date':
+                            aVal = new Date(a.cells[5].textContent);
+                            bVal = new Date(b.cells[5].textContent);
+                            break;
+                    }
+                    
+                    if (sortType === 'date') {
+                        return isAsc ? bVal - aVal : aVal - bVal;
+                    } else {
+                        return isAsc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+                    }
+                });
+                
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    </script>
+</body>
+</html>
