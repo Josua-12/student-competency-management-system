@@ -26,42 +26,22 @@
                     <a class="nav-link" th:href="@{/}">홈</a>
                 </li>
 
-                <!-- 역량진단 드롭다운 -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        역량진단
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/user/assessment}">역량진단 시작</a></li>
-                        <li><a class="dropdown-item" th:href="@{/user/assessment}">진단 결과 확인</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/assessment}">역량진단</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/user/assessment}">핵심역량</a>
-                </li>
-
-                <!-- 상담 드롭다운 -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        상담
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/counseling/user/student}">상담 예약</a></li>
-                        <li><a class="dropdown-item" th:href="@{/counseling/user/counseling/status}">내 예약 조회</a></li>
-                    </ul>
-                </li>
-
-                <!-- 비교과 프로그램 -->
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/user/noncurricular}">
-                        비교과 프로그램
-                    </a>
+                    <a class="nav-link" th:href="@{/counselinguser/student}">상담</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/user/mypage}">마이페이지</a>
+                    <a class="nav-link" th:href="@{/user/noncurricular/programs}">비교과 프로그램</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
+                </li>
+
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/auth/login}">로그아웃</a>
                 </li>
