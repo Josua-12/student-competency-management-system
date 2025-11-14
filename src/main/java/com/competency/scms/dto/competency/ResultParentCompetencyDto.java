@@ -11,5 +11,7 @@ import java.util.List;
 @Data
 public class ResultParentCompetencyDto {
     private String name;    // "자기관리 역량"
+    // 부모역량 평균 점수
+    private double parentAverageScore;
     private List<ResultChildCompetencyDto> children;
 }

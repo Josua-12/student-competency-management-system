@@ -30,6 +30,11 @@ public class AssessmentController {
     @GetMapping
     public String assessmentMain(Model model,
                                  @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+
         Long currentUserId = userDetails.getUser().getId();
 
         // 1. '진단목록' 탭에 필요한 데이터 조회

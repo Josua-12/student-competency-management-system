@@ -22,15 +22,18 @@ public interface CompetencyRepository extends JpaRepository<Competency, Long> {
      *  3) 하위역량의 '문항'들도 Fetch Join (2차)
      *  4) 문항의 '보기'들도 Fetch Join (3차)
      */
-    @Query("SELECT DISTINCT c FROM Competency c " +
-            "LEFT JOIN FETCH c.children sc " +  // sc: sub-competency (하위역량)
-            "LEFT JOIN FETCH sc.questions sq " +    // sq: sub-question (하위역량의 문항)
-            "LEFT JOIN FETCH sq.options so " +  // so: sub-option (하위역량 문항의 보기)
-            "WHERE c.parent IS NULL AND c.isActive = true " +
-            "AND (sc IS NULL OR sc.isActive = true) " +
-            "AND (sq IS NULL OR sq.isActive = true) " +
-            "ORDER BY c.displayOrder, sc.displayOrder, sq.displayOrder, so.displayOrder")
-    List<Competency> findActiveRootCompetenciesForAssessment();
+//    @Query("SELECT DISTINCT c FROM Competency c " +
+//            "LEFT JOIN FETCH c.children sc " +  // sc: sub-competency (하위역량)
+//            "LEFT JOIN FETCH sc.questions sq " +    // sq: sub-question (하위역량의 문항)
+//            "LEFT JOIN FETCH sq.options so " +  // so: sub-option (하위역량 문항의 보기)
+//            "WHERE c.parent IS NULL AND c.isActive = true " +
+//            "AND (sc IS NULL OR sc.isActive = true) " +
+//            "AND (sq IS NULL OR sq.isActive = true) " +
+//            "ORDER BY c.displayOrder, sc.displayOrder, sq.displayOrder, so.displayOrder")
+//    List<Competency> findActiveRootCompetenciesForAssessment();
+
+    // "부모가 없고(Root) + 활성화된(Active) 역량을 순서대로 찾아줘"
+    List<Competency> findByParentIsNullAndIsActiveTrueOrderByDisplayOrderAsc();
 
     /**
      * 4. 역량 코드로 존재 여부 확인

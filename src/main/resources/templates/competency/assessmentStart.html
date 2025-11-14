@@ -14,8 +14,8 @@
 <main th:fragment="content" class="container-lg my-5">
     <div class="assessment-start-container">
         <div class="assessment-header">
-            <h2 class="main-title" th:text="${section.title}">2025학년도 1학기 핵심역량 진단</h2>
-            <p class="sub-title" th:text="${section.description}">
+            <h2 class="main-title" th:text="${diagnosisForm.assessmentTitle}">2025학년도 1학기 핵심역량 진단</h2>
+            <p class="sub-title" th:text="${diagnosisForm.assessmentDescription}">
                 학생 여러분의 핵심역량 수준을 점검합니다. 각 문항을 읽고 자신에게 가장 가깝다고 생각하는 항목을 선택해 주세요.
             </p>
             <div class="progress" role="progressbar" aria-label="진행도">
