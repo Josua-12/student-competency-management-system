@@ -161,7 +161,7 @@ public class AssessmentService {
         }
 
         // 3. DB에서 모든 역량/문항/보기 데이터를 Fetch Join으로 한 번에 조회
-        List<Competency> rootComps = competencyRepository.findActiveRootCompetenciesForAssessment();
+        List<Competency> rootComps = competencyRepository.findByParentIsNullAndIsActiveTrueOrderByDisplayOrderAsc();
 
         // 4. 이전에 임시저장한 응답(Response)이 있는지 조회
         List<AssessmentResponse> responses = assessmentResponseRepository.findByAssessmentResultId(resultId);
@@ -195,6 +195,7 @@ public class AssessmentService {
         AssessmentPageDto pageDto = new AssessmentPageDto();
         pageDto.setResultId(resultId);
         pageDto.setAssessmentTitle(result.getAssessmentSection().getTitle());
+        pageDto.setAssessmentDescription(result.getAssessmentSection().getDescription());
 
         pageDto.setRootCompetencies(rootDtos);
 
@@ -384,7 +385,11 @@ public class AssessmentService {
                             .map(Competency::getDisplayOrder)
                             .orElse(0)
             ));
-            scoreDetailsList.add(new ResultParentCompetencyDto(parent.getName(), childDtos));
+            scoreDetailsList.add(new ResultParentCompetencyDto(
+                    parent.getName(),
+                    parentAvgScore,
+                    childDtos
+            ));
         }
 
         // 7. 강점/약점 분석 (하위 역량 기준 Top 2, Bottom 2)
@@ -401,12 +406,14 @@ public class AssessmentService {
 
         for (Map.Entry<Competency, Double> entry : bottom2) {
             Competency child = entry.getKey();
-            if (child.getAdviceLow() != null) {
-                weaknesses.add(new ResultFeedbackDto(
-                        child.getName(),
-                        child.getAdviceLow()
-                ));
+            String advice = child.getAdviceLow();
+            if (child.getAdviceLow() == null || advice.isBlank()) {
+                advice = "해당 역량에 대한 성장 가이드가 준비 중입니다.";
             }
+            weaknesses.add(new ResultFeedbackDto(
+                    child.getName(),
+                    advice
+            ));
         }
 
         // 7-2. 강점 (가장 높은 2개)
@@ -416,12 +423,16 @@ public class AssessmentService {
 
         for (Map.Entry<Competency, Double> entry : top2) {
             Competency child = entry.getKey();
-            if (child.getAdviceHigh() != null) {
-                strengths.add(new ResultFeedbackDto(
-                        child.getName(),
-                        child.getAdviceHigh()
-                ));
+
+            String advice = child.getAdviceHigh();
+            if (advice == null || advice.isBlank()) {
+                advice = "탁월한 역량을 보유하고 계시군요!";
             }
+
+            strengths.add(new ResultFeedbackDto(
+                    child.getName(),
+                    advice
+            ));
         }
 
         // 8. 최종 DTO 설정
