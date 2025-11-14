@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 대시보드</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+
+<h1>관리자 대시보드</h1>
+
+<div class="stats">
+  <div class="card">
+    <h3>전체 학생 수</h3>
+    <p th:text="${studentCount}"></p>
+  </div>
+
+  <div class="card">
+    <h3>오늘 로그인 수</h3>
+    <p th:text="${todayLoginCount}"></p>
+  </div>
+
+  <div class="card">
+    <h3>이번 달 신규 학생</h3>
+    <p th:text="${monthNewStudentCount}"></p>
+  </div>
+</div>
+
+<hr>
+
+<h2>역량 진단 목록</h2>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th><th>학생 이름</th><th>역량</th><th>상태</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="item : ${competencies}">
+    <td th:text="${item.id}"></td>
+    <td th:text="${item.student.name}"></td>
+    <td th:text="${item.type}"></td>
+    <td th:text="${item.status}"></td>
+  </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>상담 목록</h2>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th><th>상담자</th><th>학생</th><th>상태</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="counsel : ${counselings}">
+    <td th:text="${counsel.id}"></td>
+    <td th:text="${counsel.counselor.name}"></td>
+    <td th:text="${counsel.student.name}"></td>
+    <td th:text="${counsel.status}"></td>
+  </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>비교과 프로그램</h2>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th><th>프로그램명</th><th>담당자</th><th>신청자</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="p : ${programs}">
+    <td th:text="${p.id}"></td>
+    <td th:text="${p.title}"></td>
+    <td th:text="${p.operator.name}"></td>
+    <td th:text="${p.appliedCount}"></td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
