@@ -1,6 +1,7 @@
 package com.competency.scms.repository.noncurricular.operation;
 
 
+import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.operation.ProgramApplication;
 import com.competency.scms.domain.noncurricular.operation.ApplicationStatus;
 import org.springframework.data.jpa.repository.*;
@@ -72,5 +73,7 @@ public interface ProgramApplicationRepository
     List<ProgramApplication> findEligibleForMileage(
             @Param("progId") Long progId,
             @Param("schdId") Long schdId);
+
+    int countByProgram_ProgramIdAndStatus(Long programId, ApprovalStatus status);
 }
 

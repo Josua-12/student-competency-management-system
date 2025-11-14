@@ -6,7 +6,7 @@ import com.competency.scms.domain.noncurricular.program.ProgramSchedule;
 import com.competency.scms.dto.FileDto;
 import com.competency.scms.dto.noncurricular.linkCompetency.CompetencyDto;
 import com.competency.scms.dto.noncurricular.operation.ApprovalHistoryDto;
-import com.competency.scms.dto.noncurricular.program.*;
+import com.competency.scms.dto.noncurricular.program.op.*;
 import com.competency.scms.repository.FileRepository;
 import com.competency.scms.repository.noncurricular.linkCompetency.LinkCompetencyRepository;
 import com.competency.scms.repository.noncurricular.operation.ApprovalHistoryRepository;

@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>비교과 프로그램 상세 (학생)</title>
+    <style>
+        :root{
+            --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
+            --card:#fafafa; --chip:#f3f4f6;
+            --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
+            --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+            --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--fg);
+            font:14px/1.6 system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
+        }
+        a{color:inherit;text-decoration:none}
+        .wrap{max-width:1080px;margin:24px auto;padding:0 16px 80px;}
+
+        .badge{
+            padding:2px 8px;border-radius:999px;
+            background:var(--pri-50);color:var(--pri-600);font-size:12px;font-weight:600;
+        }
+        .chip{
+            background:var(--chip);border-radius:999px;
+            padding:4px 8px;font-size:11px;color:var(--muted);
+        }
+
+        .detail-header{margin-bottom:18px;}
+        .detail-header-top{
+            display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:6px;
+        }
+        .detail-header h1{margin:0;font-size:22px;}
+        .summary{margin:4px 0 0;color:var(--muted);font-size:13px;}
+
+        .status{
+            padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid transparent;
+        }
+        .status.open{background:#eaf7ef;color:var(--ok);border-color:#b9e6c5;}
+        .status.closed{background:#f3f4f6;color:#6b7280;border-color:var(--line);}
+        .status.done{background:#eef2ff;color:#4338ca;border-color:#c7d2fe;}
+
+        .badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:var(--muted);}
+
+        .top-grid{
+            display:grid;grid-template-columns:2fr 3fr;gap:16px;margin-bottom:20px;
+        }
+        .thumb{
+            background:#f3f4f6;border-radius:var(--radius);
+            overflow:hidden;position:relative;min-height:200px;
+        }
+        .thumb img{
+            width:100%;height:100%;object-fit:cover;display:block;
+        }
+
+        .card{
+            background:var(--card);border:1px solid var(--line);
+            border-radius:var(--radius);padding:14px 16px;
+        }
+        .info-grid{
+            display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px;font-size:13px;
+        }
+        .info-item{display:flex;flex-direction:column;gap:2px;}
+        .info-label{color:var(--muted);font-size:11px;}
+        .info-value{font-weight:500;}
+
+        .section{
+            margin-top:16px;
+        }
+        .section-title{
+            font-size:15px;font-weight:600;margin:0 0 8px;
+            display:flex;align-items:center;gap:6px;
+        }
+        .section-title span.small{
+            font-size:11px;color:var(--muted);font-weight:400;
+        }
+        .section-body{
+            font-size:13px;
+        }
+        .section-body p{margin:0 0 6px;white-space:pre-line;}
+        .section-body ul{margin:4px 0 0;padding-left:18px;}
+        .section-body li{margin-bottom:2px;}
+
+        .schedule-table{
+            width:100%;border-collapse:collapse;font-size:12px;
+        }
+        .schedule-table th,.schedule-table td{
+            border:1px solid var(--line);padding:6px 8px;text-align:left;
+        }
+        .schedule-table th{
+            background:#f9fafb;font-weight:600;
+        }
+
+        .file-list{list-style:none;margin:0;padding:0;}
+        .file-list li{margin-bottom:4px;}
+        .file-list a{color:var(--pri-600);text-decoration:underline;font-size:13px;}
+
+        .actions-bar{
+            position:fixed;left:0;right:0;bottom:0;
+            background:rgba(255,255,255,.96);
+            border-top:1px solid var(--line);
+            padding:10px 16px;
+            display:flex;align-items:center;gap:8px;
+            z-index:10;
+        }
+        .actions-bar-inner{
+            max-width:1080px;margin:0 auto;display:flex;gap:8px;align-items:center;
+        }
+        .spacer{flex:1;}
+
+        .btn{
+            border-radius:999px;
+            border:1px solid var(--line);
+            padding:8px 14px;font-size:13px;
+            background:#fff;
+            cursor:pointer;
+            display:inline-flex;align-items:center;gap:4px;
+        }
+        .btn.primary{
+            background:var(--pri);border-color:var(--pri);color:#fff;
+        }
+        .btn.primary:hover{background:var(--pri-600);}
+        .btn.ghost{background:transparent;}
+        .btn[hidden]{display:none!important;}
+
+        .toast{
+            position:fixed;right:16px;bottom:64px;
+            background:#111827;color:#fff;
+            padding:10px 12px;border-radius:10px;
+            font-size:12px;opacity:.96;
+            z-index:20;
+        }
+
+        @media (max-width:820px){
+            .top-grid{grid-template-columns:1fr;}
+            .thumb{min-height:180px;}
+            .info-grid{grid-template-columns:1fr;}
+            .actions-bar{position:static;margin-top:20px;}
+            .toast{bottom:16px;}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <!-- 헤더 -->
+    <header class="detail-header">
+        <div class="detail-header-top">
+            <div style="display:flex;gap:6px;align-items:center;">
+                <span class="badge">학생 / 비교과</span>
+                <span id="statusBadge" class="status"></span>
+            </div>
+            <span id="categoryChip" class="chip"></span>
+        </div>
+        <h1 id="title">프로그램명</h1>
+        <p id="summary" class="summary">프로그램 요약 설명</p>
+        <div class="badge-row">
+            <span id="deptBadge"></span>
+            <span id="pointBadge"></span>
+        </div>
+    </header>
+
+    <!-- 상단: 썸네일 + 기본정보 -->
+    <section class="top-grid">
+        <div class="thumb">
+            <img id="thumbnail" src="" alt="프로그램 대표 이미지" />
+        </div>
+        <aside class="card">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">운영부서</span>
+                    <span class="info-value" id="deptName">비교과센터</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">운영형태</span>
+                    <span class="info-value" id="runType">오프라인</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">모집기간</span>
+                    <span class="info-value" id="recruitPeriod">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">운영기간</span>
+                    <span class="info-value" id="programPeriod">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">정원 / 신청인원</span>
+                    <span class="info-value" id="capacityText">0 / 0명</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">장소</span>
+                    <span class="info-value" id="locationText">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">비교과 포인트</span>
+                    <span class="info-value" id="pointText">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">이수기준</span>
+                    <span class="info-value" id="completionCriteria">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">담당자</span>
+                    <span class="info-value" id="ownerName">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">연락처</span>
+                    <span class="info-value" id="ownerContact">-</span>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+    <!-- 프로그램 개요 -->
+    <section class="card section">
+        <h2 class="section-title">프로그램 개요</h2>
+        <div class="section-body">
+            <p id="description">프로그램 소개 내용이 표시됩니다.</p>
+            <p><strong>역량 영역:</strong> <span id="competencyArea">-</span></p>
+        </div>
+    </section>
+
+    <!-- 운영내용·일정 -->
+    <section class="card section">
+        <h2 class="section-title">운영내용·일정</h2>
+        <div class="section-body">
+            <table class="schedule-table" id="scheduleTable">
+                <thead>
+                <tr>
+                    <th>회차</th>
+                    <th>일자</th>
+                    <th>시간</th>
+                    <th>장소</th>
+                    <th>내용</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- JS에서 채움 -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 신청자격 -->
+    <section class="card section">
+        <h2 class="section-title">신청자격</h2>
+        <div class="section-body">
+            <h3 class="section-title" style="font-size:13px;margin-top:0;">
+                대상 학년 <span class="small">(신청 가능 학년)</span>
+            </h3>
+            <ul id="eligibleGrades"></ul>
+
+            <h3 class="section-title" style="font-size:13px;margin-top:12px;">
+                대상 학과 <span class="small">(신청 가능 학과)</span>
+            </h3>
+            <ul id="eligibleMajors"></ul>
+        </div>
+    </section>
+
+    <!-- 첨부파일·안내 -->
+    <section class="card section">
+        <h2 class="section-title">첨부파일·안내</h2>
+        <div class="section-body">
+            <h3 class="section-title" style="font-size:13px;margin-top:0;">첨부파일</h3>
+            <ul id="fileList" class="file-list"></ul>
+
+            <h3 class="section-title" style="font-size:13px;margin-top:12px;">참고 안내</h3>
+            <p id="noticeText">
+                프로그램 안내문을 확인해 주세요. 비교과 포인트 부여 기준, 이수 조건, 출석 규정 등을 반드시 확인해야 합니다.
+            </p>
+        </div>
+    </section>
+</div>
+
+<!-- 하단 버튼 바 -->
+<div class="actions-bar">
+    <div class="actions-bar-inner">
+        <a href="/student/noncurricular/list" class="btn ghost">목록</a>
+        <div class="spacer"></div>
+        <button type="button" class="btn" id="cancelBtn" hidden>신청취소</button>
+        <button type="button" class="btn" id="surveyBtn" hidden>만족도조사</button>
+        <button type="button" class="btn" id="certBtn" hidden>이수증 출력</button>
+        <button type="button" class="btn primary" id="applyBtn">신청하기</button>
+    </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+    const USE_MOCK_DETAIL = true;
+
+    const API = {
+        detail: id => `/student/noncurricular/${id}`,
+        apply: id => `/student/noncurricular/${id}/apply`,
+        cancel: id => `/student/noncurricular/${id}/cancel`,
+        survey: id => `/student/noncurricular/${id}/survey`,
+        certificate: id => `/student/noncurricular/${id}/certificate`
+    };
+
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    function toast(msg){
+        const t = $('#toast');
+        t.textContent = msg; t.hidden = false;
+        setTimeout(()=> t.hidden = true, 2200);
+    }
+
+    function getProgramIdFromUrl(){
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        // /student/noncurricular/{id}
+        return Number(parts[parts.length - 1]);
+    }
+
+    function statusBadgeClass(status){
+        if(status === 'OPEN') return 'status open';
+        if(status === 'CLOSED') return 'status closed';
+        if(status === 'DONE') return 'status done';
+        return 'status';
+    }
+
+    // ------- Mock 상세 데이터 (비교과 포인트만 사용) -------
+    function mockDetail(id){
+        return {
+            id,
+            title: '진로캠프 1기',
+            summary: '진로 설계를 위한 2일 집중 캠프 프로그램입니다.',
+            deptName: '비교과센터',
+            category: 'CAREER',
+            status: 'OPEN',
+            recruitStart: '2025-11-01',
+            recruitEnd: '2025-11-10',
+            programStart: '2025-11-15',
+            programEnd: '2025-11-16',
+            capacity: 40,
+            applied: 18,
+            locationText: '제1공학관 301호',
+            runType: 'OFFLINE', // OFFLINE / ONLINE / MIXED
+            points: 20, // ⬅ 비교과 포인트
+            thumbnailUrl: 'https://picsum.photos/seed/noncurricular-detail/800/450',
+            completionCriteria: '2회차 모두 참석 및 만족도조사 제출',
+            ownerName: '비교과센터 김담당',
+            ownerTel: '02-123-4567',
+            ownerEmail: 'ncc@univ.ac.kr',
+            competencyArea: '진로개발역량',
+            fundSrc: '교비',
+            description: '진로 탐색 및 커리어 로드맵 수립을 돕는 캠프입니다.\n\n- 진로 강의\n- 선배 멘토링\n- 1:1 상담',
+            eligibleGrades: ['1학년','2학년','3학년'],
+            eligibleMajors: ['전학과','경영학과 우대'],
+            files: [
+                {id: 1, name: '프로그램 안내문.pdf', url: '#'},
+                {id: 2, name: '세부 일정표.hwp', url: '#'}
+            ],
+            schedules: [
+                {order: 1, date: '2025-11-15', time: '10:00~17:00', place: '제1공학관 301호', content: '진로 특강 및 그룹워크숍'},
+                {order: 2, date: '2025-11-16', time: '10:00~16:00', place: '제1공학관 301호', content: '선배 멘토링 및 1:1 상담'}
+            ],
+            // 학생별 상태
+            appliedByMe: false,
+            canApply: true,
+            canCancel: false,
+            canSurvey: false,
+            canPrintCert: false
+        };
+    }
+
+    async function fetchDetail(programId){
+        if(USE_MOCK_DETAIL){
+            return mockDetail(programId || 201);
+        }
+        const res = await fetch(API.detail(programId));
+        if(!res.ok) throw new Error('상세 조회 실패');
+        return await res.json();
+    }
+
+    function renderDetail(d){
+        $('#title').textContent = d.title;
+        $('#summary').textContent = d.summary || '';
+        $('#deptName').textContent = d.deptName || '-';
+        $('#deptBadge').textContent = d.deptName ? `운영부서: ${d.deptName}` : '';
+
+        $('#categoryChip').textContent = d.category ? `분류: ${d.category}` : '';
+
+        const badge = $('#statusBadge');
+        badge.className = statusBadgeClass(d.status);
+        badge.textContent = d.status === 'OPEN' ? '모집중' :
+        d.status === 'CLOSED' ? '마감' :
+        d.status === 'DONE' ? '종료' : d.status;
+
+        const rec = d.recruitStart && d.recruitEnd ? `${d.recruitStart} ~ ${d.recruitEnd}` : '-';
+        const prog = d.programStart && d.programEnd ? `${d.programStart} ~ ${d.programEnd}` : '-';
+        $('#recruitPeriod').textContent = rec;
+        $('#programPeriod').textContent = prog;
+
+        const capText = `${d.capacity ?? 0}명 / 신청 ${d.applied ?? 0}명`;
+        $('#capacityText').textContent = capText;
+
+        $('#locationText').textContent = d.locationText || (d.runType === 'ONLINE' ? '온라인' : '-');
+
+        const runTypeMap = {OFFLINE:'오프라인', ONLINE:'온라인', MIXED:'온·오프라인 혼합'};
+        $('#runType').textContent = runTypeMap[d.runType] || '-';
+
+        // 비교과 포인트
+        const pointText = d.points ? `${d.points}점` : '-';
+        $('#pointText').textContent = pointText;
+        $('#pointBadge').textContent = pointText !== '-' ? `비교과 포인트 ${pointText}` : '';
+
+        $('#completionCriteria').textContent = d.completionCriteria || '-';
+
+        $('#ownerName').textContent = d.ownerName || '-';
+        const contact = [d.ownerTel, d.ownerEmail].filter(Boolean).join(' / ');
+        $('#ownerContact').textContent = contact || '-';
+
+        $('#thumbnail').src = d.thumbnailUrl || 'https://picsum.photos/seed/noncurricular-default/800/450';
+        $('#thumbnail').alt = `${d.title} 대표 이미지`;
+
+        $('#description').textContent = d.description || '-';
+        $('#competencyArea').textContent = d.competencyArea || '-';
+
+        // 일정
+        const tbody = $('#scheduleTable tbody');
+        tbody.innerHTML = '';
+        (d.schedules || []).forEach(s => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+        <td>${s.order ?? ''}</td>
+        <td>${s.date ?? ''}</td>
+        <td>${s.time ?? ''}</td>
+        <td>${s.place ?? ''}</td>
+        <td>${s.content ?? ''}</td>
+      `;
+            tbody.appendChild(tr);
+        });
+        if(!d.schedules || d.schedules.length === 0){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="5">등록된 일정이 없습니다.</td>`;
+            tbody.appendChild(tr);
+        }
+
+        // 신청자격
+        const gradeUl = $('#eligibleGrades');
+        gradeUl.innerHTML = '';
+        (d.eligibleGrades || []).forEach(g => {
+            const li = document.createElement('li');
+            li.textContent = g;
+            gradeUl.appendChild(li);
+        });
+        if(!d.eligibleGrades || d.eligibleGrades.length === 0){
+            const li = document.createElement('li');
+            li.textContent = '제한 없음';
+            gradeUl.appendChild(li);
+        }
+
+        const majorUl = $('#eligibleMajors');
+        majorUl.innerHTML = '';
+        (d.eligibleMajors || []).forEach(m => {
+            const li = document.createElement('li');
+            li.textContent = m;
+            majorUl.appendChild(li);
+        });
+        if(!d.eligibleMajors || d.eligibleMajors.length === 0){
+            const li = document.createElement('li');
+            li.textContent = '전 학과';
+            majorUl.appendChild(li);
+        }
+
+        // 첨부파일
+        const fileUl = $('#fileList');
+        fileUl.innerHTML = '';
+        (d.files || []).forEach(f => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="${f.url}" target="_blank" rel="noopener">${f.name}</a>`;
+            fileUl.appendChild(li);
+        });
+        if(!d.files || d.files.length === 0){
+            const li = document.createElement('li');
+            li.textContent = '등록된 첨부파일이 없습니다.';
+            fileUl.appendChild(li);
+        }
+
+        // 버튼 상태
+        const applyBtn = $('#applyBtn');
+        const cancelBtn = $('#cancelBtn');
+        const surveyBtn = $('#surveyBtn');
+        const certBtn = $('#certBtn');
+
+        applyBtn.hidden  = !d.canApply;
+        cancelBtn.hidden = !d.canCancel;
+        surveyBtn.hidden = !d.canSurvey;
+        certBtn.hidden   = !d.canPrintCert;
+    }
+
+    function setupActions(detail){
+        const programId = detail.id;
+        $('#applyBtn').addEventListener('click', async () => {
+            if(USE_MOCK_DETAIL){
+                toast('신청이 접수되었습니다. (모의)');
+                return;
+            }
+            try{
+                const res = await fetch(API.apply(programId), {method:'POST'});
+                if(!res.ok) throw new Error();
+                toast('신청이 완료되었습니다.');
+                location.reload();
+            }catch(e){
+                toast('신청 중 오류가 발생했습니다.');
+            }
+        });
+
+        $('#cancelBtn').addEventListener('click', async () => {
+            if(!confirm('신청을 취소하시겠습니까?')) return;
+            if(USE_MOCK_DETAIL){
+                toast('신청이 취소되었습니다. (모의)');
+                return;
+            }
+            try{
+                const res = await fetch(API.cancel(programId), {method:'DELETE'});
+                if(!res.ok) throw new Error();
+                toast('신청이 취소되었습니다.');
+                location.reload();
+            }catch(e){
+                toast('취소 중 오류가 발생했습니다.');
+            }
+        });
+
+        $('#surveyBtn').addEventListener('click', () => {
+            if(USE_MOCK_DETAIL){
+                toast('만족도조사 페이지로 이동합니다. (모의)');
+                return;
+            }
+            window.location.href = API.survey(programId);
+        });
+
+        $('#certBtn').addEventListener('click', () => {
+            if(USE_MOCK_DETAIL){
+                toast('이수증(PDF) 다운로드 (모의)');
+                return;
+            }
+            window.location.href = API.certificate(programId);
+        });
+    }
+
+    (async function init(){
+        try{
+            const programId = getProgramIdFromUrl();
+            const detail = await fetchDetail(programId);
+            renderDetail(detail);
+            setupActions(detail);
+        }catch(e){
+            console.error(e);
+            toast('상세 정보를 불러오지 못했습니다.');
+        }
+    })();
+</script>
+</body>
+</html>

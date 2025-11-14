@@ -1,4 +1,4 @@
-package com.competency.scms.dto.noncurricular.program;
+package com.competency.scms.dto.noncurricular.program.op;
 
 import com.competency.scms.dto.FileDto;
 import com.competency.scms.dto.noncurricular.linkCompetency.CompetencyDto;
