@@ -319,12 +319,12 @@
     /* ===== Config & State ===== */
     const API = {
         base: '', // 서버 루트. 배포 시 e.g. '/api'
-        form:   (p,s)=> `/ops/reports/form?progId=${p||''}&schdId=${s||''}`,
-        stats:  (p,s)=> `/ops/reports/stats?progId=${p||''}&schdId=${s||''}`,
-        save:   `/ops/reports`,
-        submit: `/ops/reports/submit`,
-        upload: r => `/ops/reports/${r}/files`,
-        export: (p,s)=> `/ops/reports/export?progId=${p||''}&schdId=${s||''}`
+        form:   (p,s)=> `/noncurricular-operator/reports/form?progId=${p||''}&schdId=${s||''}`,
+        stats:  (p,s)=> `/noncurricular-operator/reports/stats?progId=${p||''}&schdId=${s||''}`,
+        save:   `/noncurricular-operator/reports`,
+        submit: `/noncurricular-operator/reports/submit`,
+        upload: r => `/noncurricular-operator/reports/${r}/files`,
+        export: (p,s)=> `/noncurricular-operator/reports/export?progId=${p||''}&schdId=${s||''}`
     };
 
     const state = {

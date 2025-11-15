@@ -52,29 +52,40 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 개발용: 모든 경로 허용
-                .authorizeHttpRequests(authz -> authz
-                        .anyRequest().permitAll()
-                )
-
-                /* 운영용 설정 (개발 완료 후 주석 해제)
                 .authorizeHttpRequests(authz -> authz
                         // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
-                                "/", "/index.html",
                                 "/auth/**", "/login", "/error",
                                 "/favicon.ico", "/manifest.json",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()
 
                         // 인증 관련 공개 API
-                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/auth/**").permitAll()
 
-                        // 역할 기반 접근 제어
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/counselor/**").hasRole("COUNSELOR")
-                        .requestMatchers("/operator/**").hasRole("OPERATOR")
-                        .requestMatchers("/user/**").hasRole("STUDENT")
+                        // 학생 전용 경로
+                        .requestMatchers("/student/**", "/mypage/**").hasRole("STUDENT")
+
+                        // 상담 관련 - 세분화된 권한
+                        .requestMatchers("/counseling/student/**").hasRole("STUDENT")
+                        .requestMatchers("/counseling/counselor/**").hasAnyRole("COUNSELOR", "COUNSELING_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/counseling/admin/**").hasAnyRole("COUNSELING_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/counseling/admin/**").hasAnyRole("COUNSELING_ADMIN", "SUPER_ADMIN")
+
+                        // 비교과 관련 - 세분화된 권한
+                        .requestMatchers("/noncurricular/student/**").hasRole("STUDENT")
+                        .requestMatchers("/noncurricular/operator/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+
+                        // 역량진단 관련
+                        .requestMatchers("/competency/student/**").hasRole("STUDENT")
+                        .requestMatchers("/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+
+                        // 최고 관리자 전용
+                        .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
 
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
@@ -86,16 +97,14 @@ public class SecurityConfig {
                             response.sendRedirect("/auth/login");
                         })
                 )
-                */
 
                 // 폼로그인 비활성 (JWT 사용)
                 .formLogin(form -> form.disable())
                 // 사용자 인증 프로바이더
                 .authenticationProvider(authenticationProvider());
 
-        // JWT 필터 등록 (개발용으로 주석 처리, 운영시 주석 해제)
-        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // JWT 필터 등록
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tree;
 
     // 1-3. 페이지 로드 시 트리 데이터 가져오기 (fetch)
-    fetch('/admin/competency/api/tree')
+    fetch('/competency-admin/competency/api/tree')
         .then(response => response.json())
         .then(treeData => {
             initializeTree(treeData);
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // (Fetch 로직을 분리해서 깔끔하게 만듦)
         function fetchDetail(id) {
-            fetch(`/admin/competency/api/competencies/${id}`)
+            fetch(`/competency-admin/competency/api/competencies/${id}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Network response was not ok');
                     return res.json();
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
             adviceLow: document.getElementById('compAdviceLow').value
         };
 
-        fetch('/admin/competency/api/competencies', {
+        fetch('/competency-admin/competency/api/competencies', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(formData)
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalDeleteButtonText = deleteButton.innerHTML;
         deleteButton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 삭제 중...';
 
-        fetch(`/admin/competency/api/competencies/${competencyId}`, {
+        fetch(`/competency-admin/competency/api/competencies/${competencyId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadQuestions(competencyId) {
         questionListBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">문항 목록을 불러오는 중...</td></tr>';
 
-        fetch(`/admin/competency/api/competencies/${competencyId}/questions`)
+        fetch(`/competency-admin/competency/api/competencies/${competencyId}/questions`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('문항 목록을 불러오는데 실패했습니다.');
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalButtonText = button.innerHTML;
             button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
-            fetch(`/admin/competency/api/questions/${questionId}`, {
+            fetch(`/competency-admin/competency/api/questions/${questionId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
             // 1. (11단계 API 호출) 서버에서 '문항 상세정보 + 항목 목록' DTO를 fetch
-            fetch(`/admin/competency/api/questions/${questionId}/details`)
+            fetch(`/competency-admin/competency/api/questions/${questionId}/details`)
                 .then(response => {
                     if (!response.ok) return response.json().then(err => { throw new Error(err.error) });
                     return response.json();
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // 3. API 호출
-        fetch('/admin/competency/api/questions', {
+        fetch('/competency-admin/competency/api/questions', {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(formData)

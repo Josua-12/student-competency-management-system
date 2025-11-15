@@ -29,7 +29,7 @@ public class CounselingHistoryService {
                                                                       User currentUser, Pageable pageable) {
         if (currentUser.getRole() == UserRole.COUNSELOR) {
             return getCounselorHistory(currentUser, pageable);
-        } else if (currentUser.getRole() == UserRole.ADMIN) {
+        } else if (currentUser.getRole() == UserRole.COUNSELING_ADMIN) {
             return getAdminHistory(condition, pageable);
         } else {
             throw new BusinessException(ErrorCode.FORBIDDEN);

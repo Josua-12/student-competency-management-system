@@ -320,11 +320,11 @@
     // ====== URL 매핑 (예시) ======
     const programId = document.getElementById('page').dataset.programId;
     const ENDPOINTS = {
-        load: `/op/programs/${programId}/open`,                 // GET
-        saveDraft: `/op/programs/${programId}/open/save`,       // POST (FormData 권장)
-        submitApproval: `/op/programs/${programId}/open/submit`,// POST (FormData 권장)
-        delete: `/op/programs/${programId}`,                    // DELETE
-        cancel: `/op/programs`                                  // LIST
+        load: `/noncurricular-operator/programs/${programId}/open`,                 // GET
+        saveDraft: `/noncurricular-operator/programs/${programId}/open/save`,       // POST (FormData 권장)
+        submitApproval: `/noncurricular-operator/programs/${programId}/open/submit`,// POST (FormData 권장)
+        delete: `/noncurricular-operator/programs/${programId}`,                    // DELETE
+        cancel: `/noncurricular-operator/programs`                                  // LIST
     };
 
     // ====== 작은 유틸 ======

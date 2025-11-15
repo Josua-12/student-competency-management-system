@@ -14,27 +14,25 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user/dashboard")
+@RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 @Slf4j
 public class DashboardController {
 
     private final UserRepository userRepository;
 
-    @GetMapping("/user-info")
+    @GetMapping("/user")
     public ResponseEntity<Map<String, Object>> getUserInfo(Authentication auth) {
-        String identifier = auth.getName(); // JWT에서 추출한 값
+        String identifier = auth.getName();
         log.info("JWT에서 추출한 식별자: {}", identifier);
 
         User user;
 
         // 이메일 형식인지 확인
         if (identifier.contains("@")) {
-            // 이메일로 조회
             user = userRepository.findByEmail(identifier)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + identifier));
         } else {
-            // 학번으로 조회
             try {
                 Integer userNum = Integer.parseInt(identifier);
                 user = userRepository.findByUserNum(userNum)
@@ -53,8 +51,6 @@ public class DashboardController {
                 "programCount", 0
         ));
     }
-
-
 
     @GetMapping("/competency")
     public ResponseEntity<Map<String, Object>> getCompetency() {

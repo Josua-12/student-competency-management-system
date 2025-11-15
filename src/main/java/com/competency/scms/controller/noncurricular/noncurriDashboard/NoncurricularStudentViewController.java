@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/user/noncurricular")
+@RequestMapping("/student/noncurricular")
 public class NoncurricularStudentViewController {
 
     // 학생 대시보드는 NoncurricularEntryController에서 처리

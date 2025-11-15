@@ -39,3 +39,5 @@ application-gmail.yml
 
 *.log
 *.log.*.gz
+
+.amazonq
