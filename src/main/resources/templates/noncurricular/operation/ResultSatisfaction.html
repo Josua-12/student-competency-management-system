@@ -412,7 +412,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
       <td>${no}</td>
-      <td><a class="badge" href="/operator/programs/${row.programId}" target="_blank" style="text-decoration:none;background:var(--brand-weak);padding:4px 8px;border-radius:20px;color:#1e40af">${esc(row.programTitle)}</a></td>
+      <td><a class="badge" href="/noncurricular-operator/programs/${row.programId}" target="_blank" style="text-decoration:none;background:var(--brand-weak);padding:4px 8px;border-radius:20px;color:#1e40af">${esc(row.programTitle)}</a></td>
       <td>${esc(row.scheduleName ?? '-')}</td>
       <td>${esc(row.studentNoMasked ?? '-')}</td>
       <td>${esc(row.studentNameMasked ?? '-')}</td>
@@ -497,7 +497,7 @@
         $('#dStars').textContent = starText(r.rating);
         $('#dSubmitted').textContent = formatDateTime(r.submittedAt);
         $('#dFeedback').textContent = r.feedback ?? '-';
-        $('#btnGoProgram').setAttribute('href', `/operator/programs/${programId ?? r.programId}`);
+        $('#btnGoProgram').setAttribute('href', `/noncurricular-operator/programs/${programId ?? r.programId}`);
         openDetail();
     }
     function openDetail(){ $('#detailModal').classList.add('open'); $('#detailModal').setAttribute('aria-hidden','false'); }

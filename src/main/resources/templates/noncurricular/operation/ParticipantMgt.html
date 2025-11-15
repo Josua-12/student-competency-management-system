@@ -172,15 +172,15 @@
     // REST 엔드포인트 (백엔드 붙일 때 여기만 맞추면 됨)
     const API = {
         list:(programId,{status, scheduleId, keyword, page, size}) =>
-        `/ops/programs/${programId}/participants?status=${encodeURIComponent(status||'')}&scheduleId=${encodeURIComponent(scheduleId||'')}&q=${encodeURIComponent(keyword||'')}&page=${page||0}&size=${size||PAGE_SIZE}`,
-        approve:(programId, applicationId) => `/ops/programs/${programId}/participants/${applicationId}/approve`,
-        reject:(programId, applicationId) => `/ops/programs/${programId}/participants/${applicationId}/reject`,
-        cancel:(programId, applicationId) => `/ops/programs/${programId}/participants/${applicationId}`,
-        notify:(programId) => `/ops/programs/${programId}/participants/notify`,
-        export:(programId, params) => `/ops/programs/${programId}/participants/export?${new URLSearchParams(params)}`
+        `/noncurricular-operator/programs/${programId}/participants?status=${encodeURIComponent(status||'')}&scheduleId=${encodeURIComponent(scheduleId||'')}&q=${encodeURIComponent(keyword||'')}&page=${page||0}&size=${size||PAGE_SIZE}`,
+        approve:(programId, applicationId) => `/noncurricular-operator/programs/${programId}/participants/${applicationId}/approve`,
+        reject:(programId, applicationId) => `/noncurricular-operator/programs/${programId}/participants/${applicationId}/reject`,
+        cancel:(programId, applicationId) => `/noncurricular-operator/programs/${programId}/participants/${applicationId}`,
+        notify:(programId) => `/noncurricular-operator/programs/${programId}/participants/notify`,
+        export:(programId, params) => `/noncurricular-operator/programs/${programId}/participants/export?${new URLSearchParams(params)}`
     };
     // 출석부 이동 URL
-    const attendanceUrl = (programId, scheduleId) => `/ops/programs/${programId}/attendance?scheduleId=${scheduleId||''}`;
+    const attendanceUrl = (programId, scheduleId) => `/noncurricular-operator/programs/${programId}/attendance?scheduleId=${scheduleId||''}`;
 
     /** ====== 간단 토스트 ====== */
     function toast(msg, type='info'){
@@ -355,8 +355,8 @@
             btn.addEventListener('click', (e)=>{
                 const id = e.target.dataset.id;
                 toast(`상세보기로 이동: applicationId=${id}`);
-                // 실제 상세 URL 예: /ops/programs/{programId}/participants/{applicationId}
-                location.href = `/ops/programs/${programId}/participants/${id}`;
+                // 실제 상세 URL 예: /noncurricular-operator/programs/{programId}/participants/{applicationId}
+                location.href = `/noncurricular-operator/programs/${programId}/participants/${id}`;
             });
         });
         document.querySelectorAll('.btn-approve').forEach(btn=>{
