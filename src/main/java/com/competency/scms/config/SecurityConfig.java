@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
-                                "/auth/**", "/login", "/error",
+                                "/auth/**", "/login", "/logout", "/error",
                                 "/favicon.ico", "/manifest.json",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()

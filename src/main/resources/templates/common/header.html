@@ -54,7 +54,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="logout()">로그아웃</a>
+                    <a class="nav-link" href="/logout" onclick="return confirm('로그아웃 하시겠습니까?')">로그아웃</a>
                 </li>
             </ul>
         </div>
@@ -62,15 +62,18 @@
 </header>
 
 <script>
-    function logout() {
+    // 전역 로그아웃 함수
+    window.logout = function() {
+        console.log('로그아웃 함수 호출');
         if (confirm('로그아웃 하시겠습니까?')) {
-            // 토큰 삭제
-            if (window.ApiUtils) {
-                window.ApiUtils.clearToken();
-            }
-            // 로그인 페이지로 이동
-            window.location.href = '/auth/login';
+            console.log('/logout 엔드포인트로 이동');
+            window.location.href = '/logout';
         }
-    }
+    };
+    
+    // DOM 로드 후 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('로그아웃 함수 등록 완료');
+    });
 </script>
 </html>
