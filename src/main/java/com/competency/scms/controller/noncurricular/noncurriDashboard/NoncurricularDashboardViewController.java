@@ -25,11 +25,5 @@ public class NoncurricularDashboardViewController {
         return "layouts/noncurricular-layout";
     }
 
-    // 비교과 관리자 대시보드
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 관리자 대시보드");
-        model.addAttribute("content", "noncurricular/admin/admin-dashboard :: content");
-        return "layouts/noncurricular-layout";
-    }
+
 }

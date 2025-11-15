@@ -108,23 +108,5 @@ public class AdminController {
         }
     }
 
-    // 비교과 관리자 대시보드
-    @GetMapping("/noncurricular/admin/dashboard")
-    public String noncurricularAdminDashboard(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("[AdminController] 비교과 관리자 대시보드 요청");
-        try {
-            User user = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자"));
 
-            // 비교과 프로그램 관련 통계만
-            model.addAttribute("programList", programRepository.findAll());
-            model.addAttribute("totalPrograms", programRepository.count());
-
-            return "noncurricular/admin/noncurricular-admin-main";
-        } catch (Exception e) {
-            log.error("[AdminController] 비교과 관리자 대시보드 로드 실패", e);
-            model.addAttribute("errorMessage", "대시보드를 불러올 수 없습니다.");
-            return "error";
-        }
-    }
 }

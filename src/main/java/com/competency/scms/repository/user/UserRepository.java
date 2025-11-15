@@ -58,4 +58,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt BETWEEN :startDate AND :endDate AND u.deletedAt IS NULL")
     long countNewUsersInPeriod(@Param("startDate") LocalDateTime startDate,
                                @Param("endDate") LocalDateTime endDate);
+
+    // 역할별 사용자 수 조회
+    long countByRole(com.competency.scms.domain.user.UserRole role);
 }

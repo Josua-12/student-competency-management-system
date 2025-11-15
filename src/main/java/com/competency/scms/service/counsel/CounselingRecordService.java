@@ -100,7 +100,7 @@ public class CounselingRecordService {
 
     private void validateAccessPermission(CounselingRecord record, User currentUser) {
         boolean isCounselor = currentUser.getId().equals(record.getCounselor().getId());
-        boolean isAdmin = currentUser.getRole() == UserRole.ADMIN;
+        boolean isAdmin = currentUser.getRole() == UserRole.COUNSELING_ADMIN;
         
         if (!isCounselor && !isAdmin) {
             throw new BusinessException(ErrorCode.FORBIDDEN);

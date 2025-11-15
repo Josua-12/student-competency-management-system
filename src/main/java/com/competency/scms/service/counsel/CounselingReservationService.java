@@ -178,7 +178,7 @@ public class CounselingReservationService {
     }
 
     private void validateCounselorOrAdminRole(User user) {
-        if (user.getRole() != UserRole.COUNSELOR && user.getRole() != UserRole.ADMIN) {
+        if (user.getRole() != UserRole.COUNSELOR && user.getRole() != UserRole.COUNSELING_ADMIN) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
     }
@@ -208,7 +208,7 @@ public class CounselingReservationService {
     private void validateAccessPermission(CounselingReservation reservation, User currentUser) {
         boolean isStudent = currentUser.getId().equals(reservation.getStudent().getId());
         boolean isCounselor = reservation.getCounselor() != null && currentUser.getId().equals(reservation.getCounselor().getId());
-        boolean isAdmin = currentUser.getRole() == UserRole.ADMIN;
+        boolean isAdmin = currentUser.getRole() == UserRole.COUNSELING_ADMIN;
 
         if (!isStudent && !isCounselor && !isAdmin) {
             throw new BusinessException(ErrorCode.FORBIDDEN);

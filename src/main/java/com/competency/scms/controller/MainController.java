@@ -17,8 +17,14 @@ public class MainController {
 
     @GetMapping({"/", "/main"})
     public String mainRedirect(Authentication auth) {
+        log.info("메인 리다이렉트 - 인증 상태: {}", auth != null ? auth.getName() : "null");
+        if (auth != null) {
+            log.info("인증된 사용자 권한: {}", auth.getAuthorities());
+        }
+        
         // 인증되지 않은 사용자는 로그인 페이지로
         if (auth == null) {
+            log.info("비인증 사용자 - 로그인 페이지로 리다이렉트");
             return "redirect:/auth/login";
         }
 
@@ -31,8 +37,8 @@ public class MainController {
         return switch (role) {
             case "ROLE_SUPER_ADMIN" -> "redirect:/super-admin/dashboard";
             case "ROLE_COUNSELING_ADMIN" -> "redirect:/counseling-admin/dashboard";
-            case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular-admin/dashboard";
-            case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular-operator/dashboard";
+            case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular/admin/dashboard";
+            case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular/operator/dashboard";
             case "ROLE_COMPETENCY_ADMIN" -> "redirect:/competency-admin/dashboard";
             case "ROLE_COUNSELOR" -> "redirect:/counselor/dashboard";
             default -> "redirect:/student/dashboard"; // 학생용
@@ -45,8 +51,17 @@ public class MainController {
     }
 
     @GetMapping("/student/dashboard")
-    public String dashboard() {
+    public String dashboard(Authentication auth, org.springframework.ui.Model model) {
         log.info("학생 대시보드 페이지 접근");
+        try {
+            // 인증된 사용자 정보로 대시보드 데이터 조회
+            // 임시로 테스트 데이터 사용 (userNum: 20240001)
+            var dashboardData = mainDashboardService.getMainDashboardData("20240001");
+            model.addAttribute("dashboardData", dashboardData);
+        } catch (Exception e) {
+            log.error("대시보드 데이터 로드 실패", e);
+            model.addAttribute("errorMessage", "대시보드 데이터를 불러올 수 없습니다.");
+        }
         return "main/dashboard";
     }
 
@@ -62,17 +77,9 @@ public class MainController {
         return "counseling/admin/admin-main";
     }
 
-    @GetMapping("/noncurricular-operator/dashboard")
-    public String operatorDashboard() {
-        log.info("비교과 운영자 대시보드 페이지 접근");
-        return "noncurricular/noncurriDashboard/operator-dashboard";
-    }
 
-    @GetMapping("/noncurricular-admin/dashboard")
-    public String noncurricularAdminDashboard() {
-        log.info("비교과 관리자 대시보드 페이지 접근");
-        return "noncurricular/noncurriDashboard/student-dashboard";
-    }
+
+
 
     @GetMapping("/competency-admin/dashboard")
     public String competencyAdminDashboard() {
