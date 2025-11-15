@@ -155,6 +155,32 @@ public class UserController {
                 .build());
     }
 
+    /**
+     * 로그아웃 (API)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(jakarta.servlet.http.HttpServletResponse response) {
+        log.info("로그아웃 요청");
+        
+        // 쿠키 삭제
+        jakarta.servlet.http.Cookie accessTokenCookie = new jakarta.servlet.http.Cookie("accessToken", null);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setHttpOnly(true);
+        response.addCookie(accessTokenCookie);
+        
+        jakarta.servlet.http.Cookie refreshTokenCookie = new jakarta.servlet.http.Cookie("refreshToken", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        response.addCookie(refreshTokenCookie);
+        
+        return ResponseEntity.ok(Map.of(
+                "message", "로그아웃이 완료되었습니다.",
+                "redirectUrl", "/auth/login"
+        ));
+    }
+
 
 
 }

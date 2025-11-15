@@ -40,7 +40,7 @@ async function handleLogin(e) {
         if (response.ok) {
             persistTokens(data);
             showAlert('로그인 성공!', 'success');
-            window.location.replace('/user/dashboard');
+            window.location.replace('/');
         } else {
             handleLoginError(data);
         }

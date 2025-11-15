@@ -54,10 +54,15 @@ public class MainController {
     public String dashboard(Authentication auth, org.springframework.ui.Model model) {
         log.info("학생 대시보드 페이지 접근");
         try {
-            // 인증된 사용자 정보로 대시보드 데이터 조회
-            // 임시로 테스트 데이터 사용 (userNum: 20240001)
-            var dashboardData = mainDashboardService.getMainDashboardData("20240001");
+            String userNum = auth.getName();
+            log.info("대시보드 조회할 사용자 학번: {}", userNum);
+
+            var dashboardData = mainDashboardService.getMainDashboardData(userNum);
             model.addAttribute("dashboardData", dashboardData);
+            
+            // JavaScript에서 사용할 수 있도록 JSON 문자열로 전달
+            model.addAttribute("dashboardDataJson", 
+                new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(dashboardData));
         } catch (Exception e) {
             log.error("대시보드 데이터 로드 실패", e);
             model.addAttribute("errorMessage", "대시보드 데이터를 불러올 수 없습니다.");
@@ -116,5 +121,47 @@ public class MainController {
     @GetMapping("/auth/reset-password")
     public String resetPasswordPage() {
         return "auth/reset-password";
+    }
+
+    @GetMapping("/logout")
+    public String logout(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) {
+        log.info("=== 로그아웃 요청 시작 ===");
+        log.info("요청 URL: {}", request.getRequestURL());
+        log.info("요청 IP: {}", request.getRemoteAddr());
+        
+        // 기존 쿠키 확인
+        jakarta.servlet.http.Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (jakarta.servlet.http.Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName()) || "refreshToken".equals(cookie.getName())) {
+                    log.info("기존 쿠키 발견: {} = {}", cookie.getName(), 
+                        cookie.getValue().length() > 10 ? cookie.getValue().substring(0, 10) + "..." : cookie.getValue());
+                }
+            }
+        }
+
+        // 쿠키 삭제
+        jakarta.servlet.http.Cookie accessTokenCookie = new jakarta.servlet.http.Cookie("accessToken", "");
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(false);
+        response.addCookie(accessTokenCookie);
+        log.info("accessToken 쿠키 삭제 설정 완료");
+        
+        jakarta.servlet.http.Cookie refreshTokenCookie = new jakarta.servlet.http.Cookie("refreshToken", "");
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
+        response.addCookie(refreshTokenCookie);
+        log.info("refreshToken 쿠키 삭제 설정 완료");
+
+        // localStorage 삭제를 위한 헤더
+        response.setHeader("Clear-Site-Data", "\"cookies\", \"storage\"");
+        log.info("Clear-Site-Data 헤더 설정 완료");
+        
+        log.info("=== 로그아웃 완료 - /auth/login으로 리다이렉트 ===");
+        return "redirect:/auth/login";
     }
 }
