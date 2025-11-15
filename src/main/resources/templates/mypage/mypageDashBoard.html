@@ -1,933 +1,1050 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>나의 활동 관리 - 샘플 UI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>푸름대학교 학생역량관리 마이페이지</title>
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons (사이드 메뉴 아이콘용) -->
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- 외부 CSS 파일 로드 -->
-    <link rel="stylesheet" href="applicationstatus.css" />
+    <!-- TOAST UI Chart -->
+    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <!-- 사용자 정의 스타일 로드 -->
+    <link rel="stylesheet" href="assessment-history.css" />
 
     <style>
-        /* --- 전역 스타일 --- */
+        /* ========================================================= */
+        /* 1. 공통 및 기본 레이아웃 스타일 (CSS 파일 통합) */
+        /* ========================================================= */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
+
         :root{
-          --accent: #0d6efd;
-          --muted: #6c757d;
-          --card-radius: 12px;
-          --sidebar-width: 250px; /* 고정 사이드바 너비 */
-          --sidebar-bg: #1E3A8A; /* 다크 네이비 배경색 */
-          --header-height: 60px; /* 모바일 헤더 높이 */
+            --accent: #0d6efd;
+            --muted: #6c757d;
+            --card-radius: 12px;
+            --sidebar-width: 250px;
+            --sidebar-bg: #1E3A8A; /* 다크 네이비 배경색 */
+            --header-height: 60px;
         }
+
         body {
-          background: #f6f8fb;
-          font-family: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-          color: #212529;
-          padding: 0;
-          overflow-x: hidden; /* 사이드바 숨김 시 스크롤바 방지 */
-        }
-        .page-title {
-          display:flex;
-          align-items: center;
-          gap:12px;
-          margin-bottom:18px;
-        }
-        .card-rounded {
-          border-radius: var(--card-radius);
-          box-shadow: 0 0 12px rgba(33,37,41,0.06);
-        }
-
-        /* --- 고정 데스크톱 사이드바 (>= 992px) --- */
-        .fixed-sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background-color: var(--sidebar-bg);
-            color: white;
-            padding: 1.5rem 1rem;
-            z-index: 1030;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.15);
-            overflow-y: auto;
-            transition: transform 0.3s ease-in-out; /* 모바일 토글을 위한 트랜지션 */
-        }
-        .sidebar-header {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: white;
-            padding-left: 0.5rem;
-        }
-        .sidebar-nav a {
-            color: rgba(255, 255, 255, 0.75);
-            padding: 10px 12px;
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: #f7f9fb;
             display: flex;
-            align-items: center;
-            border-radius: 8px;
-            transition: background-color 0.2s;
-        }
-        .sidebar-nav a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        .sidebar-nav .active-link {
-            background-color: var(--accent);
-            color: white !important;
-            box-shadow: 0 2px 5px rgba(13,110,253,0.3);
-        }
-        .sidebar-nav .list-group-item {
-            padding: 0;
-            border: none;
-            background-color: transparent;
-        }
-        .sidebar-nav i {
-            margin-right: 12px;
-            font-size: 1.2rem;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* --- 모바일 헤더 (토글 버튼 포함) --- */
-        .mobile-header {
-            display: none; /* 기본 숨김 */
+        /* --- Header/Footer/Sidebar 공통 스타일 --- */
+        .sticky-top { top: 0; z-index: 1020; }
+        .sidebar { min-height: 100vh; }
+        .sidebar a.transition { transition: background-color 0.2s, color 0.2s; }
+        .sidebar a.hover-bg-light:hover { background-color: #f8f9fa; }
+        .sidebar a.active-link {
+            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+            font-weight: 600;
+        }
+
+        /* 푸터 링크 호버 효과 */
+        footer a:hover {
+            color: #ccc !important;
+            text-decoration: underline !important;
+        }
+
+        /* Offcanvas (모바일 햄버거 메뉴) 스타일 */
+        .offcanvas-start { width: 250px; }
+        .offcanvas-body .active-link {
+            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+            font-weight: 600;
+        }
+
+        /* 메인 콘텐츠 상단 패딩 조정 (Fixed-top Navbar 때문에) */
+        .main-content {
+            flex-grow: 1;
+            padding-top: 70px !important; /* 모바일: fixed-top navbar 공간 확보 */
+        }
+        @media (min-width: 768px) { /* md 이상 */
+            .main-content {
+                padding-top: 3rem !important;
+                margin-left: var(--sidebar-width); /* 사이드바 공간 확보 */
+            }
+        }
+
+        /* 테이블 스타일 */
+        .history-table th, .history-table td {
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .history-table thead th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+        }
+
+        /* Application Status Custom Modal */
+        #custom-modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: var(--header-height);
-            background-color: var(--sidebar-bg);
-            color: white;
-            padding: 0 1rem;
-            z-index: 1040; /* 사이드바 위 */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        #modal-content {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 350px;
         }
 
-        /* --- 메인 콘텐츠 래퍼 스타일 (데스크톱) --- */
-        .main-content-wrapper {
-            margin-left: var(--sidebar-width);
-            padding: 20px;
-            padding-top: 20px; /* 상단 패딩 */
-        }
+        /* ========================================================= */
+        /* 2. 대시보드 카드 스타일 (mypageDashBoard.html 기반) */
+        /* ========================================================= */
+        .card-shadow { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); }
+        .card-dashboard { border-radius: var(--card-radius); border: none; }
+        .card-dashboard.compact { padding: 1rem; }
+        .upcoming { background-color: #E0F2F1; border-left: 5px solid #00BFA5; }
+        .counsel-header { color: var(--sidebar-bg); }
+        .btn-outline-primary { border-radius: 50rem !important; }
 
-        /* --- 모바일 반응형 처리 (< 992px) --- */
-        @media (max-width: 991.98px){
-            /* 1. 모바일 헤더 표시 */
-            .mobile-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
+        /* Chart 스타일 */
+        #mainChartCanvas { max-height: 250px; }
 
-            /* 2. 사이드바 초기 숨김 & 토글 설정 */
-            .fixed-sidebar {
-                transform: translateX(-100%); /* 왼쪽 밖으로 숨김 */
-                box-shadow: none; /* 고정 박스 쉐도우 제거 */
-                padding-top: 0.5rem; /* 모바일에서는 상단에 여백 덜 줌 */
-            }
-            .fixed-sidebar.toggled {
-                transform: translateX(0); /* 보이기 */
-                box-shadow: 4px 0 10px rgba(0,0,0,0.3);
-            }
-
-            /* 3. 메인 콘텐츠 마진 해제 및 모바일 헤더 아래로 이동 */
-            .main-content-wrapper {
-                margin-left: 0;
-                padding: 10px;
-                padding-top: calc(var(--header-height) + 10px); /* 헤더 높이만큼 패딩 */
-            }
-
-            /* 4. 토글 시 배경 딤처리 */
-            .offcanvas-backdrop-custom {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 1020;
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity 0.3s ease-in-out, visibility 0.3s;
-            }
-            .offcanvas-backdrop-custom.show {
-                opacity: 1;
-                visibility: visible;
-            }
-        }
-
-        /* 차트 및 카드 스타일 (이전과 동일) */
-        .chart-box{ min-height: 260px; display:flex; align-items:center; justify-content:center; padding: 12px; }
-        .status-badge { font-weight:600; padding: .4rem .6rem; border-radius: 999px; font-size: .85rem; }
-        .status-received { background:#fff3cd; color:#856404; border:1px solid #ffeeba; }
-        .status-waiting  { background:#e7f1ff; color:#084298; border:1px solid #cfe2ff; }
-        .status-inprogress{ background:#d1e7dd; color:#0f5132; border:1px solid #badbcc; }
-        .status-cancelled { background:#f8d7da; color:#842029; border:1px solid #f5c2c7; }
-        .upcoming { border-left: 4px solid var(--accent); background: linear-gradient(90deg, rgba(13,110,253,0.03), transparent); }
-        .pagination .page-link { min-width:42px; text-align:center; }
-        .muted-sm { color:var(--muted); font-size:0.9rem; }
-        .text-accent { color: var(--accent) !important; }
-
-        @media (max-width: 768px){ /* 추가 모바일 레이아웃 조정 */
-          .charts-row { flex-direction: column; }
-          .charts-row .col { margin-bottom: 12px; }
-        }
     </style>
 </head>
 <body>
 
-<!-- 햄버거 토글 버튼 및 모바일 헤더 (Small Screen Only) -->
-<div class="mobile-header d-lg-none">
-    <div class="fw-bold fs-5">학생 역량 관리 시스템</div>
-    <button class="btn text-white p-2" id="sidebarToggleMobile">
-        <i class="bi bi-list fs-3"></i>
-    </button>
-</div>
+<!-- ========================================================= -->
+<!-- 1. 공통 헤더 (header.html) -->
+<!-- ========================================================= -->
+<header class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid px-3 px-md-5">
+        <!-- 로고/웹사이트명 -->
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <!-- 가상의 로고 이미지 경로 -->
+            <img src="https://placehold.co/30x30/0d6efd/ffffff?text=SCMS" alt="scms 로고" class="me-2 rounded" style="height: 30px;">
+            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
+        </a>
 
-<!-- 좌측 사이드 메뉴 (데스크톱 고정 / 모바일 토글) -->
-<aside class="fixed-sidebar" id="appSidebar">
-    <div class="d-lg-none text-end mb-2 pe-3">
-        <!-- 모바일 닫기 버튼 (사이드바 내부) -->
-        <button class="btn text-white p-2" id="sidebarCloseMobile">
-            <i class="bi bi-x-lg fs-4"></i>
+        <!-- 햄버거 토글 버튼 (모바일 마이페이지 사이드바) -->
+        <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+            <i class="fas fa-bars"></i>
         </button>
+
+        <!-- 네비게이션 메뉴 (데스크톱) -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#">홈</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">역량진단</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">상담</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">비교과 프로그램</a></li>
+                <li class="nav-item"><a class="nav-link active" href="#">마이페이지</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> 로그아웃</a></li>
+            </ul>
+        </div>
     </div>
-    <div class="sidebar-header d-none d-lg-block">
-        학생 역량 관리 시스템
-    </div>
-    <nav class="sidebar-nav">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none active-link">
-                    <i class="bi bi-speedometer2"></i> 나의 활동 관리 (대시보드)
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none">
-                    <i class="bi bi-search"></i> 학생 조회
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none">
-                    <i class="bi bi-gear"></i> 관리자
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none">
-                    <i class="bi bi-box-arrow-right"></i> 로그아웃
-                </a>
-            </li>
-            <li class="list-group-item mt-3">
-                <a href="#" class="text-decoration-none">
-                    <i class="bi bi-clipboard-data"></i> 역량 진단
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none">
-                    <i class="bi bi-mortarboard"></i> 비교과 프로그램
-                </a>
-            </li>
-            <li class="list-group-item">
-                <a href="#" class="text-decoration-none">
-                    <i class="bi bi-chat-dots"></i> 상담 예약/내역
-                </a>
-            </li>
-        </ul>
-    </nav>
-</aside>
+</header>
 
-<!-- 사이드바 외부 딤처리 영역 (모바일) -->
-<div id="sidebarBackdrop" class="offcanvas-backdrop-custom d-lg-none"></div>
+<!-- ========================================================= -->
+<!-- 2. 마이페이지 사이드바 (데스크톱) & Offcanvas (모바일) -->
+<!-- ========================================================= -->
 
-<!-- 메인 콘텐츠 래퍼 -->
-<div class="main-content-wrapper">
-    <div class="container-fluid">
-        <div class="page-title d-none d-lg-flex">
-            <h2 class="mb-0">나의 활동 관리</h2>
-            <small class="muted-sm">역량 진단 · 비교과 · 이수/수료 · 상담 관리</small>
-        </div>
-        <div class="page-title d-lg-none">
-            <!-- 모바일에서는 타이틀을 헤더로 대체하여 숨김. 필요 시 주석 해제하여 사용 -->
-        </div>
-
-
-        <!-- 상단 요약 카드 그룹 (이전과 동일) -->
-        <div class="row g-3 mb-3">
-            <div class="col-12 col-md-4">
-                <div class="card card-rounded p-3 h-100">
-                    <h6 class="mb-2">최근 역량 진단</h6>
-                    <div class="d-flex align-items-center">
-                        <div style="width:80px; height:80px;">
-                            <canvas id="scoreDonut"></canvas>
-                        </div>
-                        <div class="ms-3">
-                            <div class="fs-5 fw-bold" id="latestScoreText">82 / 100</div>
-                            <div class="muted-sm">평균 수준 : 상 (상세 해석 보기)</div>
-                            <div class="mt-2">
-                                <button class="btn btn-sm btn-outline-primary" id="btnLatestDetail">상세 보기</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card card-rounded p-3 h-100">
-                    <h6 class="mb-2">이수/수료 현황</h6>
-                    <div class="muted-sm">총 이수 시간 / 총 학점</div>
-                    <div class="mt-2">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <div class="fw-bold fs-5" id="completedHours">48 시간</div>
-                                <div class="muted-sm">총 이수 시간</div>
-                            </div>
-                            <div>
-                                <div class="fw-bold fs-5" id="completedCredits">12 학점</div>
-                                <div class="muted-sm">총 이수 학점</div>
-                            </div>
-                        </div>
-
-                        <div class="mt-3">
-                            <div class="muted-sm">진행률</div>
-                            <div class="progress" style="height:12px;">
-                                <div id="completionProgress" class="progress-bar" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">60%</div>
-                            </div>
-                            <div class="mt-2">
-                                <a href="#" class="small">완료 목록 보기 →</a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card card-rounded p-3 h-100">
-                    <h6 class="mb-2">상담</h6>
-                    <div class="muted-sm">다음 상담 일정</div>
-                    <div class="mt-2">
-                        <div id="nextCounsel" class="p-2 upcoming rounded">
-                            <div class="fw-semibold">2025-11-10 14:30</div>
-                            <div class="muted-sm">심리상담 - 대면 (상담자: 이지은)</div>
-                        </div>
-                        <div class="mt-2">
-                            <button class="btn btn-sm btn-outline-success" id="btnCounselApply">상담 신청</button>
-                            <button class="btn btn-sm btn-outline-danger" id="btnCounselCancel">취소</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 메인 콘텐츠: 차트 / 진단 내역 / 비교과 / 상담 리스트 (이전과 동일) -->
-        <div class="row g-3">
-            <!-- 차트 영역 -->
-            <div class="col-12 col-lg-6">
-                <div class="card card-rounded p-3 h-100">
-                    <h6 class="mb-3">역량 진단 시각화</h6>
-
-                    <div class="d-flex charts-row gap-3">
-                        <div class="col p-0">
-                            <div class="chart-box card-rounded bg-white p-3">
-                                <canvas id="radarChart" style="max-width:100%;"></canvas>
-                            </div>
-                            <div class="mt-2 muted-sm">레이더: 역량 항목별 분포</div>
-                        </div>
-
-                        <div class="col p-0">
-                            <div class="chart-box card-rounded bg-white p-3">
-                                <canvas id="barChart" style="max-width:100%;"></canvas>
-                            </div>
-                            <div class="mt-2 muted-sm">바차트: 최근 3회 점수 비교</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- 진단 내역(테이블 + 페이징) -->
-            <div class="col-12 col-lg-6">
-                <div class="card card-rounded p-3 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0">진단 내역</h6>
-                        <div class="muted-sm">총 <span id="historyTotalCount">0</span>건</div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle small" id="historyTable">
-                            <thead class="table-light">
-                            <tr>
-                                <th>날짜</th>
-                                <th>진단명</th>
-                                <th>점수</th>
-                                <th>해석</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- JS에서 채움 -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                        <div class="muted-sm" id="historyShowing">1 - 5</div>
-                        <nav>
-                            <ul class="pagination pagination-sm mb-0" id="historyPagination">
-                                <!-- JS에서 채움 -->
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 비교과 신청 내역 -->
-            <div class="col-12 col-lg-6">
-                <div class="card card-rounded p-3 h-100">
-                    <h6 class="mb-2">비교과 신청 내역</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-borderless align-middle" id="applyTable">
-                            <thead>
-                            <tr class="small text-muted">
-                                <th>신청일</th>
-                                <th>프로그램</th>
-                                <th>상태</th>
-                                <th class="text-end">액션</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- JS 채움 -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 이수완료 목록과 상담 내역 -->
-            <div class="col-12 col-lg-6">
-                <div class="card card-rounded p-3 h-100">
-                    <h6 class="mb-2">이수 / 수료 목록</h6>
-                    <ul class="list-group list-group-flush small" id="completionList" style="max-height:260px; overflow:auto;">
-                        <!-- JS 채움 -->
-                    </ul>
-                    <div class="mt-2 text-end">
-                        <a href="#" class="small">이수 상세 보기 →</a>
-                    </div>
-                </div>
-
-                <div class="card card-rounded p-3 h-100 mt-3">
-                    <h6 class="mb-2">상담 내역</h6>
-                    <div id="counselList" style="max-height:260px; overflow:auto;">
-                        <!-- JS 채움 -->
-                    </div>
-                </div>
-            </div>
+<!-- 데스크톱용 사이드바 (md 이상에서 보임) -->
+<div class="d-none d-md-block sidebar bg-white border-end position-fixed" style="width: var(--sidebar-width);">
+    <div class="p-4 pt-5">
+        <h4 class="fw-bold mb-4 text-dark">마이페이지</h4>
+        <div class="list-group list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-view="dashboard">
+                <i class="bi bi-speedometer2 me-2"></i> 대시보드
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="history">
+                <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="status">
+                <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="user-info">
+                <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
+            </a>
         </div>
     </div>
 </div>
 
-<!-- 모달 섹션 (이전과 동일) -->
-<div class="modal fade" id="modalLatestDetail" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">최근 역량 진단 상세</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <canvas id="detailRadar"></canvas>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>해석</h6>
-                        <p id="detailInterpretation">여기에 점수 기반 해석이 들어갑니다. (예: 소통 능력이 우수하지만 프로젝트 관리 역량을 향상할 필요가 있습니다.)</p>
-
-                        <h6 class="mt-3">추천 학습 활동</h6>
-                        <ul id="detailRecommendations">
-                            <li>프로젝트 관리 기초 과정 수강</li>
-                            <li>팀 협업 워크숍 참여</li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                <button class="btn btn-primary">추천 활동 신청</button>
-            </div>
+<!-- 모바일용 Offcanvas 사이드바 (md 미만에서 보임) -->
+<div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasSidebarLabel">마이페이지 메뉴</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body pt-3">
+        <div class="list-group list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-view="dashboard" data-bs-dismiss="offcanvas">
+                <i class="bi bi-speedometer2 me-2"></i> 대시보드
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="history" data-bs-dismiss="offcanvas">
+                <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="status" data-bs-dismiss="offcanvas">
+                <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
+            </a>
+            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="user-info" data-bs-dismiss="offcanvas">
+                <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
+            </a>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="modalConfirmCancel" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <p id="cancelMessage">정말로 취소하시겠습니까?</p>
-                <div class="text-end">
-                    <button class="btn btn-sm btn-secondary me-2" data-bs-dismiss="modal">아니요</button>
-                    <button id="confirmCancelBtn" class="btn btn-sm btn-danger">예, 취소</button>
+
+<!-- ========================================================= -->
+<!-- 3. 메인 콘텐츠 영역 -->
+<!-- ========================================================= -->
+<div class="main-content container-fluid px-3 px-md-5 pb-5">
+
+    <!-- 뷰 전환 영역 -->
+    <div id="dashboardView" class="view-section">
+        <!-- mypageDashBoard.html 내용 -->
+        <h1 class="fw-bold mb-4 text-dark">나의 활동 대시보드</h1>
+        <div class="row g-4">
+            <!-- 역량 진단 요약 카드 -->
+            <div class="col-lg-8">
+                <div class="card card-dashboard h-100 card-shadow">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold text-primary mb-3">최신 역량 진단 결과</h5>
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <canvas id="mainChartCanvas" role="img" aria-label="최신 역량 진단 레이더 차트"></canvas>
+                            </div>
+                            <div class="col-md-6 d-flex flex-column justify-content-center">
+                                <p class="fw-bold fs-3 text-center mb-1" id="latestAvgScore">4.4 / 5.0</p>
+                                <p class="text-center text-muted mb-4">평균 점수 (2025.01.20 진단)</p>
+
+                                <div class="d-grid gap-2 d-md-block text-center">
+                                    <button class="btn btn-outline-primary btn-sm rounded-pill" id="btnLatestDetail">상세 결과 보기</button>
+                                    <button class="btn btn-primary btn-sm rounded-pill" data-view-target="history">현황 전체 보기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상담 및 프로그램 요약 카드 -->
+            <div class="col-lg-4">
+                <div class="card card-dashboard card-shadow h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold counsel-header mb-3">
+                            <i class="bi bi-calendar-check me-2"></i> 상담/비교과 요약
+                        </h5>
+
+                        <!-- 다음 예정 상담 -->
+                        <div class="p-3 mb-3 border rounded-3 upcoming" id="nextCounselElement">
+                            <div class="fw-semibold text-success d-flex justify-content-between">
+                                <span><i class="bi bi-bell-fill me-1"></i> 예정된 상담</span>
+                                <span class="badge bg-success">D-3</span>
+                            </div>
+                            <p class="mb-0 mt-2">전문 상담사 A | 2025-03-20 14:00</p>
+                            <p class="text-sm text-muted mb-2">진로상담 (대면)</p>
+                            <button class="btn btn-danger btn-sm rounded-pill" id="btnCounselCancel"><i class="fas fa-times me-1"></i> 취소</button>
+                        </div>
+
+                        <!-- 프로그램 신청 현황 -->
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
+                            <span class="fw-semibold text-dark">비교과 신청 (누적)</span>
+                            <span class="fw-bold fs-4 text-primary" id="totalProgramCount">5건</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-semibold text-dark">완료된 프로그램</span>
+                            <span class="fw-bold fs-4 text-success" id="completedProgramCount">3건</span>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill mt-2" data-view-target="status">신청 현황 전체보기</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최근 활동 목록 -->
+            <div class="col-12">
+                <div class="card card-dashboard card-shadow">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold text-dark mb-3">최근 활동 이력 (최대 5개)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                <tr>
+                                    <th scope="col">구분</th>
+                                    <th scope="col">활동명</th>
+                                    <th scope="col">날짜</th>
+                                    <th scope="col">상태/결과</th>
+                                </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                <tr><td colspan="4" class="text-center text-muted">데이터를 로드 중입니다.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modalSatisfaction" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content">
-            <form id="satisfactionForm">
-                <div class="modal-header">
-                    <h5 class="modal-title">상담 만족도 평가</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
+    <div id="historyView" class="view-section" style="display:none;">
+        <!-- assessmentHistory.html 내용 -->
+        <h1 class="fw-bold mb-4 text-dark">역량 진단 현황</h1>
+
+        <!-- 차트 영역 -->
+        <div class="card card-dashboard card-shadow mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-semibold text-dark">역량 추이 그래프</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-secondary active" id="btnShowLineChart">꺾은선</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnShowBarChart">막대</button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-2">상담 경험을 평가해주세요.</div>
-                    <div class="mb-3">
-                        <label class="form-label">만족도</label>
-                        <select class="form-select" name="rating" required>
-                            <option value="">선택</option>
-                            <option value="5">매우 만족 (5)</option>
-                            <option value="4">만족 (4)</option>
-                            <option value="3">보통 (3)</option>
-                            <option value="2">불만족 (2)</option>
-                            <option value="1">매우 불만족 (1)</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">의견 (선택)</label>
-                        <textarea class="form-control" name="comment" rows="3" placeholder="피드백을 남겨주세요."></textarea>
+            </div>
+            <div class="card-body p-4">
+                <div id="historyChart" style="height: 320px;">
+                    <!-- TOAST UI Chart가 렌더링될 영역 -->
+                    <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                        <i class="fas fa-spinner fa-spin me-2"></i> 차트 로딩 중...
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button class="btn btn-primary" type="submit">제출</button>
+            </div>
+        </div>
+
+        <!-- 테이블 영역 -->
+        <div class="card card-dashboard card-shadow">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-semibold text-dark">역량 진단 이력</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 history-table">
+                        <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase">진단명</th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="1"></th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="2"></th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="3"></th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="4"></th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center">자세히 보기</th>
+                        </tr>
+                        </thead>
+                        <tbody id="scoreTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i> 데이터 로딩 중...
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="statusView" class="view-section" style="display:none;">
+        <!-- applicationstatus.html 내용 -->
+        <h1 class="fw-bold mb-4 text-dark">비교과 프로그램 신청 현황</h1>
+        <div class="card card-dashboard card-shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">프로그램명</th>
+                            <th scope="col" class="py-3 px-4">신청 기간</th>
+                            <th scope="col" class="py-3 px-4 text-center">신청일</th>
+                            <th scope="col" class="py-3 px-4 text-center">상태</th>
+                            <th scope="col" class="py-3 px-4 text-center">액션</th>
+                        </tr>
+                        </thead>
+                        <tbody id="applicationTableBody">
+                        <!-- 데이터는 JS에서 채워집니다. -->
+                        <tr><td colspan="5" class="text-center text-muted py-4">데이터 로드 중...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="userInfoView" class="view-section" style="display:none;">
+        <!-- user-info-edit.html 내용 기반으로 사용자 정보 수정 폼 구현 -->
+        <h1 class="fw-bold mb-4 text-dark">사용자 정보 수정</h1>
+
+        <div class="user-info-container bg-white rounded-lg shadow-lg mx-auto" style="max-width: 600px; padding: 2rem;">
+            <p class="text-muted text-center mb-4">비밀번호는 별도 메뉴에서 변경해 주세요. 이메일과 연락처만 수정 가능합니다.</p>
+
+            <form id="userInfoForm">
+                <div class="mb-3">
+                    <label for="name" class="form-label">이름</label>
+                    <input type="text" class="form-control" id="name" value="김푸름" readonly disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="studentId" class="form-label">학번</label>
+                    <input type="text" class="form-control" id="studentId" value="202212345" readonly disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">학과</label>
+                    <input type="text" class="form-control" id="department" value="컴퓨터공학과" readonly disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="grade" class="form-label">학년</label>
+                    <input type="text" class="form-control" id="grade" value="3학년" readonly disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label required">이메일</label>
+                    <input type="email" class="form-control rounded-pill" id="email" value="pureum.kim@univ.ac.kr" required>
+                    <div class="error-message text-danger small mt-1" id="email-error"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label required">연락처 (휴대폰)</label>
+                    <input type="tel" class="form-control rounded-pill" id="phone" value="010-1234-5678" required>
+                    <div class="error-message text-danger small mt-1" id="phone-error"></div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" id="cancelBtn"><i class="fas fa-undo me-1"></i> 취소</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4" id="updateBtn"><i class="fas fa-save me-1"></i> 저장</button>
                 </div>
             </form>
         </div>
     </div>
+
 </div>
 
-<!-- Bootstrap JS (with Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ========================================================= -->
+<!-- 4. 공통 푸터 (footer.html) -->
+<!-- ========================================================= -->
+<footer class="bg-dark text-white py-5 mt-auto">
+    <div class="container-fluid px-3 px-md-5">
+        <div class="row">
+            <!-- 역량 진단 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-line me-2"></i>역량 진단
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">진단 시작하기</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">진단 결과 확인하기</a></li>
+                </ul>
+            </div>
 
+            <!-- 상담 예약 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>상담예약
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">상담 예약하기</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">내 예약 조회</a></li>
+                </ul>
+            </div>
+
+            <!-- 비교과 프로그램 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-book me-2"></i>비교과 프로그램
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">교내 비교과 프로그램</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">교외 비교과 프로그램</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 하단 저작권 -->
+        <div class="border-top pt-4 mt-2 text-center text-md-start">
+            <p class="text-sm mb-0 text-secondary">
+                &copy; 2025 푸름대학교 학생역량관리센터. All Rights Reserved.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- ========================================================= -->
+<!-- 5. Modals (Custom Alert/Confirm) -->
+<!-- ========================================================= -->
+
+<!-- Application Status Custom Modal (Alert 대체) -->
+<div id="custom-modal">
+    <div id="modal-content">
+        <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
+        <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
+    </div>
+</div>
+
+<!-- Custom Modal for Confirmation/Alerts (user-info-edit.html 기반) -->
+<div class="modal fade" id="customConfirmModal" tabindex="-1" aria-labelledby="customConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customConfirmModalLabel">확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="customConfirmModalBody">
+                <!-- 메시지가 여기에 들어갑니다. -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+                <button type="button" class="btn btn-primary" id="customConfirmYesBtn">예</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- 6. JavaScript (JS 파일 통합) -->
+<!-- ========================================================= -->
+<!-- Bootstrap 5 JS Bundle 로드 (햄버거 메뉴/Offcanvas 기능 포함) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    /* ==========================
-       모바일 사이드바 토글 로직
-       ========================== */
     document.addEventListener('DOMContentLoaded', () => {
-        const sidebar = document.getElementById('appSidebar');
-        const toggleBtn = document.getElementById('sidebarToggleMobile');
-        const closeBtn = document.getElementById('sidebarCloseMobile');
-        const backdrop = document.getElementById('sidebarBackdrop');
 
-        function toggleSidebar() {
-            const isToggled = sidebar.classList.contains('toggled');
-            if (isToggled) {
-                sidebar.classList.remove('toggled');
-                backdrop.classList.remove('show');
-                document.body.style.overflow = ''; // 스크롤 허용
+        // =========================================================
+        // 1. 공통 데이터 및 유틸리티
+        // =========================================================
+
+        // 임시 데이터 (실제 서버 환경에서는 API 호출로 대체됨)
+        const competencyLabels = ['문제해결', '협업능력', '창의적사고', '리더십'];
+        const historyData = [
+            { id: 1, diagnosisTitle: "2024년 1차 진단", scores: [4.2, 3.8, 4.0, 3.1], date: "2024-06-15" },
+            { id: 2, diagnosisTitle: "2024년 2차 진단", scores: [4.6, 4.0, 4.5, 3.5], date: "2024-12-20" },
+            { id: 3, diagnosisTitle: "2025년 1차 진단", scores: [4.8, 4.2, 4.6, 3.7], date: "2025-01-20" }
+        ];
+        const applicationData = [
+            { id: 1, name: "글로벌 리더십 캠프", period: "2025.03.01~03.10", applyDate: "2025.02.20", status: "승인", statusClass: "success" },
+            { id: 2, name: "AI 코딩 부트캠프", period: "2025.04.10~04.25", applyDate: "2025.03.15", status: "신청 완료", statusClass: "primary", action: "cancel" },
+            { id: 3, name: "취업 멘토링 프로그램", period: "2025.05.01~05.31", applyDate: "2025.04.05", status: "반려", statusClass: "danger" },
+            { id: 4, name: "ESG 전문가 과정", period: "2025.06.01~06.20", applyDate: "2025.05.01", status: "종료", statusClass: "secondary", action: "register" }
+        ];
+        const counselItems = [
+            { id: 101, type: "진로상담 (대면)", advisor: "전문 상담사 A", date: "2025-03-20 14:00", status: "예정" },
+            { id: 102, type: "학업상담 (온라인)", advisor: "교수님 B", date: "2025-02-10 10:00", status: "완료" },
+        ];
+        const latestActivityData = [
+            { type: "역량진단", name: "2025년 1차 진단", date: "2025-01-20", result: "평균 4.6/5.0" },
+            { type: "상담", name: "진로상담", date: "2025-02-15", result: "완료" },
+            { type: "비교과", name: "글로벌 리더십 캠프", date: "2025-03-05", result: "이수" },
+            { type: "비교과", name: "AI 코딩 부트캠프", date: "2025-03-15", result: "신청 완료" }
+        ];
+
+        // Custom Modal elements (applicationstatus.html)
+        const modal = document.getElementById("custom-modal");
+        const modalMessage = document.getElementById("modal-message");
+        const modalCloseBtn = document.getElementById("modal-close-btn");
+
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener("click", () => {
+                modal.style.display = "none";
+            });
+        }
+
+        /**
+         * Custom Alert Modal 표시 함수
+         * @param {string} message 모달에 표시할 메시지
+         */
+        function showCustomAlertModal(message) {
+            if (modal && modalMessage) {
+                modalMessage.textContent = message;
+                modal.style.display = "flex";
             } else {
-                sidebar.classList.add('toggled');
-                backdrop.classList.add('show');
-                document.body.style.overflow = 'hidden'; // 스크롤 잠금
+                console.log("Modal message:", message);
             }
         }
 
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', toggleSidebar);
-        }
-        if (closeBtn) {
-            closeBtn.addEventListener('click', toggleSidebar);
-        }
-        if (backdrop) {
-            backdrop.addEventListener('click', toggleSidebar); // 배경 클릭 시 닫기
+        // Bootstrap Confirm Modal elements (user-info-edit.html)
+        const confirmModalEl = document.getElementById('customConfirmModal');
+        const confirmModal = new bootstrap.Modal(confirmModalEl);
+        const confirmModalBody = document.getElementById('customConfirmModalBody');
+        const confirmYesBtn = document.getElementById('customConfirmYesBtn');
+
+        /**
+         * Bootstrap Confirm Modal 표시 함수
+         * @param {string} message 모달에 표시할 메시지
+         * @returns {Promise<boolean>} 사용자의 '예'/'아니오' 응답
+         */
+        function showConfirmModal(message) {
+            return new Promise(resolve => {
+                confirmModalBody.textContent = message;
+                confirmModal.show();
+
+                const handleYes = () => {
+                    confirmModal.hide();
+                    confirmYesBtn.removeEventListener('click', handleYes);
+                    confirmModalEl.removeEventListener('hidden.bs.modal', handleHidden);
+                    resolve(true);
+                };
+
+                const handleHidden = () => {
+                    confirmYesBtn.removeEventListener('click', handleYes);
+                    confirmModalEl.removeEventListener('hidden.bs.modal', handleHidden);
+                    resolve(false);
+                };
+
+                confirmYesBtn.addEventListener('click', handleYes);
+                confirmModalEl.addEventListener('hidden.bs.modal', handleHidden);
+            });
         }
 
-        // 사이드바 메뉴 클릭 시 닫기 (모바일에서만)
-        const sidebarLinks = sidebar.querySelectorAll('.sidebar-nav a');
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth < 992) {
-                    toggleSidebar();
+        // =========================================================
+        // 2. 뷰 전환 기능
+        // =========================================================
+        const viewSections = document.querySelectorAll('.view-section');
+        const navLinks = document.querySelectorAll('[data-view]');
+        const secondaryLinks = document.querySelectorAll('[data-view-target]');
+
+        /**
+         * 특정 뷰를 표시하고 다른 뷰를 숨기는 함수
+         * @param {string} viewId 표시할 뷰의 ID ('dashboard', 'history', 'status', 'user-info')
+         */
+        function showView(viewId) {
+            viewSections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            const targetView = document.getElementById(viewId + 'View');
+            if (targetView) {
+                targetView.style.display = 'block';
+            }
+
+            // 네비게이션 링크 활성화
+            navLinks.forEach(link => {
+                link.classList.remove('active-link');
+                if (link.dataset.view === viewId) {
+                    link.classList.add('active-link');
                 }
+            });
+
+            // 차트 뷰로 전환 시 차트 다시 그리기 (TOAST UI Chart)
+            if (viewId === 'history') {
+                 // 꺾은선 차트가 기본이므로, 꺾은선 버튼을 눌러 차트 로직 실행
+                 document.getElementById('btnShowLineChart').click();
+            }
+        }
+
+        // 네비게이션 링크 클릭 이벤트 리스너
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewId = e.currentTarget.dataset.view;
+                showView(viewId);
             });
         });
 
-        // 초기화 (이전과 동일)
-        init();
-    });
-
-    /* ==========================
-       샘플 데이터 (이전과 동일)
-       ========================== */
-    const diagnosisHistory = [
-      { date: '2025-11-02', name: '기본 역량 진단', score: 82, interpretation: '상' },
-      { date: '2025-09-25', name: '심화 역량 진단', score: 74, interpretation: '중상' },
-      { date: '2025-06-18', name: '기초 역량 진단', score: 68, interpretation: '중' },
-      { date: '2024-12-05', name: '입문 역량 진단', score: 61, interpretation: '중' },
-      { date: '2024-05-10', name: '진단 테스트', score: 55, interpretation: '중하' },
-      { date: '2024-01-20', name: '초기 테스트', score: 47, interpretation: '하' }
-    ];
-    const applyList = [
-      { id:1, date:'2025-10-20', program:'창업 워크숍', status:'접수', cancellable:true },
-      { id:2, date:'2025-09-10', program:'데이터분석 특강', status:'대기', cancellable:true },
-      { id:3, date:'2025-07-02', program:'리더십 캠프', status:'진행', cancellable:false },
-      { id:4, date:'2025-04-15', program:'커뮤니케이션 세미나', status:'취소', cancellable:false }
-    ];
-    const completionItems = [
-      { title:'데이터 분석 입문', type:'과목', hours:12, completedAt:'2025-07-30' },
-      { title:'프로젝트 관리', type:'워크숍', hours:8, completedAt:'2025-05-20' },
-      { title:'리더십', type:'캠프', hours:28, completedAt:'2025-03-12' }
-    ];
-    const counselItems = [
-      { id:1, datetime:'2025-11-10 14:30', title:'심리상담', counselor:'이지은', status:'예정' },
-      { id:2, datetime:'2025-10-01 11:00', title:'진로상담', counselor:'박철수', status:'완료', rated:false },
-      { id:3, datetime:'2025-08-15 09:30', title:'학업 상담', counselor:'김민우', status:'완료', rated:true }
-    ];
-
-    /* ==========================
-       차트 초기화 (이전과 동일)
-       ========================== */
-    const scoreDonutCtx = document.getElementById('scoreDonut').getContext('2d');
-    const scoreDonut = new Chart(scoreDonutCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['점수','남은'],
-        datasets: [{
-          data: [82, 18],
-          borderWidth: 0,
-          backgroundColor: [
-              'rgba(13, 110, 253, 1)',
-              '#e9ecef'
-          ]
-        }]
-      },
-      options: {
-        cutout: '72%',
-        plugins: { legend: { display:false }, tooltip:{enabled:false} }
-      }
-    });
-
-    const radarCtx = document.getElementById('radarChart').getContext('2d');
-    const radarChart = new Chart(radarCtx, {
-      type: 'radar',
-      data: {
-        labels: ['소통', '문제해결', '전문지식', '팀워크', '리더십', '창의성'],
-        datasets: [
-          {
-            label: '나의 최근 점수',
-            data: [78, 84, 72, 88, 70, 80],
-            fill: true,
-            backgroundColor: 'rgba(13, 110, 253, 0.2)',
-            borderColor: 'rgba(13, 110, 253, 1)',
-            pointBackgroundColor: 'rgba(13, 110, 253, 1)',
-            tension: 0.3,
-            pointRadius: 4
-          }
-        ]
-      },
-      options: {
-        scales: { r: { suggestedMin: 40, suggestedMax: 100 } }
-      }
-    });
-
-    const barCtx = document.getElementById('barChart').getContext('2d');
-    const barChart = new Chart(barCtx, {
-      type: 'bar',
-      data: {
-        labels: ['2025-11-02','2025-09-25','2025-06-18'],
-        datasets: [
-          {
-            label: '총점',
-            data: [82, 74, 68],
-            backgroundColor: [
-                'rgba(13, 110, 253, 1)',
-                'rgba(13, 110, 253, 0.7)',
-                'rgba(13, 110, 253, 0.5)'
-            ],
-            barThickness: 20
-          }
-        ]
-      },
-      options: {
-        plugins: { legend:{display:false} },
-        scales: { y: { suggestedMin: 0, suggestedMax: 100 } }
-      }
-    });
-
-    const detailRadarCtx = document.getElementById('detailRadar').getContext('2d');
-    const detailRadar = new Chart(detailRadarCtx, {
-      type: 'radar',
-      data: {
-        labels: ['소통', '문제해결', '전문지식', '팀워크', '리더십', '창의성'],
-        datasets: [{
-            label:'세부',
-            data:[78,84,72,88,70,80],
-            fill:true,
-            backgroundColor: 'rgba(13, 110, 253, 0.2)',
-            borderColor: 'rgba(13, 110, 253, 1)',
-            pointBackgroundColor: 'rgba(13, 110, 253, 1)'
-        }]
-      },
-      options:{ scales:{ r:{ suggestedMin:40, suggestedMax:100 } } }
-    });
-
-    /* ==========================
-       페이지 렌더링 함수 (이전과 동일)
-       ========================== */
-    const perPage = 5;
-    let historyPage = 1;
-
-    function renderHistoryTable(){
-      const tbody = document.querySelector('#historyTable tbody');
-      tbody.innerHTML = '';
-      const total = diagnosisHistory.length;
-      const start = (historyPage-1)*perPage;
-      const pageItems = diagnosisHistory.slice(start, start+perPage);
-
-      pageItems.forEach(it => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${it.date}</td>
-          <td>${it.name}</td>
-          <td><strong>${it.score}</strong></td>
-          <td>${it.interpretation}</td>
-          <td><button class="btn btn-sm btn-outline-primary btn-detail">상세</button></td>
-        `;
-        tr.querySelector('.btn-detail').addEventListener('click', ()=> openHistoryDetail(it));
-        tbody.appendChild(tr);
-      });
-
-      document.getElementById('historyTotalCount').innerText = total;
-      const showingFrom = start + 1;
-      const showingTo = Math.min(start + perPage, total);
-      document.getElementById('historyShowing').innerText = `${showingFrom} - ${showingTo}`;
-      renderHistoryPagination(total);
-    }
-
-    function renderHistoryPagination(total){
-      const pages = Math.ceil(total / perPage);
-      const ul = document.getElementById('historyPagination');
-      ul.innerHTML = '';
-
-      for(let i=1;i<=pages;i++){
-        const li = document.createElement('li'); li.className='page-item'+(i===historyPage?' active':'');
-        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-        li.addEventListener('click', (e) => {
-          e.preventDefault(); historyPage = i; renderHistoryTable();
+        // 보조 링크 (카드 내 버튼) 클릭 이벤트 리스너
+        secondaryLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewId = e.currentTarget.dataset.viewTarget;
+                showView(viewId);
+            });
         });
-        ul.appendChild(li);
-      }
-    }
 
-    function openHistoryDetail(item){
-      document.getElementById('detailInterpretation').innerText = `${item.date} - ${item.name}\n해석: ${item.interpretation} (점수 ${item.score})`;
-      const modal = new bootstrap.Modal(document.getElementById('modalLatestDetail'));
-      modal.show();
-    }
+        // =========================================================
+        // 3. 대시보드 뷰 로직 (mypageDashBoard.html)
+        // =========================================================
 
-    function statusClassOf(status){
-      switch(status){
-        case '접수': return 'status-badge status-received';
-        case '대기': return 'status-badge status-waiting';
-        case '진행': return 'status-badge status-inprogress';
-        case '취소': return 'status-badge status-cancelled';
-        default: return 'status-badge';
-      }
-    }
+        /**
+         * 최신 역량 진단 결과를 기반으로 Chart.js 레이더 차트 생성
+         */
+        function renderMainRadarChart() {
+            const latestData = historyData[historyData.length - 1]; // 최신 데이터
+            const ctx = document.getElementById('mainChartCanvas').getContext('2d');
 
-    function renderApplyList(){
-      const tbody = document.querySelector('#applyTable tbody');
-      tbody.innerHTML = '';
-      applyList.forEach(it => {
-        const tr = document.createElement('tr');
-        const cancellable = it.cancellable;
-        tr.innerHTML = `
-          <td>${it.date}</td>
-          <td>${it.program}</td>
-          <td><span class="${statusClassOf(it.status)}">${it.status}</span></td>
-          <td class="text-end">
-            ${cancellable && it.status !== '취소' ? `<button class="btn btn-sm btn-outline-danger btn-cancel" data-id="${it.id}">취소</button>` : `<button class="btn btn-sm btn-outline-secondary" disabled>취소불가</button>`}
-          </td>
-        `;
-        if(cancellable && it.status !== '취소'){
-          tr.querySelector('.btn-cancel').addEventListener('click', (e)=>{
-            const id = +e.target.dataset.id;
-            confirmCancelApplication(id);
-          });
-        }
-        tbody.appendChild(tr);
-      });
-    }
-
-    function confirmCancelApplication(id){
-      const appl = applyList.find(a=>a.id===id);
-      if(!appl) return;
-      document.getElementById('cancelMessage').innerText = `${appl.program} 신청을 취소하시겠습니까? (신청일: ${appl.date})`;
-      const modal = new bootstrap.Modal(document.getElementById('modalConfirmCancel'));
-      modal.show();
-      const btn = document.getElementById('confirmCancelBtn');
-
-      const handler = async ()=>{
-        appl.status = '취소';
-        appl.cancellable = false;
-        renderApplyList();
-        modal.hide();
-        btn.removeEventListener('click', handler); // 기존 리스너 제거
-      };
-
-      // 기존 리스너 제거를 위해 버튼 교체
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      newBtn.addEventListener('click', handler);
-    }
-
-    function renderCompletionList(){
-      const ul = document.getElementById('completionList');
-      ul.innerHTML = '';
-      completionItems.forEach(it=>{
-        const li = document.createElement('li');
-        li.className = 'list-group-item d-flex justify-content-between align-items-start';
-        li.innerHTML = `
-          <div>
-            <div class="fw-semibold">${it.title}</div>
-            <div class="muted-sm">${it.type} · 완료일: ${it.completedAt}</div>
-          </div>
-          <div class="text-end">
-            <div class="fw-bold">${it.hours}h</div>
-          </div>
-        `;
-        ul.appendChild(li);
-      });
-
-      const totalHours = completionItems.reduce((s,i)=>s+i.hours,0);
-      document.getElementById('completedHours').innerText = totalHours + ' 시간';
-      document.getElementById('completedCredits').innerText = '12 학점';
-      const requiredHours = 80;
-      const pct = Math.min(100, Math.round(totalHours/requiredHours*100));
-      document.getElementById('completionProgress').style.width = pct + '%';
-      document.getElementById('completionProgress').innerText = pct + '%';
-    }
-
-    function renderCounselList(){
-      const wrap = document.getElementById('counselList');
-      wrap.innerHTML = '';
-      counselItems.forEach(it=>{
-        const el = document.createElement('div');
-        el.className = 'd-flex justify-content-between align-items-start p-2 mb-1 rounded' + (it.status==='예정' ? ' upcoming' : ' bg-white');
-        el.innerHTML = `
-          <div>
-            <div class="fw-semibold">${it.title} <small class="muted-sm">(${it.counselor})</small></div>
-            <div class="muted-sm">${it.datetime}</div>
-            <div class="muted-sm">상태: ${it.status}</div>
-          </div>
-          <div class="text-end">
-            ${it.status === '예정' ? `<button class="btn btn-sm btn-outline-danger btn-cancel-counsel" data-id="${it.id}">취소</button>` : (it.status==='완료' && !it.rated ? `<button class="btn btn-sm btn-outline-primary btn-rate" data-id="${it.id}">평가</button>` : `<div class="muted-sm small">${it.status==='완료' && it.rated ? '평가 완료' : ''}</div>`)}
-          </div>
-        `;
-        wrap.appendChild(el);
-
-        const cancelBtn = el.querySelector('.btn-cancel-counsel');
-        if(cancelBtn){
-          cancelBtn.addEventListener('click', ()=>{
-            confirmCancelApplicationForCounsel(it.id);
-          });
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: competencyLabels,
+                    datasets: [{
+                        label: latestData.diagnosisTitle,
+                        data: latestData.scores,
+                        backgroundColor: 'rgba(13, 110, 253, 0.2)', // primary color
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(13, 110, 253, 1)',
+                        pointBorderColor: '#fff',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            pointLabels: { font: { size: 12 } },
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (context) => `${context.label}: ${context.parsed.r.toFixed(1)}점` } }
+                    }
+                }
+            });
         }
 
-        const rateBtn = el.querySelector('.btn-rate');
-        if(rateBtn){
-          rateBtn.addEventListener('click', ()=>{
-            const modal = new bootstrap.Modal(document.getElementById('modalSatisfaction'));
-            modal.show();
-            document.getElementById('satisfactionForm').onsubmit = (e)=>{
-              e.preventDefault();
-              it.rated = true;
-              modal.hide();
-              renderCounselList();
+        /**
+         * 대시보드의 상담 예정 항목 업데이트
+         */
+        function updateNextCounselDisplay() {
+             const nextCounselElement = document.getElementById('nextCounselElement');
+             const upcoming = counselItems.find(c => c.status === '예정');
+
+             if (upcoming) {
+                 nextCounselElement.classList.add('upcoming');
+                 nextCounselElement.classList.remove('bg-white');
+                 nextCounselElement.innerHTML = `
+                    <div class="fw-semibold text-success d-flex justify-content-between">
+                        <span><i class="bi bi-bell-fill me-1"></i> 예정된 상담</span>
+                        <span class="badge bg-success">예정</span>
+                    </div>
+                    <p class="mb-0 mt-2">${upcoming.advisor} | ${upcoming.date}</p>
+                    <p class="text-sm text-muted mb-2">${upcoming.type}</p>
+                    <button class="btn btn-danger btn-sm rounded-pill" id="btnCounselCancel"><i class="fas fa-times me-1"></i> 취소</button>
+                 `;
+                 document.getElementById('btnCounselCancel').addEventListener('click', () => {
+                    confirmCancelApplicationForCounsel(upcoming.id);
+                 });
+             } else {
+                 nextCounselElement.classList.remove('upcoming');
+                 nextCounselElement.classList.add('bg-white');
+                 nextCounselElement.innerHTML = '<div class="fw-semibold">예정된 상담이 없습니다.</div><div class="text-muted-sm small">상담 신청 버튼을 이용해 주세요.</div>';
+             }
+        }
+
+        /**
+         * 대시보드의 최근 활동 목록 업데이트
+         */
+        function renderDashboardHistoryTable() {
+            const tableBody = document.getElementById('historyTableBody');
+            tableBody.innerHTML = '';
+            if (latestActivityData.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">최근 활동 이력이 없습니다.</td></tr>';
+                 return;
+            }
+
+            latestActivityData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="badge bg-secondary">${item.type}</span></td>
+                    <td class="fw-medium">${item.name}</td>
+                    <td>${item.date}</td>
+                    <td>${item.result}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // 대시보드 상담 취소 확인 함수 (alert 대체)
+        async function confirmCancelApplicationForCounsel(counselId) {
+            const confirmed = await showConfirmModal(`상담 ID ${counselId}번 상담 예약을 정말로 취소하시겠습니까?`);
+            if (confirmed) {
+                showCustomAlertModal(`상담 ID ${counselId}번의 취소 요청이 처리되었습니다. (실제 백엔드 로직 없음)`);
+                // 실제 로직: API 호출 후 counselItems 재로드/업데이트
+            }
+        }
+
+        // =========================================================
+        // 4. 역량 진단 현황 뷰 로직 (assessmentHistory.js)
+        // =========================================================
+
+        // TOAST UI Chart 데이터 준비
+        const chartCategories = competencyLabels;
+        const chartSeries = historyData.map(row => ({
+            name: row.diagnosisTitle,
+            data: row.scores
+        }));
+
+        let currentChart = null;
+
+        /**
+         * TOAST UI Chart 생성 및 업데이트
+         * @param {'line'|'bar'} type 차트 타입
+         */
+        function createChart(type) {
+            const chartContainer = document.getElementById('historyChart');
+            chartContainer.innerHTML = ''; // 기존 차트 제거
+
+            const chartOptions = {
+                chart: { width: 'auto', height: 320, title: '역량 진단 추이' },
+                yAxis: { min: 0, max: 5, title: '점수' },
+                xAxis: { title: '역량 항목', pointOnColumn: type === 'bar' },
+                legend: { visible: true },
+                series: {
+                    showLabel: true,
+                    dataLabels: { visible: true, formatter: (value) => value.toFixed(1) }
+                },
+                theme: {
+                    series: {
+                        colors: ['#0d6efd', '#20c997', '#6f42c1', '#fd7e14']
+                    }
+                }
             };
-          });
+
+            const chartData = { categories: chartCategories, series: chartSeries };
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            if (type === 'line') {
+                currentChart = new toastui.Chart.lineChart({ el: chartContainer, data: chartData, options: chartOptions });
+            } else if (type === 'bar') {
+                currentChart = new toastui.Chart.columnChart({ el: chartContainer, data: chartData, options: chartOptions });
+            }
         }
-      });
-    }
 
-    function confirmCancelApplicationForCounsel(id){
-      const item = counselItems.find(c=>c.id===id);
-      if(!item) return;
+        /**
+         * 역량 진단 이력 테이블 채우기
+         */
+        function populateHistoryTable() {
+            const tableBody = document.getElementById('scoreTableBody');
+            const headerCells = document.querySelectorAll('#historyView thead th[data-label-placeholder]');
 
-      document.getElementById('cancelMessage').innerText = `${item.title} 상담을 취소하시겠습니까? (${item.datetime})`;
-      const modal = new bootstrap.Modal(document.getElementById('modalConfirmCancel'));
-      modal.show();
-      const btn = document.getElementById('confirmCancelBtn');
+            // 1. 헤더 (역량 레이블) 업데이트
+            competencyLabels.forEach((label, index) => {
+                if (headerCells[index]) {
+                    headerCells[index].textContent = label;
+                }
+            });
 
-      const handler = ()=>{
-        item.status = '취소';
-        updateNextCounselDisplay();
-        renderCounselList();
-        modal.hide();
-        // 이벤트 핸들러 제거
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-      };
-      // 기존 이벤트 리스너 제거 후 새 이벤트 리스너 추가 (중복 방지)
-      const newBtn = btn.cloneNode(true);
-      btn.parentNode.replaceChild(newBtn, btn);
-      newBtn.addEventListener('click', handler);
-    }
+            // 2. 바디 (데이터) 업데이트
+            tableBody.innerHTML = '';
+            if (historyData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">진단 이력이 없습니다.</td></tr>';
+                return;
+            }
 
-    function updateNextCounselDisplay(){
-         const upcomingCounsel = counselItems.find(c => c.status === '예정');
-         const nextCounselElement = document.getElementById('nextCounsel');
+            historyData.forEach(row => {
+                const tr = document.createElement('tr');
+                // 점수 셀 생성 (소수점 첫째 자리까지 표시)
+                let scoreCells = row.scores.map(score => `<td class="text-center">${score.toFixed(1)}</td>`).join('');
+                tr.innerHTML = `
+                    <td class="px-4 fw-medium">${row.diagnosisTitle}</td>
+                    ${scoreCells}
+                    <td class="text-center">
+                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-pill" title="상세보기"><i class="fas fa-search"></i></a>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
 
-         if (upcomingCounsel) {
-             nextCounselElement.classList.add('upcoming');
-             nextCounselElement.classList.remove('bg-white');
-             nextCounselElement.innerHTML = `<div class="fw-semibold">${upcomingCounsel.datetime}</div><div class="muted-sm">${upcomingCounsel.title} - 대면 (상담자: ${upcomingCounsel.counselor})</div>`;
-         } else {
-             nextCounselElement.classList.remove('upcoming');
-             nextCounselElement.classList.add('bg-white');
-             nextCounselElement.innerHTML = '<div class="fw-semibold">예정된 상담이 없습니다.</div><div class="muted-sm">상담 신청 버튼을 이용해 주세요.</div>';
-         }
-    }
+        // 차트 버튼 클릭 이벤트 설정
+        const btnLine = document.getElementById('btnShowLineChart');
+        const btnBar = document.getElementById('btnShowBarChart');
 
+        if (btnLine && btnBar) {
+            btnLine.addEventListener('click', () => {
+                createChart('line');
+                btnLine.classList.add('active');
+                btnBar.classList.remove('active');
+            });
 
-    document.getElementById('btnLatestDetail').addEventListener('click', ()=>{
-      const modal = new bootstrap.Modal(document.getElementById('modalLatestDetail'));
-      modal.show();
+            btnBar.addEventListener('click', () => {
+                createChart('bar');
+                btnBar.classList.add('active');
+                btnLine.classList.remove('active');
+            });
+        }
+
+        // =========================================================
+        // 5. 비교과 신청 현황 뷰 로직 (applicationstatus.js)
+        // =========================================================
+
+        /**
+         * 비교과 프로그램 신청 현황 테이블 채우기
+         */
+        function populateApplicationTable() {
+            const tableBody = document.getElementById("applicationTableBody");
+            tableBody.innerHTML = '';
+            if (applicationData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">신청 현황이 없습니다.</td></tr>';
+                return;
+            }
+
+            applicationData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.dataset.program = item.name;
+
+                let actionButton = '';
+                if (item.action === 'cancel') {
+                    actionButton = `<button class="btn btn-sm btn-danger rounded-pill action-btn" data-action="cancel"><i class="fas fa-times me-1"></i> 취소</button>`;
+                } else if (item.action === 'register') {
+                    actionButton = `<button class="btn btn-sm btn-success rounded-pill action-btn" data-action="register"><i class="fas fa-edit me-1"></i> 산출물 등록</button>`;
+                } else {
+                    actionButton = `<button class="btn btn-sm btn-secondary rounded-pill" disabled>액션 없음</button>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 fw-medium">${item.name}</td>
+                    <td class="py-3 px-4">${item.period}</td>
+                    <td class="py-3 px-4 text-center">${item.applyDate}</td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="badge bg-${item.statusClass} fw-semibold">${item.status}</span>
+                    </td>
+                    <td class="py-3 px-4 text-center">${actionButton}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // 테이블 내 버튼 클릭 이벤트 리스너
+        const tableBody = document.getElementById("applicationTableBody");
+        if (tableBody) {
+            tableBody.addEventListener("click", (event) => {
+                if (event.target.classList.contains("action-btn")) {
+                    const button = event.target;
+                    const action = button.dataset.action;
+                    const row = button.closest("tr");
+                    const programName = row.dataset.program;
+
+                    if (action === "cancel") {
+                        // '취소' 버튼 클릭 시
+                        showCustomAlertModal(`'${programName}' 프로그램의 신청을 취소하시겠습니까? (실제 취소 기능은 백엔드 구현이 필요합니다.)`);
+                    } else if (action === "register") {
+                        // '산출물 등록' 버튼 클릭 시
+                        showCustomAlertModal(`'${programName}' 프로그램의 산출물 등록 화면으로 이동합니다. (실제 이동 기능은 백엔드 구현이 필요합니다.)`);
+                    }
+                }
+            });
+        }
+
+        // =========================================================
+        // 6. 사용자 정보 수정 뷰 로직 (user-info-edit.js)
+        // =========================================================
+        const form = document.getElementById('userInfoForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        let originalUserInfo = {
+            name: "김푸름",
+            studentId: "202212345",
+            department: "컴퓨터공학과",
+            grade: "3학년",
+            email: "pureum.kim@univ.ac.kr",
+            phone: "010-1234-5678"
+        };
+
+        /**
+         * 사용자 정보를 폼에 로드 (초기화 및 취소 시 사용)
+         */
+        function loadUserInfo() {
+            // 실제로는 API 호출로 원본 데이터를 가져오지만, 여기서는 임시 데이터 사용
+            document.getElementById('email').value = originalUserInfo.email;
+            document.getElementById('phone').value = originalUserInfo.phone;
+            // 다른 읽기 전용 필드도 업데이트 (선택 사항)
+        }
+
+        /**
+         * 폼의 에러 메시지를 지우는 함수
+         */
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(element => {
+                element.textContent = '';
+            });
+        }
+
+        // 폼 제출 이벤트 리스너 (저장)
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const newEmail = document.getElementById('email').value;
+            const newPhone = document.getElementById('phone').value;
+
+            // 간단한 클라이언트 측 유효성 검사
+            let isValid = true;
+            if (!newEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+                document.getElementById('email-error').textContent = "유효한 이메일 주소를 입력해주세요.";
+                isValid = false;
+            }
+            if (!newPhone.match(/^\d{2,3}-\d{3,4}-\d{4}$/)) {
+                document.getElementById('phone-error').textContent = "유효한 연락처 (예: 010-1234-5678)를 입력해주세요.";
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // 실제로는 API 호출로 수정된 정보를 서버에 전송
+            // try {
+            //     await fetch('/api/user/info', { ... });
+            //     showCustomAlertModal("사용자 정보가 성공적으로 업데이트되었습니다.");
+            //     originalUserInfo.email = newEmail;
+            //     originalUserInfo.phone = newPhone;
+            //     loadUserInfo(); // 폼 다시 로드
+            // } catch (error) {
+            //     showCustomAlertModal("정보 업데이트 중 오류가 발생했습니다.");
+            // }
+
+            showCustomAlertModal("사용자 정보가 성공적으로 업데이트되었습니다. (시뮬레이션)");
+            originalUserInfo.email = newEmail;
+            originalUserInfo.phone = newPhone;
+            loadUserInfo(); // 폼 다시 로드
+
+        });
+
+        // '취소' 버튼 클릭 시 Custom Modal 호출
+        cancelBtn.addEventListener('click', async function() {
+            const message = "수정사항을 취소하고 원래 정보로 되돌리시겠습니까?";
+            const confirmed = await showConfirmModal(message);
+
+            if (confirmed) {
+                loadUserInfo(); // 정보 다시 로드 (취소)
+                clearErrors();
+                showCustomAlertModal("수정사항이 취소되고 원래 정보로 되돌려졌습니다.");
+            }
+        });
+
+        // =========================================================
+        // 7. 초기화 함수 호출
+        // =========================================================
+
+        /**
+         * 페이지 초기화 (DOM 로드 후)
+         */
+        function initializePage() {
+            // 1. 대시보드 데이터 로드
+            renderMainRadarChart();
+            updateNextCounselDisplay();
+            renderDashboardHistoryTable();
+
+            // 2. 역량 진단 현황 데이터 로드
+            populateHistoryTable();
+            // 차트 기본값 (꺾은선)으로 생성
+            createChart('line');
+
+            // 3. 비교과 신청 현황 데이터 로드
+            populateApplicationTable();
+
+            // 4. 사용자 정보 수정 폼 로드
+            loadUserInfo();
+
+            // 5. 기본 뷰를 대시보드로 설정
+            showView('dashboard');
+        }
+
+        initializePage();
     });
-
-    document.getElementById('btnCounselApply').addEventListener('click', ()=>{
-      // 실제 애플리케이션에서는 모달이나 페이지 이동 로직이 들어갑니다.
-      alert('상담 신청 화면으로 이동합니다.');
-    });
-
-    document.getElementById('btnCounselCancel').addEventListener('click', ()=>{
-      const upcoming = counselItems.find(c=>c.status==='예정');
-      if(!upcoming){
-        const modal = new bootstrap.Modal(document.getElementById('modalConfirmCancel'));
-        document.getElementById('cancelMessage').innerText = '취소할 예정 상담이 없습니다.';
-        document.getElementById('confirmCancelBtn').style.display = 'none';
-        modal.show();
-        setTimeout(() => { document.getElementById('confirmCancelBtn').style.display = 'block'; }, 100); // 버튼 복구
-        return;
-      }
-      confirmCancelApplicationForCounsel(upcoming.id);
-    });
-
-
-    function init(){
-      updateNextCounselDisplay();
-      renderHistoryTable();
-      renderApplyList();
-      renderCompletionList();
-      renderCounselList();
-    }
-
 </script>
 </body>
 </html>

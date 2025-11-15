@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,136 +10,313 @@
     <!-- Font Awesome 아이콘 로드 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
+    <!-- Bootstrap Bundle JS (드롭다운 토글 기능 포함) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- 사용자 요청에 따른 공통/개별 스타일 로드 (절대 수정 금지) -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/mypage/user-info.css}">
+
+
+    <!-- 통합 CSS (user-info.css 내용) -->
+    <style>
+        /* static/css/mypage/user-info.css */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa; /* Bootstrap light background */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ===== 마이페이지 레이아웃 공통 스타일 추가 ===== */
+        .sidebar {
+            /* md 이상에서 보일 때 너비와 높이 설정 */
+            min-height: 100vh;
+            background-color: #ffffff; /* 사이드바 배경색 */
+        }
+        .sidebar .transition {
+            /* 부드러운 호버 효과를 위한 트랜지션 */
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar .hover-bg-light:hover {
+            background-color: #f8f9fa; /* Bootstrap light color */
+        }
+        .sidebar .active {
+            /* 활성화된 메뉴 항목 스타일 */
+            background-color: var(--bs-primary-bg-subtle, #cfe2ff); /* Bootstrap primary light color */
+            font-weight: 600;
+        }
+
+        /* Offcanvas (모바일 햄버거 메뉴) 스타일 */
+        .offcanvas-start {
+            /* 모바일에서 왼쪽에서 나타나도록 */
+            width: 250px;
+        }
+        .offcanvas-body .active {
+            /* 모바일 메뉴에서도 활성화 스타일 적용 */
+            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+            font-weight: 600;
+        }
+        .offcanvas-body .hover-bg-light:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* 메인 콘텐츠 상단 패딩 조정 (Fixed-top Navbar 때문에) */
+        .main-content {
+            /* 모바일에서는 fixed-top navbar가 있으므로 상단에 공간을 줌 */
+            padding-top: 70px !important;
+        }
+
+        @media (min-width: 768px) { /* md 이상 */
+            .main-content {
+                /* md 이상에서는 fixed-top navbar가 없으므로 기존 패딩 사용 */
+                padding-top: 3rem !important; /* p-md-5에 맞춰 3rem */
+            }
+        }
+
+        /* ===== 기존 사용자 정보 폼 스타일 유지 및 Bootstrap 클래스 적용 ===== */
+        .user-info-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #555;
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- 공통 헤더 역할: 모바일 전용 상단 네비게이션 및 햄버거 버튼 -->
-<!-- d-md-none: MD 사이즈 미만(모바일)에서만 보임 -->
-<nav class="navbar navbar-light bg-white border-bottom shadow-sm d-md-none fixed-top py-3">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1 fs-5 fw-bold text-dark">마이페이지</span>
-        <!-- 햄버거 버튼 (Offcanvas 토글) -->
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-            <i class="fas fa-bars"></i>
+<!-- 1. 공통 헤더: header.html의 th:fragment="header" 내용 -->
+<header class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <!-- 로고/웹사이트명 -->
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <!-- 실제 이미지 경로가 없으므로 임시로 텍스트 로고 사용 -->
+            <!-- <img th:src="@{/images/scms-logo.png}" alt="scms 로고" class="me-2" style="height: 30px;"> -->
+            <i class="fas fa-graduation-cap me-2 text-primary" style="font-size: 1.5rem;"></i>
+            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
+        </a>
+
+        <!-- 햄버거 토글 버튼 (모바일) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
-    </div>
-</nav>
 
-<!-- 모바일 전용 Offcanvas 메뉴 (햄버거 버튼 클릭 시 좌측에서 나타남) -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
-    <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title fs-5 fw-bold text-dark" id="offcanvasSidebarLabel">마이페이지 메뉴</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-        <!-- 모바일 사이드바 네비게이션 콘텐츠 -->
-        <nav class="p-3">
-            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3">마이페이지</h4>
+        <!-- 네비게이션 메뉴 -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">홈</a>
+                </li>
 
-            <!-- 메뉴 링크 (user-info.html이 현재 페이지라고 가정하고 active 클래스 적용) -->
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none transition active">
-                <i class="fas fa-user-edit me-3 text-primary"></i>
-                <span>사용자 정보 수정</span>
-            </a>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">역량진단</a>
+                </li>
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-key me-3 text-secondary"></i>
-                <span>비밀번호 변경</span>
-            </a>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">상담</a>
+                </li>
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-sign-out-alt me-3 text-danger"></i>
-                <span>로그아웃</span>
-            </a>
-        </nav>
-    </div>
-</div>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">비교과 프로그램</a>
+                </li>
 
-<!-- 메인 컨테이너 시작 -->
-<!-- pt-5: 모바일 상단바 높이만큼 공간 확보 (d-md-none인 경우) -->
-<div id="app" class="d-flex flex-column flex-md-row min-vh-100 pt-5 pt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">마이페이지</a>
+                </li>
+            </ul>
 
-    <!-- 좌측 사이드바 네비게이션 (md 이상에서 보임) -->
-    <!-- d-none d-md-block: 모바일에서 숨김, MD 사이즈 이상에서만 보임 -->
-    <aside class="sidebar col-md-3 col-lg-2 bg-white border-end shadow-sm d-none d-md-block flex-shrink-0">
-        <div class="p-4 border-bottom">
-            <h3 class="fs-5 fw-bold text-dark">마이페이지</h3>
+            <!-- 로그인/로그아웃 버튼 -->
+            <ul class="navbar-nav ms-lg-3">
+                <li class="nav-item">
+                    <!-- Thymeleaf sec:authorize="isAuthenticated()" 및 th:href="@{/logout}" 코드를 일반 HTML로 대체 -->
+                    <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="#">
+                        <i class="fas fa-sign-out-alt me-1"></i> 로그아웃
+                    </a>
+                </li>
+            </ul>
         </div>
-        <nav class="p-3">
-            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3">마이페이지</h4>
+    </div>
+</header>
+<!-- /공통 헤더 -->
 
-            <!-- 메뉴 링크 -->
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none transition active">
-                <i class="fas fa-user-edit me-3 text-primary"></i>
-                <span>사용자 정보 수정</span>
+<!-- 2. Main Layout Wrapper (user-info.html의 본문 구조) -->
+<div class="d-flex flex-grow-1" id="wrapper">
+
+    <!-- 사이드바 (데스크톱 및 Offcanvas) -->
+    <!-- d-none: MD 사이즈 미만(모바일)에서 숨김, d-md-block: MD 사이즈 이상에서 표시 -->
+    <div class="sidebar d-none d-md-block border-end p-4" style="width: 250px;">
+        <h3 class="h6 fw-bold mb-4 text-primary">MY PAGE</h3>
+        <nav class="nav flex-column">
+            <a class="nav-link active rounded hover-bg-light transition mb-1 text-dark" href="#">
+                <i class="fas fa-user-circle me-2"></i> 사용자 정보 수정
             </a>
-
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-key me-3 text-secondary"></i>
-                <span>비밀번호 변경</span>
+            <a class="nav-link rounded hover-bg-light transition mb-1 text-dark" href="#">
+                <i class="fas fa-chart-line me-2"></i> 역량 진단 현황
             </a>
-
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-sign-out-alt me-3 text-danger"></i>
-                <span>로그아웃</span>
+            <a class="nav-link rounded hover-bg-light transition mb-1 text-dark" href="#">
+                <i class="fas fa-check-square me-2"></i> 비교과 신청 현황
             </a>
         </nav>
-    </aside>
+    </div>
 
-    <!-- 메인 콘텐츠 영역 -->
-    <main class="col-md-9 col-lg-10 p-4 p-md-5 main-content flex-grow-1">
-        <div class="container-fluid">
-            <!-- 사용자 정보 수정 폼 영역 -->
+    <!-- Page Content Wrapper -->
+    <main id="page-content-wrapper" class="w-100 d-flex flex-column flex-grow-1">
+        <!-- 모바일 전용 Offcanvas (햄버거 메뉴) -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title" id="offcanvasMenuLabel">MY PAGE</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <nav class="nav flex-column">
+                    <a class="nav-link active rounded hover-bg-light transition mb-1 text-dark" href="#">
+                        <i class="fas fa-user-circle me-2"></i> 사용자 정보 수정
+                    </a>
+                    <a class="nav-link rounded hover-bg-light transition mb-1 text-dark" href="#">
+                        <i class="fas fa-chart-line me-2"></i> 역량 진단 현황
+                    </a>
+                    <a class="nav-link rounded hover-bg-light transition mb-1 text-dark" href="#">
+                        <i class="fas fa-check-square me-2"></i> 비교과 신청 현황
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content (Container) -->
+        <div class="container-fluid flex-grow-1 p-3 p-md-5 main-content">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4 d-none d-md-block">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">홈</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">마이페이지</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">사용자 정보 수정</li>
+                </ol>
+            </nav>
+
+            <h1 class="h3 fw-bold mb-4 text-dark">사용자 정보 수정</h1>
+
+            <!-- User Info Container (Form) -->
             <div class="user-info-container">
-                <h2 class="text-center mb-4 fs-3 fw-bold">사용자 정보 수정</h2>
+                <h2 class="h4 fw-bold mb-5">나의 정보</h2>
+
+                <!-- Success/Error Message Area (JavaScript로 내용 표시) -->
+                <div id="messageArea" class="alert d-none" role="alert"></div>
 
                 <form id="userInfoForm">
-                    <div class="form-group mb-3">
+                    <!-- 이름 (변경 불가) -->
+                    <div class="mb-3 form-group">
                         <label for="name" class="form-label">이름</label>
-                        <input type="text" id="name" name="name" class="form-control" readonly>
+                        <input type="text" class="form-control" id="name" readonly>
                     </div>
 
-                    <div class="form-group mb-3">
+                    <!-- 이메일 (수정 가능) -->
+                    <div class="mb-3 form-group">
                         <label for="email" class="form-label">이메일</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
-                        <span class="error-message text-danger small" id="emailError"></span>
+                        <input type="email" class="form-control" id="email" placeholder="email@example.com" required>
+                        <div id="emailError" class="form-text text-danger error-message"></div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="phone" class="form-label">전화번호</label>
-                        <input type="tel" id="phone" name="phone" class="form-control">
-                        <span class="error-message text-danger small" id="phoneError"></span>
+                    <!-- 연락처 (수정 가능) -->
+                    <div class="mb-3 form-group">
+                        <label for="phone" class="form-label">연락처</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="010-0000-0000" pattern="[0-9]{3}-?[0-9]{3,4}-?[0-9]{4}" required>
+                        <div id="phoneError" class="form-text text-danger error-message"></div>
                     </div>
 
-                    <div class="form-group mb-3">
+                    <!-- 학과 (변경 불가) -->
+                    <div class="mb-3 form-group">
                         <label for="department" class="form-label">학과</label>
-                        <input type="text" id="department" name="department" class="form-control" readonly>
+                        <input type="text" class="form-control" id="department" readonly>
                     </div>
 
-                    <div class="form-group mb-4">
+                    <!-- 학년 (변경 불가) -->
+                    <div class="mb-3 form-group">
                         <label for="grade" class="form-label">학년</label>
-                        <input type="text" id="grade" name="grade" class="form-control" readonly>
+                        <input type="text" class="form-control" id="grade" readonly>
                     </div>
 
-                    <div class="button-group d-flex justify-content-center gap-3">
-                        <button type="button" id="cancelBtn" class="btn btn-secondary btn-lg">취소</button>
-                        <button type="submit" id="updateBtn" class="btn btn-primary btn-lg">수정</button>
+                    <!-- 버튼 그룹 -->
+                    <div class="d-flex justify-content-center gap-3 mt-5">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" id="cancelBtn">취소</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="updateBtn">수정</button>
                     </div>
                 </form>
             </div>
         </div>
-
-        <!-- 공통 푸터 역할 (최하단) -->
-        <footer class="mt-5 pt-3 border-top text-center text-muted small">
-            <p>&copy; 2025 Competency Assessment System. All rights reserved.</p>
-        </footer>
     </main>
 </div>
+<!-- /Main Layout Wrapper -->
+
+
+<!-- 3. 공통 푸터: footer.html의 th:fragment="footer" 내용 -->
+<footer class="bg-dark text-white pt-5 pb-4 mt-auto">
+    <div class="container">
+        <!-- 푸터 메뉴 -->
+        <div class="row mb-4">
+            <!-- 역량 진단 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>역량진단
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/assessment" class="text-decoration-none text-light">진단하기</a></li>
+                    <li class="mb-2"><a href="/user/assessment" class="text-decoration-none text-light">진단 결과 확인하기</a></li>
+                </ul>
+            </div>
+
+            <!-- 상담 예약 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>상담예약
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/counseling/user/student" class="text-decoration-none text-light">상담 예약하기</a></li>
+                    <li class="mb-2"><a href="/counseling/user/counseling/status" class="text-decoration-none text-light">내 예약 조회</a></li>
+                </ul>
+            </div>
+
+            <!-- 비교과 프로그램 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-book me-2"></i>비교과 프로그램
+                </h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/user/noncurricular" class="text-decoration-none text-light">교내 비교과 프로그램</a></li>
+                    <li class="mb-2"><a href="/user/noncurricular" class="text-decoration-none text-light">교외 비교과 프로그램</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 하단 저작권 -->
+        <div class="border-top pt-3 text-center">
+            <p class="mb-1 small">&copy; 2024 푸름대학교 학생역량관리센터. All rights reserved.</p>
+            <div class="small">
+                <a href="#" class="text-decoration-none text-light mx-2">개인정보처리방침</a> |
+                <a href="#" class="text-decoration-none text-light mx-2">이용약관</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- /공통 푸터 -->
 
 <!-- Custom Modal for Confirmation/Alerts (confirm() 대신 사용) -->
+<!-- Bootstrap 5 모달 컴포넌트 구조를 그대로 유지 -->
 <div class="modal fade" id="customConfirmModal" tabindex="-1" aria-labelledby="customConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -151,22 +328,195 @@
                 <!-- 메시지가 여기에 들어갑니다. -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
-                <button type="button" class="btn btn-primary" id="customConfirmYesBtn">예</button>
+                <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">아니오</button>
+                <button type="button" class="btn btn-primary rounded-pill px-3" id="customConfirmYesBtn">예</button>
             </div>
         </div>
     </div>
 </div>
 
 
-<!-- 스크립트 로드 -->
-<!-- Bootstrap 5 JavaScript Bundle 로드 (햄버거 메뉴/Offcanvas 기능 포함) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 통합 JavaScript (user-info.js 내용) -->
+<script>
+    // static/js/mypage/user-info.js
 
-<!-- 기존 스크립트 경로 유지 -->
-<script th:src="@{/js/common/config.js}"></script>
-<script th:src="@{/js/common/api-utils.js}"></script>
-<script th:src="@{/js/common/error-handler.js}"></script>
-<script th:src="@{/js/mypage/user-info.js}"></script>
+    // 외부에서 로드된다고 가정하는 메시지 및 API 설정 (Canvas 환경을 위해 임시로 정의)
+    const CONFIG = {
+        API: {
+            ENDPOINTS: {
+                USER_INFO: '/api/user/info' // 임시 API 경로
+            }
+        },
+        MESSAGES: {
+            SUCCESS: {
+                USER_UPDATE: '정보가 성공적으로 수정되었습니다.',
+                CANCEL_CONFIRM: '수정사항을 취소하고 되돌리시겠습니까?'
+            },
+            ERROR: {
+                FETCH_FAILED: '사용자 정보를 불러오는데 실패했습니다.',
+                UPDATE_FAILED: '정보 수정에 실패했습니다.'
+            }
+        }
+    };
+
+    // 모달 및 메시지 처리를 위한 유틸리티 함수 (user-info.js에서 사용되므로 인라인 정의)
+    const ErrorHandler = {
+        showSuccess: (message) => {
+            const area = document.getElementById('messageArea');
+            if (area) {
+                area.className = 'alert alert-success d-block';
+                area.textContent = message;
+                setTimeout(() => area.classList.add('d-none'), 5000);
+            }
+        },
+        showError: (error) => {
+            const area = document.getElementById('messageArea');
+            if (area) {
+                area.className = 'alert alert-danger d-block';
+                area.textContent = error.message || CONFIG.MESSAGES.ERROR.UPDATE_FAILED;
+            }
+        }
+    };
+
+    // ApiUtils는 실제 서버와의 통신을 시뮬레이션합니다.
+    const ApiUtils = {
+        // 실제 fetch 요청을 시뮬레이션
+        request: async (url, options) => {
+            console.log(`Simulating API call to ${url} with method ${options.method}`);
+
+            // 시뮬레이션: PATCH 요청 성공 시 200 응답 반환
+            if (url === CONFIG.API.ENDPOINTS.USER_INFO && options.method === 'PATCH') {
+                await new Promise(resolve => setTimeout(resolve, 500)); // 딜레이 시뮬레이션
+                const data = JSON.parse(options.body);
+                // 유효성 검사 시뮬레이션
+                if (!data.email || !data.phone) {
+                     throw new Error("이메일과 연락처는 필수 항목입니다.");
+                }
+                return { status: 200, json: async () => ({}) };
+            }
+
+            // 시뮬레이션: GET 요청에 대한 응답
+            if (url === CONFIG.API.ENDPOINTS.USER_INFO && options.method === 'GET') {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                return {
+                    status: 200,
+                    json: async () => ({
+                        name: '김푸름',
+                        email: 'kim.pr@example.ac.kr',
+                        phone: '010-1234-5678',
+                        department: '컴퓨터공학과',
+                        grade: '3학년'
+                    })
+                };
+            }
+
+            throw new Error('API 요청 시뮬레이션 오류');
+        }
+    };
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('userInfoForm');
+        const updateBtn = document.getElementById('updateBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Custom Modal elements (Bootstrap Modal 객체 생성)
+        const customConfirmModalEl = document.getElementById('customConfirmModal');
+        const confirmModal = customConfirmModalEl ? new bootstrap.Modal(customConfirmModalEl) : null;
+        const confirmModalBody = document.getElementById('customConfirmModalBody');
+        const confirmYesBtn = document.getElementById('customConfirmYesBtn');
+
+        let originalData = {};
+
+        // 폼 로드 함수
+        loadUserInfo();
+
+        // 사용자 정보 로드 및 폼에 채우기
+        async function loadUserInfo() {
+            try {
+                // 외부 JS 파일에 정의된 ApiUtils를 사용한다고 가정
+                const response = await ApiUtils.request(CONFIG.API.ENDPOINTS.USER_INFO, { method: 'GET' });
+                const data = await response.json();
+                originalData = data; // 원본 데이터 저장
+
+                document.getElementById('name').value = data.name || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('phone').value = data.phone || '';
+                document.getElementById('department').value = data.department || '';
+                document.getElementById('grade').value = data.grade || '';
+
+            } catch (error) {
+                ErrorHandler.showError(error);
+            }
+        }
+
+        // 사용자 정보 업데이트 함수
+        async function updateUserInfo() {
+            clearErrors();
+
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+
+            // 기본 유효성 검사
+            if (!email || !phone) {
+                 ErrorHandler.showError(new Error("이메일과 연락처는 필수 항목입니다."));
+                 return;
+            }
+
+            const formData = { email, phone };
+
+            try {
+                // 외부 JS 파일에 정의된 ApiUtils를 사용한다고 가정
+                const response = await ApiUtils.request(CONFIG.API.ENDPOINTS.USER_INFO, {
+                    method: 'PATCH',
+                    body: JSON.stringify(formData)
+                });
+
+                ErrorHandler.showSuccess(CONFIG.MESSAGES.SUCCESS.USER_UPDATE);
+                loadUserInfo(); // 업데이트 후 정보 다시 로드 (원본 데이터 갱신)
+
+            } catch (error) {
+                ErrorHandler.showError(error);
+            }
+        }
+
+        // 오류 메시지 초기화
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(element => {
+                element.textContent = '';
+            });
+            const area = document.getElementById('messageArea');
+            if (area) area.classList.add('d-none');
+        }
+
+        // '수정' 버튼 클릭 이벤트 (폼 제출)
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateUserInfo();
+        });
+
+        // '취소' 버튼 클릭 시 Custom Modal 호출
+        cancelBtn.addEventListener('click', function() {
+            if (confirmModal && confirmModalBody && confirmYesBtn) {
+                // CONFIG가 외부에서 로드된다고 가정하고 메시지 사용
+                const message = CONFIG.MESSAGES.SUCCESS.CANCEL_CONFIRM;
+
+                // 메시지 설정 및 모달 표시
+                confirmModalBody.textContent = message;
+                confirmModal.show();
+
+                // '예' 버튼 리스너 설정 (이전 리스너 제거 후 새로 설정)
+                // Bootstrap 모달은 DOM에서 '예' 버튼을 재사용하므로, onclick을 사용하거나
+                // 이벤트 리스너를 추가/제거하는 방식으로 동작을 덮어씁니다.
+                confirmYesBtn.onclick = function() {
+                    confirmModal.hide(); // 모달 숨기기
+                    loadUserInfo();      // 정보 다시 로드 (원본 데이터로 되돌리기)
+                    clearErrors();       // 메시지 초기화
+                };
+            }
+        });
+
+    });
+</script>
 </body>
 </html>

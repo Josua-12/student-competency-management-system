@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Thymeleaf로 페이지 타이틀 설정 -->
-    <title th:text="#{page.competency.status.title}">나의 역량 현황 - Competency Status</title>
+    <!-- Thymeleaf 태그 제거 및 하드코딩된 타이틀 사용 -->
+    <title>나의 역량 현황 - Competency Status</title>
 
     <!-- Bootstrap 5 CSS 로드 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,154 +12,231 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <!-- TOAST UI Chart 로드 -->
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+    <!-- 외부 CSS 파일 로드 -->
+    <link rel="stylesheet" th:href="@{/css/mypage/assessment-history.css}" />
 
-    <!-- 사용자 정의 스타일 로드 -->
-    <link rel="stylesheet" th:href="@{/css/mypage/user-management.css}" />
+    <!-- 통합된 CSS 스타일 -->
+    <style>
+        /* CSS from assessment-history.css and fragment styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            display: flex; /* For sticky footer/layout control */
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Chart container height */
+        #historyChart {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Main content area minimum height (Adjusted for sticky footer) */
+        .main-content {
+            flex-grow: 1; /* Allows main content to take up remaining space */
+            padding-top: 1rem;
+        }
+
+        /* Table styles */
+        .history-table th, .history-table td {
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .history-table thead th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+        }
+
+        /* Sidebar active link style */
+        .sidebar a.active {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        /* Sidebar layout for fixed position on desktop */
+        .sidebar {
+             position: fixed;
+             top: 56px; /* Adjust for fixed navbar height */
+             bottom: 0;
+             left: 0;
+             z-index: 1000;
+             padding: 16px 0 0;
+             width: 200px;
+             box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+             background-color: #fff;
+             display: none; /* Hide on mobile by default */
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                display: block !important;
+            }
+            .main-content-row {
+                padding-left: 200px; /* Offset for fixed sidebar */
+            }
+        }
+
+        /* Footer link hover effect */
+        footer a:hover {
+            color: #ccc !important;
+            text-decoration: underline !important;
+        }
+    </style>
 </head>
 <body>
 
-<!-- 공통 헤더 역할: 상단 네비게이션 바 (모바일에서 햄버거 메뉴를 위해 추가) -->
-<!-- d-md-none: MD 사이즈 미만(모바일)에서만 보임 -->
-<nav class="navbar navbar-light bg-white border-bottom shadow-sm d-md-none fixed-top">
-    <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1 fs-5 fw-bold text-dark" th:text="#{system.title}">역량진단 시스템</span>
-        <!-- 햄버거 버튼 (Offcanvas 토글) -->
-        <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-            <i class="fas fa-bars"></i>
+<!-- 1. HEADER (header.html Fragment 통합) -->
+<header class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <!-- 로고/웹사이트명 (이미지 경로 th:src 제거 및 Placeholder 사용) -->
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="https://placehold.co/30x30/4f46e5/ffffff?text=LOGO"
+                 alt="scms 로고"
+                 class="me-2"
+                 style="height: 30px;">
+            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
+        </a>
+
+        <!-- 햄버거 토글 버튼 (모바일) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
-    </div>
-</nav>
 
-<!-- 모바일 전용 Offcanvas 메뉴 (햄버거 버튼 클릭 시 좌측에서 나타남) -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
-    <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title fs-5 fw-bold text-dark" id="offcanvasSidebarLabel" th:text="#{system.title}">역량진단 시스템</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-        <!-- 사이드바 네비게이션 콘텐츠 복사 -->
-        <nav class="p-3">
-            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3" th:text="#{menu.header}">메뉴</h4>
+        <!-- 네비게이션 메뉴 (th:href 제거) -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">홈</a>
+                </li>
 
-            <!-- 메뉴 링크 (active 클래스로 현재 페이지 표시) -->
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none transition active">
-                <i class="fas fa-chart-bar me-3 text-primary"></i>
-                <span th:text="#{menu.competency.status}">나의 역량 현황</span>
-            </a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/assessment">역량진단</a>
+                </li>
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-history me-3 text-secondary"></i>
-                <span th:text="#{menu.history}">전체 진단 이력</span>
-            </a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/counselinguser/student">상담</a>
+                </li>
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-file-alt me-3 text-secondary"></i>
-                <span th:text="#{menu.output}">역량진단 산출물</span>
-            </a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/noncurricular/programs">비교과 프로그램</a>
+                </li>
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-cog me-3 text-secondary"></i>
-                <span th:text="#{menu.settings}">설정</span>
-            </a>
-        </nav>
-    </div>
-</div>
-
-<!-- Bootstrap 그리드를 위한 container-fluid 및 row -->
-<!-- pt-5: 모바일 상단바 높이만큼 공간 확보 -->
-<div id="app" class="d-flex flex-column flex-md-row min-vh-100 pt-5 pt-md-0">
-
-    <!-- 좌측 사이드바 네비게이션 (md 이상에서 보임) -->
-    <!-- d-none d-md-block: 모바일에서 숨김, MD 사이즈 이상에서만 보임 -->
-    <aside class="sidebar col-md-3 col-lg-2 bg-white border-end shadow-sm d-none d-md-block flex-shrink-0">
-        <div class="p-4 border-bottom">
-            <h3 class="fs-5 fw-bold text-dark" th:text="#{system.title}">역량진단 시스템</h3>
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage">마이페이지</a>
+                </li>
+            </ul>
         </div>
-        <nav class="p-3">
-            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3" th:text="#{menu.header}">메뉴</h4>
+    </div>
+</header>
+<!-- End of HEADER -->
 
-            <!-- 메뉴 링크 (active 클래스로 현재 페이지 표시) -->
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none transition active">
-                <i class="fas fa-chart-bar me-3 text-primary"></i>
-                <span th:text="#{menu.competency.status}">나의 역량 현황</span>
-            </a>
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-history me-3 text-secondary"></i>
-                <span th:text="#{menu.history}">전체 진단 이력</span>
-            </a>
+<div class="container-fluid">
+    <div class="row main-content-row">
 
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-file-alt me-3 text-secondary"></i>
-                <span th:text="#{menu.output}">역량진단 산출물</span>
-            </a>
-
-            <a href="#" class="d-flex align-items-center p-3 rounded text-dark text-decoration-none hover-bg-light transition">
-                <i class="fas fa-cog me-3 text-secondary"></i>
-                <span th:text="#{menu.settings}">설정</span>
-            </a>
+        <!-- 2. SIDEBAR (mypage-sidebar Fragment 대체) -->
+        <!-- Bootstrap 5 Offcanvas 기능은 미포함. 데스크톱용 고정 사이드바로 대체 -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar bg-white border-end">
+            <div class="position-sticky pt-3">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <span>마이페이지</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/mypage/assessment">
+                            <i class="fas fa-chart-line me-2"></i>역량 진단 현황
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mypage/noncurricular/status">
+                            <i class="fas fa-list-check me-2"></i>비교과 신청 현황
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mypage/counseling/history">
+                            <i class="fas fa-comments me-2"></i>상담 이력
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mypage/profile">
+                            <i class="fas fa-user-gear me-2"></i>개인 정보 수정
+                        </a>
+                    </li>
+                </ul>
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <span>기타</span>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-right-from-bracket me-2"></i>로그아웃
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </nav>
-    </aside>
+        <!-- End of SIDEBAR -->
 
-    <!-- 메인 콘텐츠 영역 -->
-    <main class="col-md-9 col-lg-10 p-4 p-md-5 main-content flex-grow-1">
-        <div class="container-fluid">
+        <!-- 메인 콘텐츠 (assessmentHistory.html의 main 영역) -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">역량 진단 현황</h1>
+            </div>
 
-            <!-- 페이지 헤더 및 Breadcrumb -->
-            <header class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
-                <h2 class="fs-2 fw-bold text-dark mb-2 mb-sm-0" th:text="#{page.header}">나의 역량 현황</h2>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0 small text-muted">
-                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted hover-text-primary"><i class="fas fa-home"></i> <span th:text="#{breadcrumb.home}">홈</span></a></li>
-                        <li class="breadcrumb-item"><span th:text="#{breadcrumb.competency}">역량진단</span></li>
-                        <li class="breadcrumb-item active fw-medium text-dark" aria-current="page" th:text="#{breadcrumb.status}">나의 역량 현황</li>
-                    </ol>
-                </nav>
-            </header>
+            <!-- 차트 영역 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">역량 변화 추이</h5>
 
-            <!-- 1. 역량 점수 추이 차트 -->
-            <div class="card shadow rounded-3 mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="fs-5 fw-semibold text-dark d-flex align-items-center">
-                        <i class="fas fa-chart-line text-primary me-2"></i> <span th:text="#{chart.title}">역량 점수 추이</span>
-                    </h5>
-                    <div class="btn-group shadow-sm" role="group" aria-label="Chart type toggle">
-                        <button type="button" class="btnShowChart btn btn-primary btn-sm active" id="btnShowLineChart" data-chart-type="line">
-                            <i class="fas fa-chart-line me-1"></i> <span th:text="#{chart.line}">꺾은선</span>
+                    <!-- 차트 타입 선택 버튼 -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <button id="btnShowLineChart" class="btn btn-sm btn-outline-primary me-2 active rounded-pill">
+                            <i class="fas fa-chart-line me-1"></i> 꺾은선
                         </button>
-                        <button type="button" class="btnShowChart btn btn-outline-primary btn-sm" id="btnShowBarChart" data-chart-type="bar">
-                            <i class="fas fa-chart-bar me-1"></i> <span th:text="#{chart.bar}">막대</span>
+                        <button id="btnShowBarChart" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="fas fa-chart-bar me-1"></i> 막대
                         </button>
                     </div>
-                </div>
-                <div class="card-body p-4">
-                    <!-- 차트가 렌더링될 영역 -->
-                    <div id="historyChart" style="height: 320px;"></div>
+
+                    <div id="historyChart" style="height: 320px;">
+                        <!-- TOAST UI Chart가 렌더링될 영역 -->
+                        <div class="d-flex justify-content-center align-items-center h-100 text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i> 차트 로딩 중...
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3">
+                        <i class="fas fa-info-circle me-1"></i> 최근 3회 진단 결과를 기반으로 역량 변화 추이를 보여줍니다.
+                    </p>
                 </div>
             </div>
 
-            <!-- 2. 핵심 역량 점수 테이블 (전체 진단 이력) -->
-            <div class="card shadow rounded-3">
-                <div class="card-header border-bottom-0">
-                    <h5 class="fs-5 fw-semibold text-dark d-flex align-items-center">
-                        <i class="fas fa-table text-success me-2"></i> <span th:text="#{table.title}">전체 진단 이력 상세 점수</span>
-                    </h5>
+            <!-- 상세 테이블 영역 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white fw-semibold">
+                    진단 결과 목록
                 </div>
-                <div class="table-responsive rounded-bottom">
-                    <table class="table table-hover table-striped table-borderless small mb-0">
-                        <thead class="bg-light">
+                <div class="card-body p-0 overflow-x-auto">
+                    <table class="table table-striped history-table mb-0">
+                        <thead class="table-light">
                         <tr>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" th:text="#{table.header.name}">진단명(년도)</th>
-                            <!-- Dynamic Competency Labels will be set by JS/Thymeleaf -->
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="1"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="2"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="3"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="4"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" th:text="#{table.header.view}">자세히 보기</th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase">진단명</th>
+                            <!-- JS에서 채워질 역량 항목 Placeholder (하드코딩된 초기 값) -->
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="1">문제해결</th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="2">협업능력</th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="3">창의적사고</th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase" data-label-placeholder="4">리더십</th>
+                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center">자세히 보기</th>
                         </tr>
                         </thead>
                         <tbody id="scoreTableBody">
-                        <!-- 테이블 행은 JavaScript 또는 Thymeleaf 반복문으로 채워집니다 -->
+                        <!-- 테이블 행은 JavaScript로 채워집니다 -->
                         <tr>
                             <td colspan="6" class="text-center py-4 text-muted">
                                 <i class="fas fa-spinner fa-spin me-2"></i> 데이터 로딩 중...
@@ -169,19 +246,256 @@
                     </table>
                 </div>
             </div>
-        </div>
-
-        <!-- 공통 푸터 역할 (최하단) -->
-        <footer class="mt-5 pt-3 border-top text-center text-muted small">
-            <p>&copy; 2025 Competency Assessment System. All rights reserved.</p>
-        </footer>
-
-    </main>
+        </main>
+    </div>
 </div>
 
-<!-- Bootstrap 5 JavaScript Bundle 로드 (햄버거 메뉴/Offcanvas 기능 포함) -->
+<!-- 3. FOOTER (footer.html Fragment 통합) -->
+<footer class="bg-dark text-white pt-5 pb-4 mt-auto">
+    <div class="container">
+        <div class="row">
+            <!-- 푸터 로고 및 정보 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">푸름대학교 SCMS</h5>
+                <p class="small text-light-emphasis">학생들의 역량 강화를 위한 종합 관리 시스템</p>
+                <p class="small text-light-emphasis">주소: (04000) 서울시 푸름로 123</p>
+                <p class="small text-light-emphasis">전화: 02-1234-5678</p>
+                <p class="small text-light-emphasis">이메일: scms@purum.ac.kr</p>
+            </div>
+
+            <!-- 주요 메뉴 - 역량진단 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-line me-2"></i>역량진단
+                </h5>
+                <ul class="list-unstyled">
+                    <!-- th:href 제거 -->
+                    <li class="mb-2"><a href="/user/assessment" class="text-decoration-none text-light">진단 시작하기</a></li>
+                    <li class="mb-2"><a href="/user/assessment/history" class="text-decoration-none text-light">진단 이력</a></li>
+                    <li class="mb-2"><a href="/user/assessment" class="text-decoration-none text-light">진단 결과 확인하기</a></li>
+                </ul>
+            </div>
+
+            <!-- 상담 예약 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>상담예약
+                </h5>
+                <ul class="list-unstyled">
+                    <!-- th:href 제거 -->
+                    <li class="mb-2"><a href="/counseling/user/student" class="text-decoration-none text-light">상담 예약하기</a></li>
+                    <li class="mb-2"><a href="/counseling/user/counseling/status" class="text-decoration-none text-light">내 예약 조회</a></li>
+                </ul>
+            </div>
+
+            <!-- 비교과 프로그램 -->
+            <div class="col-md-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-book me-2"></i>비교과 프로그램
+                </h5>
+                <ul class="list-unstyled">
+                    <!-- th:href 제거 -->
+                    <li class="mb-2"><a href="/user/noncurricular" class="text-decoration-none text-light">교내 비교과 프로그램</a></li>
+                    <li class="mb-2"><a href="/user/noncurricular" class="text-decoration-none text-light">교외 비교과 프로그램</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 하단 저작권 -->
+        <div class="border-top pt-3 mt-3 text-center">
+            <small class="text-light-emphasis">&copy; 2024 푸름대학교 학생역량관리센터. All rights reserved.</small>
+        </div>
+    </div>
+</footer>
+<!-- End of FOOTER -->
+
+<!-- Bootstrap 5 JavaScript Bundle 로드 -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- 사용자 정의 JavaScript 로드 -->
-<script src="assessment-history.js"></script>
+
+<!-- 4. JAVASCRIPT (assessment-history.js 내용 통합) -->
+<script>
+    // assessment-history.js
+
+    // Canvas 환경을 위해 임시 데이터를 사용합니다.
+    // (반응형 햄버거 메뉴 기능은 Bootstrap 5의 JS/CSS를 통해 HTML에서 처리됩니다.)
+
+    // 임시 데이터
+    const competencyLabels = ['문제해결', '협업능력', '창의적사고', '리더십'];
+    const historyData = [
+        { diagnosisTitle: "2024년 1차 진단", scores: [4.2, 3.8, 4.0, 3.1] },
+        { diagnosisTitle: "2024년 2차 진단", scores: [4.6, 4.0, 4.5, 3.5] },
+        { diagnosisTitle: "2025년 1차 진단", scores: [4.8, 4.2, 4.6, 3.7] }
+    ];
+
+    // TOAST UI Chart 데이터 준비
+    const chartCategories = competencyLabels;
+    const chartSeries = historyData.map(row => ({
+        name: row.diagnosisTitle,
+        data: row.scores
+    }));
+
+    const chartOptions = {
+        chart: {
+            width: 'auto',
+            height: 320
+        },
+        yAxis: {
+            min: 0,
+            max: 5,
+            title: '점수 (5점 만점)'
+        },
+        xAxis: {
+            title: '역량 항목'
+        },
+        series: {
+            showDot: true,
+            colors: ['#4e73df', '#1cc88a', '#36b9cc']
+        },
+        legend: {
+            visible: true
+        },
+        tooltip: {
+            formatter: (value) => `${value.toFixed(1)}점`
+        },
+        theme: {
+            chart: {
+                fontFamily: 'Noto Sans KR, sans-serif'
+            },
+            title: {
+                fontSize: 16
+            }
+        }
+    };
+
+    let currentChart = null;
+
+    // TOAST UI Chart 생성 함수
+    function createChart(type = 'line') {
+        const container = document.getElementById('historyChart');
+
+        // 기존 차트가 있으면 제거
+        if (currentChart) {
+            currentChart.destroy();
+        }
+
+        const data = {
+            categories: chartCategories,
+            series: chartSeries
+        };
+
+        try {
+            if (type === 'line') {
+                currentChart = new toastui.Chart.lineChart({
+                    el: container,
+                    data: data,
+                    options: {
+                        ...chartOptions,
+                        title: '역량 변화 추이 (꺾은선)',
+                        responsive: true
+                    }
+                });
+            } else if (type === 'bar') {
+                // 막대 차트 데이터 구조 변환
+                const barCategories = historyData.map(row => row.diagnosisTitle);
+                const barSeries = competencyLabels.map((label, index) => ({
+                    name: label,
+                    data: historyData.map(row => row.scores[index])
+                }));
+
+                currentChart = new toastui.Chart.barChart({
+                    el: container,
+                    data: {
+                        categories: barCategories,
+                        series: barSeries
+                    },
+                    options: {
+                        ...chartOptions,
+                        title: '역량 변화 추이 (막대)',
+                        responsive: true
+                    }
+                });
+            }
+
+            // 반응형 처리: 차트 크기 조정
+            window.addEventListener('resize', () => {
+                 if (currentChart) {
+                    currentChart.resize();
+                }
+            });
+
+        } catch (error) {
+            console.error("차트 생성 중 오류 발생:", error);
+            container.innerHTML = `<div class="d-flex justify-content-center align-items-center h-100 text-danger"><i class="fas fa-exclamation-circle me-2"></i> 차트 로드 실패. 콘솔 확인.</div>`;
+        }
+    }
+
+
+    // 테이블 데이터 채우기
+    function populateTable() {
+        const tableBody = document.getElementById('scoreTableBody');
+        // 테이블 헤더의 레이블을 동적으로 업데이트
+        const tableHeaders = document.querySelectorAll('.history-table thead th[data-label-placeholder]');
+        tableHeaders.forEach((th, index) => {
+            if (competencyLabels[index]) {
+                th.textContent = competencyLabels[index];
+            }
+        });
+
+        // 테이블 내용 비우기
+        tableBody.innerHTML = '';
+
+        // 데이터가 없는 경우 처리
+        if (historyData.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">진단 이력이 없습니다.</td></tr>`;
+            return;
+        }
+
+        // 데이터로 테이블 채우기
+        historyData.forEach(row => {
+            const tr = document.createElement('tr');
+            // 점수 셀 생성 (소수점 첫째 자리까지 표시)
+            let scoreCells = row.scores.map(score => `<td class="text-center">${score.toFixed(1)}</td>`).join('');
+            tr.innerHTML = `
+                <td class="px-4">${row.diagnosisTitle}</td>
+                ${scoreCells}
+                <td class="text-center">
+                    <a href="#" class="btn btn-outline-secondary btn-sm rounded-pill" title="상세보기"><i class="fas fa-search"></i></a>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+
+    // DOM 로드 완료 후 실행
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnLine = document.getElementById('btnShowLineChart');
+        const btnBar = document.getElementById('btnShowBarChart');
+
+        // 테이블 데이터 먼저 채우기
+        populateTable();
+
+        // 초기 차트 로드 (기본값: 꺾은선)
+        createChart('line');
+
+        // 차트 버튼이 있을 때만 이벤트 리스너 설정
+        if (btnLine && btnBar) {
+            // 꺾은선 버튼 클릭 이벤트
+            btnLine.addEventListener('click', () => {
+                createChart('line');
+                btnLine.classList.add('active');
+                btnBar.classList.remove('active');
+            });
+
+            // 막대 버튼 클릭 이벤트
+            btnBar.addEventListener('click', () => {
+                createChart('bar');
+                btnBar.classList.add('active');
+                btnLine.classList.remove('active');
+            });
+        }
+    });
+</script>
+
 </body>
 </html>
