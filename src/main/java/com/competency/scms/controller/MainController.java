@@ -29,13 +29,13 @@ public class MainController {
                 .orElse("ROLE_STUDENT");
 
         return switch (role) {
-            case "ROLE_SUPER_ADMIN" -> "redirect:/admin/dashboard";
-            case "ROLE_COUNSELING_ADMIN" -> "redirect:/counseling/admin/dashboard";
-            case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular/admin/dashboard";
-            case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular/operator/dashboard";
-            case "ROLE_COMPETENCY_ADMIN" -> "redirect:/competency/admin/dashboard";
-            case "ROLE_COUNSELOR" -> "redirect:/counseling/counselor/dashboard";
-            default -> "redirect:/user/dashboard"; // 학생용
+            case "ROLE_SUPER_ADMIN" -> "redirect:/super-admin/dashboard";
+            case "ROLE_COUNSELING_ADMIN" -> "redirect:/counseling-admin/dashboard";
+            case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular-admin/dashboard";
+            case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular-operator/dashboard";
+            case "ROLE_COMPETENCY_ADMIN" -> "redirect:/competency-admin/dashboard";
+            case "ROLE_COUNSELOR" -> "redirect:/counselor/dashboard";
+            default -> "redirect:/student/dashboard"; // 학생용
         };
     }
 
@@ -44,46 +44,46 @@ public class MainController {
         return mainRedirect(auth);
     }
 
-    @GetMapping("/user/dashboard")
+    @GetMapping("/student/dashboard")
     public String dashboard() {
         log.info("학생 대시보드 페이지 접근");
         return "main/dashboard";
     }
 
-    @GetMapping("/counseling/counselor/dashboard")
+    @GetMapping("/counselor/dashboard")
     public String counselorDashboard() {
         log.info("상담사 대시보드 페이지 접근");
         return "counseling/counselor/counselor-main";
     }
 
-    @GetMapping("/counseling/admin/dashboard")
+    @GetMapping("/counseling-admin/dashboard")
     public String counselingAdminDashboard() {
         log.info("상담 관리자 대시보드 페이지 접근");
-        return "counseling/admin/counseling-admin-main";
+        return "counseling/admin/admin-main";
     }
 
-    @GetMapping("/noncurricular/operator/dashboard")
+    @GetMapping("/noncurricular-operator/dashboard")
     public String operatorDashboard() {
         log.info("비교과 운영자 대시보드 페이지 접근");
-        return "noncurricular/operator/operator-main";
+        return "noncurricular/noncurriDashboard/operator-dashboard";
     }
 
-    @GetMapping("/noncurricular/admin/dashboard")
+    @GetMapping("/noncurricular-admin/dashboard")
     public String noncurricularAdminDashboard() {
         log.info("비교과 관리자 대시보드 페이지 접근");
-        return "noncurricular/admin/noncurricular-admin-main";
+        return "noncurricular/noncurriDashboard/student-dashboard";
     }
 
-    @GetMapping("/competency/admin/dashboard")
+    @GetMapping("/competency-admin/dashboard")
     public String competencyAdminDashboard() {
         log.info("역량 관리자 대시보드 페이지 접근");
-        return "competency/admin/competency-admin-main";
+        return "competency/admin-section";
     }
 
-    @GetMapping("/admin/dashboard")
+    @GetMapping("/super-admin/dashboard")
     public String superAdminDashboard() {
         log.info("최고 관리자 대시보드 페이지 접근");
-        return "admin/super-admin-main";
+        return "admin/dashboard";
     }
 
     @GetMapping("/auth/login")
