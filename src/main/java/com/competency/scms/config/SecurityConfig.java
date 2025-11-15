@@ -64,7 +64,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/login", "/api/user/refresh", "/api/auth/**").permitAll()
 
                         // 학생 전용 경로
-                        .requestMatchers("/student/**", "/mypage/**").hasRole("STUDENT")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/mypage/**").hasRole("STUDENT")
+                        .requestMatchers("/mypage").authenticated()
 
                         // 상담 관련 - 세분화된 권한
                         .requestMatchers("/counseling/student/**").hasRole("STUDENT")
