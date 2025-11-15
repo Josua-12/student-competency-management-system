@@ -123,6 +123,14 @@ public class MainController {
         return "auth/reset-password";
     }
 
+    @GetMapping("/mypage")
+    public String mypageRedirect(Authentication auth) {
+        if (auth == null) {
+            return "redirect:/auth/login";
+        }
+        return "redirect:/student/mypage";
+    }
+
     @GetMapping("/logout")
     public String logout(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) {
         log.info("=== 로그아웃 요청 시작 ===");
