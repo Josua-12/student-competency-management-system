@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/admin/assessment-section")
+@RequestMapping("/competency-admin/assessment-section")
 @RequiredArgsConstructor
 public class AssessmentSectionAdminController {
 

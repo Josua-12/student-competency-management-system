@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/op/mileages")
+@RequestMapping("/api/noncurricular-operator/mileages")
 public class MileageController {
 
     private final MileageService mileageService;

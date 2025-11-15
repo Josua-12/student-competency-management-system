@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/operator/noncurricular/programs")
+@RequestMapping("/api/noncurricular-operator/programs")
 public class ProgramCommandController {
 
     private final ProgramCommandService programCommandService;

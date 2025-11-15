@@ -6,30 +6,30 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/noncurricular/dashboard")
+@RequestMapping("/noncurricular")
 public class NoncurricularDashboardViewController {
 
-    @GetMapping("/personal")
-    public String personalDashboard(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 개인 대시보드");
-        model.addAttribute("content",
-                "noncurricular/dashboard/personal-dashboard :: content");
+    // 학생용 비교과 대시보드
+    @GetMapping("/student/dashboard")
+    public String studentDashboard(Model model) {
+        model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
+        model.addAttribute("content", "noncurricular/student/student-dashboard :: content");
         return "layouts/noncurricular-layout";
     }
 
-    @GetMapping("/operator")
+    // 비교과 운영자 대시보드
+    @GetMapping("/operator/dashboard")
     public String operatorDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 운영자 대시보드");
-        model.addAttribute("content",
-                "noncurricular/dashboard/operator-dashboard :: content");
+        model.addAttribute("content", "noncurricular/operator/operator-dashboard :: content");
         return "layouts/noncurricular-layout";
     }
 
-    @GetMapping("/department")
-    public String departmentDashboard(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 부서관리자 대시보드");
-        model.addAttribute("content",
-                "noncurricular/dashboard/department-dashboard :: content");
+    // 비교과 관리자 대시보드
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model model) {
+        model.addAttribute("pageTitle", "비교과 프로그램 - 관리자 대시보드");
+        model.addAttribute("content", "noncurricular/admin/admin-dashboard :: content");
         return "layouts/noncurricular-layout";
     }
 }

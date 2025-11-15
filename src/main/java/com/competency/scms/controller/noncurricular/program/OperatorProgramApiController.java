@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/operator/programs")
+@RequestMapping("/api/noncurricular-operator/programs")
 public class OperatorProgramApiController {
 
     private final ProgramQueryService programQueryService;

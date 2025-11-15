@@ -17,27 +17,31 @@ public class MainController {
 
     @GetMapping({"/", "/main"})
     public String mainRedirect(Authentication auth) {
-        // 개발용: 바로 학생 대시보드로 이동
-        return "redirect:/user/dashboard";
-
-        /* 운영용 (개발 완료 후 주석 해제)
+        // 인증되지 않은 사용자는 로그인 페이지로
         if (auth == null) {
             return "redirect:/auth/login";
         }
 
-        // 사용자 역할에 따른 대시보드 리다이렉트
+        // 인증된 사용자는 역할에 따른 대시보드로 리다이렉트
         String role = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
                 .orElse("ROLE_STUDENT");
 
         return switch (role) {
-            case "ROLE_ADMIN" -> "redirect:/admin/dashboard";
-            case "ROLE_COUNSELOR" -> "redirect:/counselor/dashboard";
-            case "ROLE_OPERATOR" -> "redirect:/operator/dashboard";
+            case "ROLE_SUPER_ADMIN" -> "redirect:/admin/dashboard";
+            case "ROLE_COUNSELING_ADMIN" -> "redirect:/counseling/admin/dashboard";
+            case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular/admin/dashboard";
+            case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular/operator/dashboard";
+            case "ROLE_COMPETENCY_ADMIN" -> "redirect:/competency/admin/dashboard";
+            case "ROLE_COUNSELOR" -> "redirect:/counseling/counselor/dashboard";
             default -> "redirect:/user/dashboard"; // 학생용
         };
-        */
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboardRedirect(Authentication auth) {
+        return mainRedirect(auth);
     }
 
     @GetMapping("/user/dashboard")
@@ -46,16 +50,40 @@ public class MainController {
         return "main/dashboard";
     }
 
-    @GetMapping("/counselor/dashboard")
+    @GetMapping("/counseling/counselor/dashboard")
     public String counselorDashboard() {
         log.info("상담사 대시보드 페이지 접근");
         return "counseling/counselor/counselor-main";
     }
 
-    @GetMapping("/operator/dashboard")
+    @GetMapping("/counseling/admin/dashboard")
+    public String counselingAdminDashboard() {
+        log.info("상담 관리자 대시보드 페이지 접근");
+        return "counseling/admin/counseling-admin-main";
+    }
+
+    @GetMapping("/noncurricular/operator/dashboard")
     public String operatorDashboard() {
-        log.info("운영자 대시보드 페이지 접근");
+        log.info("비교과 운영자 대시보드 페이지 접근");
         return "noncurricular/operator/operator-main";
+    }
+
+    @GetMapping("/noncurricular/admin/dashboard")
+    public String noncurricularAdminDashboard() {
+        log.info("비교과 관리자 대시보드 페이지 접근");
+        return "noncurricular/admin/noncurricular-admin-main";
+    }
+
+    @GetMapping("/competency/admin/dashboard")
+    public String competencyAdminDashboard() {
+        log.info("역량 관리자 대시보드 페이지 접근");
+        return "competency/admin/competency-admin-main";
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String superAdminDashboard() {
+        log.info("최고 관리자 대시보드 페이지 접근");
+        return "admin/super-admin-main";
     }
 
     @GetMapping("/auth/login")

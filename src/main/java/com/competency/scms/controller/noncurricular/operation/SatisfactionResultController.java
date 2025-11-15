@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/satisfaction-results")
+@RequestMapping("/api/noncurricular-operator/satisfaction-results")
 public class SatisfactionResultController {
 
     private final SatisfactionResultService service;

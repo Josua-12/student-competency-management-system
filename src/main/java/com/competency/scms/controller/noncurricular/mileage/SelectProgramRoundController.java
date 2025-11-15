@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/op/programs")
+@RequestMapping("/api/noncurricular-operator/programs")
 public class SelectProgramRoundController {
 
     private final ProgramRepository programRepository;

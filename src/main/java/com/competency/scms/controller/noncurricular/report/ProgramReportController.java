@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ops/reports")
+@RequestMapping("/noncurricular-operator/reports")
 public class ProgramReportController {
 
     private final ProgramReportService reportService;
