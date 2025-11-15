@@ -1,4 +1,51 @@
 /* static/css/mypage/user-info.css */
+
+/* ===== 마이페이지 레이아웃 공통 스타일 추가 ===== */
+.sidebar {
+    /* md 이상에서 보일 때 너비와 높이 설정 */
+    min-height: 100vh;
+}
+.sidebar .transition {
+    /* 부드러운 호버 효과를 위한 트랜지션 */
+    transition: background-color 0.2s, color 0.2s;
+}
+.sidebar .hover-bg-light:hover {
+    background-color: #f8f9fa; /* Bootstrap light color */
+}
+.sidebar .active {
+    /* 활성화된 메뉴 항목 스타일 */
+    background-color: var(--bs-primary-bg-subtle, #cfe2ff); /* Bootstrap primary light color */
+    font-weight: 600;
+}
+
+/* Offcanvas (모바일 햄버거 메뉴) 스타일 */
+.offcanvas-start {
+    /* 모바일에서 왼쪽에서 나타나도록 */
+    width: 250px;
+}
+.offcanvas-body .active {
+    /* 모바일 메뉴에서도 활성화 스타일 적용 */
+    background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+    font-weight: 600;
+}
+.offcanvas-body .hover-bg-light:hover {
+    background-color: #f8f9fa;
+}
+
+/* 메인 콘텐츠 상단 패딩 조정 (Fixed-top Navbar 때문에) */
+.main-content {
+    /* 모바일에서는 fixed-top navbar가 있으므로 상단에 공간을 줌 */
+    padding-top: 70px !important;
+}
+
+@media (min-width: 768px) { /* md 이상 */
+    .main-content {
+        /* md 이상에서는 fixed-top navbar가 없으므로 기존 패딩 사용 */
+        padding-top: 3rem !important; /* p-md-5에 맞춰 3rem */
+    }
+}
+
+/* ===== 기존 사용자 정보 폼 스타일 유지 및 Bootstrap 클래스 적용 ===== */
 .user-info-container {
     max-width: 600px;
     margin: 2rem auto;
@@ -14,31 +61,12 @@
     color: #333;
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
 .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
     font-weight: 500;
     color: #555;
 }
 
-.form-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
+/* Bootstrap form-control이 대부분 처리하지만, readonly 스타일을 명확히 함 */
 .form-group input[readonly] {
     background-color: #f8f9fa;
     color: #6c757d;
@@ -51,14 +79,12 @@
     margin-top: 0.25rem;
 }
 
-.button-group {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 2rem;
-}
+/* 버튼 그룹 및 버튼 스타일은 Bootstrap 클래스 (btn, btn-primary, btn-secondary) 사용으로 대체 */
 
-.btn-primary, .btn-secondary {
+/* 기존 스타일에서 .btn-primary, .btn-secondary의 커스텀 패딩은 HTML에서 btn-lg로 대체 */
+/* 만약 커스텀 패딩을 유지하고 싶다면 아래를 활성화 */
+/*
+.button-group .btn-primary, .button-group .btn-secondary {
     padding: 0.75rem 2rem;
     border: none;
     border-radius: 4px;
@@ -66,21 +92,4 @@
     cursor: pointer;
     transition: background-color 0.2s;
 }
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #545b62;
-}
+*/

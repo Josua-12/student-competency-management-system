@@ -1,136 +1,103 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>비교과 프로그램 신청 현황</title>
     <!-- Tailwind CSS 로드 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bootstrap 5 CSS 로드 (카드, 테이블, 뱃지 등 컴포넌트 사용을 위해 유지) -->
+    <!-- Bootstrap 5 CSS 로드 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 아이콘 로드 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <!-- 사용자 정의 스타일 로드 -->
-    <link rel="stylesheet" href="applicationstatus.css" />
-
-    <!-- CSS (Styles) 영역: 모든 스타일을 여기에 통합합니다. -->
-    <style>
-        /* 기본 스타일 정의 */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa; /* gray-100 */
-        }
-
-        /* 1. 사이드바 스타일 정의 */
-        .sidebar {
-            width: 260px; /* 고정 너비 설정 */
-        }
-
-        /* 2. 활성 링크 스타일 정의 */
-        .active-link {
-            /* 활성 링크에 배경색을 지정하여 텍스트가 잘 보이도록 함 */
-            background-color: #4f46e5 !important; /* Tailwind Indigo-600 */
-            color: white !important; /* 활성 링크 텍스트를 흰색으로 */
-        }
-
-        /* 3. 호버 및 전환 효과 정의 */
-        .nav-link {
-            transition: all 0.2s ease-in-out;
-        }
-        .hover-bg-light:hover {
-            background-color: #f1f3f5; /* Light gray for hover */
-            color: #495057 !important; /* Dark text on hover */
-        }
-        .text-muted-hover:hover {
-            color: #4f46e5 !important; /* Indigo color on hover for breadcrumb link */
-        }
-        .text-indigo {
-            color: #4f46e5 !important; /* Custom indigo color */
-        }
-
-        /* 테이블 디자인 개선 */
-        .application-table th {
-            letter-spacing: 0.05em;
-            color: #6c757d;
-        }
-        .application-table td {
-            font-size: 0.95rem;
-        }
-
-        /* 상태 뱃지 스타일 */
-        .badge-status {
-            min-width: 70px;
-            padding: 0.5em 0.8em;
-            font-weight: 600;
-        }
-
-        /* 모바일 뷰에서 사이드바 숨김 */
-        @media (max-width: 767px) {
-            .sidebar {
-                display: none !important;
-            }
-        }
-
-        /* 커스텀 모달 스타일: alert() 대신 사용 */
-        #custom-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1050;
-        }
-        #modal-content {
-            background-color: white;
-            padding: 25px 30px; /* 패딩 증가 */
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 강화 */
-            max-width: 380px;
-            width: 90%;
-        }
-    </style>
+    <!-- 외부 CSS 파일 로드 -->
+    <link rel="stylesheet" th:href="@{/css/mypage/user-management.css}" />
 </head>
-<body>
+<body class="bg-light"> <!-- body 배경색을 CSS에서 관리하도록 변경 -->
 
-<!-- Custom Modal Structure (alert() 대체, 확인 버튼 재도입) -->
+<!-- Custom Modal Structure (alert() 대체) -->
 <div id="custom-modal">
     <div id="modal-content">
-        <!-- 메시지 아래에 버튼을 위한 간격 확보 -->
         <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
-        <!-- 확인 버튼 재도입 -->
         <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
     </div>
 </div>
 
-<div id="app" class="d-flex min-vh-100">
+<!-- 1. 공통 상단 헤더 (Top Navigation Bar) -->
+<nav class="top-header bg-white border-bottom">
+    <div class="d-flex justify-content-between align-items-center h-100 px-4">
+        <!-- 로고 / 시스템 이름 -->
+        <a href="index.html" class="text-xl fw-bolder text-indigo text-decoration-none d-flex align-items-center">
+            <i class="fas fa-graduation-cap me-2"></i> 역량 시스템
+        </a>
 
-    <!-- 사이드바 네비게이션 -->
-    <aside class="sidebar bg-white border-end shadow-sm d-none d-md-block flex-shrink-0">
-        <div class="p-4 border-bottom">
-            <h3 class="fs-5 fw-bolder text-dark">역량진단 시스템</h3>
+        <!-- 데스크톱용 프로필 / 사용자 정보 -->
+        <div class="d-none d-md-flex align-items-center">
+            <span class="text-sm text-gray-700 me-3">환영합니다, 홍길동님</span>
+            <button class="btn btn-outline-secondary rounded-pill btn-sm">
+                <i class="fas fa-sign-out-alt me-1"></i> 로그아웃
+            </button>
         </div>
-        <nav class="p-3 space-y-2">
-            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3">메뉴</h4>
-            <a href="#" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition">
+
+        <!-- 모바일용 햄버거 버튼 -->
+        <button id="mobile-menu-btn" class="btn btn-light d-md-none" aria-label="메뉴 토글" aria-expanded="false" aria-controls="mobile-menu">
+            <i class="fas fa-bars fa-lg"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- 2. 모바일 드롭다운 메뉴 (햄버거 클릭 시 나타남) -->
+<div id="mobile-menu" class="bg-white py-2 d-md-none">
+    <div class="p-3">
+        <!-- 사이드바의 링크와 동일하게 구성 -->
+        <a href="index.html" class="nav-link p-3 rounded-3 text-dark hover-bg-light transition d-block">
+            <i class="fas fa-chart-bar fa-fw me-3"></i>
+            <span>나의 역량 현황</span>
+        </a>
+        <a href="applicationstatus.html" class="nav-link p-3 rounded-3 active-link d-block">
+            <i class="fas fa-list-check fa-fw me-3"></i>
+            <span>신청 프로그램 현황</span>
+        </a>
+        <a href="outputs.html" class="nav-link p-3 rounded-3 text-dark hover-bg-light transition d-block">
+            <i class="fas fa-file-alt fa-fw me-3"></i>
+            <span>역량진단 산출물</span>
+        </a>
+        <a href="settings.html" class="nav-link p-3 rounded-3 text-dark hover-bg-light transition d-block">
+            <i class="fas fa-cog fa-fw me-3"></i>
+            <span>설정</span>
+        </a>
+        <hr class="my-2">
+        <button class="btn btn-outline-secondary rounded-pill w-100 mt-2">
+            <i class="fas fa-sign-out-alt me-1"></i> 로그아웃
+        </button>
+    </div>
+</div>
+
+<!-- 전체 레이아웃 컨테이너 -->
+<div class="d-flex main-container">
+
+    <!-- 3. 좌측 사이드바 (데스크톱 뷰) -->
+    <aside class="sidebar bg-white border-end shadow-sm d-none d-md-block">
+        <div class="p-4 border-bottom">
+            <h3 class="fs-5 fw-bolder text-dark">주요 메뉴</h3>
+        </div>
+        <nav class="p-3">
+            <h4 class="small fw-semibold text-uppercase text-muted mb-2 px-3">비교과</h4>
+            <a href="index.html" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition d-block">
                 <i class="fas fa-chart-bar fa-fw me-3"></i>
                 <span>나의 역량 현황</span>
             </a>
             <!-- 현재 페이지 (활성) -->
-            <a href="#" class="nav-link p-3 rounded-3 active-link">
+            <a href="applicationstatus.html" class="nav-link p-3 rounded-3 active-link d-block">
                 <i class="fas fa-list-check fa-fw me-3"></i>
                 <span>신청 프로그램 현황</span>
             </a>
             <!-- 산출물 메뉴 -->
-            <a href="#" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition">
+            <a href="outputs.html" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition d-block">
                 <i class="fas fa-file-alt fa-fw me-3"></i>
                 <span>역량진단 산출물</span>
             </a>
-            <a href="#" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition">
+            <a href="settings.html" class="nav-link p-3 rounded-3 text-muted hover-bg-light transition d-block">
                 <i class="fas fa-cog fa-fw me-3"></i>
                 <span>설정</span>
             </a>
@@ -146,7 +113,7 @@
                 <h2 class="h3 fw-bolder text-dark mb-2 mb-sm-0">비교과 프로그램 신청 현황</h2>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 small text-muted">
-                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted-hover"><i class="fas fa-home"></i> 홈</a></li>
+                        <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted-hover"><i class="fas fa-home"></i> 홈</a></li>
                         <li class="breadcrumb-item">비교과</li>
                         <li class="breadcrumb-item active text-dark fw-medium" aria-current="page">신청 현황</li>
                     </ol>
@@ -237,74 +204,33 @@
                 </div>
             </div>
 
+            <!-- 페이지 하단 여백 -->
+            <div class="py-5"></div>
+
         </div>
     </main>
 </div>
 
+<!-- 4. 공통 푸터 -->
+<footer class="bg-white border-top py-4 mt-auto">
+    <div class="container-fluid px-3 px-md-5">
+        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row text-center text-md-start">
+            <p class="mb-2 mb-md-0 text-sm text-gray-500">
+                &copy; 2024 역량진단 시스템. All Rights Reserved.
+            </p>
+            <div class="text-sm text-gray-500">
+                <a href="#" class="text-decoration-none text-muted-hover">개인정보처리방침</a>
+                <span class="mx-2 text-gray-300">|</span>
+                <a href="#" class="text-decoration-none text-muted-hover">이용약관</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
 <!-- Bootstrap 5 JS Bundle 로드 -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- *** 기능 구현을 위한 외부 JS 파일 로드 *** -->
+<script src="script.js"></script>
 
-<!-- JavaScript (Script) 영역: 모든 스크립트를 여기에 통합합니다. -->
-<script>
-    // alert() 대신 사용할 커스텀 모달 기능
-    const customModal = document.getElementById('custom-modal');
-    const modalMessage = document.getElementById('modal-message');
-    const modalCloseBtn = document.getElementById('modal-close-btn'); // 확인 버튼 요소 재정의
-
-    /**
-     * 커스텀 모달을 표시하는 함수
-     * @param {string} message - 모달에 표시할 메시지
-     */
-    function showCustomModal(message) {
-        modalMessage.textContent = message;
-        customModal.style.display = 'flex';
-    }
-
-    // 모달 닫기 버튼 이벤트 리스너: 확인 버튼 클릭 시 닫기
-    modalCloseBtn.addEventListener('click', () => {
-        customModal.style.display = 'none';
-    });
-
-    // 이전에 있던 배경 클릭으로 닫는 로직은 제거됨.
-
-    // 테이블 상호작용 로직
-    document.addEventListener('DOMContentLoaded', () => {
-        const tableBody = document.getElementById('applicationTableBody');
-
-        // 테이블 본문 클릭 이벤트 리스너
-        tableBody.addEventListener('click', (event) => {
-            const target = event.target;
-
-            // 클릭된 요소가 'action-btn' 클래스를 가지는지 확인
-            if (target.classList.contains('action-btn')) {
-                const action = target.getAttribute('data-action');
-                const row = target.closest('tr');
-                const programName = row.getAttribute('data-program');
-                const status = row.getAttribute('data-status');
-
-                // '취소' 버튼 클릭 시 로직
-                if (action === 'cancel') {
-                    if (status === '신청 완료') {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램 신청을 정말로 취소하시겠습니까? (기능 구현 필요). 닫으려면 확인 버튼을 클릭하세요.`);
-                    } else {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램은 현재 '${status}' 상태이므로 취소할 수 없습니다. 닫으려면 확인 버튼을 클릭하세요.`);
-                    }
-                }
-                // '산출물 등록' 버튼 클릭 시 로직
-                else if (action === 'register') {
-                    if (status === '이수 완료') {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램의 산출물 등록 페이지로 이동합니다. (기능 구현 필요). 닫으려면 확인 버튼을 클릭하세요.`);
-                    } else {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램은 아직 이수 완료 상태가 아닙니다. 산출물 등록이 불가능합니다. 닫으려면 확인 버튼을 클릭하세요.`);
-                    }
-                }
-            }
-        });
-    });
-</script>
 </body>
 </html>

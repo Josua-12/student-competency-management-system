@@ -1,4 +1,52 @@
 /* static/css/mypage/user-info-edit.css */
+
+/* ===== 마이페이지 레이아웃 공통 스타일 추가 (반응형 사이드바) ===== */
+.sidebar {
+    /* md 이상에서 보일 때 너비와 높이 설정 */
+    min-height: 100vh;
+}
+.sidebar .transition {
+    /* 부드러운 호버 효과를 위한 트랜지션 */
+    transition: background-color 0.2s, color 0.2s;
+}
+.sidebar .hover-bg-light:hover {
+    background-color: #f8f9fa; /* Bootstrap light color */
+}
+.sidebar .active {
+    /* 활성화된 메뉴 항목 스타일 */
+    background-color: var(--bs-primary-bg-subtle, #cfe2ff); /* Bootstrap primary light color */
+    font-weight: 600;
+}
+
+/* Offcanvas (모바일 햄버거 메뉴) 스타일 */
+.offcanvas-start {
+    /* 모바일에서 왼쪽에서 나타나도록 */
+    width: 250px;
+}
+.offcanvas-body .active {
+    /* 모바일 메뉴에서도 활성화 스타일 적용 */
+    background-color: var(--bs-primary-bg-subtle, #cfe2ff);
+    font-weight: 600;
+}
+.offcanvas-body .hover-bg-light:hover {
+    background-color: #f8f9fa;
+}
+
+/* 메인 콘텐츠 상단 패딩 조정 (Fixed-top Navbar 때문에) */
+.main-content {
+    /* 모바일에서는 fixed-top navbar가 있으므로 상단에 공간을 줌 */
+    padding-top: 70px !important;
+}
+
+@media (min-width: 768px) { /* md 이상 */
+    .main-content {
+        /* md 이상에서는 fixed-top navbar가 없으므로 기존 패딩 사용 */
+        padding-top: 3rem !important; /* p-md-5에 맞춰 3rem */
+    }
+}
+
+
+/* ===== 기존 사용자 정보 폼 스타일 유지 ===== */
 .user-info-container {
     max-width: 600px;
     margin: 2rem auto;
