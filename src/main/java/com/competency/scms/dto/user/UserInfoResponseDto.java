@@ -7,6 +7,7 @@ public record UserInfoResponseDto(
         String name,
         String email,
         String phone,
+        String address,
         String department,
         Integer grade
 ) {
@@ -16,6 +17,7 @@ public record UserInfoResponseDto(
                 user.getName(),
                 user.getEmail(),
                 user.getPhone(),
+                user.getAddress(),
                 user.getDepartment() != null ? user.getDepartment().getName() : null,
                 user.getGrade()
         );
