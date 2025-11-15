@@ -30,7 +30,15 @@ public class UserInfoService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
         
-        user.updateInfo(dto.email(), dto.phone());
+        if (dto.email() != null) {
+            user.updateEmail(dto.email());
+        }
+        if (dto.phone() != null) {
+            user.updatePhone(dto.phone());
+        }
+        if (dto.address() != null) {
+            user.updateAddress(dto.address());
+        }
     }
 
     @Transactional

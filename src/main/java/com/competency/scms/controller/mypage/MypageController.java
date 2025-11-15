@@ -47,6 +47,8 @@ public class MypageController {
         model.addAttribute("userNum", userInfo.userNum());
         model.addAttribute("department", userInfo.department());
         model.addAttribute("phone", userInfo.phone());
+        model.addAttribute("address", userInfo.address());
+        model.addAttribute("grade", userInfo.grade());
 
         return "mypage/changeinfo";
     }
@@ -54,7 +56,7 @@ public class MypageController {
     @GetMapping("/password")
     public String changePassword() {
         log.info("비밀번호 변경 페이지 접근");
-        return "mypage/changePW";
+        return "mypage/password";
     }
 
     @GetMapping("/assessment-history")

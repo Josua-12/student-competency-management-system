@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,8 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- TOAST UI Chart -->
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
-    <!-- 사용자 정의 스타일 로드 -->
-    <link rel="stylesheet" href="assessment-history.css" />
+
 
     <style>
         /* ========================================================= */
@@ -39,6 +38,8 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
 
         /* --- Header/Footer/Sidebar 공통 스타일 --- */
@@ -64,16 +65,9 @@
             font-weight: 600;
         }
 
-        /* 메인 콘텐츠 상단 패딩 조정 (Fixed-top Navbar 때문에) */
+        /* 메인 콘텐츠 레이아웃 */
         .main-content {
-            flex-grow: 1;
-            padding-top: 70px !important; /* 모바일: fixed-top navbar 공간 확보 */
-        }
-        @media (min-width: 768px) { /* md 이상 */
-            .main-content {
-                padding-top: 3rem !important;
-                margin-left: var(--sidebar-width); /* 사이드바 공간 확보 */
-            }
+            min-height: calc(100vh - 56px); /* 헤더 높이 제외 */
         }
 
         /* 테이블 스타일 */
@@ -129,91 +123,72 @@
 </head>
 <body>
 
-<!-- ========================================================= -->
-<!-- 1. 공통 헤더 (header.html) -->
-<!-- ========================================================= -->
-<header class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container-fluid px-3 px-md-5">
-        <!-- 로고/웹사이트명 -->
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <!-- 가상의 로고 이미지 경로 -->
-            <img src="https://placehold.co/30x30/0d6efd/ffffff?text=SCMS" alt="scms 로고" class="me-2 rounded" style="height: 30px;">
-            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
-        </a>
+<!-- 공통 헤더 사용 -->
+<div th:replace="~{common/header :: header}"></div>
 
-        <!-- 햄버거 토글 버튼 (모바일 마이페이지 사이드바) -->
-        <button class="btn btn-outline-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <!-- 네비게이션 메뉴 (데스크톱) -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#">홈</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">역량진단</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">상담</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">비교과 프로그램</a></li>
-                <li class="nav-item"><a class="nav-link active" href="#">마이페이지</a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> 로그아웃</a></li>
-            </ul>
+<!-- 메인 콘텐츠 영역 -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- 마이페이지 사이드바 (데스크톱) -->
+        <div class="d-none d-md-block col-md-3 col-lg-2 sidebar bg-white border-end" style="min-height: calc(100vh - 56px);">
+            <div class="p-4 pt-4">
+                <h4 class="fw-bold mb-4 text-dark">마이페이지</h4>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-page="dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i> 대시보드
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/assessment-history">
+                        <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/application-status">
+                        <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/info">
+                        <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/password">
+                        <i class="bi bi-key me-2"></i> 비밀번호 변경
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-</header>
-
-<!-- ========================================================= -->
-<!-- 2. 마이페이지 사이드바 (데스크톱) & Offcanvas (모바일) -->
-<!-- ========================================================= -->
-
-<!-- 데스크톱용 사이드바 (md 이상에서 보임) -->
-<div class="d-none d-md-block sidebar bg-white border-end position-fixed" style="width: var(--sidebar-width);">
-    <div class="p-4 pt-5">
-        <h4 class="fw-bold mb-4 text-dark">마이페이지</h4>
-        <div class="list-group list-group-flush">
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-view="dashboard">
-                <i class="bi bi-speedometer2 me-2"></i> 대시보드
-            </a>
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="history">
-                <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
-            </a>
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="status">
-                <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
-            </a>
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="user-info">
-                <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
-            </a>
+        
+        <!-- 모바일용 Offcanvas 사이드바 -->
+        <div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title fw-bold" id="offcanvasSidebarLabel">마이페이지 메뉴</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body pt-3">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-page="dashboard" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-speedometer2 me-2"></i> 대시보드
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/assessment-history" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/application-status" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/info" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/password" data-bs-dismiss="offcanvas">
+                        <i class="bi bi-key me-2"></i> 비밀번호 변경
+                    </a>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
-<!-- 모바일용 Offcanvas 사이드바 (md 미만에서 보임) -->
-<div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
-    <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title fw-bold" id="offcanvasSidebarLabel">마이페이지 메뉴</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body pt-3">
-        <div class="list-group list-group-flush">
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-view="dashboard" data-bs-dismiss="offcanvas">
-                <i class="bi bi-speedometer2 me-2"></i> 대시보드
-            </a>
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="history" data-bs-dismiss="offcanvas">
-                <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
-            </a>
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="status" data-bs-dismiss="offcanvas">
-                <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
-            </a>
-            <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-view="user-info" data-bs-dismiss="offcanvas">
-                <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
-            </a>
+        
+        <!-- 모바일 햄버거 버튼 -->
+        <div class="d-md-none position-fixed" style="top: 70px; right: 15px; z-index: 1030;">
+            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-    </div>
-</div>
-
-
-<!-- ========================================================= -->
-<!-- 3. 메인 콘텐츠 영역 -->
-<!-- ========================================================= -->
-<div class="main-content container-fluid px-3 px-md-5 pb-5">
+        
+        <!-- 메인 콘텐츠 -->
+        <div class="col-md-9 col-lg-10 main-content px-3 px-md-4 py-4">
 
     <!-- 뷰 전환 영역 -->
     <div id="dashboardView" class="view-section">
@@ -390,7 +365,7 @@
         <h1 class="fw-bold mb-4 text-dark">사용자 정보 수정</h1>
 
         <div class="user-info-container bg-white rounded-lg shadow-lg mx-auto" style="max-width: 600px; padding: 2rem;">
-            <p class="text-muted text-center mb-4">비밀번호는 별도 메뉴에서 변경해 주세요. 이메일과 연락처만 수정 가능합니다.</p>
+            <p class="text-muted text-center mb-4">이메일, 연락처, 주소를 개별적으로 수정할 수 있습니다. 비밀번호는 별도 버튼을 이용해 주세요.</p>
 
             <form id="userInfoForm">
                 <div class="mb-3">
@@ -410,74 +385,40 @@
                     <input type="text" class="form-control" id="grade" value="3학년" readonly disabled>
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label required">이메일</label>
-                    <input type="email" class="form-control rounded-pill" id="email" value="pureum.kim@univ.ac.kr" required>
+                    <label for="email" class="form-label">이메일</label>
+                    <input type="email" class="form-control rounded-pill" id="email" value="pureum.kim@univ.ac.kr">
                     <div class="error-message text-danger small mt-1" id="email-error"></div>
                 </div>
                 <div class="mb-3">
-                    <label for="phone" class="form-label required">연락처 (휴대폰)</label>
-                    <input type="tel" class="form-control rounded-pill" id="phone" value="010-1234-5678" required>
+                    <label for="phone" class="form-label">연락처 (휴대폰)</label>
+                    <input type="tel" class="form-control rounded-pill" id="phone" value="010-1234-5678">
                     <div class="error-message text-danger small mt-1" id="phone-error"></div>
                 </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">주소</label>
+                    <input type="text" class="form-control rounded-pill" id="address" value="서울시 강남구 테헤란로 123">
+                    <div class="error-message text-danger small mt-1" id="address-error"></div>
+                </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4" id="cancelBtn"><i class="fas fa-undo me-1"></i> 취소</button>
-                    <button type="submit" class="btn btn-primary rounded-pill px-4" id="updateBtn"><i class="fas fa-save me-1"></i> 저장</button>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <button type="button" class="btn btn-outline-warning rounded-pill px-4" id="passwordBtn">
+                        <i class="fas fa-key me-1"></i> 비밀번호 변경
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4" id="cancelBtn"><i class="fas fa-undo me-1"></i> 취소</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="updateBtn"><i class="fas fa-save me-1"></i> 저장</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-</div>
-
-<!-- ========================================================= -->
-<!-- 4. 공통 푸터 (footer.html) -->
-<!-- ========================================================= -->
-<footer class="bg-dark text-white py-5 mt-auto">
-    <div class="container-fluid px-3 px-md-5">
-        <div class="row">
-            <!-- 역량 진단 -->
-            <div class="col-md-4 mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-chart-line me-2"></i>역량 진단
-                </h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">진단 시작하기</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">진단 결과 확인하기</a></li>
-                </ul>
-            </div>
-
-            <!-- 상담 예약 -->
-            <div class="col-md-4 mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-calendar-alt me-2"></i>상담예약
-                </h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">상담 예약하기</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">내 예약 조회</a></li>
-                </ul>
-            </div>
-
-            <!-- 비교과 프로그램 -->
-            <div class="col-md-4 mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-book me-2"></i>비교과 프로그램
-                </h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">교내 비교과 프로그램</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-light">교외 비교과 프로그램</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 하단 저작권 -->
-        <div class="border-top pt-4 mt-2 text-center text-md-start">
-            <p class="text-sm mb-0 text-secondary">
-                &copy; 2025 푸름대학교 학생역량관리센터. All Rights Reserved.
-            </p>
         </div>
     </div>
-</footer>
+</div>
+
+<!-- 공통 푸터 사용 -->
+<div th:replace="~{common/footer :: footer}"></div>
 
 <!-- ========================================================= -->
 <!-- 5. Modals (Custom Alert/Confirm) -->
@@ -608,7 +549,7 @@
         // 2. 뷰 전환 기능
         // =========================================================
         const viewSections = document.querySelectorAll('.view-section');
-        const navLinks = document.querySelectorAll('[data-view]');
+        const navLinks = document.querySelectorAll('[data-page]');
         const secondaryLinks = document.querySelectorAll('[data-view-target]');
 
         /**
@@ -642,12 +583,59 @@
 
         // 네비게이션 링크 클릭 이벤트 리스너
         navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', async (e) => {
                 e.preventDefault();
-                const viewId = e.currentTarget.dataset.view;
-                showView(viewId);
+                const page = e.currentTarget.dataset.page;
+                console.log('사이드바 클릭:', page);
+                
+                // 사이드바 활성화 상태 변경
+                navLinks.forEach(l => l.classList.remove('active-link'));
+                e.currentTarget.classList.add('active-link');
+                
+                if (page === 'dashboard') {
+                    console.log('대시보드 표시');
+                    showView('dashboard');
+                } else if (page === '/student/mypage/info') {
+                    console.log('사용자 정보 수정 페이지로 이동');
+                    window.location.href = page;
+                } else {
+                    console.log('AJAX 로드:', page);
+                    await loadPageContent(page);
+                }
             });
         });
+
+        // AJAX로 페이지 콘텐츠 로드
+        async function loadPageContent(url) {
+            try {
+                const response = await fetch(url, {
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const html = await response.text();
+                    // 메인 콘텐츠 영역에만 HTML 삽입
+                    const mainContent = document.querySelector('.main-content');
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.querySelector('main, .main-content, .container, body');
+                    
+                    if (newContent) {
+                        mainContent.innerHTML = newContent.innerHTML;
+                    } else {
+                        mainContent.innerHTML = html;
+                    }
+                } else if (response.status === 401) {
+                    window.location.href = '/auth/login';
+                } else {
+                    showCustomAlertModal('페이지를 불러올 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('페이지 로드 실패:', error);
+                showCustomAlertModal('페이지 로드 중 오류가 발생했습니다.');
+            }
+        }
 
         // 보조 링크 (카드 내 버튼) 클릭 이벤트 리스너
         secondaryLinks.forEach(link => {
@@ -942,17 +930,68 @@
             department: "컴퓨터공학과",
             grade: "3학년",
             email: "pureum.kim@univ.ac.kr",
-            phone: "010-1234-5678"
+            phone: "010-1234-5678",
+            address: "서울시 강남구 테헤란로 123"
         };
+
+        // JWT 토큰 가져오기 함수
+        function getAuthHeaders() {
+            const token = getCookie('accessToken');
+            return token ? {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            } : {
+                'Content-Type': 'application/json'
+            };
+        }
+        
+        // 쿠키 가져오기 함수
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
 
         /**
          * 사용자 정보를 폼에 로드 (초기화 및 취소 시 사용)
          */
-        function loadUserInfo() {
-            // 실제로는 API 호출로 원본 데이터를 가져오지만, 여기서는 임시 데이터 사용
-            document.getElementById('email').value = originalUserInfo.email;
-            document.getElementById('phone').value = originalUserInfo.phone;
-            // 다른 읽기 전용 필드도 업데이트 (선택 사항)
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/user/info', {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const userInfo = await response.json();
+                    document.getElementById('name').value = userInfo.name || '';
+                    document.getElementById('studentId').value = userInfo.userNum || '';
+                    document.getElementById('department').value = userInfo.department || '';
+                    document.getElementById('email').value = userInfo.email || '';
+                    document.getElementById('phone').value = userInfo.phone || '';
+                    document.getElementById('address').value = userInfo.address || '';
+                    
+                    // originalUserInfo 업데이트
+                    originalUserInfo = {
+                        name: userInfo.name || '',
+                        studentId: userInfo.userNum || '',
+                        department: userInfo.department || '',
+                        email: userInfo.email || '',
+                        phone: userInfo.phone || '',
+                        address: userInfo.address || ''
+                    };
+                } else if (response.status === 401) {
+                    showCustomAlertModal('로그인이 필요합니다.');
+                    window.location.href = '/auth/login';
+                } else {
+                    showCustomAlertModal('사용자 정보를 불러올 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('사용자 정보 로드 실패:', error);
+                showCustomAlertModal('사용자 정보를 불러오는 중 오류가 발생했습니다.');
+            }
         }
 
         /**
@@ -969,37 +1008,51 @@
             e.preventDefault();
             clearErrors();
 
-            const newEmail = document.getElementById('email').value;
-            const newPhone = document.getElementById('phone').value;
+            const newEmail = document.getElementById('email').value.trim();
+            const newPhone = document.getElementById('phone').value.trim();
+            const newAddress = document.getElementById('address').value.trim();
 
             // 간단한 클라이언트 측 유효성 검사
             let isValid = true;
-            if (!newEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+            if (newEmail && !newEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
                 document.getElementById('email-error').textContent = "유효한 이메일 주소를 입력해주세요.";
                 isValid = false;
             }
-            if (!newPhone.match(/^\d{2,3}-\d{3,4}-\d{4}$/)) {
+            if (newPhone && !newPhone.match(/^\d{2,3}-\d{3,4}-\d{4}$/)) {
                 document.getElementById('phone-error').textContent = "유효한 연락처 (예: 010-1234-5678)를 입력해주세요.";
                 isValid = false;
             }
 
             if (!isValid) return;
 
-            // 실제로는 API 호출로 수정된 정보를 서버에 전송
-            // try {
-            //     await fetch('/api/user/info', { ... });
-            //     showCustomAlertModal("사용자 정보가 성공적으로 업데이트되었습니다.");
-            //     originalUserInfo.email = newEmail;
-            //     originalUserInfo.phone = newPhone;
-            //     loadUserInfo(); // 폼 다시 로드
-            // } catch (error) {
-            //     showCustomAlertModal("정보 업데이트 중 오류가 발생했습니다.");
-            // }
-
-            showCustomAlertModal("사용자 정보가 성공적으로 업데이트되었습니다. (시뮬레이션)");
-            originalUserInfo.email = newEmail;
-            originalUserInfo.phone = newPhone;
-            loadUserInfo(); // 폼 다시 로드
+            // 실제 API 호출로 수정된 정보를 서버에 전송
+            try {
+                const response = await fetch('/api/user/info', {
+                    method: 'PATCH',
+                    headers: getAuthHeaders(),
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: newEmail || null,
+                        phone: newPhone || null,
+                        address: newAddress || null
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    showCustomAlertModal(result.message || "사용자 정보가 성공적으로 업데이트되었습니다.");
+                    await loadUserInfo(); // 폼 다시 로드
+                } else if (response.status === 401) {
+                    showCustomAlertModal('로그인이 필요합니다.');
+                    window.location.href = '/auth/login';
+                } else {
+                    const error = await response.json().catch(() => ({}));
+                    showCustomAlertModal(error.error || "정보 업데이트 중 오류가 발생했습니다.");
+                }
+            } catch (error) {
+                console.error('사용자 정보 업데이트 실패:', error);
+                showCustomAlertModal("정보 업데이트 중 오류가 발생했습니다.");
+            }
 
         });
 
@@ -1015,6 +1068,14 @@
             }
         });
 
+        // '비밀번호 변경' 버튼 클릭 시
+        const passwordBtn = document.getElementById('passwordBtn');
+        if (passwordBtn) {
+            passwordBtn.addEventListener('click', async function() {
+                await loadPageContent('/student/mypage/password');
+            });
+        }
+
         // =========================================================
         // 7. 초기화 함수 호출
         // =========================================================
@@ -1022,7 +1083,7 @@
         /**
          * 페이지 초기화 (DOM 로드 후)
          */
-        function initializePage() {
+        async function initializePage() {
             // 1. 대시보드 데이터 로드
             renderMainRadarChart();
             updateNextCounselDisplay();
@@ -1037,7 +1098,7 @@
             populateApplicationTable();
 
             // 4. 사용자 정보 수정 폼 로드
-            loadUserInfo();
+            await loadUserInfo();
 
             // 5. 기본 뷰를 대시보드로 설정
             showView('dashboard');
