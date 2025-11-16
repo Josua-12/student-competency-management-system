@@ -62,6 +62,12 @@ public class AssessmentResult extends CompetencyBaseEntity {
     @OneToMany(mappedBy = "assessmentResult", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AssessmentResponse> responses = new ArrayList<>();
+    
+    /**
+     * 평균 점수 (계산된 값)
+     */
+    @Column(name = "average_score")
+    private Double averageScore;
 
     // 편의 메서드 추가
 

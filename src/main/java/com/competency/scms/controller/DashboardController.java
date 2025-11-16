@@ -55,18 +55,32 @@ public class DashboardController {
     @GetMapping("/competency")
     public ResponseEntity<Map<String, Object>> getCompetency() {
         return ResponseEntity.ok(Map.of(
-                "chart", Map.of("labels", List.of(), "datasets", List.of()),
-                "list", List.of()
+                "labels", List.of("소통역량", "학습역량", "문제해결역량", "팀워크역량"),
+                "scores", List.of(4.2, 3.8, 4.0, 3.5)
         ));
     }
 
     @GetMapping("/consultations")
     public ResponseEntity<List<Map<String, Object>>> getConsultations() {
-        return ResponseEntity.ok(List.of());
+        return ResponseEntity.ok(List.of(
+                Map.of("counselorName", "김상담", "reservationDate", "2025-11-15", "status", "COMPLETED", "type", "진로상담"),
+                Map.of("counselorName", "이상담", "reservationDate", "2025-11-13", "status", "COMPLETED", "type", "학업상담"),
+                Map.of("counselorName", "박상담", "reservationDate", "2025-11-11", "status", "PENDING", "type", "일반상담")
+        ));
     }
 
     @GetMapping("/programs")
     public ResponseEntity<List<Map<String, Object>>> getPrograms() {
-        return ResponseEntity.ok(List.of());
+        return ResponseEntity.ok(List.of(
+                Map.of("id", 1, "title", "AI 프로그래밍 워크샵", "category", "ACADEMIC", 
+                       "applicationDeadline", "2025-11-23", "status", "모집중", 
+                       "currentParticipants", 15, "maxParticipants", 30),
+                Map.of("id", 2, "title", "리더십 캐프", "category", "LEADERSHIP", 
+                       "applicationDeadline", "2025-11-30", "status", "모집중", 
+                       "currentParticipants", 8, "maxParticipants", 20),
+                Map.of("id", 3, "title", "창업 아이디어 경진대회", "category", "CAREER", 
+                       "applicationDeadline", "2025-12-07", "status", "모집중", 
+                       "currentParticipants", 25, "maxParticipants", 50)
+        ));
     }
 }

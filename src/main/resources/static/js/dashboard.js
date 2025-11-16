@@ -1,53 +1,45 @@
 // /js/dashboard.js
 
+// API 유틸리티 객체 정의 (중복 선언 방지)
+window.DashboardApi = window.DashboardApi || {
+    async getJson(url) {
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('API 호출 실패:', error);
+            return null;
+        }
+    }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        // 서버에서 전달받은 데이터 사용
-        if (window.dashboardData) {
-            loadUserInfoFromServer(window.dashboardData);
-            loadCompetencyFromServer(window.dashboardData);
-        } else {
-            // API 호출 방식 (기존)
-            await Promise.all([
-                loadUserInfo(),
-                loadCompetency(),
-                loadConsultations(),
-                loadRecentPrograms()
-            ]);
-        }
+        await Promise.all([
+            loadUserInfo(),
+            loadCompetency(),
+            loadConsultations(),
+            loadRecentPrograms()
+        ]);
     } catch (e) {
         console.error('대시보드 초기화 실패', e);
     }
 });
 
-// 서버에서 전달받은 데이터 사용
-function loadUserInfoFromServer(data) {
-    const { userName, userEmail, mileage, programCount } = data;
-    setText('#user-name', userName || '');
-    setText('#user-email', userEmail || '');
-    setText('#user-mileage', (mileage ?? 0) + '점');
-    setText('#user-program-count', (programCount ?? 0) + '건');
-    setInitial('#user-initial', userName);
-}
-
-function loadCompetencyFromServer(data) {
-    const { competencyScore } = data;
-    if (competencyScore && competencyScore.length > 0) {
-        renderCompetencyList('#competency-list', competencyScore);
-        // 차트 데이터 준비
-        const chartData = {
-            labels: competencyScore.map(item => item.competencyName),
-            datasets: [{
-                label: '역량 점수',
-                data: competencyScore.map(item => item.score)
-            }]
-        };
-        renderCompetencyChart('competencyChart', chartData);
-    }
-}
-
 async function loadUserInfo() {
-    const res = await Api.getJson('/api/dashboard/user'); // Api.get → Api.getJson
+    const res = await window.DashboardApi.getJson('/api/dashboard/user');
+    if (!res) return;
+    
     const { name, email, mileage, programCount } = res;
     setText('#user-name', name || '');
     setText('#user-email', email || '');
@@ -57,21 +49,51 @@ async function loadUserInfo() {
 }
 
 async function loadCompetency() {
-    const res = await Api.getJson('/api/dashboard/competency'); // Api.get → Api.getJson
-    renderCompetencyChart('competencyChart', res.chart);
-    renderCompetencyList('#competency-list', res.list);
+    const res = await window.DashboardApi.getJson('/api/dashboard/competency');
+    if (!res) return;
+    
+    if (res.labels && res.scores) {
+        const chartData = {
+            labels: res.labels,
+            datasets: [{
+                label: '역량 점수',
+                data: res.scores
+            }]
+        };
+        renderCompetencyChart('competencyChart', chartData);
+        
+        const listData = res.labels.map((label, index) => ({
+            name: label,
+            score: res.scores[index] || 0
+        }));
+        renderCompetencyList('#competency-list', listData);
+    }
 }
 
 async function loadConsultations() {
-    const res = await Api.getJson('/api/dashboard/consultations'); // Api.get → Api.getJson
+    const res = await window.DashboardApi.getJson('/api/dashboard/consultations');
     const wrap = document.querySelector('#consultation-history');
-    wrap.innerHTML = (res || []).map(toConsultationItem).join('');
+    if (!wrap) return;
+    
+    if (!res || res.length === 0) {
+        wrap.innerHTML = '<div class="empty-message">상담 내역이 없습니다.</div>';
+        return;
+    }
+    
+    wrap.innerHTML = res.map(toConsultationItem).join('');
 }
 
 async function loadRecentPrograms() {
-    const res = await Api.getJson('/api/dashboard/programs'); // Api.get → Api.getJson
+    const res = await window.DashboardApi.getJson('/api/dashboard/programs');
     const wrap = document.querySelector('#recent-programs');
-    wrap.innerHTML = (res || []).map(toProgramCard).join('');
+    if (!wrap) return;
+    
+    if (!res || res.length === 0) {
+        wrap.innerHTML = '<div class="empty-message">등록된 프로그램이 없습니다.</div>';
+        return;
+    }
+    
+    wrap.innerHTML = res.map(toProgramCard).join('');
 }
 
 function setText(sel, v) {
@@ -90,6 +112,7 @@ function renderCompetencyChart(canvasId, data) {
     if (!data) return;
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
+    
     new Chart(ctx, {
         type: 'radar',
         data: {
@@ -123,15 +146,18 @@ function renderCompetencyList(sel, list) {
 }
 
 function toConsultationItem(c) {
-    const date = escapeHtml(c.date || '');
-    const title = escapeHtml(c.title || '');
+    const counselorName = escapeHtml(c.counselorName || '');
+    const reservationDate = new Date(c.reservationDate).toLocaleDateString('ko-KR');
     const status = escapeHtml(c.status || '');
+    const type = escapeHtml(c.type || '');
+    
     return `
     <div class="history-item">
-      <div class="history-title">${title}</div>
+      <div class="history-title">${counselorName} 상담사</div>
       <div class="history-meta">
-        <span>${date}</span>
+        <span>${reservationDate}</span>
         <span class="badge">${status}</span>
+        <span class="type">${type}</span>
       </div>
     </div>
   `;
@@ -139,16 +165,35 @@ function toConsultationItem(c) {
 
 function toProgramCard(p) {
     const title = escapeHtml(p.title || '');
-    const period = escapeHtml(p.period || '');
-    const link = `/programs/${encodeURIComponent(p.id)}`;
+    const category = escapeHtml(p.category || '');
+    const status = escapeHtml(p.status || '');
+    const deadline = p.applicationDeadline ? 
+        new Date(p.applicationDeadline).toLocaleDateString('ko-KR') : '미정';
+    const participants = `${p.currentParticipants || 0}/${p.maxParticipants || 0}`;
+    const link = `/noncurricular/program/detail/${encodeURIComponent(p.id)}`;
+    
     return `
-    <a class="program-card" href="${link}">
-      <div class="program-title">${title}</div>
-      <div class="program-period">${period}</div>
-    </a>
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-title">${title}</div>
+        <span class="program-category">${category}</span>
+      </div>
+      <div class="program-info">
+        <div class="program-deadline">신청마감: ${deadline}</div>
+        <div class="program-participants">참여자: ${participants}</div>
+        <span class="program-status">${status}</span>
+      </div>
+      <a href="${link}" class="program-link">상세보기 →</a>
+    </div>
   `;
 }
 
 function escapeHtml(s) {
-    return (s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    return (s ?? '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[m]));
 }
