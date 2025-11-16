@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{common/layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상담 이력 관리</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <th:block th:fragment="css"></th:block>
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
-    
+    <th:block th:fragment="content">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -72,7 +70,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             총 상담 건수</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">45건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalHistory">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-chat-dots text-primary" style="font-size: 2rem;"></i>
@@ -89,7 +87,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             완료된 상담</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">42건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="completedHistory">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
@@ -106,7 +104,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                             이번 달 상담</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">8건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthlyHistory">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-calendar-month text-info" style="font-size: 2rem;"></i>
@@ -123,7 +121,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                             평균 만족도</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.5/5.0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="avgSatisfaction">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
@@ -182,7 +180,7 @@
                 <!-- 상담 이력 목록 -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">상담 이력 목록 <span class="badge bg-primary">45건</span></h5>
+                        <h5 class="mb-0">상담 이력 목록 <span class="badge bg-primary" id="totalCount">0건</span></h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -199,56 +197,9 @@
                                         <th>관리</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="historyTableBody">
                                     <tr>
-                                        <td>2024-01-15</td>
-                                        <td>김학생<br><small class="text-muted">202012345</small></td>
-                                        <td>컴퓨터공학과</td>
-                                        <td>진로상담</td>
-                                        <td><span class="badge bg-success">완료</span></td>
-                                        <td>4.5/5.0</td>
-                                        <td><span class="badge bg-success">작성완료</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#historyDetailModal" data-id="1" data-status="COMPLETED">상세</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-14</td>
-                                        <td>이학생<br><small class="text-muted">202012346</small></td>
-                                        <td>경영학과</td>
-                                        <td>학업상담</td>
-                                        <td><span class="badge bg-success">완료</span></td>
-                                        <td>-</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#recordModal" data-id="2">작성하기</button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#historyDetailModal" data-id="2" data-status="COMPLETED" data-satisfaction="false">상세</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-12</td>
-                                        <td>박학생<br><small class="text-muted">202012347</small></td>
-                                        <td>심리학과</td>
-                                        <td>심리상담</td>
-                                        <td><span class="badge bg-danger">취소</span></td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#historyDetailModal" data-id="3" data-status="CANCELLED" data-cancel-reason="개인 사정으로 인한 취소">상세</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-10</td>
-                                        <td>최학생<br><small class="text-muted">202012348</small></td>
-                                        <td>기계공학과</td>
-                                        <td>취업상담</td>
-                                        <td><span class="badge bg-secondary">거절</span></td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#historyDetailModal" data-id="4" data-status="REJECTED" data-reject-reason="일정 조정 불가">상세</button>
-                                        </td>
+                                        <td colspan="8" class="text-center">로딩 중...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -273,138 +224,71 @@
             </main>
         </div>
     </div>
+    </th:block>
 
+    <th:block th:fragment="scripts">
+    <script th:src="@{/js/counseling/counselor-history.js}"></script>
     <!-- 상담 이력 상세 조회 모달 -->
     <div class="modal fade" id="historyDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">상담 이력 상세 정보</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- 기본 정보 -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">학생 정보</h6>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>이름:</strong></div>
-                                <div class="col-8">김학생</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>학번:</strong></div>
-                                <div class="col-8">202012345</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>학과:</strong></div>
-                                <div class="col-8">컴퓨터공학과</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>학년:</strong></div>
-                                <div class="col-8">3학년</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">상담 정보</h6>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>상담일:</strong></div>
-                                <div class="col-8">2024년 1월 15일</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>상담시간:</strong></div>
-                                <div class="col-8">14:00 ~ 15:00 (60분)</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>상담유형:</strong></div>
-                                <div class="col-8">진로상담</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-4"><strong>상태:</strong></div>
-                                <div class="col-8"><span class="badge bg-success">완료</span></div>
-                            </div>
-                        </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>학생명:</strong></div>
+                        <div class="col-sm-9" id="detailStudentName">-</div>
                     </div>
-
-                    <!-- 취소/거절 사유 -->
-                    <div id="cancelReasonSection" style="display: none;">
-                        <hr>
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-3" id="reasonTitle">취소 사유</h6>
-                            <div class="alert alert-warning" id="reasonText"></div>
-                        </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담유형:</strong></div>
+                        <div class="col-sm-9" id="detailField">-</div>
                     </div>
-
-                    <!-- 상담 내용 (완료된 경우만) -->
-                    <div id="counselingContent">
-                        <hr>
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-3">상담 내용</h6>
-                            <div class="border p-3 bg-light">
-                                <p><strong>상담 주제:</strong> IT 분야 진로 선택 및 취업 준비 방향</p>
-                                <p><strong>상담 내용:</strong></p>
-                                <p>학생이 컴퓨터공학과 3학년으로 졸업 후 진로에 대한 고민을 상담 요청했습니다. 
-                                현재 프로그래밍 실력과 관심 분야를 파악한 결과, 웹 개발 분야에 특히 관심이 많음을 확인했습니다.
-                                취업 시장 동향과 필요한 기술 스택에 대해 설명하고, 포트폴리오 준비 방법을 안내했습니다.</p>
-                            </div>
-                        </div>
-
-                        <!-- 상담 결과 -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-3">상담 결과</h6>
-                            <div class="border p-3 bg-light">
-                                <p>진로 방향을 웹 개발자로 구체화했으며, 필요한 기술 학습 로드맵을 제시했습니다.
-                                포트폴리오 프로젝트 아이디어를 함께 도출했고, 취업 준비 일정을 수립했습니다.</p>
-                            </div>
-                        </div>
-
-                        <!-- 만족도 정보 -->
-                        <div class="mb-4" id="satisfactionSection">
-                            <h6 class="fw-bold mb-3">만족도 조사 결과</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="border p-3">
-                                        <div class="mb-2">
-                                            <strong>전반적 만족도:</strong> 
-                                            <span class="badge bg-primary">4.5/5.0</span>
-                                        </div>
-                                        <div class="mb-2">
-                                            <strong>상담사 전문성:</strong> 
-                                            <span class="badge bg-success">5.0/5.0</span>
-                                        </div>
-                                        <div class="mb-2">
-                                            <strong>문제 해결 도움:</strong> 
-                                            <span class="badge bg-info">4.0/5.0</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="border p-3">
-                                        <div class="mb-2">
-                                            <strong>재이용 의향:</strong> 예
-                                        </div>
-                                        <div class="mb-2">
-                                            <strong>추가 의견:</strong>
-                                        </div>
-                                        <p class="small">상담사님이 친절하고 전문적이어서 많은 도움이 되었습니다. 구체적인 조언을 주셔서 감사합니다.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>세부분류:</strong></div>
+                        <div class="col-sm-9" id="detailCategory">-</div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담일시:</strong></div>
+                        <div class="col-sm-9" id="detailDateTime">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상태:</strong></div>
+                        <div class="col-sm-9"><span class="badge" id="detailStatus">-</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담내용:</strong></div>
+                        <div class="col-sm-9" id="detailContent">-</div>
+                    </div>
+                    <div class="row mb-3" id="detailReasonSection" style="display: none;">
+                        <div class="col-sm-3"><strong id="detailReasonLabel">사유:</strong></div>
+                        <div class="col-sm-9"><div class="alert alert-warning mb-0" id="detailReason">-</div></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <hr>
-
-                    <!-- 기록 정보 -->
-                    <div class="row">
-                        <div class="col-md-4">
-                            <strong>예약 신청일:</strong> 2024년 1월 10일
-                        </div>
-                        <div class="col-md-4">
-                            <strong>상담일지 작성일:</strong> 2024년 1월 15일
-                        </div>
-                        <div class="col-md-4">
-                            <strong>만족도 제출일:</strong> 2024년 1월 16일
-                        </div>
+    <!-- 상담일지 보기 모달 -->
+    <div class="modal fade" id="viewRecordModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담일지 보기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>상담 내용</strong></label>
+                        <div class="border p-3 bg-light" id="viewRecordContent">-</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>비고</strong></label>
+                        <div class="border p-3 bg-light" id="viewRecordMemo">-</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -425,20 +309,12 @@
                 <div class="modal-body">
                     <form>
                         <div class="mb-3">
-                            <label class="form-label">상담 주제 <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label">상담 내용 <span class="text-danger">*</span></label>
-                            <textarea class="form-control" rows="5" required></textarea>
+                            <textarea class="form-control" rows="6" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">상담 결과 및 향후 계획</label>
-                            <textarea class="form-control" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">특이사항</label>
-                            <textarea class="form-control" rows="2"></textarea>
+                            <label class="form-label">비고</label>
+                            <textarea class="form-control" rows="4"></textarea>
                         </div>
                     </form>
                 </div>
@@ -451,48 +327,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 상세 모달 열기 시 상태에 따른 내용 표시
-        document.querySelectorAll('[data-bs-target="#historyDetailModal"]').forEach(button => {
-            button.addEventListener('click', function() {
-                const status = this.getAttribute('data-status');
-                const satisfaction = this.getAttribute('data-satisfaction');
-                const cancelReason = this.getAttribute('data-cancel-reason');
-                const rejectReason = this.getAttribute('data-reject-reason');
-                
-                const cancelReasonSection = document.getElementById('cancelReasonSection');
-                const counselingContent = document.getElementById('counselingContent');
-                const satisfactionSection = document.getElementById('satisfactionSection');
-                const reasonTitle = document.getElementById('reasonTitle');
-                const reasonText = document.getElementById('reasonText');
-                
-                // 기본적으로 모든 섹션 숨김
-                cancelReasonSection.style.display = 'none';
-                counselingContent.style.display = 'none';
-                
-                if (status === 'CANCELLED') {
-                    // 취소된 상담
-                    reasonTitle.textContent = '취소 사유';
-                    reasonText.textContent = cancelReason || '취소 사유가 기록되지 않았습니다.';
-                    cancelReasonSection.style.display = 'block';
-                } else if (status === 'REJECTED') {
-                    // 거절된 상담
-                    reasonTitle.textContent = '거절 사유';
-                    reasonText.textContent = rejectReason || '거절 사유가 기록되지 않았습니다.';
-                    cancelReasonSection.style.display = 'block';
-                } else if (status === 'COMPLETED') {
-                    // 완료된 상담
-                    counselingContent.style.display = 'block';
-                    
-                    // 만족도가 입력되지 않은 경우 만족도 섹션 숨김
-                    if (satisfaction === 'false') {
-                        satisfactionSection.style.display = 'none';
-                    } else {
-                        satisfactionSection.style.display = 'block';
-                    }
-                }
-            });
-        });
-    </script>
+    </th:block>
 </body>
 </html>

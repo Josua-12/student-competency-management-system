@@ -25,14 +25,21 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || '신청 실패');
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             alert('신청이 완료되었습니다.');
             window.location.href = '/counseling/student/status';
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('신청 중 오류가 발생했습니다.');
+            alert(error.message || '신청 중 오류가 발생했습니다.');
         });
     });
     

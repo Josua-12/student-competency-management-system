@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{common/layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>예약 승인 관리</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <th:block th:fragment="css"></th:block>
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
-    
+    <th:block th:fragment="content">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -67,7 +65,7 @@
                                 <select class="form-select">
                                     <option value="">전체</option>
                                     <option value="PENDING">대기중</option>
-                                    <option value="APPROVED">승인됨</option>
+                                    <option value="CONFIRMED">승인됨</option>
                                     <option value="REJECTED">거부됨</option>
                                 </select>
                             </div>
@@ -99,7 +97,7 @@
                 <!-- 예약 목록 -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">상담 예약 목록 <span class="badge bg-primary">8건</span></h5>
+                        <h5 class="mb-0">상담 예약 목록 <span class="badge bg-primary" id="totalCount">0건</span></h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -116,44 +114,9 @@
                                         <th>관리</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="reservationTableBody">
                                     <tr>
-                                        <td>CNSL-2024-001</td>
-                                        <td>김학생</td>
-                                        <td>진로상담</td>
-                                        <td>2024-01-15 14:00</td>
-                                        <td>-</td>
-                                        <td>2024-01-10</td>
-                                        <td><span class="badge bg-warning">대기중</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal" data-id="1">승인</button>
-                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="1">거부</button>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="1">상세</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CNSL-2024-002</td>
-                                        <td>이학생</td>
-                                        <td>학업상담</td>
-                                        <td>2024-01-16 10:00</td>
-                                        <td>2024-01-16 10:00</td>
-                                        <td>2024-01-11</td>
-                                        <td><span class="badge bg-success">승인됨</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="2">상세</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>CNSL-2024-003</td>
-                                        <td>박학생</td>
-                                        <td>심리상담</td>
-                                        <td>2024-01-17 15:00</td>
-                                        <td>-</td>
-                                        <td>2024-01-12</td>
-                                        <td><span class="badge bg-danger">거부됨</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="3" data-status="REJECTED" data-reject-reason="일정 조정 불가로 인한 거절">상세</button>
-                                        </td>
+                                        <td colspan="8" class="text-center">로딩 중...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -163,7 +126,9 @@
             </main>
         </div>
     </div>
+    </th:block>
 
+    <th:block th:fragment="scripts">
     <!-- 승인 모달 -->
     <div class="modal fade" id="approveModal" tabindex="-1">
         <div class="modal-dialog">
@@ -243,35 +208,51 @@
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>예약번호:</strong></div>
-                        <div class="col-sm-9">CNSL-2024-001</div>
+                        <div class="col-sm-9" id="detailReservationId">-</div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>학생명:</strong></div>
-                        <div class="col-sm-9">김학생 (202012345)</div>
+                        <div class="col-sm-9" id="detailStudentName">-</div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>상담유형:</strong></div>
-                        <div class="col-sm-9">진로상담</div>
+                        <div class="col-sm-9" id="detailField">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>세부분류:</strong></div>
+                        <div class="col-sm-9" id="detailCategory">-</div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>요청일시:</strong></div>
-                        <div class="col-sm-9">2024년 1월 15일 14:00</div>
+                        <div class="col-sm-9" id="detailRequestedDateTime">-</div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>확정일시:</strong></div>
-                        <div class="col-sm-9">-</div>
+                        <div class="col-sm-9" id="detailConfirmedDateTime">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담사:</strong></div>
+                        <div class="col-sm-9" id="detailCounselor">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상태:</strong></div>
+                        <div class="col-sm-9"><span class="badge" id="detailStatus">-</span></div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-3"><strong>상담내용:</strong></div>
-                        <div class="col-sm-9">진로 선택에 대한 고민이 있어 상담을 신청합니다. 전공과 관련된 진로 방향에 대해 조언을 구하고 싶습니다.</div>
+                        <div class="col-sm-9" id="detailContent">-</div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-3"><strong>신청일:</strong></div>
-                        <div class="col-sm-9">2024년 1월 10일</div>
+                    <div class="row mb-3" id="detailMemoSection" style="display: none;">
+                        <div class="col-sm-3"><strong>메모:</strong></div>
+                        <div class="col-sm-9" id="detailMemo">-</div>
                     </div>
-                    <div class="row mb-3" id="rejectReasonRow" style="display: none;">
+                    <div class="row mb-3" id="detailAttachmentsSection" style="display: none;">
+                        <div class="col-sm-3"><strong>첨부파일:</strong></div>
+                        <div class="col-sm-9" id="detailAttachments"></div>
+                    </div>
+                    <div class="row mb-3" id="detailRejectReasonRow" style="display: none;">
                         <div class="col-sm-3"><strong>거절사유:</strong></div>
-                        <div class="col-sm-9" id="rejectReasonText"></div>
+                        <div class="col-sm-9" id="detailRejectReasonText">-</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -282,23 +263,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 상세 모달 열기 시 거절사유 표시
-        document.querySelectorAll('[data-bs-target="#detailModal"]').forEach(button => {
-            button.addEventListener('click', function() {
-                const status = this.getAttribute('data-status');
-                const rejectReason = this.getAttribute('data-reject-reason');
-                const rejectReasonRow = document.getElementById('rejectReasonRow');
-                const rejectReasonText = document.getElementById('rejectReasonText');
-                
-                if (status === 'REJECTED' && rejectReason) {
-                    rejectReasonText.textContent = rejectReason;
-                    rejectReasonRow.style.display = 'flex';
-                } else {
-                    rejectReasonRow.style.display = 'none';
-                }
-            });
-        });
-    </script>
+    <script th:src="@{/js/counseling/counselor-reservation.js}"></script>
+    </th:block>
 </body>
 </html>

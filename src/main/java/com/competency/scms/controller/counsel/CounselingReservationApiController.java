@@ -43,6 +43,7 @@ public class CounselingReservationApiController {
         CounselingReservationDto.CreateRequest request = new CounselingReservationDto.CreateRequest();
         request.setCounselingField(com.competency.scms.domain.counseling.CounselingField.EMPLOYMENT);
         request.setSubFieldId(subfieldId);
+        request.setCounselorId(counselorId);
         request.setReservationDate(java.time.LocalDate.parse(reservationDate));
         request.setStartTime(java.time.LocalTime.parse(reservationTime));
         request.setEndTime(java.time.LocalTime.parse(reservationTime).plusMinutes(40));
@@ -140,5 +141,29 @@ public class CounselingReservationApiController {
         Page<CounselingReservationDto.ListResponse> reservations = 
                 reservationService.getAssignedReservations(userDetails.getUser(), pageable);
         return ResponseEntity.ok(reservations);
+    }
+    
+    // 상담사 예약 승인 관리 - 대기중인 예약 조회
+    @GetMapping("/counselor")
+    public ResponseEntity<Page<CounselingReservationDto.ListResponse>> getCounselorReservations(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String field,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Page<CounselingReservationDto.ListResponse> reservations = 
+                reservationService.getCounselorPendingReservations(userDetails.getUser(), pageable);
+        return ResponseEntity.ok(reservations);
+    }
+    
+    // 상담 완료 처리
+    @PostMapping(value = "/{reservationId}/complete", consumes = "multipart/form-data")
+    public ResponseEntity<Void> completeReservation(
+            @PathVariable Long reservationId,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile[] files,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        reservationService.completeReservation(reservationId, userDetails.getUser(), files);
+        return ResponseEntity.ok().build();
     }
 }

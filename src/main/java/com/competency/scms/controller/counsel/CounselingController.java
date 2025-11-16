@@ -132,4 +132,10 @@ public class CounselingController {
     public String adminSettings() {
         return "counseling/admin/basic-settings";
     }
+
+    // 관리자 상담사 일정 관리
+    @GetMapping("/admin/schedules")
+    public String adminSchedules() {
+        return "counseling/admin/counselor-schedule-management";
+    }
 }

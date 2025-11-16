@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{common/layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>일정 관리</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <th:block th:fragment="css"></th:block>
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
-    
+    <th:block th:fragment="content">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -81,46 +79,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>09:00-10:00</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-light text-center">-</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                    </tr>
-                                    <tr>
-                                        <td>10:00-11:00</td>
-                                        <td class="bg-light text-center">-</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-light text-center">-</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-light text-center">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td>11:00-12:00</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                    </tr>
-                                    <tr>
-                                        <td>14:00-15:00</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                    </tr>
-                                    <tr>
-                                        <td>15:00-16:00</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                        <td class="bg-success text-white text-center">근무</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -145,33 +103,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 확정된 예약 목록 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">확정된 예약 목록</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
                                     <tr>
-                                        <td>2024-01-10</td>
-                                        <td>2024-01-16 ~ 2024-01-16</td>
-                                        <td>개인사정</td>
-                                        <td><span class="badge bg-warning">대기중</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#offScheduleModal">수정</button>
-                                            <button class="btn btn-sm btn-outline-danger">취소</button>
-                                        </td>
+                                        <th>학생명</th>
+                                        <th>상담유형</th>
+                                        <th>예약일시</th>
+                                        <th>상태</th>
+                                        <th>관리</th>
                                     </tr>
+                                </thead>
+                                <tbody id="confirmedReservationsBody">
                                     <tr>
-                                        <td>2024-01-05</td>
-                                        <td>2024-01-12 ~ 2024-01-12</td>
-                                        <td>병가</td>
-                                        <td><span class="badge bg-success">승인됨</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-info">상세</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-03</td>
-                                        <td>2024-01-08 ~ 2024-01-09</td>
-                                        <td>연차</td>
-                                        <td><span class="badge bg-danger">거부됨</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-info">상세</button>
-                                        </td>
+                                        <td colspan="5" class="text-center">로딩 중...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -207,22 +164,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>09:00-10:00</td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                        <td class="bg-light text-center">-</td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                        <td class="bg-warning text-center">예약됨<br><small>김학생</small></td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                    </tr>
-                                    <tr>
-                                        <td>14:00-15:00</td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                        <td class="bg-danger text-white text-center">휴무<br><small>개인사정</small></td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                        <td class="bg-success text-white text-center">근무가능</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -231,7 +172,9 @@
             </main>
         </div>
     </div>
+    </th:block>
 
+    <th:block th:fragment="scripts">
     <!-- 휴무 신청 모달 -->
     <div class="modal fade" id="offScheduleModal" tabindex="-1">
         <div class="modal-dialog">
@@ -272,22 +215,96 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-primary">신청</button>
+                    <button type="button" class="btn btn-primary" id="submitOffRequest">신청</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상담 완료 처리 모달 -->
+    <div class="modal fade" id="completeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 완료 처리</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 상담을 완료 처리하고 필요한 경우 첨부파일을 업로드하세요.
+                    </div>
+                    <form id="completeForm" enctype="multipart/form-data">
+                        <input type="hidden" id="completeReservationId">
+                        <div class="mb-3">
+                            <label class="form-label">첨부파일 (선택사항)</label>
+                            <input type="file" class="form-control" id="completeFiles" name="files" multiple>
+                            <small class="text-muted">여러 파일을 선택할 수 있습니다.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success" id="submitComplete">완료 처리</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 예약 상세 모달 -->
+    <div class="modal fade" id="reservationDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">예약 상세 정보</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>예약번호:</strong></div>
+                        <div class="col-sm-9" id="detailReservationId">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>학생명:</strong></div>
+                        <div class="col-sm-9" id="detailStudentName">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담유형:</strong></div>
+                        <div class="col-sm-9" id="detailField">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>세부분류:</strong></div>
+                        <div class="col-sm-9" id="detailCategory">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>요청일시:</strong></div>
+                        <div class="col-sm-9" id="detailRequestedDateTime">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>확정일시:</strong></div>
+                        <div class="col-sm-9" id="detailConfirmedDateTime">-</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상태:</strong></div>
+                        <div class="col-sm-9"><span class="badge" id="detailStatus">-</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>상담내용:</strong></div>
+                        <div class="col-sm-9" id="detailContent">-</div>
+                    </div>
+                    <div class="row mb-3" id="detailMemoSection" style="display: none;">
+                        <div class="col-sm-3"><strong>메모:</strong></div>
+                        <div class="col-sm-9" id="detailMemo">-</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 주간 네비게이션
-        document.getElementById('prevWeek').addEventListener('click', function() {
-            console.log('이전 주 로드');
-        });
-
-        document.getElementById('nextWeek').addEventListener('click', function() {
-            console.log('다음 주 로드');
-        });
-    </script>
+    <script src="/js/counseling/counselor-schedule.js"></script>
+    </th:block>
 </body>
 </html>

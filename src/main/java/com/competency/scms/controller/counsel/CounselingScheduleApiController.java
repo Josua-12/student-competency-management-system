@@ -20,6 +20,12 @@ public class CounselingScheduleApiController {
 
     private final CounselingScheduleService scheduleService;
 
+    // 상담사 본인의 기본 근무시간표 조회
+    @GetMapping("/my-schedule")
+    public ResponseEntity<?> getMyBaseSchedule() {
+        return ResponseEntity.ok(scheduleService.getMyBaseSchedule());
+    }
+
     // 기본 달력 날짜 조회 (금요일 17:00 이후면 다음 주 월요일)
     @GetMapping("/default-date")
     public ResponseEntity<Map<String, LocalDate>> getDefaultCalendarDate() {

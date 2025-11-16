@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{common/layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상담사 일정 관리</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
-    
+    <th:block th:fragment="css"></th:block>
+
+    <th:block th:fragment="content">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -194,27 +193,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>2024-01-10</td>
-                                        <td>2024-01-16 ~ 2024-01-16</td>
-                                        <td>개인사정</td>
-                                        <td>가족 행사 참석</td>
-                                        <td><span class="badge bg-warning">대기중</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">승인</button>
-                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">거부</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-08</td>
-                                        <td>2024-01-15 ~ 2024-01-17</td>
-                                        <td>병가</td>
-                                        <td>독감으로 인한 병가</td>
-                                        <td><span class="badge bg-success">승인됨</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-info">상세</button>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -223,7 +201,9 @@
             </main>
         </div>
     </div>
+    </th:block>
 
+    <th:block th:fragment="scripts">
     <!-- 승인 모달 -->
     <div class="modal fade" id="approveModal" tabindex="-1">
         <div class="modal-dialog">
@@ -245,7 +225,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-success">승인</button>
+                    <button type="button" class="btn btn-success" id="confirmApprove">승인</button>
                 </div>
             </div>
         </div>
@@ -272,136 +252,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-danger">거부</button>
+                    <button type="button" class="btn btn-danger" id="confirmReject">거부</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 상담분류 선택 시 상담사 목록 업데이트
-        document.getElementById('fieldSelect').addEventListener('change', async function() {
-            const counselorSelect = document.getElementById('counselorSelect');
-            const selectedField = this.value;
-            
-            counselorSelect.innerHTML = '<option value="">상담사를 선택하세요</option>';
-            
-            if (selectedField) {
-                try {
-                    const token = localStorage.getItem('accessToken');
-                    const response = await fetch(`/api/counseling/management/counselors?field=${selectedField}`, {
-                        headers: {'Authorization': `Bearer ${token}`}
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        const counselors = data.content || data;
-                        
-                        counselorSelect.disabled = false;
-                        counselors.forEach(counselor => {
-                            const option = document.createElement('option');
-                            option.value = counselor.userId;
-                            option.textContent = counselor.name;
-                            counselorSelect.appendChild(option);
-                        });
-                    }
-                } catch (error) {
-                    console.error('상담사 목록 로드 실패:', error);
-                    counselorSelect.disabled = true;
-                }
-            } else {
-                counselorSelect.disabled = true;
-            }
-        });
-
-        // 상담사 선택 시 일정 섹션 표시
-        document.getElementById('loadSchedule').addEventListener('click', function() {
-            const fieldSelect = document.getElementById('fieldSelect');
-            const counselorSelect = document.getElementById('counselorSelect');
-            
-            if (!fieldSelect.value) {
-                alert('상담분류를 선택해주세요.');
-                return;
-            }
-            if (!counselorSelect.value) {
-                alert('상담사를 선택해주세요.');
-                return;
-            }
-            
-            document.getElementById('scheduleSection').style.display = 'block';
-            document.getElementById('offScheduleSection').style.display = 'block';
-            loadExistingSchedule(counselorSelect.value);
-        });
-
-        // 기존 일정 데이터 로드
-        async function loadExistingSchedule(counselorId) {
-            try {
-                const token = localStorage.getItem('accessToken');
-                const response = await fetch(`/api/counseling/schedules/counselor/${counselorId}`, {
-                    headers: {'Authorization': `Bearer ${token}`}
-                });
-                
-                if (response.ok) {
-                    const schedules = await response.json();
-                    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                    
-                    schedules.forEach(schedule => {
-                        const dayMap = {0: 'mon', 1: 'tue', 2: 'wed', 3: 'thu', 4: 'fri'};
-                        const day = dayMap[schedule.dayOfWeek];
-                        
-                        ['0910', '1011', '1112', '1213', '1314', '1415', '1516', '1617', '1718'].forEach(slot => {
-                            const slotKey = `slot${slot}`;
-                            if (schedule[slotKey]) {
-                                const checkbox = document.querySelector(`input[name="${slotKey}_${day}"]`);
-                                if (checkbox) checkbox.checked = true;
-                            }
-                        });
-                    });
-                }
-            } catch (error) {
-                console.error('일정 로드 실패:', error);
-            }
-        }
-
-        // 일정 저장
-        document.getElementById('saveSchedule').addEventListener('click', async function() {
-            const fieldId = document.getElementById('fieldSelect').value;
-            const counselorId = document.getElementById('counselorSelect').value;
-            
-            if (!fieldId || !counselorId) {
-                alert('상담분류와 상담사를 모두 선택해주세요.');
-                return;
-            }
-            
-            const scheduleData = {};
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                scheduleData[checkbox.name] = checkbox.checked;
-            });
-            
-            try {
-                const token = localStorage.getItem('accessToken');
-                const response = await fetch(`/api/counseling/schedules/counselor/${counselorId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(scheduleData)
-                });
-                
-                if (response.ok) {
-                    alert('일정이 저장되었습니다.');
-                } else {
-                    alert('일정 저장에 실패했습니다.');
-                }
-            } catch (error) {
-                console.error('일정 저장 실패:', error);
-                alert('일정 저장 중 오류가 발생했습니다.');
-            }
-        });
-    </script>
+    <script src="/js/counseling/admin-schedule.js"></script>
+    </th:block>
 </body>
 </html>

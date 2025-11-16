@@ -20,6 +20,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -213,6 +215,27 @@ public class CounselingScheduleService {
             case 17 -> override.getSlot1718();
             default -> null;
         };
+    }
+
+    // 상담사 본인의 기본 근무시간표 조회
+    public List<Map<String, Object>> getMyBaseSchedule() {
+        User currentUser = getCurrentUser();
+        List<CounselingBaseSchedule> schedules = scheduleRepository.findByCounselorOrderByDayOfWeek(currentUser, Pageable.unpaged()).getContent();
+        
+        return schedules.stream().map(schedule -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("dayOfWeek", schedule.getDayOfWeek().getValue() - 1);
+            map.put("slot0910", schedule.getSlot0910());
+            map.put("slot1011", schedule.getSlot1011());
+            map.put("slot1112", schedule.getSlot1112());
+            map.put("slot1415", schedule.getSlot1415());
+            map.put("slot1516", schedule.getSlot1516());
+            return map;
+        }).collect(Collectors.toList());
+    }
+
+    private User getCurrentUser() {
+        return (User) org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     // 기본 달력 날짜 계산 (금요일 17:00 이후면 다음 주 월요일)

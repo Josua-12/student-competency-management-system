@@ -25,7 +25,7 @@ public class CounselingMapper {
         return response;
     }
 
-    public CounselingReservationDto.DetailResponse toDetailResponse(CounselingReservation reservation) {
+    public CounselingReservationDto.DetailResponse toDetailResponse(CounselingReservation reservation, Long recordId) {
         var response = new CounselingReservationDto.DetailResponse();
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
@@ -43,6 +43,7 @@ public class CounselingMapper {
         response.setMemo(reservation.getMemo());
         response.setRejectReason(reservation.getRejectReason());
         response.setCancelReason(reservation.getCancelReason());
+        response.setRecordId(recordId);
         return response;
     }
 }

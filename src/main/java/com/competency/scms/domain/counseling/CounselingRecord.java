@@ -14,9 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 
-@SQLDelete(sql = "UPDATE counseling_records SET deleted_at = NOW() WHERE id = ?") //soft delete
-@FilterDef(name = "notDeleted", defaultCondition = "deleted_at IS NULL")
-@Filter(name = "notDeleted")// 조회 시 자동으로 제외
+
 @Entity
 @Table(name = "counseling_records")
 @Getter
@@ -57,9 +55,7 @@ public class CounselingRecord {
     @Builder.Default
     private boolean isPublic = false;   // 기본 설정 : 비공개
 
-    public boolean isDeleted(){
-        return deletedAt != null;       //soft 삭제 관리
-    }
+
     
     @Column(nullable = false)
     private LocalDateTime counselingDate;

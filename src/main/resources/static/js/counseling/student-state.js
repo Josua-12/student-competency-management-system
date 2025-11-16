@@ -119,6 +119,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('detailMemoSection').style.display = 'none';
                 }
                 
+                if (reservation.status === 'REJECTED' && reservation.rejectReason) {
+                    document.getElementById('detailRejectReasonSection').style.display = 'block';
+                    document.getElementById('detailRejectReason').textContent = reservation.rejectReason;
+                } else {
+                    document.getElementById('detailRejectReasonSection').style.display = 'none';
+                }
+                
                 if (reservation.counselingField === 'EMPLOYMENT') {
                     loadAttachmentsForDetail(reservationId);
                 } else {
@@ -551,16 +558,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 section.style.display = 'block';
                 container.innerHTML = '';
                 
-                attachments.forEach(att => {
-                    const typeDisplay = att.attachmentType === 'RESUME' ? '이력서' : 
-                                       att.attachmentType === 'COVER_LETTER' ? '자기소개서' : '서류';
-                    const link = document.createElement('a');
-                    link.href = `/api/counseling/reservations/attachments/${att.id}/download`;
-                    link.download = att.originalName;
-                    link.className = 'btn btn-sm btn-outline-secondary me-2 mb-2';
-                    link.innerHTML = `<i class="bi bi-download"></i> ${typeDisplay}: ${att.originalName}`;
-                    container.appendChild(link);
-                });
+                const studentAttachments = attachments.filter(att => 
+                    att.attachmentType === 'RESUME' || att.attachmentType === 'COVER_LETTER'
+                );
+                const counselorAttachments = attachments.filter(att => 
+                    att.attachmentType === 'DOCUMENT'
+                );
+                
+                if (studentAttachments.length > 0) {
+                    const studentLabel = document.createElement('div');
+                    studentLabel.className = 'fw-bold mb-2';
+                    studentLabel.textContent = '학생 첨부파일:';
+                    container.appendChild(studentLabel);
+                    
+                    studentAttachments.forEach(att => {
+                        const typeDisplay = att.attachmentType === 'RESUME' ? '이력서' : '자기소개서';
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = 'mb-2';
+                        const link = document.createElement('a');
+                        link.href = `/api/counseling/reservations/attachments/${att.id}/download`;
+                        link.download = att.originalName;
+                        link.className = 'btn btn-sm btn-outline-secondary';
+                        link.innerHTML = `<i class="bi bi-download"></i> ${typeDisplay}: ${att.originalName}`;
+                        fileDiv.appendChild(link);
+                        container.appendChild(fileDiv);
+                    });
+                }
+                
+                if (counselorAttachments.length > 0) {
+                    const counselorLabel = document.createElement('div');
+                    counselorLabel.className = 'fw-bold mb-2 mt-3';
+                    counselorLabel.textContent = '상담사 첨부파일:';
+                    container.appendChild(counselorLabel);
+                    
+                    counselorAttachments.forEach(att => {
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = 'mb-2';
+                        const link = document.createElement('a');
+                        link.href = `/api/counseling/reservations/attachments/${att.id}/download`;
+                        link.download = att.originalName;
+                        link.className = 'btn btn-sm btn-outline-primary';
+                        link.innerHTML = `<i class="bi bi-download"></i> ${att.originalName}`;
+                        fileDiv.appendChild(link);
+                        container.appendChild(fileDiv);
+                    });
+                }
             })
             .catch(error => {
                 console.error('Error:', error);

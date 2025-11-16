@@ -30,6 +30,7 @@ public class CounselingReservationService {
     private final CounselingSubFieldRepository subFieldRepository;
     private final com.competency.scms.repository.counseling.CounselingSatisfactionRepository satisfactionRepository;
     private final com.competency.scms.repository.counseling.CounselingAttachmentRepository attachmentRepository;
+    private final com.competency.scms.repository.counseling.CounselingRecordRepository recordRepository;
     private final FileStorageService fileStorageService;
     private final CounselingMapper mapper = new CounselingMapper();
 
@@ -69,6 +70,12 @@ public class CounselingReservationService {
         } else { // 본인을 위해 예약 생성하는 경우
             student = currentUser;
             initialStatus = ReservationStatus.PENDING;
+            
+            // 학생이 상담사를 지정한 경우 (취업상담 등)
+            if (request.getCounselorId() != null) {
+                assignedCounselor = userRepository.findById(request.getCounselorId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+            }
         }
 
         CounselingSubField subField = findSubFieldById(request.getSubFieldId());
@@ -114,7 +121,8 @@ public class CounselingReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
         
         validateAccessPermission(reservation, currentUser);
-        return mapper.toDetailResponse(reservation);
+        Long recordId = recordRepository.findByReservationId(reservationId).map(r -> r.getId()).orElse(null);
+        return mapper.toDetailResponse(reservation, recordId);
     }
 
     // CNSL-004: 상담 예약 취소
@@ -177,11 +185,44 @@ public class CounselingReservationService {
         reservation.setRejectReason(rejectReason);
         reservation.setRejectedAt(LocalDateTime.now());
     }
+    
+    // 상담 완료 처리
+    @Transactional
+    public void completeReservation(Long reservationId, User currentUser, org.springframework.web.multipart.MultipartFile[] files) {
+        CounselingReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        
+        if (!reservation.getCounselor().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
+        if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
+        
+        reservation.setStatus(ReservationStatus.COMPLETED);
+        reservation.setCompletedAt(LocalDateTime.now());
+        
+        if (files != null) {
+            for (org.springframework.web.multipart.MultipartFile file : files) {
+                if (file != null && !file.isEmpty()) {
+                    saveAttachment(reservationId, file, com.competency.scms.domain.counseling.AttachmentType.DOCUMENT);
+                }
+            }
+        }
+    }
 
     // CNSL-011: 배정된 상담 일정 조회 (상담사)
     public Page<CounselingReservationDto.ListResponse> getAssignedReservations(User counselor, Pageable pageable) {
         Page<CounselingReservation> reservations = reservationRepository.findByCounselorAndStatusOrderByConfirmedDateTimeAsc(
                 counselor, ReservationStatus.CONFIRMED, pageable);
+        return reservations.map(mapper::toListResponse);
+    }
+    
+    // 상담사 예약 승인 관리 - 대기중인 예약 조회
+    public Page<CounselingReservationDto.ListResponse> getCounselorPendingReservations(User counselor, Pageable pageable) {
+        Page<CounselingReservation> reservations = reservationRepository.findByCounselorAndStatusOrderByCreatedAtAsc(
+                counselor, ReservationStatus.PENDING, pageable);
         return reservations.map(mapper::toListResponse);
     }
 

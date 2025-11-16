@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상담사 메인</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <th:block th:fragment="css"></th:block>
 </head>
 <body>
     <th:block th:fragment="content">
@@ -68,7 +67,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 대기중인 예약</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingReservations">-</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="bi bi-clock text-primary" style="font-size: 2rem;"></i>
@@ -85,7 +84,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 오늘 상담</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="todayCounseling">-</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
@@ -102,7 +101,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                                 이번 달 상담</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0건</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthlyCounseling">-</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="bi bi-bar-chart text-info" style="font-size: 2rem;"></i>
@@ -119,7 +118,7 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                 평균 만족도</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0/5.0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="avgSatisfaction">-</div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
@@ -157,9 +156,9 @@
                                                     <th>상태</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="scheduleTableBody">
                                                 <tr>
-                                                    <td colspan="4" class="text-center">일정이 없습니다.</td>
+                                                    <td colspan="4" class="text-center">로딩 중...</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -173,7 +172,6 @@
         </div>
     </th:block>
     <th:block th:fragment="scripts">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script th:src="@{/js/counseling/counselor-main.js}"></script>
     </th:block>
 </body>

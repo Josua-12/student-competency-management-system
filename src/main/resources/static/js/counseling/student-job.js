@@ -110,9 +110,14 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/counseling/schedule/monthly?${params}`)
             .then(response => response.json())
             .then(schedules => {
-                const filteredSchedules = selectedSubfield === 'all' 
+                const now = new Date();
+                const filteredSchedules = (selectedSubfield === 'all' 
                     ? schedules 
-                    : schedules.filter(s => s.subfieldId == selectedSubfield);
+                    : schedules.filter(s => s.subfieldId == selectedSubfield))
+                    .filter(schedule => {
+                        const scheduleDateTime = new Date(`${schedule.date}T${schedule.startTime}`);
+                        return scheduleDateTime > now;
+                    });
                 
                 filteredSchedules.forEach(schedule => {
                     const dateKey = schedule.date;
@@ -242,7 +247,11 @@ document.addEventListener('DOMContentLoaded', function() {
             body: formData
         })
         .then(response => {
-            if (!response.ok) throw new Error('예약 실패');
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || '예약 실패');
+                });
+            }
             return response.json();
         })
         .then(data => {
@@ -252,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('예약 중 오류가 발생했습니다.');
+            alert(error.message || '예약 중 오류가 발생했습니다.');
         });
     }
 });
