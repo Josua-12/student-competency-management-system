@@ -107,13 +107,26 @@ function toConsultationItem(c) {
 
 function toProgramCard(p) {
     const title = escapeHtml(p.title || '');
-    const period = escapeHtml(p.period || '');
-    const link = `/programs/${encodeURIComponent(p.id)}`;
+    const category = escapeHtml(p.category || '');
+    const status = escapeHtml(p.status || '');
+    const deadline = p.applicationDeadline ? 
+        new Date(p.applicationDeadline).toLocaleDateString('ko-KR') : '미정';
+    const participants = `${p.currentParticipants || 0}/${p.maxParticipants || 0}`;
+    const link = `/noncurricular/program/detail/${encodeURIComponent(p.id)}`;
+    
     return `
-    <a class="program-card" href="${link}">
-      <div class="program-title">${title}</div>
-      <div class="program-period">${period}</div>
-    </a>
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-title">${title}</div>
+        <span class="program-category">${category}</span>
+      </div>
+      <div class="program-info">
+        <div class="program-deadline">신청마감: ${deadline}</div>
+        <div class="program-participants">참여자: ${participants}</div>
+        <span class="program-status">${status}</span>
+      </div>
+      <a href="${link}" class="program-link">상세보기 →</a>
+    </div>
   `;
 }
 
