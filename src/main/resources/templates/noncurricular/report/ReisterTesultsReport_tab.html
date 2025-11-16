@@ -1,10 +1,13 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="ko">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>OP-007 결과보고서 등록</title>
-    <style>
+    <title>OP-007 결과보고서 등록</title> -->
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentStyles">
+<style>
         :root{
             --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
             --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
@@ -220,9 +223,11 @@
             .kpis{grid-template-columns:repeat(3,1fr)}
             .grid-2,.grid-3{grid-template-columns:1fr}
         }
-    </style>
-</head>
-<body>
+</style>
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentFragment">
 <div class="page">
     <h1>결과보고서 등록</h1>
     <p class="muted">역할에 따라 탭이 다르게 노출됩니다.</p>
@@ -578,6 +583,10 @@
     <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
 </div>
 
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentScript">
 <script>
     /* ===== 권한 / 탭 설정 ===== */
     // 실제에선 서버에서 로그인 유저 역할을 넘겨주는 값을 쓰면 됨.
@@ -1037,5 +1046,4 @@
         renderStuProgList();
     })();
 </script>
-</body>
-</html>
+</div>

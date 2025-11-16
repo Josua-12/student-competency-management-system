@@ -1,10 +1,13 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>비교과 프로그램 상세 (운영자)</title>
-    <style>
+    <title>비교과 프로그램 상세 (운영자)</title> -->
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentStyles">
+<style>
         :root{
             --bg:#f7f8fa; --card:#fff; --text:#222; --muted:#6b7280;
             --line:#e5e7eb; --brand:#2563eb; --brand-weak:#dbeafe;
@@ -55,9 +58,11 @@
         .toast.show{opacity:1;transform:translate(-50%,0)}
         .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;border:0;clip:rect(0,0,0,0)}
         .hr{height:1px;background:var(--line);margin:12px 0}
-    </style>
-</head>
-<body>
+</style>
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentFragment">
 <div class="wrap">
     <!-- 페이지 헤더 -->
     <div class="page-title" role="group" aria-label="프로그램 식별 및 상태">
@@ -257,6 +262,10 @@
 <!-- Toast -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentScript">
 <script>
     // ---- 상태 뱃지 매핑 (programs.status + 운영 승인상태 enum 참조) ----
     const statusMap = {
@@ -420,5 +429,4 @@
         }
     })();
 </script>
-</body>
-</html>
+</div>

@@ -1,10 +1,13 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <title>운영자 대시보드</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <style>
+    <meta name="viewport" content="width=device-width,initial-scale=1" /> -->
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentStyles">
+<style>
         :root{
             --bg:#ffffff;
             --fg:#111827;
@@ -201,10 +204,11 @@
             max-height:260px;
             overflow:auto;
         }
-    </style>
-</head>
-<body>
-<div th:fragment="content">
+</style>
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentFragment">
     <div class="layout">
         <header>
             <div>
@@ -307,6 +311,9 @@
         </section>
     </div>
 </div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentScript">
 <script>
     const OP_API = {
         dashboard: '/api/operator/dashboard'
@@ -496,5 +503,4 @@
 
     document.addEventListener('DOMContentLoaded', initOperatorDashboard);
 </script>
-</body>
-</html>
+</div>

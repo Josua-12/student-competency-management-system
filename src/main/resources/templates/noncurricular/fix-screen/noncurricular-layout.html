@@ -11,12 +11,16 @@
     <link rel="stylesheet" th:href="@{/css/noncurricular/noncurricular.css}">
     <th:block th:replace="common/header :: headerStyles"></th:block>
     <th:block th:replace="common/footer :: footerStyles"></th:block>
+    <th:block th:if="${contentStyle != null}" th:replace="${contentStyle}"></th:block>
+
+
 </head>
 
 <body  class="d-flex flex-column min-vh-100">
     <!-- 상단 헤더 -->
     <div th:replace="common/header :: header"></div>
 <!--            class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top"-->
+
 
     <div class="container-fluid">
         <div class="row">
@@ -28,7 +32,7 @@
             <!-- 우측 메인 컨텐츠 영역 -->
             <main class="col-12 col-md-9 col-lg-10 py-4">
                 <!-- 컨텐츠 프래그먼트 교체 영역 -->
-                <div th:replace="__${contentFragment}__">
+                <div th:replace="${contentFragment}">
                     <p>표시할 컨텐츠가 없습니다.</p>
                 </div>
             </main>
@@ -43,3 +47,63 @@
 <!--    <div th:replace="common/footer :: footerScript"></div>-->
 </body>
 </html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko"-->
+<!--      xmlns:th="http://www.thymeleaf.org">-->
+
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title th:text="${pageTitle} ?: '비교과 프로그램'">비교과 프로그램</title>-->
+
+<!--    &lt;!&ndash; 공통 CSS &ndash;&gt;-->
+<!--    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">-->
+<!--    <link rel="stylesheet" th:href="@{/css/noncurricular/noncurricular.css}">-->
+<!--    <th:block th:replace="common/header :: headerStyles"></th:block>-->
+<!--    <th:block th:replace="common/footer :: footerStyles"></th:block>-->
+
+<!--    &lt;!&ndash; ⭐ 페이지 전용 CSS (옵션) &ndash;&gt;-->
+<!--    <th:block th:if="${contentStyle != null}"-->
+<!--              th:replace="${contentStyle}">-->
+<!--    </th:block>-->
+<!--</head>-->
+
+<!--<body class="d-flex flex-column min-vh-100">-->
+
+<!--&lt;!&ndash; 상단 헤더 &ndash;&gt;-->
+<!--<div th:replace="common/header :: header"></div>-->
+
+<!--<div class="container-fluid">-->
+<!--    <div class="row">-->
+
+<!--        &lt;!&ndash; 좌측 사이드바 &ndash;&gt;-->
+<!--        <aside class="col-12 col-md-3 col-lg-2 p-0 sidebar-col">-->
+<!--            <div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>-->
+<!--        </aside>-->
+
+<!--        &lt;!&ndash; 메인 컨텐츠 &ndash;&gt;-->
+<!--        <main class="col-12 col-md-9 col-lg-10 py-4">-->
+<!--            &lt;!&ndash; ⭐ 페이지 전용 본문 fragment &ndash;&gt;-->
+<!--            <th:block th:if="${contentFragment != null}"-->
+<!--                      th:replace="${contentFragment}">-->
+<!--            </th:block>-->
+<!--        </main>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 푸터 &ndash;&gt;-->
+<!--<div th:replace="~{common/footer :: footer}"></div>-->
+
+<!--&lt;!&ndash; 공통 JS &ndash;&gt;-->
+<!--<script th:src="@{/js/bootstrap.bundle.min.js}"></script>-->
+<!--<script th:src="@{/js/noncurricular.js}"></script>-->
+<!--<div th:replace="common/header :: headerScript"></div>-->
+
+<!--&lt;!&ndash; ⭐ 페이지 전용 JS (옵션) &ndash;&gt;-->
+<!--<th:block th:if="${contentScript != null}"-->
+<!--          th:replace="${contentScript}">-->
+<!--</th:block>-->
+
+<!--</body>-->
+<!--</html>-->

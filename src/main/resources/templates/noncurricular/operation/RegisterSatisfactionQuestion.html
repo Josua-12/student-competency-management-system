@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8" />
-    <title>만족도 설문 등록 | 비교과 프로그램 운영자</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <title>만족도 설문 등록 | 비교과 프로그램 운영자</title>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1" />-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
     <style>
         :root{
             --bg:#f6f7fb; --card:#fff; --ink:#222; --muted:#666; --line:#e6e8ef;
@@ -64,8 +66,11 @@
             label{margin-bottom:6px}
         }
     </style>
-</head>
-<body>
+</div>
+<!--</head>-->
+<!--<body>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
 <div class="wrap">
     <div class="crumb">비교과 프로그램 &rsaquo; 프로그램 상세 &rsaquo; <b>만족도 설문 등록</b></div>
     <h1 class="page-title">만족도 설문 등록</h1>
@@ -163,7 +168,9 @@
         </div>
     </section>
 </div>
-
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
 <script>
     // ---------- State ----------
     const state = {
@@ -459,5 +466,6 @@
     ];
     renderQuestions();
 </script>
-</body>
-</html>
+</div>
+<!--</body>-->
+<!--</html>-->
