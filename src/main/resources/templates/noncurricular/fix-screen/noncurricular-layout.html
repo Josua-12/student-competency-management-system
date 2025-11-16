@@ -17,6 +17,7 @@
 <!-- 상단 헤더 -->
 <header th:replace="common/header :: header"></header>
 
+<<<<<<< HEAD
 <div class="container-fluid">
     <div class="row">
 
@@ -36,6 +37,12 @@
             <!-- content가 없을 때 보이는 기본 내용 -->
                 <p>표시할 컨텐츠가 없습니다.</p>
             </div>
+=======
+    <div class="layout">
+        <!-- 왼쪽 사이드바 -->
+        <div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+
+>>>>>>> 341e362cdbb69989b403d376a326f4e14cad3ef5
 
         </main>
 
@@ -46,8 +53,19 @@
 <footer th:replace="common/footer :: footer"></footer>
 
 <!-- 공통 JS -->
+<<<<<<< HEAD
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/noncurricular.js}"></script>
+=======
+<!--<script th:src="@{/js/main.js}"></script>-->
+
+<!-- 사이드바 스크립트 -->
+<div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebarScript"></div>
+
+<!-- 페이지별 스크립트 (선택) -->
+<div th:if="${pageScript != null}"
+     th:replace="${pageScript}"></div>
+>>>>>>> 341e362cdbb69989b403d376a326f4e14cad3ef5
 
 </body>
 </html>
