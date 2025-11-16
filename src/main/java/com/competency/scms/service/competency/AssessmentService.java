@@ -1,5 +1,6 @@
 package com.competency.scms.service.competency;
 
+import com.competency.scms.domain.Department;
 import com.competency.scms.domain.competency.*;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.competency.*;
@@ -357,23 +358,41 @@ public class AssessmentService {
 
 
         List<String> radarLabels = new ArrayList<>();
-        List<Double> radarScores = new ArrayList<>();
+        List<Double> myScoresList = new ArrayList<>();
+        List<Double> deptScoresList = new ArrayList<>();
+        List<Double> univScoresList = new ArrayList<>();
 
         // 6. '핵심 역량'을 순회하며 DTO 조립
         // (정렬: displayOrder 순)
         List<Competency> sortedParents = parentToScoresMap.keySet().stream()
-                .sorted(Comparator.comparingInt(Competency::getDisplayOrder))
+                .sorted(Comparator.comparingInt(Competency::getDisplayOrder)
+                .thenComparing(Competency::getId))
                 .toList();
+
+        Department userDepartment = result.getUser().getDepartment();
+        List<Long> parentIds = sortedParents.stream().map(Competency::getId).toList();
+
+        Map<Long, Double> deptAvgMap = assessmentResultRepository.findDepartmentAverages(
+                        userDepartment,
+                        parentIds
+                ).stream()
+                .collect(Collectors.toMap(CompetencyAverageDto::getCompetencyId, CompetencyAverageDto::getAverageScore));
+
+        Map<Long, Double> univAvgMap = assessmentResultRepository.findUniversityAverages(parentIds)
+                .stream()
+                .collect(Collectors.toMap(CompetencyAverageDto::getCompetencyId, CompetencyAverageDto::getAverageScore));
 
         for (Competency parent : sortedParents) {
             // 6-1. [레이더 차트] (핵심 역량의 평균 점수 계산)
-            double parentAvgScore = parentToScoresMap.get(parent).stream()
+            double myAvgScore = parentToScoresMap.get(parent).stream()
                     .mapToDouble(Double::doubleValue)
                     .average()
                     .orElse(0.0);
 
             radarLabels.add(parent.getName());
-            radarScores.add(parentAvgScore);
+            myScoresList.add(myAvgScore);
+            deptScoresList.add(deptAvgMap.getOrDefault(parent.getId(), 0.0));
+            univScoresList.add(univAvgMap.getOrDefault(parent.getId(), 0.0));
 
             // 6-2. [막대 그래프] (하위 역량 DTO 리스트)
             List<ResultChildCompetencyDto> childDtos = parentToChildrenDtoMap.get(parent);
@@ -387,10 +406,12 @@ public class AssessmentService {
             ));
             scoreDetailsList.add(new ResultParentCompetencyDto(
                     parent.getName(),
-                    parentAvgScore,
+                    myAvgScore,
                     childDtos
             ));
         }
+
+
 
         // 7. 강점/약점 분석 (하위 역량 기준 Top 2, Bottom 2)
         List<ResultFeedbackDto> strengths = new ArrayList<>();
@@ -435,8 +456,18 @@ public class AssessmentService {
             ));
         }
 
+        // 평균 점수 계산 로직
+
+
+
+
         // 8. 최종 DTO 설정
-        data.setRadarChartData(new RadarChartData(radarLabels, radarScores));
+        data.setRadarChartData(new RadarChartData(
+                radarLabels,
+                myScoresList,
+                deptScoresList,
+                univScoresList
+        ));
         data.setScoreDetails(scoreDetailsList);
         data.setStrengths(strengths);
         data.setWeaknesses(weaknesses);
