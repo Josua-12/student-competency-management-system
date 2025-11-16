@@ -39,9 +39,6 @@ public class NoncurricularStudentViewController {
      */
     private void setView(Model model, String baseView) {
         model.addAttribute("content", baseView);
-//        model.addAttribute("contentStyles",   baseView);
-//        model.addAttribute("contentFragment", baseView);
-//        model.addAttribute("contentScript",   baseView);
     }
 
     /**
@@ -143,6 +140,7 @@ public class NoncurricularStudentViewController {
     }
 
 
+<<<<<<< HEAD
     /**
      * 비교과 포인트 조회
      * GET /noncurricular/student/points
@@ -154,5 +152,7 @@ public class NoncurricularStudentViewController {
         setView(model, "noncurricular/noncurriDashboard/student-dashboard");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
+=======
+>>>>>>> 3227c32c3d1a2dded3fe4e1dc1d5d33df959b0c0
 }
 

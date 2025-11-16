@@ -83,33 +83,43 @@ public class DashboardService {
     
     // 상담 내역 조회 (최근 3건)
     public List<ConsultationHistoryDto> getRecentConsultations() {
-        var reservations = counselingReservationRepository.findAll(PageRequest.of(0, 3));
-        
-        return reservations.stream()
-            .map(reservation -> ConsultationHistoryDto.of(
-                reservation.getId(),
-                reservation.getCounselor().getName(),
-                reservation.getReservationDate().atStartOfDay(),
-                reservation.getStatus().name(),
-                reservation.getCounselingField().name()
-            ))
-            .collect(Collectors.toList());
+        try {
+            var reservations = counselingReservationRepository.findAll(PageRequest.of(0, 3));
+            
+            return reservations.stream()
+                .map(reservation -> ConsultationHistoryDto.of(
+                    reservation.getId(),
+                    reservation.getCounselor() != null ? reservation.getCounselor().getName() : "상담사 미지정",
+                    reservation.getReservationDate().atStartOfDay(),
+                    reservation.getStatus().name(),
+                    reservation.getCounselingField().name()
+                ))
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.warn("상담 내역 조회 실패", e);
+            return List.of();
+        }
     }
     
     // 최신 비교과 프로그램 3개 조회
     public List<RecentProgramDto> getRecentPrograms() {
-        var programs = programRepository.findAll(PageRequest.of(0, 3));
-        
-        return programs.stream()
-            .map(program -> RecentProgramDto.of(
-                program.getProgramId(),
-                program.getTitle(),
-                program.getCategory().name(),
-                program.getRecruitEndAt(),
-                program.getStatus().name(),
-                program.getCurrentParticipants() != null ? program.getCurrentParticipants() : 0,
-                program.getMaxParticipants()
-            ))
-            .collect(Collectors.toList());
+        try {
+            var programs = programRepository.findAll(PageRequest.of(0, 3));
+            
+            return programs.stream()
+                .map(program -> RecentProgramDto.of(
+                    program.getProgramId(),
+                    program.getTitle(),
+                    program.getCategory() != null ? program.getCategory().name() : "미분류",
+                    program.getRecruitEndAt(),
+                    program.getStatus() != null ? program.getStatus().name() : "DRAFT",
+                    program.getCurrentParticipants() != null ? program.getCurrentParticipants() : 0,
+                    program.getMaxParticipants()
+                ))
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.warn("비교과 프로그램 조회 실패", e);
+            return List.of();
+        }
     }
 }

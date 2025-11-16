@@ -62,7 +62,9 @@ public class SecurityConfig {
                         // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
                                 "/auth/**", "/login", "/logout", "/error",
-                                "/favicon.ico", "/manifest.json",
+                                "/favicon.ico", "/manifest.json"
+                        ).permitAll()
+                        .requestMatchers(
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()
 
@@ -83,8 +85,9 @@ public class SecurityConfig {
                         // 비교과 관련 - 세분화된 권한
                         .requestMatchers("/noncurricular/student/**").hasRole("STUDENT")
                         .requestMatchers("/noncurricular/operator/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/api/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/noncurricular-operator/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
 
                         // 역량진단 관련
                         .requestMatchers("/competency/student/**").hasRole("STUDENT")

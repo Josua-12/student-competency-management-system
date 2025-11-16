@@ -15,9 +15,7 @@ public class NoncurricularOperatorViewController {
      * 예) "noncurricular/noncurriDashboard/operator-dashboard"
      */
     private void setView(Model model, String baseView) {
-//        model.addAttribute("contentStyles",   baseView);
         model.addAttribute("content", baseView);
-//        model.addAttribute("contentScript",   baseView);
     }
 
     /* =========================
@@ -114,24 +112,22 @@ public class NoncurricularOperatorViewController {
     /**
      * 비교과 포인트 조회
      * GET /noncurricular/admin/points
-     * TODO: 대응 템플릿 생성 필요
      */
     @GetMapping("/admin/points")
     public String managePoints(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 비교과 포인트 조회");
-        setView(model, "noncurricular/operation/PointList");
+        model.addAttribute("pageTitle", "비교과 포인트 조회 (운영자)");
+        setView(model, "noncurricular/mileage/operator-points");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
     /**
      * 비교과 포인트 등록
      * GET /noncurricular/admin/points/register
-     * TODO: 대응 템플릿 생성 필요
      */
     @GetMapping("/admin/points/register")
     public String registerPoints(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 비교과 포인트 등록");
-        setView(model, "noncurricular/operation/RegisterPoint");
+        model.addAttribute("pageTitle", "비교과 포인트 등록");
+        setView(model, "noncurricular/mileage/operator-points-register");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 

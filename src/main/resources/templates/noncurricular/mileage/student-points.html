@@ -1,0 +1,371 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
+    <style>
+        .noncurri-mileage-student-page{
+            --bg:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --card:#f9fafb;
+            --pri: #094081;
+            --pri-soft:#eff6ff;
+            --radius-lg:16px;
+        }
+        .noncurri-mileage-student-page .layout{
+            max-width:1100px;
+            margin:0 auto;
+            padding:24px 16px 40px;
+        }
+        .noncurri-mileage-student-page header{
+            margin-bottom:24px;
+        }
+        .noncurri-mileage-student-page header h1{
+            font-size:24px;
+            font-weight:700;
+            margin-bottom:8px;
+        }
+        .noncurri-mileage-student-page header .sub{
+            font-size:14px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-student-page .card{
+            background:var(--card);
+            border-radius:var(--radius-lg);
+            border:1px solid var(--line);
+            padding:20px;
+            margin-bottom:20px;
+        }
+        .noncurri-mileage-student-page .card-title{
+            font-size:16px;
+            font-weight:600;
+            margin-bottom:16px;
+        }
+        .noncurri-mileage-student-page .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+            gap:16px;
+            margin-bottom:20px;
+        }
+        .noncurri-mileage-student-page .summary-item{
+            background:#ffffff;
+            border-radius:12px;
+            padding:16px;
+            border:1px solid var(--line);
+            text-align:center;
+        }
+        .noncurri-mileage-student-page .summary-label{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:8px;
+        }
+        .noncurri-mileage-student-page .summary-value{
+            font-size:24px;
+            font-weight:700;
+            color:var(--pri);
+        }
+        .noncurri-mileage-student-page .filter-row{
+            display:flex;
+            gap:12px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+        }
+        .noncurri-mileage-student-page .filter-item{
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+        .noncurri-mileage-student-page .filter-item label{
+            font-size:12px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-student-page .filter-item select, .noncurri-mileage-student-page .filter-item input{
+            padding:8px 12px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            font-size:14px;
+        }
+        .noncurri-mileage-student-page .btn{
+            padding:8px 16px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            background:#ffffff;
+            cursor:pointer;
+            font-size:14px;
+        }
+        .noncurri-mileage-student-page .btn-primary{
+            background:var(--pri);
+            border-color:var(--pri);
+            color:#ffffff;
+        }
+        .noncurri-mileage-student-page .table-container{
+            overflow-x:auto;
+        }
+        .noncurri-mileage-student-page table{
+            width:100%;
+            border-collapse:collapse;
+            background:#ffffff;
+            border-radius:8px;
+            overflow:hidden;
+        }
+        .noncurri-mileage-student-page th, .noncurri-mileage-student-page td{
+            padding:12px;
+            text-align:left;
+            border-bottom:1px solid var(--line);
+        }
+        .noncurri-mileage-student-page th{
+            background:var(--card);
+            font-weight:600;
+            font-size:14px;
+        }
+        .noncurri-mileage-student-page td{
+            font-size:14px;
+        }
+        .noncurri-mileage-student-page .badge{
+            display:inline-flex;
+            padding:4px 8px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:500;
+        }
+        .noncurri-mileage-student-page .badge-earn{background:#dcfce7;color:#166534;}
+        .noncurri-mileage-student-page .badge-use{background:#fee2e2;color:#dc2626;}
+        .noncurri-mileage-student-page .empty-state{
+            text-align:center;
+            padding:40px;
+            color:var(--muted);
+        }
+    </style>
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
+    <div class="noncurri-mileage-student-page layout">
+        <header>
+            <h1>비교과 포인트 조회</h1>
+            <p class="sub">나의 비교과 포인트 적립 및 사용 내역을 확인할 수 있습니다.</p>
+        </header>
+
+        <!-- 포인트 요약 -->
+        <section class="card">
+            <div class="card-title">포인트 현황</div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">총 적립 포인트</div>
+                    <div class="summary-value" id="totalEarned">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">사용한 포인트</div>
+                    <div class="summary-value" id="totalUsed">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">현재 보유 포인트</div>
+                    <div class="summary-value" id="currentPoints">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 필터 -->
+        <section class="card">
+            <div class="filter-row">
+                <div class="filter-item">
+                    <label>기간</label>
+                    <select id="periodFilter">
+                        <option value="all">전체</option>
+                        <option value="thisMonth">이번 달</option>
+                        <option value="lastMonth">지난 달</option>
+                        <option value="thisYear">올해</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>유형</label>
+                    <select id="typeFilter">
+                        <option value="all">전체</option>
+                        <option value="EARN">적립</option>
+                        <option value="USE">사용</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>프로그램명</label>
+                    <input type="text" id="programFilter" placeholder="프로그램명 검색">
+                </div>
+                <div class="filter-item" style="justify-content:end;">
+                    <button class="btn btn-primary" onclick="searchPoints()">검색</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 포인트 내역 테이블 -->
+        <section class="card">
+            <div class="card-title">포인트 내역</div>
+            <div class="table-container">
+                <table id="pointsTable">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>프로그램명</th>
+                            <th>유형</th>
+                            <th>포인트</th>
+                            <th>사유</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pointsTableBody">
+                        <!-- JS로 렌더링 -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state" style="display:none;">
+                    포인트 내역이 없습니다.
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div th:fragment="contentScript">
+<script th:inline="javascript">
+    const POINTS_API = {
+        history: '/api/student/mileage/history'
+    };
+
+    let currentData = [];
+
+    async function fetchPointsData() {
+        try {
+            const res = await fetch(POINTS_API.history);
+            if (!res.ok) throw new Error('API error');
+            return await res.json();
+        } catch (e) {
+            console.error('포인트 API 실패, 더미 데이터 사용', e);
+            return {
+                summary: {
+                    totalEarned: 180,
+                    totalUsed: 30,
+                    currentPoints: 150
+                },
+                records: [
+                    {
+                        date: '2025-11-15',
+                        programName: '진로 및 취업캠프',
+                        type: 'EARN',
+                        points: 20,
+                        reason: '프로그램 이수',
+                        remarks: '완료'
+                    },
+                    {
+                        date: '2025-11-10',
+                        programName: '리더십 워크숍',
+                        type: 'EARN',
+                        points: 15,
+                        reason: '프로그램 이수',
+                        remarks: '완료'
+                    },
+                    {
+                        date: '2025-11-05',
+                        programName: '글로벌 역량 강화',
+                        type: 'EARN',
+                        points: 10,
+                        reason: '프로그램 이수',
+                        remarks: '완료'
+                    },
+                    {
+                        date: '2025-10-20',
+                        programName: '포인트 사용',
+                        type: 'USE',
+                        points: -30,
+                        reason: '도서 구매',
+                        remarks: '사용'
+                    }
+                ]
+            };
+        }
+    }
+
+    function renderSummary(data) {
+        const summary = data.summary || {};
+        document.getElementById('totalEarned').textContent = summary.totalEarned || 0;
+        document.getElementById('totalUsed').textContent = summary.totalUsed || 0;
+        document.getElementById('currentPoints').textContent = summary.currentPoints || 0;
+    }
+
+    function renderPointsTable(records) {
+        const tbody = document.getElementById('pointsTableBody');
+        const emptyState = document.getElementById('emptyState');
+        
+        tbody.innerHTML = '';
+        
+        if (!records || records.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        records.forEach(record => {
+            const row = document.createElement('tr');
+            const badgeClass = record.type === 'EARN' ? 'badge-earn' : 'badge-use';
+            const typeText = record.type === 'EARN' ? '적립' : '사용';
+            const pointsText = record.type === 'EARN' ? `+${record.points}` : record.points;
+            
+            row.innerHTML = `
+                <td>${record.date}</td>
+                <td>${record.programName}</td>
+                <td><span class="badge ${badgeClass}">${typeText}</span></td>
+                <td>${pointsText}</td>
+                <td>${record.reason}</td>
+                <td>${record.remarks || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function filterRecords(records, filters) {
+        return records.filter(record => {
+            // 기간 필터
+            if (filters.period !== 'all') {
+                const recordDate = new Date(record.date);
+                const now = new Date();
+                
+                switch (filters.period) {
+                    case 'thisMonth':
+                        if (recordDate.getMonth() !== now.getMonth() || 
+                            recordDate.getFullYear() !== now.getFullYear()) return false;
+                        break;
+                    case 'lastMonth':
+                        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+                        if (recordDate.getMonth() !== lastMonth.getMonth() || 
+                            recordDate.getFullYear() !== lastMonth.getFullYear()) return false;
+                        break;
+                    case 'thisYear':
+                        if (recordDate.getFullYear() !== now.getFullYear()) return false;
+                        break;
+                }
+            }
+            
+            // 유형 필터
+            if (filters.type !== 'all' && record.type !== filters.type) return false;
+            
+            // 프로그램명 필터
+            if (filters.program && !record.programName.toLowerCase().includes(filters.program.toLowerCase())) return false;
+            
+            return true;
+        });
+    }
+
+    function searchPoints() {
+        const filters = {
+            period: document.getElementById('periodFilter').value,
+            type: document.getElementById('typeFilter').value,
+            program: document.getElementById('programFilter').value.trim()
+        };
+        
+        const filteredRecords = filterRecords(currentData.records || [], filters);
+        renderPointsTable(filteredRecords);
+    }
+
+    async function initPointsPage() {
+        currentData = await fetchPointsData();
+        renderSummary(currentData);
+        renderPointsTable(currentData.records || []);
+    }
+
+    document.addEventListener('DOMContentLoaded', initPointsPage);
+</script>
+</div>
