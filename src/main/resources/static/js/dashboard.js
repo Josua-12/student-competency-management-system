@@ -52,7 +52,11 @@ async function loadCompetency() {
     const res = await window.DashboardApi.getJson('/api/dashboard/competency');
     if (!res) return;
     
-    if (res.labels && res.scores) {
+    const chartContainer = document.getElementById('competencyChart');
+    const listContainer = document.querySelector('#competency-list');
+    
+    if (res.hasResult && res.labels && res.scores) {
+        // 진단 결과가 있을 때 - 차트 표시
         const chartData = {
             labels: res.labels,
             datasets: [{
@@ -67,6 +71,19 @@ async function loadCompetency() {
             score: res.scores[index] || 0
         }));
         renderCompetencyList('#competency-list', listData);
+    } else {
+        // 진단 결과가 없을 때 - 진단하기 버튼 표시
+        if (chartContainer) {
+            chartContainer.style.display = 'none';
+        }
+        if (listContainer) {
+            listContainer.innerHTML = `
+                <div class="no-assessment">
+                    <p>역량 진단 결과가 없습니다.</p>
+                    <a href="/student/assessment" class="btn btn-primary">역량 진단 시작하기</a>
+                </div>
+            `;
+        }
     }
 }
 
