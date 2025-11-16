@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .contentTypeOptions().and()
                         .httpStrictTransportSecurity(hstsConfig -> hstsConfig
                                 .maxAgeInSeconds(31536000)
-                                .includeSubdomains(true))
+                                .includeSubDomains(true))
                         .and())
 
                 .authorizeHttpRequests(authz -> authz

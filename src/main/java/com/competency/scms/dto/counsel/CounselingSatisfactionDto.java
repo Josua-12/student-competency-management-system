@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -50,6 +51,27 @@ public class CounselingSatisfactionDto {
                 private String optionText;
                 private Integer optionValue;
             }
+        }
+    }
+
+    // 제출된 만족도 조회용
+    @Data
+    public static class ResultResponse {
+        private Long satisfactionId;
+        private Long reservationId;
+        private String counselorName;
+        private LocalDateTime submittedAt;
+        private List<AnswerResponse> answers;
+        
+        @Data
+        public static class AnswerResponse {
+            private Long questionId;
+            private String questionText;
+            private String questionType;
+            private String answerText;
+            private Integer ratingValue;
+            private Long selectedOptionId;
+            private String selectedOptionText;
         }
     }
 }

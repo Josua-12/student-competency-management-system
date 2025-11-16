@@ -31,5 +31,7 @@ public interface CounselingRecordRepository extends JpaRepository<CounselingReco
     // CNSL-013-1-1: (상담사) 본인이 담당한 기간별 상담일지 조회
     @Query("SELECT cr FROM CounselingRecord cr WHERE cr.counselor = :counselor AND cr.counselingDate BETWEEN :startDate AND :endDate ORDER BY cr.counselingDate DESC")
     Page<CounselingRecord> findByCounselorAndCounselingDateBetween(@Param("counselor") User counselor, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+    
+    java.util.Optional<CounselingRecord> findByReservationId(Long reservationId);
 }
 

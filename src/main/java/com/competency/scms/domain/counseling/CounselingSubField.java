@@ -29,8 +29,28 @@ public class CounselingSubField { // 관리자가 하위 상담 분야 관리
     @Column(nullable = false)
     private String subfieldName;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private ConsultingType consultingType = ConsultingType.INTERVIEW;    // 면접상담 or 서면첨삭
+    
     @Column(columnDefinition = "TEXT")
     private String description;
+    
+    public enum ConsultingType {
+        INTERVIEW("면접상담"),
+        WRITTEN_EDITING("서면첨삭");
+        
+        private final String displayName;
+        
+        ConsultingType(String displayName) {
+            this.displayName = displayName;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
 
     @Builder.Default
     @Column(nullable = false)

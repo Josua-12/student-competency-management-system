@@ -23,6 +23,7 @@ public class CounselingHistoryDto {
         private ReservationStatus status;
         private LocalDateTime createdAt;
         private LocalDateTime completedAt;
+        private Boolean hasRecord;
     }
     
     // 상담 현황 조회용

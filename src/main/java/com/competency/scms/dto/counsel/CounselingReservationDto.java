@@ -17,6 +17,7 @@ public class CounselingReservationDto {
     @Data
     public static class CreateRequest {
         private Long studentId; // 상담사가 예약 시 필수, 학생이 예약 시 null (인증된 학생 정보 사용)
+        private Long counselorId; // 학생이 상담사를 지정하는 경우 (취업상담 등)
         @NotNull(message = "상담 분야는 필수입니다")
         private CounselingField counselingField;
         @NotNull(message = "세부 분야는 필수입니다")
@@ -46,6 +47,9 @@ public class CounselingReservationDto {
         private LocalTime confirmedEndTime;
         private ReservationStatus status;
         private String counselorName;
+        private String requestContent;
+        private java.time.LocalDateTime createdAt;
+        private Boolean hasSatisfaction;
     }
     
     // 예약 목록 검색 조건
@@ -55,6 +59,7 @@ public class CounselingReservationDto {
         private CounselingField counselingField;
         private LocalDate startDate;
         private LocalDate endDate;
+        private String dateType = "regDate"; // regDate 또는 schdlDate
         private Integer page = 0;
         private Integer size = 10;
     }
@@ -128,6 +133,7 @@ public class CounselingReservationDto {
         private String memo;
         private String rejectReason;
         private String cancelReason;
+        private Long recordId;
     }
     
     // 예약 취소용

@@ -1,7 +1,7 @@
 package com.competency.scms.controller.counsel;
 
-import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.counsel.CounselingHistoryDto;
+import com.competency.scms.security.CustomUserDetails;
 import com.competency.scms.service.counsel.CounselingHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,10 +22,9 @@ public class CounselingHistoryApiController {
     public ResponseEntity<Page<CounselingHistoryDto.HistoryResponse>> getAllHistory(
             @ModelAttribute CounselingHistoryDto.SearchCondition condition,
             Pageable pageable,
-            @AuthenticationPrincipal User currentUser) {
-        
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Page<CounselingHistoryDto.HistoryResponse> history = 
-                historyService.getAllHistory(condition, currentUser, pageable);
+                historyService.getAllHistory(condition, userDetails.getUser(), pageable);
         return ResponseEntity.ok(history);
     }
 
@@ -33,19 +32,17 @@ public class CounselingHistoryApiController {
     @GetMapping("/counselor")
     public ResponseEntity<Page<CounselingHistoryDto.HistoryResponse>> getCounselorHistory(
             Pageable pageable,
-            @AuthenticationPrincipal User currentUser) {
-        
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Page<CounselingHistoryDto.HistoryResponse> history = 
-                historyService.getCounselorHistory(currentUser, pageable);
+                historyService.getCounselorHistory(userDetails.getUser(), pageable);
         return ResponseEntity.ok(history);
     }
 
     // CNSL-017: 상담사 본인 담당 상담 현황
     @GetMapping("/status")
     public ResponseEntity<CounselingHistoryDto.StatusResponse> getCounselorStatus(
-            @AuthenticationPrincipal User currentUser) {
-        
-        CounselingHistoryDto.StatusResponse status = historyService.getCounselorStatus(currentUser);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        CounselingHistoryDto.StatusResponse status = historyService.getCounselorStatus(userDetails.getUser());
         return ResponseEntity.ok(status);
     }
 }

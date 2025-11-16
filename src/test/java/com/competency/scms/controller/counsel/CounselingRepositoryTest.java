@@ -46,6 +46,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private CounselingSubFieldRepository subFieldRepository;
     @Autowired
     private TestCounselingReservationRepository testCounselingReservationRepository;
+    @Autowired
     private DepartmentRepository departmentRepository;
 
     //--쿼리문 있는 Repos--//
@@ -57,8 +58,6 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private CounselingScheduleRepository counselingScheduleRepository;
     @Autowired
     private SatisfactionAnswerRepository satisfactionAnswerRepository;
-    @Autowired
-    private DepartmentRepository departmentRepository;
 
     private User testStudent;
     private User testCounselor;
@@ -82,7 +81,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
                 .phone("010-1234-5678")
                 .password("password")
                 .birthDate(LocalDate.of(2000,1,1))
-                .department(ensureDept("ECONOMICS", "경제학과")
+                .department(ensureDept("ECONOMICS", "경제학과"))
                 .grade(1)
                 .build();
         userRepository.save(testStudent);

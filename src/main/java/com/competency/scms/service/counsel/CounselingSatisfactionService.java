@@ -120,4 +120,75 @@ public class CounselingSatisfactionService {
         response.setOptionValue(option.getOptionValue());
         return response;
     }
+
+    // 제출된 만족도 조회
+    public CounselingSatisfactionDto.ResultResponse getResult(Long reservationId, User student) {
+        CounselingSatisfaction satisfaction = satisfactionRepository.findByReservationId(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SATISFACTION_NOT_FOUND));
+        
+        if (!satisfaction.getStudent().getId().equals(student.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
+        CounselingSatisfactionDto.ResultResponse response = new CounselingSatisfactionDto.ResultResponse();
+        response.setSatisfactionId(satisfaction.getId());
+        response.setReservationId(reservationId);
+        response.setCounselorName(satisfaction.getCounselor().getName());
+        response.setSubmittedAt(satisfaction.getSubmittedAt());
+        response.setAnswers(satisfaction.getAnswers().stream().map(this::toAnswerResponse).collect(Collectors.toList()));
+        
+        return response;
+    }
+
+    private CounselingSatisfactionDto.ResultResponse.AnswerResponse toAnswerResponse(SatisfactionAnswer answer) {
+        CounselingSatisfactionDto.ResultResponse.AnswerResponse response = 
+                new CounselingSatisfactionDto.ResultResponse.AnswerResponse();
+        response.setQuestionId(answer.getQuestion().getId());
+        response.setQuestionText(answer.getQuestion().getQuestionText());
+        response.setQuestionType(answer.getQuestion().getQuestionType().name());
+        response.setAnswerText(answer.getAnswerText());
+        response.setRatingValue(answer.getRatingValue());
+        if (answer.getSelectedOption() != null) {
+            response.setSelectedOptionId(answer.getSelectedOption().getId());
+            response.setSelectedOptionText(answer.getSelectedOption().getOptionText());
+        }
+        return response;
+    }
+
+    // 만족도 수정
+    @Transactional
+    public void updateSatisfaction(Long satisfactionId, CounselingSatisfactionDto.SubmitRequest request, User student) {
+        CounselingSatisfaction satisfaction = satisfactionRepository.findById(satisfactionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.SATISFACTION_NOT_FOUND));
+        
+        if (!satisfaction.getStudent().getId().equals(student.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
+        List<SatisfactionAnswer> newAnswers = new ArrayList<>();
+        
+        for (CounselingSatisfactionDto.SubmitRequest.AnswerRequest answerReq : request.getAnswers()) {
+            SatisfactionQuestion question = questionRepository.findById(answerReq.getQuestionId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+            
+            SatisfactionAnswer answer = new SatisfactionAnswer();
+            answer.setSatisfaction(satisfaction);
+            answer.setQuestion(question);
+            answer.setAnswerText(answerReq.getAnswerText());
+            answer.setRatingValue(answerReq.getRatingValue());
+            
+            if (answerReq.getSelectedOptionId() != null) {
+                QuestionOption option = optionRepository.findById(answerReq.getSelectedOptionId())
+                        .orElseThrow(() -> new BusinessException(ErrorCode.OPTION_NOT_FOUND));
+                answer.setSelectedOption(option);
+            }
+            
+            newAnswers.add(answer);
+        }
+        
+        satisfaction.getAnswers().clear();
+        satisfactionRepository.flush();
+        satisfaction.getAnswers().addAll(newAnswers);
+        satisfaction.setSubmittedAt(LocalDateTime.now());
+    }
 }

@@ -8,6 +8,7 @@ import com.competency.scms.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +21,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public interface CounselingReservationRepository extends JpaRepository<CounselingReservation, Long> {
+public interface CounselingReservationRepository extends JpaRepository<CounselingReservation, Long>, JpaSpecificationExecutor<CounselingReservation> {
 
     // CNSL-002: (학생) 학생별 상담 예약 목록 조회
     Page<CounselingReservation> findByStudentOrderByCreatedAtDesc(User student, Pageable pageable);
