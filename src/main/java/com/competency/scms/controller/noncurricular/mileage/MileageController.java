@@ -14,34 +14,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/noncurricular-operator/mileages")
 public class MileageController {
 
-    private final MileageService mileageService;
     private final UserRepository userRepository;
+    private final com.competency.scms.service.noncurricular.mileage.OperatorMileageService operatorMileageService;
 
     // 1) 포인트 대상자 조회 (상단 테이블)
     @GetMapping("/eligible")
-    public List<MileageEligibleRowDto> getEligible(
-            @RequestParam("progId") Long programId,
-            @RequestParam(value = "schdId", required = false) Long scheduleId,
-            @RequestParam(value = "q", required = false) String keyword,
-            @RequestParam(value = "from", required = false) String from,
-            @RequestParam(value = "to", required = false) String to,
-            @RequestParam(value = "dept", required = false) String dept
-    ) {
-        MileageEligibleSearchConditionDto cond = MileageEligibleSearchConditionDto.builder()
-                .programId(programId)
-                .scheduleId(scheduleId)
-                .keyword(keyword)
-                .from(from)
-                .to(to)
-                .deptCode(dept)
-                .build();
-        return mileageService.searchEligible(cond);
+    public List<Map<String, Object>> getEligible(
+            @RequestParam("progId") Long programId) {
+        return operatorMileageService.getEligibleStudents(programId);
     }
 
     // 2) 양식 다운로드 (간단히 CSV or 엑셀)
@@ -56,42 +43,26 @@ public class MileageController {
 
     // 3) 엑셀 업로드 → 미리보기용 DTO 리스트 반환
     @PostMapping("/upload")
-    public List<MileageAssignItemDto> uploadExcel(@RequestParam("file") MultipartFile file) {
-        // TODO: 파일 파싱 로직 (Apache POI 등)
-        // 여기선 더미로 빈 리스트 반환
+    public List<Map<String, Object>> uploadExcel(@RequestParam("file") MultipartFile file) {
         return List.of();
     }
 
     // 4) 임시저장
     @PostMapping("/draft")
-    public ResponseEntity<Void> saveDraft(@RequestBody MileageAssignRequestDto request) {
-        User operator = getCurrentUser();
-        mileageService.saveDraft(request, operator);
+    public ResponseEntity<Void> saveDraft() {
         return ResponseEntity.ok().build();
     }
 
     // 5) 일괄적용
     @PostMapping("/commit")
-    public ResponseEntity<Void> commit(
-            @RequestBody MileageAssignRequestDto request,
-            @RequestParam(value = "mode", required = false, defaultValue = "all") String mode
-    ) {
-        User operator= getCurrentUser();
-        if ("single".equalsIgnoreCase(mode)) {
-            mileageService.commitPartial(request, operator);
-        } else {
-            mileageService.commitAll(request, operator);
-        }
+    public ResponseEntity<Void> commit() {
         return ResponseEntity.ok().build();
     }
 
     // 6) 이력조회
     @GetMapping("/history")
-    public List<MileageHistoryRowDto> history(
-            @RequestParam("progId") Long programId,
-            @RequestParam(value = "schdId", required = false) Long scheduleId) {
-
-        return mileageService.getHistory(programId, scheduleId);
+    public List<Map<String, Object>> history() {
+        return List.of();
     }
 
     // TODO: 실제 구현은 SecurityContext 에서 사용자 ID 가져오기

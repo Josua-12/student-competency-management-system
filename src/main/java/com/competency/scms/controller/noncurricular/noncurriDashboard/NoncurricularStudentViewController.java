@@ -16,9 +16,6 @@ public class NoncurricularStudentViewController {
      */
     private void setView(Model model, String baseView) {
         model.addAttribute("content", baseView);
-//        model.addAttribute("contentStyles",   baseView);
-//        model.addAttribute("contentFragment", baseView);
-//        model.addAttribute("contentScript",   baseView);
     }
 
     /**
@@ -98,16 +95,6 @@ public class NoncurricularStudentViewController {
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
-    /**
-     * 비교과 포인트 조회
-     * GET /noncurricular/student/points
-     * (일단 학생 대시보드 화면 재사용)
-     */
-    @GetMapping("/points")
-    public String points(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 포인트 조회");
-        setView(model, "noncurricular/noncurriDashboard/student-dashboard");
-        return "noncurricular/fix-screen/noncurricular-layout";
-    }
+
 }
 
