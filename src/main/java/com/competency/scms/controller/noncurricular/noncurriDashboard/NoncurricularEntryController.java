@@ -31,7 +31,6 @@ public class NoncurricularEntryController {
 
         switch (role) {
             case STUDENT:
-<<<<<<< HEAD
                 return "redirect:/noncurricular/student/dashboard";
 
             case NONCURRICULAR_OPERATOR:
@@ -40,15 +39,6 @@ public class NoncurricularEntryController {
             case NONCURRICULAR_ADMIN:
             case SUPER_ADMIN:
                 return "redirect:/noncurricular/admin/dashboard";
-=======
-                return "redirect:/noncurricular/dashboard/personal";
-
-            case OPERATOR:
-                return "redirect:/noncurricular/dashboard/operator";
-
-            case ADMIN:
-                return "redirect:/noncurricular/dashboard/department";
->>>>>>> 341e362cdbb69989b403d376a326f4e14cad3ef5
 
             default:
                 return "redirect:/auth/login";
