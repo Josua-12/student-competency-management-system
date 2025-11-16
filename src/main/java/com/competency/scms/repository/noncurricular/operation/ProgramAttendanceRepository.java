@@ -57,6 +57,15 @@ public interface ProgramAttendanceRepository extends JpaRepository<ProgramAttend
     // 특정 상태의 출석 건수
     long countByStatus(AttendanceStatus status);
 
-
+    @Query("""
+        select distinct pa.programApplication.applicationId
+        from ProgramAttendance pa
+        where pa.programApplication.applicationId in :applicationIds
+          and pa.status = :status
+        """)
+    List<Long> findApplicationIdsByStatus(
+            @Param("applicationIds") List<Long> applicationIds,
+            @Param("status") AttendanceStatus status
+    );
 }
 
