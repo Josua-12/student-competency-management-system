@@ -84,6 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/competency/student/**").hasRole("STUDENT")
                         .requestMatchers("/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/admin/assessment-section", "/admin/assessment-section/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
 
                         // 최고 관리자 전용
                         .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")

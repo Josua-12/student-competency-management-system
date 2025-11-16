@@ -113,4 +113,5 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
             @Param("parentIds") List<Long> parentIds
     );
 
+    Long user(User user);
 }

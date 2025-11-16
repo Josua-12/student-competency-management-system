@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(
+      th:replace="~{competency/competency_layout :: layout(
                     title='진단 결과',
                     content=~{::main},
                     css=~{::#page-css},
-                    scripts=~{::#page-scripts}
+                    scripts=~{::#page-scripts},
+                    hideSidebar=false  )}">
                   )}">
 
 <th:block th:fragment="css" id="page-css">
@@ -31,10 +32,12 @@
         <div class="result-card mb-4">
             <h5 class="card-title">2. 상세 점수 분석</h5>
             <div class="detail-scores-container">
-                <div class="parent-competency-group" th:each="parentResult : ${assessmentResultData.scoreDetails}">
+                <div class="parent-competency-group"
+                     th:each="parentResult, loopStat : ${assessmentResultData.scoreDetails}"
+                     th:classappend="'color-group-' + ${loopStat.index}">
 
                     <h6 class="parent-title">
-                        [핵심역량]
+                        [핵심역량 <span th:text="${loopStat.count}">1</span>]
                         <span th:text="${parentResult.name}">통합적 사고</span>
                         (평균 점수: <span th:text="${#numbers.formatDecimal(parentResult.parentAverageScore, 1, 2)}">4.5</span>점)
                     </h6>
@@ -104,59 +107,65 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
-        // 1. Controller에서 넘겨준 DTO 내부의 radarChartData를 가져옵니다.
-        // (RadarChartData: { labels: [...], scores: [...] })
-        const serverChartData = /*[[${assessmentResultData.radarChartData}]]*/ null;
-
+        // 3. HTML/CSS가 모두 준비되면(DOMContentLoaded) 그림 그리기 시작!
         document.addEventListener('DOMContentLoaded', () => {
-            if (!serverChartData) return;
 
+            // 4. 서버 데이터 가져오기 (DTO 필드명: labels, scores, deptScores, univScores)
+            const serverChartData = /*[[${assessmentResultData.radarChartData}]]*/ null;
+
+            // 5. [수정] 데이터 검증 (myScores -> scores)
+            if (!serverChartData || !serverChartData.labels || !serverChartData.scores) {
+                console.error("차트 데이터가 비어있거나 형식이 올바르지 않습니다.", serverChartData);
+                return;
+            }
+
+            // 6. 차트 그릴 캔버스(div) 찾기
             const el = document.getElementById('tui-radar-chart');
+            if (!el) {
+                console.error("차트를 그릴 div 요소를 찾지 못했습니다. (ID: tui-radar-chart)");
+                return;
+            }
 
             const fixedWidth = el.offsetWidth;
 
-            // 2. 데이터 설정
+            // 7. [수정] 데이터 3종 세트 (myScores -> scores)
             const data = {
                 categories: serverChartData.labels,
                 series: [
-                    {
-                        name: '나의 점수',
-                        data: serverChartData.scores
-                    }
+                    { name: '나의 점수', data: serverChartData.scores }, // 👈 여기 수정
+                    { name: '학과 평균', data: serverChartData.deptScores },
+                    { name: '학교 평균', data: serverChartData.univScores }
                 ]
             };
 
-            // 3. 옵션 설정
+            // 8. 옵션 (가독성, 5점 만점, 떨림 방지)
             const options = {
                 chart: {
-                    width: fixedWidth,    // 부모 div 너비에 맞춤
-                    height: 450       // ✅ 높이를 고정해서 "지랄맞은" 리사이징 방지
+                    width: fixedWidth,
+                    height: 450
                 },
                 legend: { align: 'bottom' },
                 series: {
                     showDot: true,
-                    showArea: true
+                    showArea: false // 겹쳐보이게 색 채우기 끄기
                 },
                 plot: { type: 'radar' },
                 yAxis: {
-                    scale: { min: 0, max: 5 }, // 5점 만점 고정
+                    scale: { min: 0, max: 5 },
                     min: 0, max: 5, stepSize: 1
                 },
-                // ✅ [추가] 소수점 깔끔하게 자르기 (툴팁)
                 tooltip: {
                     formatter: (value) => Number(value).toFixed(1) + '점'
                 },
-                // (선택) 차트 내보내기 메뉴 숨김
                 exportMenu: { visible: false }
             };
 
-            // 4. 차트 그리기
-            // Toast UI Chart 버전에 따라 함수명이 다를 수 있어 안전하게 처리
-            if (toastui.Chart.radarChart) {
-                toastui.Chart.radarChart({ el, data, options });
-            } else {
-                // 구버전 호환
+            // 9. 차트 생성
+            try {
                 new toastui.Chart.radarChart({ el, data, options });
+            } catch (e) {
+                console.error("TUI 차트 생성에 실패했습니다:", e);
+                el.innerText = "차트를 로드하는 중 오류가 발생했습니다.";
             }
         });
 

@@ -105,6 +105,7 @@ public class AssessmentController {
 
     /**
      * 임시저장 / 최종제출 처리
+     *
      * @param submitDto
      * @param userDetails
      * @return
@@ -131,7 +132,7 @@ public class AssessmentController {
                 response.put("redirectUrl", "/student/assessment/result/" + submitDto.getResultId());
             } else {
                 response.put("message", "답변이 임시저장되었습니다.");
-                response.put("redirectUrl", "/student/assessment/page/" + submitDto.getResultId()) ;
+                response.put("redirectUrl", "/student/assessment/page/" + submitDto.getResultId());
             }
 
             return ResponseEntity.ok(response);
@@ -155,6 +156,7 @@ public class AssessmentController {
 
     /**
      * 최종 진단 결과 페이지
+     *
      * @param resultId
      * @param userDetails
      * @param model
@@ -182,5 +184,25 @@ public class AssessmentController {
             // 권한 없거나 존재하지 않는 진단
             return "redirect:/student/assessment";
         }
+    }
+
+    @GetMapping("/history")
+    public String assessmentHistory(Model model,
+                                    @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // 1. 로그인 여부 확인
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+
+        Long currentUserId = userDetails.getUser().getId();
+
+        // 2. 서비스 호출
+        AssessmentHistoryPageDto pageDto = assessmentService.getAssessmentHistoryData(currentUserId);
+
+        // 3. HTML이 필요로 하는 모델 담기
+        model.addAttribute("competencyLabels", pageDto.getCompetencyLabels());
+        model.addAttribute("historyData", pageDto.getHistoryData());
+
+        return "competency/assessmentHistory";
     }
 }
