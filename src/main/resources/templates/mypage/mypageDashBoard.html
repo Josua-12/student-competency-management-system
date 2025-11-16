@@ -1,199 +1,36 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{mypage/mypage-layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>푸름대학교 학생역량관리 마이페이지</title>
-
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 아이콘 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- TOAST UI Chart -->
-    <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
-
-
-    <style>
-        /* ========================================================= */
-        /* 1. 공통 및 기본 레이아웃 스타일 (CSS 파일 통합) */
-        /* ========================================================= */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
-
-        :root{
-            --accent: #0d6efd;
-            --muted: #6c757d;
-            --card-radius: 12px;
-            --sidebar-width: 250px;
-            --sidebar-bg: #1E3A8A; /* 다크 네이비 배경색 */
-            --header-height: 60px;
-        }
-
-        body {
-            font-family: 'Noto Sans KR', 'Inter', sans-serif;
-            background-color: #f7f9fb;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* --- Header/Footer/Sidebar 공통 스타일 --- */
-        .sticky-top { top: 0; z-index: 1020; }
-        .sidebar { min-height: 100vh; }
-        .sidebar a.transition { transition: background-color 0.2s, color 0.2s; }
-        .sidebar a.hover-bg-light:hover { background-color: #f8f9fa; }
-        .sidebar a.active-link {
-            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
-            font-weight: 600;
-        }
-
-        /* 푸터 링크 호버 효과 */
-        footer a:hover {
-            color: #ccc !important;
-            text-decoration: underline !important;
-        }
-
-        /* Offcanvas (모바일 햄버거 메뉴) 스타일 */
-        .offcanvas-start { width: 250px; }
-        .offcanvas-body .active-link {
-            background-color: var(--bs-primary-bg-subtle, #cfe2ff);
-            font-weight: 600;
-        }
-
-        /* 메인 콘텐츠 레이아웃 */
-        .main-content {
-            min-height: calc(100vh - 56px); /* 헤더 높이 제외 */
-        }
-
-        /* 테이블 스타일 */
-        .history-table th, .history-table td {
-            padding: 1rem 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .history-table thead th {
-            background-color: #f3f4f6;
-            font-weight: 600;
-            color: #374151;
-            white-space: nowrap;
-        }
-
-        /* Application Status Custom Modal */
-        #custom-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        #modal-content {
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 90%;
-            width: 350px;
-        }
-
-        /* ========================================================= */
-        /* 2. 대시보드 카드 스타일 (mypageDashBoard.html 기반) */
-        /* ========================================================= */
-        .card-shadow { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); }
-        .card-dashboard { border-radius: var(--card-radius); border: none; }
-        .card-dashboard.compact { padding: 1rem; }
-        .upcoming { background-color: #E0F2F1; border-left: 5px solid #00BFA5; }
-        .counsel-header { color: var(--sidebar-bg); }
-        .btn-outline-primary { border-radius: 50rem !important; }
-
-        /* Chart 스타일 */
-        #mainChartCanvas { max-height: 250px; }
-
-    </style>
+    <title>나의 활동 대시보드</title>
+    <th:block th:fragment="css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <style>
+            .card-shadow { 
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
+            }
+            .card-dashboard { 
+                border-radius: 12px; 
+                border: none; 
+            }
+            .upcoming { 
+                background-color: #E0F2F1; 
+                border-left: 5px solid #00BFA5; 
+            }
+            .counsel-header { 
+                color: #1E3A8A; 
+            }
+            #mainChartCanvas { 
+                max-height: 250px; 
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-
-<!-- 공통 헤더 사용 -->
-<div th:replace="~{common/header :: header}"></div>
-
-<!-- 메인 콘텐츠 영역 -->
-<div class="container-fluid">
-    <div class="row">
-        <!-- 마이페이지 사이드바 (데스크톱) -->
-        <div class="d-none d-md-block col-md-3 col-lg-2 sidebar bg-white border-end" style="min-height: calc(100vh - 56px);">
-            <div class="p-4 pt-4">
-                <h4 class="fw-bold mb-4 text-dark">마이페이지</h4>
-                <div class="list-group list-group-flush">
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-page="dashboard">
-                        <i class="bi bi-speedometer2 me-2"></i> 대시보드
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/assessment-history">
-                        <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/application-status">
-                        <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/info">
-                        <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/password">
-                        <i class="bi bi-key me-2"></i> 비밀번호 변경
-                    </a>
-                </div>
-            </div>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">나의 활동 대시보드</h1>
         </div>
         
-        <!-- 모바일용 Offcanvas 사이드바 -->
-        <div class="offcanvas offcanvas-start bg-white" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
-            <div class="offcanvas-header border-bottom">
-                <h5 class="offcanvas-title fw-bold" id="offcanvasSidebarLabel">마이페이지 메뉴</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body pt-3">
-                <div class="list-group list-group-flush">
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 active-link transition" data-page="dashboard" data-bs-dismiss="offcanvas">
-                        <i class="bi bi-speedometer2 me-2"></i> 대시보드
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/assessment-history" data-bs-dismiss="offcanvas">
-                        <i class="bi bi-graph-up me-2"></i> 역량 진단 현황
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/application-status" data-bs-dismiss="offcanvas">
-                        <i class="bi bi-list-check me-2"></i> 프로그램 신청 현황
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/info" data-bs-dismiss="offcanvas">
-                        <i class="bi bi-person-gear me-2"></i> 사용자 정보 수정
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action border-0 py-2 hover-bg-light transition" data-page="/student/mypage/password" data-bs-dismiss="offcanvas">
-                        <i class="bi bi-key me-2"></i> 비밀번호 변경
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 모바일 햄버거 버튼 -->
-        <div class="d-md-none position-fixed" style="top: 70px; right: 15px; z-index: 1030;">
-            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <!-- 메인 콘텐츠 -->
-        <div class="col-md-9 col-lg-10 main-content px-3 px-md-4 py-4">
-
-    <!-- 뷰 전환 영역 -->
-    <div id="dashboardView" class="view-section">
-        <!-- mypageDashBoard.html 내용 -->
-        <h1 class="fw-bold mb-4 text-dark">나의 활동 대시보드</h1>
         <div class="row g-4">
             <!-- 역량 진단 요약 카드 -->
             <div class="col-lg-8">
@@ -210,7 +47,7 @@
 
                                 <div class="d-grid gap-2 d-md-block text-center">
                                     <button class="btn btn-outline-primary btn-sm rounded-pill" id="btnLatestDetail">상세 결과 보기</button>
-                                    <button class="btn btn-primary btn-sm rounded-pill" data-view-target="history">현황 전체 보기</button>
+                                    <a href="/student/mypage/assessment-history" class="btn btn-primary btn-sm rounded-pill">현황 전체 보기</a>
                                 </div>
                             </div>
                         </div>
@@ -223,18 +60,20 @@
                 <div class="card card-dashboard card-shadow h-100">
                     <div class="card-body">
                         <h5 class="card-title fw-semibold counsel-header mb-3">
-                            <i class="bi bi-calendar-check me-2"></i> 상담/비교과 요약
+                            <i class="fas fa-calendar-check me-2"></i> 상담/비교과 요약
                         </h5>
 
                         <!-- 다음 예정 상담 -->
                         <div class="p-3 mb-3 border rounded-3 upcoming" id="nextCounselElement">
                             <div class="fw-semibold text-success d-flex justify-content-between">
-                                <span><i class="bi bi-bell-fill me-1"></i> 예정된 상담</span>
+                                <span><i class="fas fa-bell me-1"></i> 예정된 상담</span>
                                 <span class="badge bg-success">D-3</span>
                             </div>
                             <p class="mb-0 mt-2">전문 상담사 A | 2025-03-20 14:00</p>
                             <p class="text-sm text-muted mb-2">진로상담 (대면)</p>
-                            <button class="btn btn-danger btn-sm rounded-pill" id="btnCounselCancel"><i class="fas fa-times me-1"></i> 취소</button>
+                            <button class="btn btn-danger btn-sm rounded-pill" id="btnCounselCancel">
+                                <i class="fas fa-times me-1"></i> 취소
+                            </button>
                         </div>
 
                         <!-- 프로그램 신청 현황 -->
@@ -247,9 +86,8 @@
                             <span class="fw-bold fs-4 text-success" id="completedProgramCount">3건</span>
                         </div>
                         <div class="d-grid">
-                            <button class="btn btn-outline-secondary btn-sm rounded-pill mt-2" data-view-target="status">신청 현황 전체보기</button>
+                            <a href="/student/mypage/application-status" class="btn btn-outline-secondary btn-sm rounded-pill mt-2">신청 현황 전체보기</a>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -270,7 +108,30 @@
                                 </tr>
                                 </thead>
                                 <tbody id="historyTableBody">
-                                <tr><td colspan="4" class="text-center text-muted">데이터를 로드 중입니다.</td></tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">역량진단</span></td>
+                                    <td class="fw-medium">2025년 1차 진단</td>
+                                    <td>2025-01-20</td>
+                                    <td>평균 4.6/5.0</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-info">상담</span></td>
+                                    <td class="fw-medium">진로상담</td>
+                                    <td>2025-02-15</td>
+                                    <td>완료</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-success">비교과</span></td>
+                                    <td class="fw-medium">글로벌 리더십 캠프</td>
+                                    <td>2025-03-05</td>
+                                    <td>이수</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary">비교과</span></td>
+                                    <td class="fw-medium">AI 코딩 부트캠프</td>
+                                    <td>2025-03-15</td>
+                                    <td>신청 완료</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -280,832 +141,76 @@
         </div>
     </div>
 
-    <div id="historyView" class="view-section" style="display:none;">
-        <!-- assessmentHistory.html 내용 -->
-        <h1 class="fw-bold mb-4 text-dark">역량 진단 현황</h1>
-
-        <!-- 차트 영역 -->
-        <div class="card card-dashboard card-shadow mb-4">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-semibold text-dark">역량 추이 그래프</h5>
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-secondary active" id="btnShowLineChart">꺾은선</button>
-                    <button type="button" class="btn btn-outline-secondary" id="btnShowBarChart">막대</button>
-                </div>
-            </div>
-            <div class="card-body p-4">
-                <div id="historyChart" style="height: 320px;">
-                    <!-- TOAST UI Chart가 렌더링될 영역 -->
-                    <div class="d-flex justify-content-center align-items-center h-100 text-muted">
-                        <i class="fas fa-spinner fa-spin me-2"></i> 차트 로딩 중...
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 테이블 영역 -->
-        <div class="card card-dashboard card-shadow">
-            <div class="card-header bg-white">
-                <h5 class="mb-0 fw-semibold text-dark">역량 진단 이력</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0 history-table">
-                        <thead class="bg-light">
-                        <tr>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase">진단명</th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="1"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="2"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="3"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center" data-label-placeholder="4"></th>
-                            <th scope="col" class="py-3 px-4 text-xs fw-semibold text-uppercase text-center">자세히 보기</th>
-                        </tr>
-                        </thead>
-                        <tbody id="scoreTableBody">
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">
-                                <i class="fas fa-spinner fa-spin me-2"></i> 데이터 로딩 중...
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="statusView" class="view-section" style="display:none;">
-        <!-- applicationstatus.html 내용 -->
-        <h1 class="fw-bold mb-4 text-dark">비교과 프로그램 신청 현황</h1>
-        <div class="card card-dashboard card-shadow">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                        <tr>
-                            <th scope="col" class="py-3 px-4">프로그램명</th>
-                            <th scope="col" class="py-3 px-4">신청 기간</th>
-                            <th scope="col" class="py-3 px-4 text-center">신청일</th>
-                            <th scope="col" class="py-3 px-4 text-center">상태</th>
-                            <th scope="col" class="py-3 px-4 text-center">액션</th>
-                        </tr>
-                        </thead>
-                        <tbody id="applicationTableBody">
-                        <!-- 데이터는 JS에서 채워집니다. -->
-                        <tr><td colspan="5" class="text-center text-muted py-4">데이터 로드 중...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="userInfoView" class="view-section" style="display:none;">
-        <!-- user-info-edit.html 내용 기반으로 사용자 정보 수정 폼 구현 -->
-        <h1 class="fw-bold mb-4 text-dark">사용자 정보 수정</h1>
-
-        <div class="user-info-container bg-white rounded-lg shadow-lg mx-auto" style="max-width: 600px; padding: 2rem;">
-            <p class="text-muted text-center mb-4">이메일, 연락처, 주소를 개별적으로 수정할 수 있습니다. 비밀번호는 별도 버튼을 이용해 주세요.</p>
-
-            <form id="userInfoForm">
-                <div class="mb-3">
-                    <label for="name" class="form-label">이름</label>
-                    <input type="text" class="form-control" id="name" value="김푸름" readonly disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="studentId" class="form-label">학번</label>
-                    <input type="text" class="form-control" id="studentId" value="202212345" readonly disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="department" class="form-label">학과</label>
-                    <input type="text" class="form-control" id="department" value="컴퓨터공학과" readonly disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="grade" class="form-label">학년</label>
-                    <input type="text" class="form-control" id="grade" value="3학년" readonly disabled>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">이메일</label>
-                    <input type="email" class="form-control rounded-pill" id="email" value="pureum.kim@univ.ac.kr">
-                    <div class="error-message text-danger small mt-1" id="email-error"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">연락처 (휴대폰)</label>
-                    <input type="tel" class="form-control rounded-pill" id="phone" value="010-1234-5678">
-                    <div class="error-message text-danger small mt-1" id="phone-error"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">주소</label>
-                    <input type="text" class="form-control rounded-pill" id="address" value="서울시 강남구 테헤란로 123">
-                    <div class="error-message text-danger small mt-1" id="address-error"></div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <button type="button" class="btn btn-outline-warning rounded-pill px-4" id="passwordBtn">
-                        <i class="fas fa-key me-1"></i> 비밀번호 변경
-                    </button>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-secondary rounded-pill px-4" id="cancelBtn"><i class="fas fa-undo me-1"></i> 취소</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="updateBtn"><i class="fas fa-save me-1"></i> 저장</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- 공통 푸터 사용 -->
-<div th:replace="~{common/footer :: footer}"></div>
-
-<!-- ========================================================= -->
-<!-- 5. Modals (Custom Alert/Confirm) -->
-<!-- ========================================================= -->
-
-<!-- Application Status Custom Modal (Alert 대체) -->
-<div id="custom-modal">
-    <div id="modal-content">
-        <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
-        <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
-    </div>
-</div>
-
-<!-- Custom Modal for Confirmation/Alerts (user-info-edit.html 기반) -->
-<div class="modal fade" id="customConfirmModal" tabindex="-1" aria-labelledby="customConfirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="customConfirmModalLabel">확인</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="customConfirmModalBody">
-                <!-- 메시지가 여기에 들어갑니다. -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
-                <button type="button" class="btn btn-primary" id="customConfirmYesBtn">예</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========================================================= -->
-<!-- 6. JavaScript (JS 파일 통합) -->
-<!-- ========================================================= -->
-<!-- Bootstrap 5 JS Bundle 로드 (햄버거 메뉴/Offcanvas 기능 포함) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        // =========================================================
-        // 1. 공통 데이터 및 유틸리티
-        // =========================================================
-
-        // 임시 데이터 (실제 서버 환경에서는 API 호출로 대체됨)
-        const competencyLabels = ['문제해결', '협업능력', '창의적사고', '리더십'];
-        const historyData = [
-            { id: 1, diagnosisTitle: "2024년 1차 진단", scores: [4.2, 3.8, 4.0, 3.1], date: "2024-06-15" },
-            { id: 2, diagnosisTitle: "2024년 2차 진단", scores: [4.6, 4.0, 4.5, 3.5], date: "2024-12-20" },
-            { id: 3, diagnosisTitle: "2025년 1차 진단", scores: [4.8, 4.2, 4.6, 3.7], date: "2025-01-20" }
-        ];
-        const applicationData = [
-            { id: 1, name: "글로벌 리더십 캠프", period: "2025.03.01~03.10", applyDate: "2025.02.20", status: "승인", statusClass: "success" },
-            { id: 2, name: "AI 코딩 부트캠프", period: "2025.04.10~04.25", applyDate: "2025.03.15", status: "신청 완료", statusClass: "primary", action: "cancel" },
-            { id: 3, name: "취업 멘토링 프로그램", period: "2025.05.01~05.31", applyDate: "2025.04.05", status: "반려", statusClass: "danger" },
-            { id: 4, name: "ESG 전문가 과정", period: "2025.06.01~06.20", applyDate: "2025.05.01", status: "종료", statusClass: "secondary", action: "register" }
-        ];
-        const counselItems = [
-            { id: 101, type: "진로상담 (대면)", advisor: "전문 상담사 A", date: "2025-03-20 14:00", status: "예정" },
-            { id: 102, type: "학업상담 (온라인)", advisor: "교수님 B", date: "2025-02-10 10:00", status: "완료" },
-        ];
-        const latestActivityData = [
-            { type: "역량진단", name: "2025년 1차 진단", date: "2025-01-20", result: "평균 4.6/5.0" },
-            { type: "상담", name: "진로상담", date: "2025-02-15", result: "완료" },
-            { type: "비교과", name: "글로벌 리더십 캠프", date: "2025-03-05", result: "이수" },
-            { type: "비교과", name: "AI 코딩 부트캠프", date: "2025-03-15", result: "신청 완료" }
-        ];
-
-        // Custom Modal elements (applicationstatus.html)
-        const modal = document.getElementById("custom-modal");
-        const modalMessage = document.getElementById("modal-message");
-        const modalCloseBtn = document.getElementById("modal-close-btn");
-
-        if (modalCloseBtn) {
-            modalCloseBtn.addEventListener("click", () => {
-                modal.style.display = "none";
-            });
-        }
-
-        /**
-         * Custom Alert Modal 표시 함수
-         * @param {string} message 모달에 표시할 메시지
-         */
-        function showCustomAlertModal(message) {
-            if (modal && modalMessage) {
-                modalMessage.textContent = message;
-                modal.style.display = "flex";
-            } else {
-                console.log("Modal message:", message);
-            }
-        }
-
-        // Bootstrap Confirm Modal elements (user-info-edit.html)
-        const confirmModalEl = document.getElementById('customConfirmModal');
-        const confirmModal = new bootstrap.Modal(confirmModalEl);
-        const confirmModalBody = document.getElementById('customConfirmModalBody');
-        const confirmYesBtn = document.getElementById('customConfirmYesBtn');
-
-        /**
-         * Bootstrap Confirm Modal 표시 함수
-         * @param {string} message 모달에 표시할 메시지
-         * @returns {Promise<boolean>} 사용자의 '예'/'아니오' 응답
-         */
-        function showConfirmModal(message) {
-            return new Promise(resolve => {
-                confirmModalBody.textContent = message;
-                confirmModal.show();
-
-                const handleYes = () => {
-                    confirmModal.hide();
-                    confirmYesBtn.removeEventListener('click', handleYes);
-                    confirmModalEl.removeEventListener('hidden.bs.modal', handleHidden);
-                    resolve(true);
-                };
-
-                const handleHidden = () => {
-                    confirmYesBtn.removeEventListener('click', handleYes);
-                    confirmModalEl.removeEventListener('hidden.bs.modal', handleHidden);
-                    resolve(false);
-                };
-
-                confirmYesBtn.addEventListener('click', handleYes);
-                confirmModalEl.addEventListener('hidden.bs.modal', handleHidden);
-            });
-        }
-
-        // =========================================================
-        // 2. 뷰 전환 기능
-        // =========================================================
-        const viewSections = document.querySelectorAll('.view-section');
-        const navLinks = document.querySelectorAll('[data-page]');
-        const secondaryLinks = document.querySelectorAll('[data-view-target]');
-
-        /**
-         * 특정 뷰를 표시하고 다른 뷰를 숨기는 함수
-         * @param {string} viewId 표시할 뷰의 ID ('dashboard', 'history', 'status', 'user-info')
-         */
-        function showView(viewId) {
-            viewSections.forEach(section => {
-                section.style.display = 'none';
-            });
-
-            const targetView = document.getElementById(viewId + 'View');
-            if (targetView) {
-                targetView.style.display = 'block';
-            }
-
-            // 네비게이션 링크 활성화
-            navLinks.forEach(link => {
-                link.classList.remove('active-link');
-                if (link.dataset.view === viewId) {
-                    link.classList.add('active-link');
-                }
-            });
-
-            // 차트 뷰로 전환 시 차트 다시 그리기 (TOAST UI Chart)
-            if (viewId === 'history') {
-                 // 꺾은선 차트가 기본이므로, 꺾은선 버튼을 눌러 차트 로직 실행
-                 document.getElementById('btnShowLineChart').click();
-            }
-        }
-
-        // 네비게이션 링크 클릭 이벤트 리스너
-        navLinks.forEach(link => {
-            link.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const page = e.currentTarget.dataset.page;
-                console.log('사이드바 클릭:', page);
-                
-                // 사이드바 활성화 상태 변경
-                navLinks.forEach(l => l.classList.remove('active-link'));
-                e.currentTarget.classList.add('active-link');
-                
-                if (page === 'dashboard') {
-                    console.log('대시보드 표시');
-                    showView('dashboard');
-                } else if (page === '/student/mypage/info') {
-                    console.log('사용자 정보 수정 페이지로 이동');
-                    window.location.href = page;
-                } else {
-                    console.log('AJAX 로드:', page);
-                    await loadPageContent(page);
-                }
-            });
-        });
-
-        // AJAX로 페이지 콘텐츠 로드
-        async function loadPageContent(url) {
-            try {
-                const response = await fetch(url, {
-                    headers: getAuthHeaders(),
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const html = await response.text();
-                    // 메인 콘텐츠 영역에만 HTML 삽입
-                    const mainContent = document.querySelector('.main-content');
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newContent = doc.querySelector('main, .main-content, .container, body');
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // 최신 역량 진단 결과를 기반으로 Chart.js 레이더 차트 생성
+                function renderMainRadarChart() {
+                    const competencyLabels = ['문제해결', '협업능력', '창의적사고', '리더십'];
+                    const latestScores = [4.8, 4.2, 4.6, 3.7]; // 최신 데이터
                     
-                    if (newContent) {
-                        mainContent.innerHTML = newContent.innerHTML;
-                    } else {
-                        mainContent.innerHTML = html;
-                    }
-                } else if (response.status === 401) {
-                    window.location.href = '/auth/login';
-                } else {
-                    showCustomAlertModal('페이지를 불러올 수 없습니다.');
-                }
-            } catch (error) {
-                console.error('페이지 로드 실패:', error);
-                showCustomAlertModal('페이지 로드 중 오류가 발생했습니다.');
-            }
-        }
+                    const ctx = document.getElementById('mainChartCanvas').getContext('2d');
 
-        // 보조 링크 (카드 내 버튼) 클릭 이벤트 리스너
-        secondaryLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const viewId = e.currentTarget.dataset.viewTarget;
-                showView(viewId);
-            });
-        });
-
-        // =========================================================
-        // 3. 대시보드 뷰 로직 (mypageDashBoard.html)
-        // =========================================================
-
-        /**
-         * 최신 역량 진단 결과를 기반으로 Chart.js 레이더 차트 생성
-         */
-        function renderMainRadarChart() {
-            const latestData = historyData[historyData.length - 1]; // 최신 데이터
-            const ctx = document.getElementById('mainChartCanvas').getContext('2d');
-
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: competencyLabels,
-                    datasets: [{
-                        label: latestData.diagnosisTitle,
-                        data: latestData.scores,
-                        backgroundColor: 'rgba(13, 110, 253, 0.2)', // primary color
-                        borderColor: 'rgba(13, 110, 253, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(13, 110, 253, 1)',
-                        pointBorderColor: '#fff',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: { display: true },
-                            suggestedMin: 0,
-                            suggestedMax: 5,
-                            pointLabels: { font: { size: 12 } },
-                            ticks: { display: false }
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: competencyLabels,
+                            datasets: [{
+                                label: '2025년 1차 진단',
+                                data: latestScores,
+                                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                                borderColor: 'rgba(13, 110, 253, 1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: 'rgba(13, 110, 253, 1)',
+                                pointBorderColor: '#fff',
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    angleLines: { display: true },
+                                    suggestedMin: 0,
+                                    suggestedMax: 5,
+                                    pointLabels: { font: { size: 12 } },
+                                    ticks: { display: false }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: { 
+                                    callbacks: { 
+                                        label: (context) => `${context.label}: ${context.parsed.r.toFixed(1)}점` 
+                                    } 
+                                }
+                            }
                         }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { label: (context) => `${context.label}: ${context.parsed.r.toFixed(1)}점` } }
-                    }
-                }
-            });
-        }
-
-        /**
-         * 대시보드의 상담 예정 항목 업데이트
-         */
-        function updateNextCounselDisplay() {
-             const nextCounselElement = document.getElementById('nextCounselElement');
-             const upcoming = counselItems.find(c => c.status === '예정');
-
-             if (upcoming) {
-                 nextCounselElement.classList.add('upcoming');
-                 nextCounselElement.classList.remove('bg-white');
-                 nextCounselElement.innerHTML = `
-                    <div class="fw-semibold text-success d-flex justify-content-between">
-                        <span><i class="bi bi-bell-fill me-1"></i> 예정된 상담</span>
-                        <span class="badge bg-success">예정</span>
-                    </div>
-                    <p class="mb-0 mt-2">${upcoming.advisor} | ${upcoming.date}</p>
-                    <p class="text-sm text-muted mb-2">${upcoming.type}</p>
-                    <button class="btn btn-danger btn-sm rounded-pill" id="btnCounselCancel"><i class="fas fa-times me-1"></i> 취소</button>
-                 `;
-                 document.getElementById('btnCounselCancel').addEventListener('click', () => {
-                    confirmCancelApplicationForCounsel(upcoming.id);
-                 });
-             } else {
-                 nextCounselElement.classList.remove('upcoming');
-                 nextCounselElement.classList.add('bg-white');
-                 nextCounselElement.innerHTML = '<div class="fw-semibold">예정된 상담이 없습니다.</div><div class="text-muted-sm small">상담 신청 버튼을 이용해 주세요.</div>';
-             }
-        }
-
-        /**
-         * 대시보드의 최근 활동 목록 업데이트
-         */
-        function renderDashboardHistoryTable() {
-            const tableBody = document.getElementById('historyTableBody');
-            tableBody.innerHTML = '';
-            if (latestActivityData.length === 0) {
-                 tableBody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">최근 활동 이력이 없습니다.</td></tr>';
-                 return;
-            }
-
-            latestActivityData.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><span class="badge bg-secondary">${item.type}</span></td>
-                    <td class="fw-medium">${item.name}</td>
-                    <td>${item.date}</td>
-                    <td>${item.result}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        // 대시보드 상담 취소 확인 함수 (alert 대체)
-        async function confirmCancelApplicationForCounsel(counselId) {
-            const confirmed = await showConfirmModal(`상담 ID ${counselId}번 상담 예약을 정말로 취소하시겠습니까?`);
-            if (confirmed) {
-                showCustomAlertModal(`상담 ID ${counselId}번의 취소 요청이 처리되었습니다. (실제 백엔드 로직 없음)`);
-                // 실제 로직: API 호출 후 counselItems 재로드/업데이트
-            }
-        }
-
-        // =========================================================
-        // 4. 역량 진단 현황 뷰 로직 (assessmentHistory.js)
-        // =========================================================
-
-        // TOAST UI Chart 데이터 준비
-        const chartCategories = competencyLabels;
-        const chartSeries = historyData.map(row => ({
-            name: row.diagnosisTitle,
-            data: row.scores
-        }));
-
-        let currentChart = null;
-
-        /**
-         * TOAST UI Chart 생성 및 업데이트
-         * @param {'line'|'bar'} type 차트 타입
-         */
-        function createChart(type) {
-            const chartContainer = document.getElementById('historyChart');
-            chartContainer.innerHTML = ''; // 기존 차트 제거
-
-            const chartOptions = {
-                chart: { width: 'auto', height: 320, title: '역량 진단 추이' },
-                yAxis: { min: 0, max: 5, title: '점수' },
-                xAxis: { title: '역량 항목', pointOnColumn: type === 'bar' },
-                legend: { visible: true },
-                series: {
-                    showLabel: true,
-                    dataLabels: { visible: true, formatter: (value) => value.toFixed(1) }
-                },
-                theme: {
-                    series: {
-                        colors: ['#0d6efd', '#20c997', '#6f42c1', '#fd7e14']
-                    }
-                }
-            };
-
-            const chartData = { categories: chartCategories, series: chartSeries };
-
-            if (currentChart) {
-                currentChart.destroy();
-            }
-
-            if (type === 'line') {
-                currentChart = new toastui.Chart.lineChart({ el: chartContainer, data: chartData, options: chartOptions });
-            } else if (type === 'bar') {
-                currentChart = new toastui.Chart.columnChart({ el: chartContainer, data: chartData, options: chartOptions });
-            }
-        }
-
-        /**
-         * 역량 진단 이력 테이블 채우기
-         */
-        function populateHistoryTable() {
-            const tableBody = document.getElementById('scoreTableBody');
-            const headerCells = document.querySelectorAll('#historyView thead th[data-label-placeholder]');
-
-            // 1. 헤더 (역량 레이블) 업데이트
-            competencyLabels.forEach((label, index) => {
-                if (headerCells[index]) {
-                    headerCells[index].textContent = label;
-                }
-            });
-
-            // 2. 바디 (데이터) 업데이트
-            tableBody.innerHTML = '';
-            if (historyData.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">진단 이력이 없습니다.</td></tr>';
-                return;
-            }
-
-            historyData.forEach(row => {
-                const tr = document.createElement('tr');
-                // 점수 셀 생성 (소수점 첫째 자리까지 표시)
-                let scoreCells = row.scores.map(score => `<td class="text-center">${score.toFixed(1)}</td>`).join('');
-                tr.innerHTML = `
-                    <td class="px-4 fw-medium">${row.diagnosisTitle}</td>
-                    ${scoreCells}
-                    <td class="text-center">
-                        <a href="#" class="btn btn-outline-secondary btn-sm rounded-pill" title="상세보기"><i class="fas fa-search"></i></a>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        // 차트 버튼 클릭 이벤트 설정
-        const btnLine = document.getElementById('btnShowLineChart');
-        const btnBar = document.getElementById('btnShowBarChart');
-
-        if (btnLine && btnBar) {
-            btnLine.addEventListener('click', () => {
-                createChart('line');
-                btnLine.classList.add('active');
-                btnBar.classList.remove('active');
-            });
-
-            btnBar.addEventListener('click', () => {
-                createChart('bar');
-                btnBar.classList.add('active');
-                btnLine.classList.remove('active');
-            });
-        }
-
-        // =========================================================
-        // 5. 비교과 신청 현황 뷰 로직 (applicationstatus.js)
-        // =========================================================
-
-        /**
-         * 비교과 프로그램 신청 현황 테이블 채우기
-         */
-        function populateApplicationTable() {
-            const tableBody = document.getElementById("applicationTableBody");
-            tableBody.innerHTML = '';
-            if (applicationData.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">신청 현황이 없습니다.</td></tr>';
-                return;
-            }
-
-            applicationData.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.dataset.program = item.name;
-
-                let actionButton = '';
-                if (item.action === 'cancel') {
-                    actionButton = `<button class="btn btn-sm btn-danger rounded-pill action-btn" data-action="cancel"><i class="fas fa-times me-1"></i> 취소</button>`;
-                } else if (item.action === 'register') {
-                    actionButton = `<button class="btn btn-sm btn-success rounded-pill action-btn" data-action="register"><i class="fas fa-edit me-1"></i> 산출물 등록</button>`;
-                } else {
-                    actionButton = `<button class="btn btn-sm btn-secondary rounded-pill" disabled>액션 없음</button>`;
+                    });
                 }
 
-                tr.innerHTML = `
-                    <td class="py-3 px-4 fw-medium">${item.name}</td>
-                    <td class="py-3 px-4">${item.period}</td>
-                    <td class="py-3 px-4 text-center">${item.applyDate}</td>
-                    <td class="py-3 px-4 text-center">
-                        <span class="badge bg-${item.statusClass} fw-semibold">${item.status}</span>
-                    </td>
-                    <td class="py-3 px-4 text-center">${actionButton}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        // 테이블 내 버튼 클릭 이벤트 리스너
-        const tableBody = document.getElementById("applicationTableBody");
-        if (tableBody) {
-            tableBody.addEventListener("click", (event) => {
-                if (event.target.classList.contains("action-btn")) {
-                    const button = event.target;
-                    const action = button.dataset.action;
-                    const row = button.closest("tr");
-                    const programName = row.dataset.program;
-
-                    if (action === "cancel") {
-                        // '취소' 버튼 클릭 시
-                        showCustomAlertModal(`'${programName}' 프로그램의 신청을 취소하시겠습니까? (실제 취소 기능은 백엔드 구현이 필요합니다.)`);
-                    } else if (action === "register") {
-                        // '산출물 등록' 버튼 클릭 시
-                        showCustomAlertModal(`'${programName}' 프로그램의 산출물 등록 화면으로 이동합니다. (실제 이동 기능은 백엔드 구현이 필요합니다.)`);
-                    }
+                // 상담 취소 버튼 이벤트
+                const btnCounselCancel = document.getElementById('btnCounselCancel');
+                if (btnCounselCancel) {
+                    btnCounselCancel.addEventListener('click', function() {
+                        if (confirm('상담 예약을 정말로 취소하시겠습니까?')) {
+                            alert('상담 취소 요청이 처리되었습니다.');
+                        }
+                    });
                 }
-            });
-        }
 
-        // =========================================================
-        // 6. 사용자 정보 수정 뷰 로직 (user-info-edit.js)
-        // =========================================================
-        const form = document.getElementById('userInfoForm');
-        const cancelBtn = document.getElementById('cancelBtn');
-
-        let originalUserInfo = {
-            name: "김푸름",
-            studentId: "202212345",
-            department: "컴퓨터공학과",
-            grade: "3학년",
-            email: "pureum.kim@univ.ac.kr",
-            phone: "010-1234-5678",
-            address: "서울시 강남구 테헤란로 123"
-        };
-
-        // JWT 토큰 가져오기 함수
-        function getAuthHeaders() {
-            const token = getCookie('accessToken');
-            return token ? {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            } : {
-                'Content-Type': 'application/json'
-            };
-        }
-        
-        // 쿠키 가져오기 함수
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
-
-        /**
-         * 사용자 정보를 폼에 로드 (초기화 및 취소 시 사용)
-         */
-        async function loadUserInfo() {
-            try {
-                const response = await fetch('/api/user/info', {
-                    method: 'GET',
-                    headers: getAuthHeaders(),
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const userInfo = await response.json();
-                    document.getElementById('name').value = userInfo.name || '';
-                    document.getElementById('studentId').value = userInfo.userNum || '';
-                    document.getElementById('department').value = userInfo.department || '';
-                    document.getElementById('email').value = userInfo.email || '';
-                    document.getElementById('phone').value = userInfo.phone || '';
-                    document.getElementById('address').value = userInfo.address || '';
-                    
-                    // originalUserInfo 업데이트
-                    originalUserInfo = {
-                        name: userInfo.name || '',
-                        studentId: userInfo.userNum || '',
-                        department: userInfo.department || '',
-                        email: userInfo.email || '',
-                        phone: userInfo.phone || '',
-                        address: userInfo.address || ''
-                    };
-                } else if (response.status === 401) {
-                    showCustomAlertModal('로그인이 필요합니다.');
-                    window.location.href = '/auth/login';
-                } else {
-                    showCustomAlertModal('사용자 정보를 불러올 수 없습니다.');
+                // 상세 결과 보기 버튼 이벤트
+                const btnLatestDetail = document.getElementById('btnLatestDetail');
+                if (btnLatestDetail) {
+                    btnLatestDetail.addEventListener('click', function() {
+                        alert('상세 결과 페이지로 이동합니다.');
+                    });
                 }
-            } catch (error) {
-                console.error('사용자 정보 로드 실패:', error);
-                showCustomAlertModal('사용자 정보를 불러오는 중 오류가 발생했습니다.');
-            }
-        }
 
-        /**
-         * 폼의 에러 메시지를 지우는 함수
-         */
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(element => {
-                element.textContent = '';
+                // 차트 초기화
+                renderMainRadarChart();
             });
-        }
-
-        // 폼 제출 이벤트 리스너 (저장)
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            clearErrors();
-
-            const newEmail = document.getElementById('email').value.trim();
-            const newPhone = document.getElementById('phone').value.trim();
-            const newAddress = document.getElementById('address').value.trim();
-
-            // 간단한 클라이언트 측 유효성 검사
-            let isValid = true;
-            if (newEmail && !newEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-                document.getElementById('email-error').textContent = "유효한 이메일 주소를 입력해주세요.";
-                isValid = false;
-            }
-            if (newPhone && !newPhone.match(/^\d{2,3}-\d{3,4}-\d{4}$/)) {
-                document.getElementById('phone-error').textContent = "유효한 연락처 (예: 010-1234-5678)를 입력해주세요.";
-                isValid = false;
-            }
-
-            if (!isValid) return;
-
-            // 실제 API 호출로 수정된 정보를 서버에 전송
-            try {
-                const response = await fetch('/api/user/info', {
-                    method: 'PATCH',
-                    headers: getAuthHeaders(),
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        email: newEmail || null,
-                        phone: newPhone || null,
-                        address: newAddress || null
-                    })
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    showCustomAlertModal(result.message || "사용자 정보가 성공적으로 업데이트되었습니다.");
-                    await loadUserInfo(); // 폼 다시 로드
-                } else if (response.status === 401) {
-                    showCustomAlertModal('로그인이 필요합니다.');
-                    window.location.href = '/auth/login';
-                } else {
-                    const error = await response.json().catch(() => ({}));
-                    showCustomAlertModal(error.error || "정보 업데이트 중 오류가 발생했습니다.");
-                }
-            } catch (error) {
-                console.error('사용자 정보 업데이트 실패:', error);
-                showCustomAlertModal("정보 업데이트 중 오류가 발생했습니다.");
-            }
-
-        });
-
-        // '취소' 버튼 클릭 시 Custom Modal 호출
-        cancelBtn.addEventListener('click', async function() {
-            const message = "수정사항을 취소하고 원래 정보로 되돌리시겠습니까?";
-            const confirmed = await showConfirmModal(message);
-
-            if (confirmed) {
-                loadUserInfo(); // 정보 다시 로드 (취소)
-                clearErrors();
-                showCustomAlertModal("수정사항이 취소되고 원래 정보로 되돌려졌습니다.");
-            }
-        });
-
-        // '비밀번호 변경' 버튼 클릭 시
-        const passwordBtn = document.getElementById('passwordBtn');
-        if (passwordBtn) {
-            passwordBtn.addEventListener('click', async function() {
-                await loadPageContent('/student/mypage/password');
-            });
-        }
-
-        // =========================================================
-        // 7. 초기화 함수 호출
-        // =========================================================
-
-        /**
-         * 페이지 초기화 (DOM 로드 후)
-         */
-        async function initializePage() {
-            // 1. 대시보드 데이터 로드
-            renderMainRadarChart();
-            updateNextCounselDisplay();
-            renderDashboardHistoryTable();
-
-            // 2. 역량 진단 현황 데이터 로드
-            populateHistoryTable();
-            // 차트 기본값 (꺾은선)으로 생성
-            createChart('line');
-
-            // 3. 비교과 신청 현황 데이터 로드
-            populateApplicationTable();
-
-            // 4. 사용자 정보 수정 폼 로드
-            await loadUserInfo();
-
-            // 5. 기본 뷰를 대시보드로 설정
-            showView('dashboard');
-        }
-
-        initializePage();
-    });
-</script>
+        </script>
+    </th:block>
 </body>
 </html>
