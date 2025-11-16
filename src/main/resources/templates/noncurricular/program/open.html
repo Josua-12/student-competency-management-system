@@ -7,322 +7,584 @@
 
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentStyles">
-<style>
-        :root{
-            --bg:#f7f8fa; --card:#fff; --text:#1b1f24; --muted:#6b7280; --line:#e5e7eb;
-            --primary:#2563eb; --primary-600:#1d4ed8; --danger:#ef4444; --warn:#f59e0b; --ok:#10b981;
+    <style>
+        /* open_User 전용 네임스페이스 */
+        .open_User-page{
+            --bg:#f7f8fa;
+            --card:#fff;
+            --text:#1b1f24;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --primary:#2563eb;
+            --primary-600:#1d4ed8;
+            --danger:#ef4444;
+            --warn:#f59e0b;
+            --ok:#10b981;
             --radius:14px;
+
+            margin:0;
+            background:var(--bg);
+            color:var(--text);
+            font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Arial;
         }
-        *{box-sizing:border-box}
-        body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial}
-        .wrap{max-width:1200px;margin:24px auto;padding:0 16px}
-        h1{font-size:22px;margin:0 0 12px}
-        .subtitle{color:var(--muted);margin-bottom:20px}
-        .grid{display:grid;gap:16px}
-        @media(min-width:920px){.grid.cols-2{grid-template-columns:1fr 1fr}}
-        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
-        .section-title{font-weight:700;margin:0 0 12px}
-        .row{display:grid;grid-template-columns:180px 1fr;gap:12px;align-items:center;margin:10px 0}
-        .row.inline > *:first-child{align-self:start;padding-top:8px}
-        label{color:#374151;font-weight:600}
-        input[type="text"],input[type="number"],input[type="datetime-local"],input[type="date"],input[type="time"],input[type="email"],input[type="tel"],select,textarea{
-            width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff
+
+        .open_User-page *{
+            box-sizing:border-box;
         }
-        textarea{min-height:90px;resize:vertical}
-        .help{font-size:12px;color:var(--muted);margin-top:6px}
-        .inline-group{display:flex;gap:8px;flex-wrap:wrap}
-        .inline-group > *{flex:1}
-        .chips{display:flex;gap:8px;flex-wrap:wrap}
-        .chip{padding:6px 10px;border:1px dashed var(--line);border-radius:999px;font-size:12px;color:var(--muted)}
-        .table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-        .table th,.table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;background:#fff}
-        .table th{background:#fafafa;font-weight:700;font-size:13px}
-        .table tr:last-child td{border-bottom:none}
-        .t-actions{white-space:nowrap}
-        .btn{
-            appearance:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
-            background:#fff;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:600
+
+        .open_User-page .wrap{
+            max-width:1200px;
+            margin:24px auto;
+            padding:0 16px;
         }
-        .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
-        .btn.primary:hover{background:var(--primary-600)}
-        .btn.danger{border-color:#fecaca;background:#fee2e2;color:#b91c1c}
-        .btn.warn{border-color:#fde68a;background:#fef3c7;color:#92400e}
-        .btn.ghost{background:transparent}
-        .btn.small{padding:6px 10px;border-radius:8px;font-size:12px}
-        .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-        .required::after{content:" *";color:var(--danger);margin-left:2px}
-        .divider{height:1px;background:var(--line);margin:12px 0}
-        .file-list{display:flex;flex-wrap:wrap;gap:8px}
-        .file-pill{border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:#fff;font-size:12px}
+
+        .open_User-page h1{
+            font-size:22px;
+            margin:0 0 12px;
+        }
+
+        .open_User-page .subtitle{
+            color:var(--muted);
+            margin-bottom:20px;
+        }
+
+        .open_User-page .grid{
+            display:grid;
+            gap:16px;
+        }
+
+        @media (min-width:920px){
+            .open_User-page .grid.cols-2{
+                grid-template-columns:1fr 1fr;
+            }
+        }
+
+        .open_User-page .card{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:var(--radius);
+            padding:18px;
+        }
+
+        .open_User-page .section-title{
+            font-weight:700;
+            margin:0 0 12px;
+        }
+
+        .open_User-page .row{
+            display:grid;
+            grid-template-columns:180px 1fr;
+            gap:12px;
+            align-items:center;
+            margin:10px 0;
+        }
+
+        .open_User-page .row.inline > *:first-child{
+            align-self:start;
+            padding-top:8px;
+        }
+
+        .open_User-page label{
+            color:#374151;
+            font-weight:600;
+        }
+
+        .open_User-page input[type="text"],
+        .open_User-page input[type="number"],
+        .open_User-page input[type="datetime-local"],
+        .open_User-page input[type="date"],
+        .open_User-page input[type="time"],
+        .open_User-page input[type="email"],
+        .open_User-page input[type="tel"],
+        .open_User-page select,
+        .open_User-page textarea{
+            width:100%;
+            padding:10px 12px;
+            border:1px solid var(--line);
+            border-radius:10px;
+            background:#fff;
+        }
+
+        .open_User-page textarea{
+            min-height:90px;
+            resize:vertical;
+        }
+
+        .open_User-page .help{
+            font-size:12px;
+            color:var(--muted);
+            margin-top:6px;
+        }
+
+        .open_User-page .inline-group{
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .open_User-page .inline-group > *{
+            flex:1;
+        }
+
+        .open_User-page .chips{
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+
+        .open_User-page .chip{
+            padding:6px 10px;
+            border:1px dashed var(--line);
+            border-radius:999px;
+            font-size:12px;
+            color:var(--muted);
+        }
+
+        .open_User-page .table{
+            width:100%;
+            border-collapse:separate;
+            border-spacing:0;
+            border:1px solid var(--line);
+            border-radius:12px;
+            overflow:hidden;
+        }
+
+        .open_User-page .table th,
+        .open_User-page .table td{
+            padding:10px 8px;
+            border-bottom:1px solid var(--line);
+            text-align:left;
+            background:#fff;
+        }
+
+        .open_User-page .table th{
+            background:#fafafa;
+            font-weight:700;
+            font-size:13px;
+        }
+
+        .open_User-page .table tr:last-child td{
+            border-bottom:none;
+        }
+
+        .open_User-page .t-actions{
+            white-space:nowrap;
+        }
+
+        .open_User-page .btn{
+            appearance:none;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            border:1px solid var(--line);
+            background:#fff;
+            border-radius:10px;
+            padding:10px 14px;
+            cursor:pointer;
+            font-weight:600;
+        }
+
+        .open_User-page .btn.primary{
+            background:var(--primary);
+            border-color:var(--primary);
+            color:#fff;
+        }
+
+        .open_User-page .btn.primary:hover{
+            background:var(--primary-600);
+        }
+
+        .open_User-page .btn.danger{
+            border-color:#fecaca;
+            background:#fee2e2;
+            color:#b91c1c;
+        }
+
+        .open_User-page .btn.warn{
+            border-color:#fde68a;
+            background:#fef3c7;
+            color:#92400e;
+        }
+
+        .open_User-page .btn.ghost{
+            background:transparent;
+        }
+
+        .open_User-page .btn.small{
+            padding:6px 10px;
+            border-radius:8px;
+            font-size:12px;
+        }
+
+        .open_User-page .btnbar{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
+
+        .open_User-page .required::after{
+            content:" *";
+            color:var(--danger);
+            margin-left:2px;
+        }
+
+        .open_User-page .divider{
+            height:1px;
+            background:var(--line);
+            margin:12px 0;
+        }
+
+        .open_User-page .file-list{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+
+        .open_User-page .file-pill{
+            border:1px solid var(--line);
+            border-radius:12px;
+            padding:6px 10px;
+            background:#fff;
+            font-size:12px;
+        }
+
         /* Toast */
-        .toast{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:9999}
-        .toast-item{background:#111827;color:#fff;padding:12px 14px;border-radius:10px;box-shadow:0 10px 20px rgba(0,0,0,.15);opacity:.98}
-        .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:#fff}
-        .note{font-size:12px;color:var(--muted)}
+        .open_User-page .toast{
+            position:fixed;
+            right:16px;
+            bottom:16px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            z-index:9999;
+        }
+
+        .open_User-page .toast-item{
+            background:#111827;
+            color:#fff;
+            padding:12px 14px;
+            border-radius:10px;
+            box-shadow:0 10px 20px rgba(0,0,0,.15);
+            opacity:.98;
+        }
+
+        .open_User-page .badge{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            padding:4px 8px;
+            border-radius:999px;
+            font-size:12px;
+            border:1px solid var(--line);
+            background:#f7f8fa;
+        }
+
+        .open_User-page .note{
+            font-size:12px;
+            color:var(--muted);
+        }
+
         /* Tag input */
-        .tagbox{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff}
-        .tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px}
-        .tag button{border:none;background:transparent;cursor:pointer;font-weight:700}
-        .tagbox input{border:none;outline:none;flex:1;min-width:120px}
-        .optline{display:flex;gap:12px;flex-wrap:wrap}
-        .optline label{font-weight:500}
-</style>
+        .open_User-page .tagbox{
+            display:flex;
+            flex-wrap:wrap;
+            gap:6px;
+            padding:8px;
+            border:1px solid var(--line);
+            border-radius:10px;
+            background:#fff;
+        }
+
+        .open_User-page .tag{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            border:1px solid var(--line);
+            border-radius:999px;
+            padding:6px 10px;
+            font-size:12px;
+        }
+
+        .open_User-page .tag button{
+            border:none;
+            background:transparent;
+            cursor:pointer;
+            font-weight:700;
+        }
+
+        .open_User-page .tagbox input{
+            border:none;
+            outline:none;
+            flex:1;
+            min-width:120px;
+        }
+
+        .open_User-page .optline{
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .open_User-page .optline label{
+            font-weight:500;
+        }
+    </style>
 </div>
 
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentFragment">
-<div class="wrap" id="page" data-program-id="123">
-    <h1>과정 개설 <span class="badge">운영자</span></h1>
-    <div class="subtitle">프로그램 기본정보, 모집/운영 설정, 회차(일정), 첨부를 등록/수정합니다.</div>
+    <div class="open_User-page">
+    <div class="wrap" id="page" data-program-id="123">
+        <h1>과정 개설 <span class="badge">운영자</span></h1>
+        <div class="subtitle">프로그램 기본정보, 모집/운영 설정, 회차(일정), 첨부를 등록/수정합니다.</div>
 
-    <!-- =========== [1] 프로그램 기본정보 =========== -->
-    <section class="card" id="sec-basic">
-        <h2 class="section-title">프로그램 기본정보</h2>
+        <!-- =========== [1] 프로그램 기본정보 =========== -->
+        <section class="card" id="sec-basic">
+            <h2 class="section-title">프로그램 기본정보</h2>
 
-        <div class="row">
-            <label class="required" for="programName">프로그램명</label>
-            <input type="text" id="programName" maxlength="100" required />
-        </div>
-
-        <div class="row">
-            <label class="required" for="category">프로그램 분류/역량영역</label>
-            <div class="inline-group">
-                <select id="category" required>
-                    <option value="">분류 선택</option>
-                    <option value="CAREER">진로/취업</option>
-                    <option value="GLOBAL">국제/어학</option>
-                    <option value="LEAD">리더십</option>
-                    <option value="VOL">봉사</option>
-                </select>
-                <select id="competencyArea" required>
-                    <option value="">역량영역 선택</option>
-                    <option value="COMM">의사소통</option>
-                    <option value="TEAM">팀워크</option>
-                    <option value="PROB">문제해결</option>
-                    <option value="LEARN">자기주도학습</option>
-                </select>
+            <div class="row">
+                <label class="required" for="programName">프로그램명</label>
+                <input type="text" id="programName" maxlength="100" required />
             </div>
-        </div>
 
-        <div class="row">
-            <label class="required" for="dept">운영부서</label>
-            <select id="dept" required>
-                <option value="">부서 선택</option>
-                <option value="STU">학생지원팀</option>
-                <option value="EMP">취업지원센터</option>
-                <option value="LIB">도서관</option>
-            </select>
-        </div>
-
-        <div class="row">
-            <label class="required" for="ownerName">담당자명</label>
-            <input type="text" id="ownerName" required />
-        </div>
-
-        <div class="row">
-            <label class="required" for="ownerTel">담당자 연락처</label>
-            <input type="tel" id="ownerTel" placeholder="예: 010-1234-5678" required />
-        </div>
-
-        <div class="row">
-            <label class="required" for="ownerEmail">담당자 이메일</label>
-            <input type="email" id="ownerEmail" placeholder="예: manager@univ.ac.kr" required />
-        </div>
-
-        <div class="row inline">
-            <label class="required" for="summary">프로그램 개요/목적</label>
-            <textarea id="summary" maxlength="1000" placeholder="핵심 내용, 목표, 기대효과 등을 입력하세요." required></textarea>
-        </div>
-
-        <div class="row">
-            <label class="required">운영 기간</label>
-            <div class="inline-group">
-                <input type="datetime-local" id="runStart" required />
-                <input type="datetime-local" id="runEnd" required />
-            </div>
-        </div>
-
-        <div class="row">
-            <label class="required">신청 기간</label>
-            <div class="inline-group">
-                <input type="datetime-local" id="appStart" required />
-                <input type="datetime-local" id="appEnd" required />
-            </div>
-        </div>
-
-        <div class="row">
-            <label class="required" for="maxPart">모집정원</label>
-            <input type="number" id="maxPart" min="1" placeholder="최대 인원" required />
-        </div>
-
-        <div class="row">
-            <label>신청자격(학년)</label>
-            <div class="optline" id="gradeOpts">
-                <label><input type="checkbox" value="ALL" checked> 전체</label>
-                <label><input type="checkbox" value="1"> 1학년</label>
-                <label><input type="checkbox" value="2"> 2학년</label>
-                <label><input type="checkbox" value="3"> 3학년</label>
-                <label><input type="checkbox" value="4"> 4학년</label>
-            </div>
-            <div class="help">“전체”를 해제하고 학년을 선택하면 해당 학년만 신청 가능</div>
-        </div>
-
-        <div class="row inline">
-            <label>신청자격(학과)</label>
-            <div>
-                <div class="tagbox" id="majorBox">
-                    <input id="majorInput" placeholder="학과명을 입력 후 Enter" />
+            <div class="row">
+                <label class="required" for="category">프로그램 분류/역량영역</label>
+                <div class="inline-group">
+                    <select id="category" required>
+                        <option value="">분류 선택</option>
+                        <option value="CAREER">진로/취업</option>
+                        <option value="GLOBAL">국제/어학</option>
+                        <option value="LEAD">리더십</option>
+                        <option value="VOL">봉사</option>
+                    </select>
+                    <select id="competencyArea" required>
+                        <option value="">역량영역 선택</option>
+                        <option value="COMM">의사소통</option>
+                        <option value="TEAM">팀워크</option>
+                        <option value="PROB">문제해결</option>
+                        <option value="LEARN">자기주도학습</option>
+                    </select>
                 </div>
-                <div class="help">빈 값이면 제한 없음</div>
             </div>
-        </div>
 
-        <div class="row">
-            <label class="required" for="runType">운영방식</label>
-            <select id="runType" required>
-                <option value="">선택</option>
-                <option value="OFFLINE">오프라인</option>
-                <option value="ONLINE">온라인</option>
-                <option value="HYBRID">혼합</option>
-            </select>
-        </div>
-
-        <div class="row">
-            <label for="location">운영장소</label>
-            <input type="text" id="location" placeholder="예: 인문관 302호" />
-        </div>
-
-        <div class="row">
-            <label class="required" for="criteria">이수기준</label>
-            <input type="text" id="criteria" placeholder="예: 총 2회차 중 2회 출석 + 과제 제출" required />
-        </div>
-
-        <div class="row">
-            <label for="surveyRequired">만족도 설문 필수 여부</label>
-            <label class="optline"><input type="checkbox" id="surveyRequired" /> 필수</label>
-        </div>
-
-        <div class="row">
-            <label for="points">부여 포인트</label>
-            <input type="number" id="points" min="0" step="1" placeholder="예: 10" />
-        </div>
-
-        <div class="row inline">
-            <label>역량매핑</label>
-            <div>
-                <div class="tagbox" id="compMapBox">
-                    <input id="compMapInput" placeholder="역량 키워드 입력 후 Enter (예: 의사소통, 문제해결)" />
-                </div>
-                <div class="help">문서의 역량모델 코드가 있다면 동일한 코드로 입력하세요.</div>
-            </div>
-        </div>
-
-        <div class="row inline">
-            <label>홍보 포스터</label>
-            <div>
-                <input type="file" id="poster" accept="image/*" />
-                <div class="file-list" id="posterList"></div>
-            </div>
-        </div>
-
-        <div class="row inline">
-            <label>안내문/일정표</label>
-            <div>
-                <input type="file" id="guides" multiple />
-                <div class="file-list" id="guideList"></div>
-            </div>
-        </div>
-    </section>
-
-    <div class="grid cols-2">
-        <!-- =========== [2] 운영(세부) 설정 =========== -->
-        <section class="card" id="sec-oper">
-            <h2 class="section-title">운영 세부 설정</h2>
             <div class="row">
-                <label for="onlineUrl">온라인 링크</label>
-                <input type="text" id="onlineUrl" placeholder="예: Zoom/Google Meet URL" />
-            </div>
-            <div class="row">
-                <label for="budget">예산(원)</label>
-                <input type="number" id="budget" min="0" step="1000" placeholder="예: 2000000" />
-            </div>
-            <div class="row">
-                <label for="fundSrc">재원</label>
-                <select id="fundSrc">
-                    <option value="">선택</option>
-                    <option value="UNIV">대학(본부)</option>
-                    <option value="DEPT">부서</option>
-                    <option value="OUT">외부</option>
-                    <option value="NONE">없음</option>
+                <label class="required" for="dept">운영부서</label>
+                <select id="dept" required>
+                    <option value="">부서 선택</option>
+                    <option value="STU">학생지원팀</option>
+                    <option value="EMP">취업지원센터</option>
+                    <option value="LIB">도서관</option>
                 </select>
             </div>
-            <div class="chips">
-                <span class="chip">운영방식에 따라 장소/링크 필수 여부가 자동 전환됩니다.</span>
-            </div>
-        </section>
 
-        <!-- =========== [3] 회차(일정) =========== -->
-        <section class="card" id="sec-schedules" style="grid-column:1/-1">
-            <h2 class="section-title">회차(일정) 관리</h2>
-            <div class="help">회차별 일자와 시작/종료 시간을 입력하세요. 회차별 정원을 지정할 수 있습니다.</div>
-            <div style="margin:10px 0; display:flex; gap:8px; flex-wrap:wrap">
-                <button class="btn small" id="btnAddRow">+ 회차 추가</button>
-                <button class="btn small warn" id="btnAutoFill">모집기간 기반 자동작성</button>
+            <div class="row">
+                <label class="required" for="ownerName">담당자명</label>
+                <input type="text" id="ownerName" required />
             </div>
-            <table class="table" id="tbl">
-                <thead>
-                <tr>
-                    <th style="width:60px">회차</th>
-                    <th style="width:160px">일자</th>
-                    <th style="width:120px">시작</th>
-                    <th style="width:120px">종료</th>
-                    <th>장소/링크</th>
-                    <th style="width:120px">회차 정원</th>
-                    <th style="width:140px">출석방식</th>
-                    <th class="t-actions" style="width:90px">행동</th>
-                </tr>
-                </thead>
-                <tbody id="tbody"></tbody>
-            </table>
-            <div class="note" style="margin-top:8px">출석방식 예: 서명, QR, 사진, LMS</div>
-        </section>
 
-        <!-- =========== [4] 기타 첨부 (선택) =========== -->
-        <section class="card" id="sec-files">
-            <h2 class="section-title">기타 첨부</h2>
+            <div class="row">
+                <label class="required" for="ownerTel">담당자 연락처</label>
+                <input type="tel" id="ownerTel" placeholder="예: 010-1234-5678" required />
+            </div>
+
+            <div class="row">
+                <label class="required" for="ownerEmail">담당자 이메일</label>
+                <input type="email" id="ownerEmail" placeholder="예: manager@univ.ac.kr" required />
+            </div>
+
             <div class="row inline">
-                <label for="files">기타 파일</label>
+                <label class="required" for="summary">프로그램 개요/목적</label>
+                <textarea id="summary" maxlength="1000" placeholder="핵심 내용, 목표, 기대효과 등을 입력하세요." required></textarea>
+            </div>
+
+            <div class="row">
+                <label class="required">운영 기간</label>
+                <div class="inline-group">
+                    <input type="datetime-local" id="runStart" required />
+                    <input type="datetime-local" id="runEnd" required />
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="required">신청 기간</label>
+                <div class="inline-group">
+                    <input type="datetime-local" id="appStart" required />
+                    <input type="datetime-local" id="appEnd" required />
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="required" for="maxPart">모집정원</label>
+                <input type="number" id="maxPart" min="1" placeholder="최대 인원" required />
+            </div>
+
+            <div class="row">
+                <label>신청자격(학년)</label>
+                <div class="optline" id="gradeOpts">
+                    <label><input type="checkbox" value="ALL" checked> 전체</label>
+                    <label><input type="checkbox" value="1"> 1학년</label>
+                    <label><input type="checkbox" value="2"> 2학년</label>
+                    <label><input type="checkbox" value="3"> 3학년</label>
+                    <label><input type="checkbox" value="4"> 4학년</label>
+                </div>
+                <div class="help">“전체”를 해제하고 학년을 선택하면 해당 학년만 신청 가능</div>
+            </div>
+
+            <div class="row inline">
+                <label>신청자격(학과)</label>
                 <div>
-                    <input type="file" id="files" multiple />
-                    <div class="file-list" id="fileList"></div>
-                    <div class="help">계획서, 결과보고 초안 등 (최대 10개 권장)</div>
+                    <div class="tagbox" id="majorBox">
+                        <input id="majorInput" placeholder="학과명을 입력 후 Enter" />
+                    </div>
+                    <div class="help">빈 값이면 제한 없음</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="required" for="runType">운영방식</label>
+                <select id="runType" required>
+                    <option value="">선택</option>
+                    <option value="OFFLINE">오프라인</option>
+                    <option value="ONLINE">온라인</option>
+                    <option value="HYBRID">혼합</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <label for="location">운영장소</label>
+                <input type="text" id="location" placeholder="예: 인문관 302호" />
+            </div>
+
+            <div class="row">
+                <label class="required" for="criteria">이수기준</label>
+                <input type="text" id="criteria" placeholder="예: 총 2회차 중 2회 출석 + 과제 제출" required />
+            </div>
+
+            <div class="row">
+                <label for="surveyRequired">만족도 설문 필수 여부</label>
+                <label class="optline"><input type="checkbox" id="surveyRequired" /> 필수</label>
+            </div>
+
+            <div class="row">
+                <label for="points">부여 포인트</label>
+                <input type="number" id="points" min="0" step="1" placeholder="예: 10" />
+            </div>
+
+            <div class="row inline">
+                <label>역량매핑</label>
+                <div>
+                    <div class="tagbox" id="compMapBox">
+                        <input id="compMapInput" placeholder="역량 키워드 입력 후 Enter (예: 의사소통, 문제해결)" />
+                    </div>
+                    <div class="help">문서의 역량모델 코드가 있다면 동일한 코드로 입력하세요.</div>
+                </div>
+            </div>
+
+            <div class="row inline">
+                <label>홍보 포스터</label>
+                <div>
+                    <input type="file" id="poster" accept="image/*" />
+                    <div class="file-list" id="posterList"></div>
+                </div>
+            </div>
+
+            <div class="row inline">
+                <label>안내문/일정표</label>
+                <div>
+                    <input type="file" id="guides" multiple />
+                    <div class="file-list" id="guideList"></div>
                 </div>
             </div>
         </section>
-    </div>
 
-    <div class="card" style="margin-top:16px">
-        <div class="btnbar">
-            <button class="btn" id="btnPreview">미리보기</button>
-            <div style="flex:1"></div>
-            <button class="btn" id="btnSave">임시 저장</button>
-            <button class="btn primary" id="btnSubmit">제출(승인요청)</button>
-            <button class="btn danger" id="btnDelete">삭제</button>
-            <button class="btn ghost" id="btnCancel">취소</button>
+        <div class="grid cols-2">
+            <!-- =========== [2] 운영(세부) 설정 =========== -->
+            <section class="card" id="sec-oper">
+                <h2 class="section-title">운영 세부 설정</h2>
+                <div class="row">
+                    <label for="onlineUrl">온라인 링크</label>
+                    <input type="text" id="onlineUrl" placeholder="예: Zoom/Google Meet URL" />
+                </div>
+                <div class="row">
+                    <label for="budget">예산(원)</label>
+                    <input type="number" id="budget" min="0" step="1000" placeholder="예: 2000000" />
+                </div>
+                <div class="row">
+                    <label for="fundSrc">재원</label>
+                    <select id="fundSrc">
+                        <option value="">선택</option>
+                        <option value="UNIV">대학(본부)</option>
+                        <option value="DEPT">부서</option>
+                        <option value="OUT">외부</option>
+                        <option value="NONE">없음</option>
+                    </select>
+                </div>
+                <div class="chips">
+                    <span class="chip">운영방식에 따라 장소/링크 필수 여부가 자동 전환됩니다.</span>
+                </div>
+            </section>
+
+            <!-- =========== [3] 회차(일정) =========== -->
+            <section class="card" id="sec-schedules" style="grid-column:1/-1">
+                <h2 class="section-title">회차(일정) 관리</h2>
+                <div class="help">회차별 일자와 시작/종료 시간을 입력하세요. 회차별 정원을 지정할 수 있습니다.</div>
+                <div style="margin:10px 0; display:flex; gap:8px; flex-wrap:wrap">
+                    <button class="btn small" id="btnAddRow">+ 회차 추가</button>
+                    <button class="btn small warn" id="btnAutoFill">모집기간 기반 자동작성</button>
+                </div>
+                <table class="table" id="tbl">
+                    <thead>
+                    <tr>
+                        <th style="width:60px">회차</th>
+                        <th style="width:160px">일자</th>
+                        <th style="width:120px">시작</th>
+                        <th style="width:120px">종료</th>
+                        <th>장소/링크</th>
+                        <th style="width:120px">회차 정원</th>
+                        <th style="width:140px">출석방식</th>
+                        <th class="t-actions" style="width:90px">행동</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+                <div class="note" style="margin-top:8px">출석방식 예: 서명, QR, 사진, LMS</div>
+            </section>
+
+            <!-- =========== [4] 기타 첨부 (선택) =========== -->
+            <section class="card" id="sec-files">
+                <h2 class="section-title">기타 첨부</h2>
+                <div class="row inline">
+                    <label for="files">기타 파일</label>
+                    <div>
+                        <input type="file" id="files" multiple />
+                        <div class="file-list" id="fileList"></div>
+                        <div class="help">계획서, 결과보고 초안 등 (최대 10개 권장)</div>
+                    </div>
+                </div>
+            </section>
         </div>
-        <div class="divider"></div>
-        <div class="note">
-            • 임시 저장: 검토중 초안 저장만 수행합니다. • 제출(승인요청): 부서/시스템관리자 검토 대상으로 전환됩니다. • 삭제: 작성자가 소유한 초안만 가능. • 취소: 목록으로 이동.
+
+        <div class="card" style="margin-top:16px">
+            <div class="btnbar">
+                <button class="btn" id="btnPreview">미리보기</button>
+                <div style="flex:1"></div>
+                <button class="btn" id="btnSave">임시 저장</button>
+                <button class="btn primary" id="btnSubmit">제출(승인요청)</button>
+                <button class="btn danger" id="btnDelete">삭제</button>
+                <button class="btn ghost" id="btnCancel">취소</button>
+            </div>
+            <div class="divider"></div>
+            <div class="note">
+                • 임시 저장: 검토중 초안 저장만 수행합니다. • 제출(승인요청): 부서/시스템관리자 검토 대상으로 전환됩니다. • 삭제: 작성자가 소유한 초안만 가능. • 취소: 목록으로 이동.
+            </div>
         </div>
+
     </div>
-
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    </div>
 </div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-</div>
-
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentScript">
 <script>
