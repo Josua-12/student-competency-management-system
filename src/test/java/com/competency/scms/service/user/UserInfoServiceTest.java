@@ -34,7 +34,7 @@ class UserInfoServiceTest {
                 .phone("010-0000-0000")
                 .build();
         
-        UserUpdateDto dto = new UserUpdateDto("new@example.com", "010-1234-5678");
+        UserUpdateDto dto = new UserUpdateDto("new@example.com", "010-1234-5678", null);
         
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
@@ -50,7 +50,7 @@ class UserInfoServiceTest {
     void updateUserInfo_사용자없음() {
         // given
         Long userId = 1L;
-        UserUpdateDto dto = new UserUpdateDto("new@example.com", "010-1234-5678");
+        UserUpdateDto dto = new UserUpdateDto("new@example.com", "010-1234-5678", null);
         
         given(userRepository.findById(userId)).willReturn(Optional.empty());
 

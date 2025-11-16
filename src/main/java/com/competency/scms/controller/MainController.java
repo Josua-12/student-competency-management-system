@@ -54,10 +54,13 @@ public class MainController {
     public String dashboard(Authentication auth, org.springframework.ui.Model model) {
         log.info("학생 대시보드 페이지 접근");
         try {
-            String userNum = auth.getName();
-            log.info("대시보드 조회할 사용자 학번: {}", userNum);
+            String userEmail = auth.getName();
+            log.info("대시보드 조회할 사용자 이메일: {}", userEmail);
 
-            // 대시보드 데이터는 API로 처리
+            // 대시보드 데이터 조회
+            var dashboardData = mainDashboardService.getMainDashboardData(userEmail);
+            model.addAttribute("dashboardData", dashboardData);
+            
         } catch (Exception e) {
             log.error("대시보드 데이터 로드 실패", e);
             model.addAttribute("errorMessage", "대시보드 데이터를 불러올 수 없습니다.");

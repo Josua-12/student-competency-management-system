@@ -3,8 +3,11 @@ package com.competency.scms.service.main;
 import com.competency.scms.dto.dashboard.CompetencyChartDto;
 import com.competency.scms.dto.dashboard.ConsultationHistoryDto;
 import com.competency.scms.dto.dashboard.RecentProgramDto;
+import com.competency.scms.dto.dashboard.DashboardResponseDto;
+import com.competency.scms.domain.user.User;
 import com.competency.scms.repository.counseling.CounselingReservationRepository;
 import com.competency.scms.repository.noncurricular.program.ProgramRepository;
+import com.competency.scms.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +24,39 @@ public class DashboardService {
     private final CounselingReservationRepository counselingReservationRepository;
     private final ProgramRepository programRepository;
     private final com.competency.scms.repository.competency.CompetencyRepository competencyRepository;
+    private final UserRepository userRepository;
+
+    /**
+     * 메인 대시보드 데이터 조회
+     */
+    public DashboardResponseDto getMainDashboardData(String userEmail) {
+        log.info("[MainDashboardService] 대시보드 데이터 조회 - userEmail: {}", userEmail);
+        
+        try {
+            // 이메일로 사용자 조회
+            User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            
+            log.info("사용자 조회 성공 - userNum: {}, name: {}", user.getUserNum(), user.getName());
+            
+            // 대시보드 데이터 구성
+            CompetencyChartDto competencyChart = getLatestCompetencyChart();
+            List<ConsultationHistoryDto> consultations = getRecentConsultations();
+            List<RecentProgramDto> programs = getRecentPrograms();
+            
+            return DashboardResponseDto.builder()
+                .userName(user.getName())
+                .userNum(user.getUserNum().toString())
+                .competencyChart(competencyChart)
+                .recentConsultations(consultations)
+                .recentPrograms(programs)
+                .build();
+                
+        } catch (Exception e) {
+            log.error("[MainDashboardService] 대시보드 데이터 조회 실패 - userEmail: {}", userEmail, e);
+            throw new RuntimeException("대시보드 데이터를 조회할 수 없습니다.", e);
+        }
+    }
 
     // 핵심역량 최신 검사 결과 조회
     public CompetencyChartDto getLatestCompetencyChart() {
