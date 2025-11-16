@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/op/programs/{programId}/open")
+@RequestMapping("/noncurricular-operator/programs/{programId}/open")
 public class ProgramOpenController {
 
     private final ProgramOpenService programOpenService;

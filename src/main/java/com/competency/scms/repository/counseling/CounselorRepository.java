@@ -24,4 +24,7 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
     // 대시보드 분리를 위한 상담사 조회 메서드
     List<Counselor> findAllByCounselorId(Long counselorId); // CounselRepository
 
+    // 활성화 상태별 상담사 수 조회
+    long countByIsActive(boolean isActive);
+
 }

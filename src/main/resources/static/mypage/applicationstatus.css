@@ -1,78 +1,144 @@
- /* 기본 스타일 정의 */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa; /* gray-100 */
-        }
+/* 폰트 및 기본 배경 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
 
-        /* 1. 사이드바 스타일 정의 */
-        .sidebar {
-            width: 260px; /* 고정 너비 설정 */
-        }
+body {
+    font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    background-color: #f1f5f9; /* Tailwind gray-100 / 기존 f7f9fb 보다 통일성 */
+}
 
-        /* 2. 활성 링크 스타일 정의 */
-        .active-link {
-            /* 활성 링크에 배경색을 지정하여 텍스트가 잘 보이도록 함 */
-            background-color: #4f46e5 !important; /* Tailwind Indigo-600 */
-            color: white !important; /* 활성 링크 텍스트를 흰색으로 */
-        }
+/* 차트 컨테이너 높이 설정 (applicationstatus.css) */
+#historyChart {
+    width: 100%;
+    height: 400px;
+}
 
-        /* 3. 호버 및 전환 효과 정의 */
-        .nav-link {
-            transition: all 0.2s ease-in-out;
-        }
-        .hover-bg-light:hover {
-            background-color: #f1f3f5; /* Light gray for hover */
-            color: #495057 !important; /* Dark text on hover */
-        }
-        .text-muted-hover:hover {
-            color: #4f46e5 !important; /* Indigo color on hover for breadcrumb link */
-        }
-        .text-indigo {
-            color: #4f46e5 !important; /* Custom indigo color */
-        }
+/* 메인 콘텐츠 영역 최소 높이 설정 (applicationstatus.css) */
+.main-content {
+    min-height: calc(100vh - 64px); /* 헤더 높이 제외 */
+}
 
-        /* 테이블 디자인 개선 */
-        .application-table th {
-            letter-spacing: 0.05em;
-            color: #6c757d;
-        }
-        .application-table td {
-            font-size: 0.95rem;
-        }
+/* 테이블 스타일 (applicationstatus.css) */
+.history-table th, .history-table td {
+    padding: 1rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+.history-table thead th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+}
 
-        /* 상태 뱃지 스타일 */
-        .badge-status {
-            min-width: 70px;
-            padding: 0.5em 0.8em;
-            font-weight: 600;
-        }
+/* 아래 내용은 applicationstatus.js 에 있던 CSS 규칙들입니다.
+*/
 
-        /* 모바일 뷰에서 사이드바 숨김 */
-        @media (max-width: 767px) {
-            .sidebar {
-                display: none !important;
-            }
-        }
+/* 1. 사이드바 스타일 정의 */
+.sidebar {
+    width: 260px; /* 고정 너비 설정 */
+    flex-shrink: 0;
+    position: sticky;
+    top: 64px; /* 헤더 높이만큼 아래에 위치 */
+    height: calc(100vh - 64px); /* 헤더를 제외한 높이 */
+    overflow-y: auto; /* 내용이 많아지면 스크롤 가능 */
+    z-index: 50; /* 헤더보다 낮게 */
+}
 
-        /* 커스텀 모달 스타일: alert() 대신 사용 */
-        #custom-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1050;
-        }
-        #modal-content {
-            background-color: white;
-            padding: 25px 30px; /* 패딩 증가 */
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 강화 */
-            max-width: 380px;
-            width: 90%;
-        }
+/* 2. 활성 링크 스타일 정의 */
+/* .sidebar a.active (applicationstatus.css) 와 .active-link (applicationstatus.js) 를 통합 */
+.active-link, .sidebar a.active {
+    background-color: #4f46e5 !important; /* Tailwind Indigo-600 */
+    color: white !important; /* 활성 링크 텍스트를 흰색으로 */
+    font-weight: 600;
+    /* applicationstatus.css의 border-left는 제거 (디자인 통일) */
+}
+
+/* 3. 호버 및 전환 효과 정의 */
+.nav-link {
+    transition: all 0.2s ease-in-out;
+}
+.hover-bg-light:hover {
+    background-color: #e2e8f0; /* Light gray for hover */
+    color: #495057 !important; /* Dark text on hover */
+}
+.text-muted-hover:hover {
+    color: #4f46e5 !important; /* Indigo color on hover for breadcrumb link */
+}
+.text-indigo {
+    color: #4f46e5 !important; /* Custom indigo color */
+}
+
+/* 테이블 디자인 개선 */
+.application-table th {
+    letter-spacing: 0.05em;
+    color: #64748b; /* Tailwind slate-500 */
+    font-size: 0.8rem;
+}
+.application-table td {
+    font-size: 0.95rem;
+}
+
+/* 상태 뱃지 스타일 */
+.badge-status {
+    min-width: 70px;
+    padding: 0.5em 0.8em;
+    font-weight: 600;
+}
+
+/* 모바일 뷰에서 사이드바 숨김 (HTML에서 .d-md-block으로 제어) */
+/*
+@media (max-width: 767px) {
+    .sidebar {
+        display: none !important;
+    }
+}
+*/
+
+/* 공통 헤더 스타일 */
+.top-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 64px; /* 고정 높이 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 모바일 메뉴 스타일 (햄버거 메뉴 클릭 시 나타남) */
+#mobile-menu {
+    display: none; /* JS로 제어 */
+    position: absolute;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* 메인 콘텐츠 영역: 헤더 높이만큼 여백 */
+.main-container {
+    /* HTML에서 이미 .main-container에 적용됨. CSS에서는 제거 */
+    /* padding-top: 64px; */
+}
+
+/* 커스텀 모달 스타일: alert() 대신 사용 */
+#custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* JS로 제어 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+#modal-content {
+    background-color: white;
+    padding: 25px 30px; /* 패딩 증가 */
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* 그림자 강화 */
+    max-width: 380px;
+    width: 90%;
+}

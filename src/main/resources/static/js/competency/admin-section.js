@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function loadSections() {
         // [수정됨] GET 요청은 CSRF가 필요 없으므로 헤더를 안 보냅니다.
-        fetch('/admin/assessment-section/api/sections')
+        fetch('/competency-admin/assessment-section/api/sections')
             .then(res => {
                 if (!res.ok) throw new Error('목록 로딩 실패');
                 return res.json();
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * API: 상세 조회 (수정용)
      */
     function fetchSectionDetail(id) {
-        fetch(`/admin/assessment-section/api/sections/${id}`)
+        fetch(`/competency-admin/assessment-section/api/sections/${id}`)
             .then(res => res.json())
             .then(data => {
                 openModal(data); // Edit Mode
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             active: document.getElementById('isActive').checked
         };
 
-        fetch('/admin/assessment-section/api/sections', {
+        fetch('/competency-admin/assessment-section/api/sections', {
             method: 'POST',
             // [수정됨] 헬퍼 함수로 헤더 생성
             headers: getFetchHeaders(),
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function deleteSection(id) {
         if(!confirm('정말 이 진단 회차를 삭제하시겠습니까?\n(이미 진행된 진단 결과가 있다면 문제가 될 수 있습니다.)')) return;
 
-        fetch(`/admin/assessment-section/api/sections/${id}`, {
+        fetch(`/competency-admin/assessment-section/api/sections/${id}`, {
             method: 'DELETE',
             // [수정됨] 헬퍼 함수로 헤더 생성 (Content-Type 제외)
             headers: getFetchHeaders(false)

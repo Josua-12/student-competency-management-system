@@ -1,6 +1,5 @@
 package com.competency.scms.controller.noncurricular.noncurriDashboard;
 
-
 import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorDashboardResponse;
 import com.competency.scms.service.noncurricular.noncurriDashboard.OperatorDashboardService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/operator")
+@RequestMapping("/api/noncurricular-operator")
 public class OperatorDashboardController {
 
     private final OperatorDashboardService operatorDashboardService;
@@ -21,11 +20,10 @@ public class OperatorDashboardController {
         return operatorDashboardService.getDashboard();
     }
 
-    @GetMapping("/noncurricular/programs")
+    @GetMapping("/programs")
     public String programList(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 조회");
-        model.addAttribute("content", "noncurricular/program-list :: content");
+        model.addAttribute("pageTitle", "비교과 프로그램 - 운영자 프로그램 관리");
+        model.addAttribute("content", "noncurricular/operator/program-list :: content");
         return "layouts/noncurricular-layout";
     }
 }
-

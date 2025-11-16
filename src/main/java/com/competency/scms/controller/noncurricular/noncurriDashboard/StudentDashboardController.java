@@ -11,17 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/student")
+@RequestMapping("/api/student/noncurricular")
 public class StudentDashboardController {
 
     private final StudentDashboardService studentDashboardService;
 
     @GetMapping("/dashboard")
     public StudentDashboardResponse getDashboard(
-            @AuthenticationPrincipal CustomUserDetails user // 실제 Principal 타입에 맞게 수정
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
-        Long studentId = user.getUser().getId();; // or user.getUserId()
+        Long studentId = user.getUser().getId();
         return studentDashboardService.getDashboard(studentId);
     }
 }
-

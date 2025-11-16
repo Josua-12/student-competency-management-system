@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/operator/noncurricular/programs")
+@RequestMapping("/api/noncurricular-operator/programs/query")
 public class ProgramQueryApiController {
 
     private final com.competency.scms.service.noncurricular.program.ProgramQueryService programQueryService;

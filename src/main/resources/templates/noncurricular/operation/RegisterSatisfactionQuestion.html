@@ -424,7 +424,7 @@
             const payload = collectPayload('DRAFT');
             console.log('[SAVE DRAFT]', payload);
             // 실제 연동
-            // const api = `/api/op/programs/${payload.programId}/surveys/satisfaction`;
+            // const api = `/api/noncurricular-operator/programs/${payload.programId}/surveys/satisfaction`;
             // const result = await postJSON(api, payload);
             alert('초안으로 저장할 payload가 콘솔에 출력되었습니다.');
         }catch(e){ alert('저장 실패: '+e.message); }
@@ -436,7 +436,7 @@
             const payload = collectPayload('PUBLISHED');
             console.log('[PUBLISH]', payload);
             // 실제 연동
-            // const api = `/api/op/programs/${payload.programId}/surveys/satisfaction/publish`;
+            // const api = `/api/noncurricular-operator/programs/${payload.programId}/surveys/satisfaction/publish`;
             // const result = await postJSON(api, payload);
             alert('게시할 payload가 콘솔에 출력되었습니다.');
         }catch(e){ alert('게시 실패: '+e.message); }
@@ -444,7 +444,7 @@
 
     // 취소
     el('#btn-cancel').addEventListener('click', ()=>{
-        // 실제 이동: location.href = `/op/programs/${state.programId}/detail`;
+        // 실제 이동: location.href = `/noncurricular-operator/programs/${state.programId}/detail`;
         history.back();
     });
 

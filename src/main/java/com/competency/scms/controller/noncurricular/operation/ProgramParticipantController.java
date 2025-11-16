@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ops/programs/{programId}/participants")
+@RequestMapping("/noncurricular-operator/programs/{programId}/participants")
 public class ProgramParticipantController {
     private final ProgramParticipantService service;
 

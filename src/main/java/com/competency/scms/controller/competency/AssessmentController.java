@@ -18,7 +18,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/user/assessment")
+@RequestMapping("/student/assessment")
 public class AssessmentController {
     private final AssessmentService assessmentService;
 
@@ -70,7 +70,7 @@ public class AssessmentController {
 
         // 2. 생성되거나 찾아낸 Result의 PK를 가지고
         //    실제 '진단 수행 페이지'로 리다이렉트
-        return "redirect:/user/assessment/page/" + result.getId();
+        return "redirect:/student/assessment/page/" + result.getId();
     }
 
     /**
@@ -97,9 +97,9 @@ public class AssessmentController {
             // 3. 뷰 반환
             return "competency/assessmentStart";
         } catch (IllegalArgumentException e) {
-            return "redirect:/user/assessment/result/" + resultId;
+            return "redirect:/student/assessment/result/" + resultId;
         } catch (SecurityException | IllegalStateException e) {
-            return "redirect:/user/assessment";
+            return "redirect:/student/assessment";
         }
     }
 
@@ -128,10 +128,10 @@ public class AssessmentController {
             // 3. DTO의 'action' 값에 따라 분기
             if ("submit".equals(submitDto.getAction())) {
                 response.put("message", "진단을 성공적으로 제출했습니다.");
-                response.put("redirectUrl", "/user/assessment/result/" + submitDto.getResultId());
+                response.put("redirectUrl", "/student/assessment/result/" + submitDto.getResultId());
             } else {
                 response.put("message", "답변이 임시저장되었습니다.");
-                response.put("redirectUrl", "/user/assessment/page/" + submitDto.getResultId()) ;
+                response.put("redirectUrl", "/student/assessment/page/" + submitDto.getResultId()) ;
             }
 
             return ResponseEntity.ok(response);
@@ -144,7 +144,7 @@ public class AssessmentController {
         } catch (IllegalStateException e) {
             response.put("status", "error");
             response.put("message", "이미 제출이 완료된 진단입니다.");
-            response.put("redirectUrl", "/user/assessment/result/" + submitDto.getResultId());
+            response.put("redirectUrl", "/student/assessment/result/" + submitDto.getResultId());
             return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
             response.put("status", "error");
@@ -177,10 +177,10 @@ public class AssessmentController {
             return "competency/assessmentResult";
         } catch (IllegalStateException e) {
             // 아직 완료되지 않은 진단
-            return "redirect:/user/assessment/page/" + resultId;
+            return "redirect:/student/assessment/page/" + resultId;
         } catch (SecurityException | IllegalArgumentException e) {
             // 권한 없거나 존재하지 않는 진단
-            return "redirect:/user/assessment";
+            return "redirect:/student/assessment";
         }
     }
 }

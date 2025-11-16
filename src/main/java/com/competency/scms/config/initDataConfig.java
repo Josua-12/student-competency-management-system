@@ -44,7 +44,6 @@ public class initDataConfig implements CommandLineRunner {
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
 
-
     private User getUser(int userNum) {
         return userRepository.findByUserNum(userNum)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userNum=" + userNum));
@@ -71,28 +70,28 @@ public class initDataConfig implements CommandLineRunner {
 
         log.info("▶️ 테스트 데이터 초기화 시작");
 
-        // 시스템 관리자 3명
-        userRepository.save(User.builder().role(UserRole.ADMIN).userNum(100001).name("이현우").email("leehyunwoo@pureum.ac.kr").phone("010-2363-9792")
+        // 최고 관리자 3명 (SUPER_ADMIN)
+        userRepository.save(User.builder().role(UserRole.SUPER_ADMIN).userNum(100001).name("이현우").email("leehyunwoo@pureum.ac.kr").phone("010-2363-9792")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1965, 7, 27)).department(deptSysAdmin).build());
-        userRepository.save(User.builder().role(UserRole.ADMIN).userNum(100002).name("임예린").email("limyerin@pureum.ac.kr").phone("010-2390-6079")
+        userRepository.save(User.builder().role(UserRole.SUPER_ADMIN).userNum(100002).name("임예린").email("limyerin@pureum.ac.kr").phone("010-2390-6079")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1983, 5, 24)).department(deptSysAdmin).build());
-        userRepository.save(User.builder().role(UserRole.ADMIN).userNum(100003).name("조은우").email("choeunwoo@pureum.ac.kr").phone("010-9926-4095")
+        userRepository.save(User.builder().role(UserRole.SUPER_ADMIN).userNum(100003).name("조은우").email("choeunwoo@pureum.ac.kr").phone("010-9926-4095")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1968, 11, 10)).department(deptSysAdmin).build());
 
-        // 비교과프로그램 관리자 1명
-        userRepository.save(User.builder().role(UserRole.ADMIN).userNum(110001).name("박태현").email("parktaehyun@pureum.ac.kr").phone("010-4205-3849")
+        // 비교과프로그램 관리자 1명 (NONCURRICULAR_ADMIN)
+        userRepository.save(User.builder().role(UserRole.NONCURRICULAR_ADMIN).userNum(110001).name("박태현").email("parktaehyun@pureum.ac.kr").phone("010-4205-3849")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1961, 3, 15)).department(deptNcpAdmin).build());
 
-        // 비교과프로그램 운영자 1명
-        userRepository.save(User.builder().role(UserRole.OPERATOR).userNum(140001).name("임도윤").email("limdoyoon@pureum.ac.kr").phone("010-7136-5442")
+        // 비교과프로그램 운영자 1명 (NONCURRICULAR_OPERATOR)
+        userRepository.save(User.builder().role(UserRole.NONCURRICULAR_OPERATOR).userNum(140001).name("임도윤").email("limdoyoon@pureum.ac.kr").phone("010-7136-5442")
                 .password(passwordEncoder.encode(("operator123"))).birthDate(LocalDate.of(1972, 2, 13)).department(deptNcpOperator).build());
 
-        // 상담 관리자 1명
-        userRepository.save(User.builder().role(UserRole.ADMIN).userNum(120001).name("윤지훈").email("yoonjihun@pureum.ac.kr").phone("010-7316-9474")
+        // 상담 관리자 1명 (COUNSELING_ADMIN)
+        userRepository.save(User.builder().role(UserRole.COUNSELING_ADMIN).userNum(120001).name("윤지훈").email("yoonjihun@pureum.ac.kr").phone("010-7316-9474")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1965, 12, 18)).department(deptCounselAdmin).build());
 
-        // 역량관리 관리자 1명
-        userRepository.save(User.builder().role(UserRole.ADMIN).userNum(130001).name("강지윤").email("kangjiyun@pureum.ac.kr").phone("010-3399-5747")
+        // 역량관리 관리자 1명 (COMPETENCY_ADMIN)
+        userRepository.save(User.builder().role(UserRole.COMPETENCY_ADMIN).userNum(130001).name("강지윤").email("kangjiyun@pureum.ac.kr").phone("010-3399-5747")
                 .password(passwordEncoder.encode(("admin123"))).birthDate(LocalDate.of(1971, 12, 4)).department(deptCompetencyAdmin).build());
 
         // 심리상담 서브필드
@@ -131,7 +130,7 @@ public class initDataConfig implements CommandLineRunner {
 
         log.info("✅ 상담 서브필드 초기 데이터 27건이 생성되었습니다.");
 
-        // 상담사 12명 (학생상담센터)
+        // 상담사 12명 (COUNSELOR)
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150001).name("정준호").email("jungjoonho@pureum.ac.kr").phone("010-3191-1123")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1983, 11, 14)).department(deptCounselCenter).build());
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150002).name("조수빈").email("chosubin@pureum.ac.kr").phone("010-9053-2777")
@@ -157,7 +156,7 @@ public class initDataConfig implements CommandLineRunner {
         userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150012).name("김민수").email("kimminsu@pureum.ac.kr").phone("010-7556-2469")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 9, 16)).department(deptCounselCenter).build());
 
-        // 학생 데이터 50명
+        // 학생 데이터 50명 (STUDENT)
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213901).name("김서윤").email("jsua86268@gmail.com").phone("010-2857-1311")
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 8, 5)).department(ensureDept("KOREAN_LANG", "국어국문학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20212802).name("이준호").email("20212802@school.edu").phone("010-4135-9920")
@@ -259,9 +258,9 @@ public class initDataConfig implements CommandLineRunner {
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210150).name("노태경").email("20210150@school.edu").phone("010-7441-6833")
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 1)).department(ensureDept("ARCHITECTURE", "건축학과")).grade(3).build());
 
-        log.info("✅ User 초기 데이터 56건이 생성되었습니다.");
+        log.info("✅ User 초기 데이터 62건이 생성되었습니다.");
 
-
+        // 상담사 엔티티 생성
         Counselor counselorEntity1 = counselorRepository.save(Counselor.builder()
                 .counselorId(getUserId(150001)).counselingField(CounselingField.PSYCHOLOGICAL)
                 .specialization("심리상담 전문").isActive(true).build());
@@ -457,158 +456,11 @@ public class initDataConfig implements CommandLineRunner {
                 .reason(MileageReason.PROGRAM_COMPLETION).points(10).remarks("자기소개서·이력서 컨설팅 이수").build());
 
         log.info("✅ MileageRecord 초기 데이터 6건이 생성되었습니다.");
-
-        // 프로그램 참여 데이터 20건
-        programApplicationRepository.save(ProgramApplication.builder().program(prog1).student(getUser(20213901)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 3, 10, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog2).student(getUser(20212802)).status(ApplicationStatus.APPROVED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 3, 23, 10, 0)).approvedAt(LocalDateTime.of(2025, 3, 23, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog3).student(getUser(20214503)).status(ApplicationStatus.APPROVED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 2, 10, 0)).approvedAt(LocalDateTime.of(2025, 4, 2, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog4).student(getUser(20212904)).status(ApplicationStatus.REJECTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 3, 18, 10, 0)).rejectedAt(LocalDateTime.of(2025, 3, 18, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog5).student(getUser(20214405)).status(ApplicationStatus.APPROVED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 5, 10, 0)).approvedAt(LocalDateTime.of(2025, 4, 5, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog6).student(getUser(20212206)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 15, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog7).student(getUser(20211707)).status(ApplicationStatus.REJECTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 3, 30, 10, 0)).rejectedAt(LocalDateTime.of(2025, 3, 30, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog8).student(getUser(20210808)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 8, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog9).student(getUser(20213109)).status(ApplicationStatus.CANCELED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 13, 10, 0)).cancelledAt(LocalDateTime.of(2025, 4, 13, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog10).student(getUser(20213710)).status(ApplicationStatus.REJECTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 1, 10, 0)).rejectedAt(LocalDateTime.of(2025, 4, 1, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog11).student(getUser(20212711)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 12, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog12).student(getUser(20210912)).status(ApplicationStatus.CANCELED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 17, 10, 0)).cancelledAt(LocalDateTime.of(2025, 4, 17, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog13).student(getUser(20210213)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 3, 25, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog14).student(getUser(20213414)).status(ApplicationStatus.APPROVED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 3, 27, 10, 0)).approvedAt(LocalDateTime.of(2025, 3, 27, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog15).student(getUser(20211215)).status(ApplicationStatus.APPROVED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 3, 10, 0)).approvedAt(LocalDateTime.of(2025, 4, 3, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog16).student(getUser(20214216)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 10, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog17).student(getUser(20214617)).status(ApplicationStatus.WAITLISTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 14, 10, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog18).student(getUser(20212318)).status(ApplicationStatus.APPROVED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 6, 10, 0)).approvedAt(LocalDateTime.of(2025, 4, 6, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog19).student(getUser(20213619)).status(ApplicationStatus.REJECTED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 9, 10, 0)).rejectedAt(LocalDateTime.of(2025, 4, 9, 11, 0)).build());
-        programApplicationRepository.save(ProgramApplication.builder().program(prog20).student(getUser(20210320)).status(ApplicationStatus.CANCELED).consentYn(true)
-                .appliedAt(LocalDateTime.of(2025, 4, 11, 10, 0)).cancelledAt(LocalDateTime.of(2025, 4, 11, 11, 0)).build());
-
-        log.info("✅ ProgramApplication 초기 데이터 20건이 생성되었습니다.");
-
-        // 상담 후 만족도 조사 질문 중 시스템 질문들(counselingField = null)
-        SatisfactionQuestion question1 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
-                .questionText("상담사의 전문성과 태도에 만족하십니까?")
-                .isSystemDefault(true)
-                .questionType(SatisfactionQuestion.QuestionType.RATING)
-                .displayOrder(1)
-                .isRequired(true)
-                .isActive(true)
-                .build());
-
-        SatisfactionQuestion question2 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
-                .questionText("상담을 통해 문제 해결에 도움을 받으셨습니까?")
-                .isSystemDefault(true)
-                .questionType(SatisfactionQuestion.QuestionType.RATING)
-                .displayOrder(2)
-                .isRequired(true)
-                .isActive(true)
-                .build());
-
-        SatisfactionQuestion question3 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
-                .questionText("추가로 하고 싶은 말씀이 있으신가요?")
-                .isSystemDefault(true)
-                .questionType(SatisfactionQuestion.QuestionType.TEXT) //주관식
-                .displayOrder(3)
-                .isRequired(false)
-                .isActive(true)
-                .build());
-
-        SatisfactionQuestion question4 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
-                .questionText("향후 선호하는 상담 방식은 무엇입니까?")
-                .questionType(SatisfactionQuestion.QuestionType.MULTIPLE_CHOICE)
-                .displayOrder(4)
-                .isSystemDefault(false)
-                .isRequired(false)
-                .isActive(true)
-                .build());
-
-        questionOptionRepository.save(QuestionOption.builder()
-                .question(question4).optionText("대면 상담").optionValue(1).displayOrder(1).build());
-
-        questionOptionRepository.save(QuestionOption.builder()
-                .question(question4).optionText("화상 상담").optionValue(2).displayOrder(2).build());
-
-        questionOptionRepository.save(QuestionOption.builder()
-                .question(question4).optionText("카톡 상담").optionValue(3).displayOrder(3).build());
-
-        questionOptionRepository.save(QuestionOption.builder()
-                .question(question4).optionText("전화 상담").optionValue(4).displayOrder(4).build());
-
-        log.info("✅ 상담 후 만족도 조사 질문 4건(시스템 기본)이 생성되었습니다.");
-        log.info("✅ QuestionOption 초기 데이터 4건이 생성되었습니다.");
-
-        // 진단 세션(AssessmentSection) 초기화 데이터
-
-        LocalDateTime now = LocalDateTime.now();
-
-        // 1. [진행 중]
-        AssessmentSection activeSection = AssessmentSection.builder()
-                .title("2025학년도 1학기 정기 핵심역량 진단")
-                .description("재학생 전체를 대상으로 하는 정기 진단입니다. 성실히 응답해 주세요.")
-                .startDate(now.minusDays(7))
-                .endDate(now.plusDays(7))
-                .isActive(true)
-                .build();
-
-        // 2. [종료됨]
-        AssessmentSection expiredSection = AssessmentSection.builder()
-                .title("2024학년도 2학기 정기 핵심역량 진단")
-                .description("지난 학기 진단 결과입니다.")
-                .startDate(now.minusMonths(2))
-                .endDate(now.minusMonths(1))
-                .isActive(true)
-                .build();
-
-        // 3. [예정됨]
-        AssessmentSection upcomingSection = AssessmentSection.builder()
-                .title("2025학년도 여름방학 특별 진단")
-                .description("여름방학 프로그램 참여자를 위한 사전 진단입니다.")
-                .startDate(now.plusMonths(1))
-                .endDate(now.plusMonths(2))
-                .isActive(true)
-                .build();
-
-        // 4. [비활성]
-        AssessmentSection inactiveSection = AssessmentSection.builder()
-                .title("(임시) 관리자 테스트용 진단")
-                .description("학생들에게는 보이지 않는 테스트 항목입니다.")
-                .startDate(now.minusDays(1))
-                .endDate(now.plusDays(1))
-                .isActive(false)
-                .build();
-
-        assessmentSectionRepository.saveAll(List.of(activeSection, expiredSection, upcomingSection, inactiveSection));
-        log.info("✅ AssessmentSection 초기 데이터 4건이 생성되었습니다.");
-
-        log.info("테스트 데이터 초기화 완료");
-
-
-    }
-
-    private Department ensureDept(String code, String name) {
-        return departmentRepository.findByCode(code)
-                .orElseGet(() -> departmentRepository.save(
-                    Department.builder().code(code).name(name).build()));
-    }
-
-
-
 }
 
+    private Department ensureDept(String code, String name) {
+    return departmentRepository.findByCode(code)
+            .orElseGet(() -> departmentRepository.save(
+                    Department.builder().code(code).name(name).build()));
+    }
+}

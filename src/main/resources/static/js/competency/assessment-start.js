@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 버튼 비활성화 및 로딩 표시 (중복 전송 방지)
             toggleButtons(true);
 
-            const response = await fetch('/user/assessment/submit', {
+            const response = await fetch('/student/assessment/submit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -97,6 +97,10 @@
 </th:block>
 
 <th:block th:fragment="scripts">
+    <script th:inline="javascript">
+        // 서버에서 전달받은 데이터를 JavaScript 변수로 설정
+        window.dashboardData = /*[[${dashboardData}]]*/ null;
+    </script>
     <script th:src="@{/js/dashboard.js}"></script>
 </th:block>
 </body>
