@@ -1,10 +1,13 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="ko">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>OP-007 결과보고서 등록</title>
-    <style>
+    <title>OP-007 결과보고서 등록</title> -->
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentStyles">
+<style>
         :root{
             --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
             --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
@@ -82,9 +85,11 @@
             .kpis{grid-template-columns:repeat(3,1fr)}
             .grid-2,.grid-3{grid-template-columns:1fr}
         }
-    </style>
-</head>
-<body>
+</style>
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentFragment">
 <div class="page">
     <h1>결과보고서 등록 <span class="muted">운영자</span></h1>
 
@@ -315,6 +320,10 @@
 <!-- Toast -->
 <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
 
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentScript">
 <script>
     /* ===== Config & State ===== */
     const API = {
@@ -608,5 +617,4 @@
     }
     init();
 </script>
-</body>
-</html>
+</div>

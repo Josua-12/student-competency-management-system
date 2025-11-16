@@ -1,10 +1,13 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="ko">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>비교과 프로그램 상세 (학생)</title>
-    <style>
+    <title>비교과 프로그램 상세 (학생)</title> -->
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentStyles">
+<style>
         :root{
             --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
             --card:#fafafa; --chip:#f3f4f6;
@@ -149,9 +152,11 @@
             .info-grid{grid-template-columns:1fr;}
             .actions-bar{position:static;margin-top:20px;}
         }
-    </style>
-</head>
-<body>
+</style>
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentFragment">
 <div class="wrap">
     <!-- 헤더 -->
     <header class="detail-header">
@@ -309,6 +314,10 @@
 
 <div id="toast" class="toast" hidden></div>
 
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentScript">
 <script>
     const USE_MOCK_DETAIL = true;
 
@@ -591,5 +600,4 @@
         }
     })();
 </script>
-</body>
-</html>
+</div>
