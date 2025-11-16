@@ -46,8 +46,8 @@
                                 <p class="text-center text-muted mb-4">평균 점수 (2025.01.20 진단)</p>
 
                                 <div class="d-grid gap-2 d-md-block text-center">
-                                    <button class="btn btn-outline-primary btn-sm rounded-pill" id="btnLatestDetail">상세 결과 보기</button>
-                                    <a href="/student/mypage/assessment-history" class="btn btn-primary btn-sm rounded-pill">현황 전체 보기</a>
+                                    <a href="/student/assessment" class="btn btn-outline-primary btn-sm rounded-pill">상세 결과 보기</a>
+                                    <a href="/student/assessment" class="btn btn-primary btn-sm rounded-pill">현황 전체 보기</a>
                                 </div>
                             </div>
                         </div>
@@ -71,9 +71,9 @@
                             </div>
                             <p class="mb-0 mt-2">전문 상담사 A | 2025-03-20 14:00</p>
                             <p class="text-sm text-muted mb-2">진로상담 (대면)</p>
-                            <button class="btn btn-danger btn-sm rounded-pill" id="btnCounselCancel">
-                                <i class="fas fa-times me-1"></i> 취소
-                            </button>
+                            <a href="/counseling/student/status" class="btn btn-primary btn-sm rounded-pill">
+                                <i class="fas fa-calendar me-1"></i> 예약 보기
+                            </a>
                         </div>
 
                         <!-- 프로그램 신청 현황 -->
@@ -86,7 +86,7 @@
                             <span class="fw-bold fs-4 text-success" id="completedProgramCount">3건</span>
                         </div>
                         <div class="d-grid">
-                            <a href="/student/mypage/application-status" class="btn btn-outline-secondary btn-sm rounded-pill mt-2">신청 현황 전체보기</a>
+                            <a href="/noncurricular/student/dashboard" class="btn btn-outline-secondary btn-sm rounded-pill mt-2">신청 현황 전체보기</a>
                         </div>
                     </div>
                 </div>
@@ -189,23 +189,9 @@
                     });
                 }
 
-                // 상담 취소 버튼 이벤트
-                const btnCounselCancel = document.getElementById('btnCounselCancel');
-                if (btnCounselCancel) {
-                    btnCounselCancel.addEventListener('click', function() {
-                        if (confirm('상담 예약을 정말로 취소하시겠습니까?')) {
-                            alert('상담 취소 요청이 처리되었습니다.');
-                        }
-                    });
-                }
 
-                // 상세 결과 보기 버튼 이벤트
-                const btnLatestDetail = document.getElementById('btnLatestDetail');
-                if (btnLatestDetail) {
-                    btnLatestDetail.addEventListener('click', function() {
-                        alert('상세 결과 페이지로 이동합니다.');
-                    });
-                }
+
+
 
                 // 차트 초기화
                 renderMainRadarChart();
