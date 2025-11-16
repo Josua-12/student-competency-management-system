@@ -53,11 +53,40 @@ public class DashboardController {
     }
 
     @GetMapping("/competency")
-    public ResponseEntity<Map<String, Object>> getCompetency() {
-        return ResponseEntity.ok(Map.of(
-                "labels", List.of("소통역량", "학습역량", "문제해결역량", "팀워크역량"),
-                "scores", List.of(4.2, 3.8, 4.0, 3.5)
-        ));
+    public ResponseEntity<Map<String, Object>> getCompetency(Authentication auth) {
+        String identifier = auth.getName();
+        User user;
+        
+        if (identifier.contains("@")) {
+            user = userRepository.findByEmail(identifier)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + identifier));
+        } else {
+            try {
+                Integer userNum = Integer.parseInt(identifier);
+                user = userRepository.findByUserNum(userNum)
+                        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다: " + identifier));
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("잘못된 사용자 식별자: " + identifier);
+            }
+        }
+        
+        // 실제 역량 진단 결과 조회 (임시 데이터)
+        // TODO: 실제 AssessmentResult 엔티티에서 조회
+        // 예시: 진단 결과가 없는 경우
+        boolean hasAssessmentResult = false; // 실제로는 DB에서 조회
+        
+        if (hasAssessmentResult) {
+            return ResponseEntity.ok(Map.of(
+                    "hasResult", true,
+                    "labels", List.of("소통역량", "학습역량", "문제해결역량", "팀워크역량"),
+                    "scores", List.of(4.2, 3.8, 4.0, 3.5),
+                    "lastAssessmentDate", "2025-11-01"
+            ));
+        } else {
+            return ResponseEntity.ok(Map.of(
+                    "hasResult", false
+            ));
+        }
     }
 
     @GetMapping("/consultations")
