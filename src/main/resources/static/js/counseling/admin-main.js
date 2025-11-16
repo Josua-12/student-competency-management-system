@@ -24,10 +24,12 @@ async function loadAdminStats() {
 
 function updateStatCards(stats) {
     const cards = document.querySelectorAll('.card-body .h5');
-    if (stats.totalReservations) cards[0].textContent = `${stats.totalReservations}건`;
-    if (stats.pendingCount) cards[1].textContent = `${stats.pendingCount}건`;
-    if (stats.activeCounselors) cards[2].textContent = `${stats.activeCounselors}명`;
-    if (stats.avgSatisfaction) cards[3].textContent = `${stats.avgSatisfaction}/5.0`;
+    if (!cards || cards.length < 4) return;
+    
+    cards[0].textContent = `${stats.totalReservations || 0}건`;
+    cards[1].textContent = `${stats.pendingCount || 0}건`;
+    cards[2].textContent = `${stats.activeCounselors || 0}명`;
+    cards[3].textContent = `${stats.avgSatisfaction || '0.0'}/5.0`;
 }
 
 async function loadPendingApprovals() {
@@ -48,18 +50,30 @@ async function loadPendingApprovals() {
 
 function renderPendingTable(reservations) {
     const tbody = document.querySelector('.table tbody');
+    if (!tbody) return;
+    
     if (reservations.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" class="text-center">승인 대기 내역이 없습니다.</td></tr>';
         return;
     }
     tbody.innerHTML = reservations.slice(0, 5).map(r => `
         <tr>
-            <td>${r.studentName}</td>
-            <td>${r.counselingField}</td>
+            <td>${r.studentName || '학생'}</td>
+            <td>${getFieldName(r.counselingField)}</td>
             <td>${formatDate(r.createdAt)}</td>
             <td><a href="/counseling/admin/approvals?id=${r.id}" class="btn btn-sm btn-primary">처리</a></td>
         </tr>
     `).join('');
+}
+
+function getFieldName(field) {
+    const fieldNames = {
+        'PSYCHOLOGICAL': '심리상담',
+        'CAREER': '진로상담',
+        'EMPLOYMENT': '취업상담',
+        'LEARNING': '학습상담'
+    };
+    return fieldNames[field] || field;
 }
 
 async function loadCounselorStats() {
@@ -80,20 +94,20 @@ async function loadCounselorStats() {
 
 function renderCounselorTable(counselors) {
     const tbody = document.querySelectorAll('.table')[1]?.querySelector('tbody');
-    if (tbody) {
-        if (counselors.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center">상담사 데이터가 없습니다.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = counselors.slice(0, 5).map(c => `
-            <tr>
-                <td>${c.name}</td>
-                <td>${c.specialization}</td>
-                <td>${c.monthlyCount}건</td>
-                <td>${c.avgSatisfaction}</td>
-            </tr>
-        `).join('');
+    if (!tbody) return;
+    
+    if (counselors.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">상담사 데이터가 없습니다.</td></tr>';
+        return;
     }
+    tbody.innerHTML = counselors.slice(0, 5).map(c => `
+        <tr>
+            <td>${c.name || c.counselorName}</td>
+            <td>${c.specialization || getFieldName(c.counselingField)}</td>
+            <td>${c.monthlyCount || 0}건</td>
+            <td>${c.avgSatisfaction || '0.0'}</td>
+        </tr>
+    `).join('');
 }
 
 function formatDate(dateStr) {

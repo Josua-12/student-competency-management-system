@@ -73,11 +73,8 @@
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">상담사</label>
-                                <select class="form-select">
+                                <select class="form-select" id="counselorFilter">
                                     <option value="">전체</option>
-                                    <option value="1">김상담</option>
-                                    <option value="2">이상담</option>
-                                    <option value="3">박상담</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -207,11 +204,8 @@
                     <form>
                         <div class="mb-3">
                             <label class="form-label">상담사 선택</label>
-                            <select class="form-select" required>
+                            <select class="form-select" id="assignCounselorSelect" required>
                                 <option value="">상담사를 선택하세요</option>
-                                <option value="1">김상담 (진로상담 전문)</option>
-                                <option value="2">이상담 (학업상담 전문)</option>
-                                <option value="3">박상담 (심리상담 전문)</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -320,6 +314,51 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // 페이지 로드 시 상담사 목록 로드
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCounselors();
+        });
+
+        async function loadCounselors() {
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetch('/api/counseling/management/counselors', {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const counselors = data.content || data;
+                    
+                    const counselorFilter = document.getElementById('counselorFilter');
+                    const assignCounselorSelect = document.getElementById('assignCounselorSelect');
+                    
+                    counselors.forEach(counselor => {
+                        const filterOption = document.createElement('option');
+                        filterOption.value = counselor.userId;
+                        filterOption.textContent = counselor.name;
+                        counselorFilter.appendChild(filterOption);
+                        
+                        const assignOption = document.createElement('option');
+                        assignOption.value = counselor.userId;
+                        assignOption.textContent = `${counselor.name} (${getFieldName(counselor.counselingField)} 전문)`;
+                        assignCounselorSelect.appendChild(assignOption);
+                    });
+                }
+            } catch (error) {
+                console.error('상담사 목록 로드 실패:', error);
+            }
+        }
+
+        function getFieldName(field) {
+            const fieldNames = {
+                'PSYCHOLOGICAL': '심리상담',
+                'CAREER': '진로상담',
+                'EMPLOYMENT': '취업상담',
+                'LEARNING': '학습상담'
+            };
+            return fieldNames[field] || field;
+        }
         // 전체 선택 체크박스
         document.getElementById('selectAll').addEventListener('change', function() {
             const checkboxes = document.querySelectorAll('.row-checkbox');
@@ -356,9 +395,8 @@
         document.querySelectorAll('[data-bs-target="#assignModal"]').forEach(button => {
             button.addEventListener('click', function() {
                 const counselor = this.getAttribute('data-counselor');
-                const select = document.querySelector('#assignModal select');
+                const select = document.getElementById('assignCounselorSelect');
                 if (counselor && counselor !== '') {
-                    // 기존 상담사가 있으면 해당 값으로 설정
                     Array.from(select.options).forEach(option => {
                         if (option.text.includes(counselor)) {
                             option.selected = true;

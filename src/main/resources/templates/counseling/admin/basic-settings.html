@@ -243,53 +243,8 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr data-field="CAREER">
-                                                <td>김상담</td>
-                                                <td>kim.counselor@university.ac.kr</td>
-                                                <td>진로상담</td>
-                                                <td>IT, 공학계열 진로 지도</td>
-                                                <td><span class="badge bg-success">활성</span></td>
-                                                <td>2024-01-01</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
-                                                    <button class="btn btn-sm btn-outline-warning">비활성</button>
-                                                </td>
-                                            </tr>
-                                            <tr data-field="LEARNING">
-                                                <td>이상담</td>
-                                                <td>lee.counselor@university.ac.kr</td>
-                                                <td>학습상담</td>
-                                                <td>학습법, 시간관리, 학업계획</td>
-                                                <td><span class="badge bg-success">활성</span></td>
-                                                <td>2024-01-01</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
-                                                    <button class="btn btn-sm btn-outline-warning">비활성</button>
-                                                </td>
-                                            </tr>
-                                            <tr data-field="PSYCHOLOGICAL">
-                                                <td>박상담</td>
-                                                <td>park.counselor@university.ac.kr</td>
-                                                <td>심리상담</td>
-                                                <td>스트레스 관리, 대인관계</td>
-                                                <td><span class="badge bg-danger">비활성</span></td>
-                                                <td>2024-01-01</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
-                                                    <button class="btn btn-sm btn-outline-success">활성</button>
-                                                </td>
-                                            </tr>
-                                            <tr data-field="EMPLOYMENT">
-                                                <td>최상담</td>
-                                                <td>choi.counselor@university.ac.kr</td>
-                                                <td>취업상담</td>
-                                                <td>이력서 작성, 면접 준비</td>
-                                                <td><span class="badge bg-success">활성</span></td>
-                                                <td>2024-01-02</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
-                                                    <button class="btn btn-sm btn-outline-warning">비활성</button>
-                                                </td>
+                                            <tr>
+                                                <td colspan="7" class="text-center">로딩 중...</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -582,6 +537,67 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCounselors();
+        });
+
+        async function loadCounselors() {
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetch('/api/counseling/management/counselors', {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const counselors = data.content || data;
+                    renderCounselorTable(counselors);
+                }
+            } catch (error) {
+                console.error('상담원 목록 로드 실패:', error);
+            }
+        }
+
+        function renderCounselorTable(counselors) {
+            const tbody = document.querySelector('#counselorTable tbody');
+            if (!tbody) return;
+            
+            if (counselors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">등록된 상담원이 없습니다.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = counselors.map(c => `
+                <tr data-field="${c.counselingField}">
+                    <td>${c.name}</td>
+                    <td>${c.email}</td>
+                    <td>${getFieldName(c.counselingField)}</td>
+                    <td>${c.specialization || '-'}</td>
+                    <td><span class="badge bg-${c.isActive ? 'success' : 'danger'}">${c.isActive ? '활성' : '비활성'}</span></td>
+                    <td>${formatDate(c.createdAt)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#counselorModal">수정</button>
+                        <button class="btn btn-sm btn-outline-${c.isActive ? 'warning' : 'success'}">${c.isActive ? '비활성' : '활성'}</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getFieldName(field) {
+            const fieldNames = {
+                'PSYCHOLOGICAL': '심리상담',
+                'CAREER': '진로상담',
+                'EMPLOYMENT': '취업상담',
+                'LEARNING': '학습상담'
+            };
+            return fieldNames[field] || field;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return new Date(dateStr).toLocaleDateString('ko-KR');
+        }
+
         // 세부분류 모달 열기
         document.querySelectorAll('[data-bs-target="#subfieldModal"]').forEach(button => {
             button.addEventListener('click', function() {

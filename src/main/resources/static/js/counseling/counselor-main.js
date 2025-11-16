@@ -20,8 +20,12 @@ async function loadDashboardStats() {
             const pendingData = await pending.json();
             const assignedData = await assigned.json();
             
-            document.querySelector('.text-primary + .h5').textContent = `${pendingData.totalElements || 0}건`;
-            document.querySelector('.text-success + .h5').textContent = `${assignedData.content?.filter(r => isToday(r.reservationDate)).length || 0}건`;
+            const cards = document.querySelectorAll('.card-body .h5');
+            if (cards.length >= 4) {
+                cards[0].textContent = `${pendingData.totalElements || 0}건`;
+                cards[1].textContent = `${assignedData.content?.filter(r => isToday(r.reservationDate)).length || 0}건`;
+                cards[2].textContent = `${assignedData.totalElements || 0}건`;
+            }
         }
     } catch (error) {
         console.error('통계 로드 실패:', error);
@@ -46,18 +50,30 @@ async function loadTodaySchedule() {
 
 function renderScheduleTable(reservations) {
     const tbody = document.querySelector('table tbody');
+    if (!tbody) return;
+    
     if (reservations.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" class="text-center">일정이 없습니다.</td></tr>';
         return;
     }
     tbody.innerHTML = reservations.map(r => `
         <tr>
-            <td>${r.startTime}</td>
-            <td>${r.studentName}</td>
-            <td>${r.counselingField}</td>
+            <td>${r.startTime || r.confirmedStartTime || '-'}</td>
+            <td>${r.studentName || '학생'}</td>
+            <td>${getFieldName(r.counselingField)}</td>
             <td><span class="badge bg-${getStatusColor(r.status)}">${getStatusText(r.status)}</span></td>
         </tr>
     `).join('');
+}
+
+function getFieldName(field) {
+    const fieldNames = {
+        'PSYCHOLOGICAL': '심리상담',
+        'CAREER': '진로상담',
+        'EMPLOYMENT': '취업상담',
+        'LEARNING': '학습상담'
+    };
+    return fieldNames[field] || field;
 }
 
 function setupDateNavigation() {

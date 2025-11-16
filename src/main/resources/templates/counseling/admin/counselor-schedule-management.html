@@ -281,27 +281,35 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // 상담분류 선택 시 상담사 목록 업데이트
-        document.getElementById('fieldSelect').addEventListener('change', function() {
+        document.getElementById('fieldSelect').addEventListener('change', async function() {
             const counselorSelect = document.getElementById('counselorSelect');
             const selectedField = this.value;
             
             counselorSelect.innerHTML = '<option value="">상담사를 선택하세요</option>';
             
             if (selectedField) {
-                counselorSelect.disabled = false;
-                const counselors = {
-                    'PSYCHOLOGICAL': [{ id: '1', name: '박상담' }, { id: '2', name: '정상담' }],
-                    'CAREER': [{ id: '3', name: '김상담' }, { id: '4', name: '이상담' }],
-                    'EMPLOYMENT': [{ id: '5', name: '최상담' }, { id: '6', name: '강상담' }],
-                    'LEARNING': [{ id: '7', name: '조상담' }, { id: '8', name: '윤상담' }]
-                };
-                
-                counselors[selectedField].forEach(counselor => {
-                    const option = document.createElement('option');
-                    option.value = counselor.id;
-                    option.textContent = counselor.name;
-                    counselorSelect.appendChild(option);
-                });
+                try {
+                    const token = localStorage.getItem('accessToken');
+                    const response = await fetch(`/api/counseling/management/counselors?field=${selectedField}`, {
+                        headers: {'Authorization': `Bearer ${token}`}
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const counselors = data.content || data;
+                        
+                        counselorSelect.disabled = false;
+                        counselors.forEach(counselor => {
+                            const option = document.createElement('option');
+                            option.value = counselor.userId;
+                            option.textContent = counselor.name;
+                            counselorSelect.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('상담사 목록 로드 실패:', error);
+                    counselorSelect.disabled = true;
+                }
             } else {
                 counselorSelect.disabled = true;
             }
@@ -327,28 +335,39 @@
         });
 
         // 기존 일정 데이터 로드
-        function loadExistingSchedule(counselorId) {
-            // 예시 데이터 - 실제로는 서버에서 가져옴
-            const existingSchedule = {
-                'slot0910_mon': true,
-                'slot1112_mon': true,
-                'slot1415_mon': true,
-                'slot1011_tue': true,
-                'slot1112_tue': true,
-                'slot1415_tue': true
-            };
-            
-            // 체크박스 상태 설정
-            Object.keys(existingSchedule).forEach(key => {
-                const checkbox = document.querySelector(`input[name="${key}"]`);
-                if (checkbox) {
-                    checkbox.checked = existingSchedule[key];
+        async function loadExistingSchedule(counselorId) {
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetch(`/api/counseling/schedules/counselor/${counselorId}`, {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                
+                if (response.ok) {
+                    const schedules = await response.json();
+                    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    
+                    schedules.forEach(schedule => {
+                        const dayMap = {0: 'mon', 1: 'tue', 2: 'wed', 3: 'thu', 4: 'fri'};
+                        const day = dayMap[schedule.dayOfWeek];
+                        
+                        ['0910', '1011', '1112', '1213', '1314', '1415', '1516', '1617', '1718'].forEach(slot => {
+                            const slotKey = `slot${slot}`;
+                            if (schedule[slotKey]) {
+                                const checkbox = document.querySelector(`input[name="${slotKey}_${day}"]`);
+                                if (checkbox) checkbox.checked = true;
+                            }
+                        });
+                    });
                 }
-            });
+            } catch (error) {
+                console.error('일정 로드 실패:', error);
+            }
         }
 
         // 일정 저장
-        document.getElementById('saveSchedule').addEventListener('click', function() {
+        document.getElementById('saveSchedule').addEventListener('click', async function() {
             const fieldId = document.getElementById('fieldSelect').value;
             const counselorId = document.getElementById('counselorSelect').value;
             
@@ -362,8 +381,26 @@
                 scheduleData[checkbox.name] = checkbox.checked;
             });
             
-            console.log('저장할 일정 데이터:', scheduleData);
-            alert('일정이 저장되었습니다.');
+            try {
+                const token = localStorage.getItem('accessToken');
+                const response = await fetch(`/api/counseling/schedules/counselor/${counselorId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(scheduleData)
+                });
+                
+                if (response.ok) {
+                    alert('일정이 저장되었습니다.');
+                } else {
+                    alert('일정 저장에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('일정 저장 실패:', error);
+                alert('일정 저장 중 오류가 발생했습니다.');
+            }
         });
     </script>
 </body>
