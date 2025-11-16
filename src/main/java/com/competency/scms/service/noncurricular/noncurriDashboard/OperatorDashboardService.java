@@ -4,6 +4,6 @@ import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorDashbo
 
 public interface OperatorDashboardService {
 
-    OperatorDashboardResponse getDashboard();
+    OperatorDashboardResponse getDashboard(Long userId);
 }
 

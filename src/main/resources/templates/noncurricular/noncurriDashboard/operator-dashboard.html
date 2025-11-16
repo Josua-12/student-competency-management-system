@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <title>운영자 대시보드</title>
@@ -204,108 +204,109 @@
     </style>
 </head>
 <body>
-<div class="layout">
-    <header>
-        <div>
-            <h1>운영자 대시보드</h1>
-            <p class="sub">비교과 프로그램 운영 · 승인 · 성과/통계를 한눈에 관리하는 화면입니다.</p>
-        </div>
-        <div class="last-update" id="op-lastUpdate">-</div>
-    </header>
+<div th:fragment="content">
+    <div class="layout">
+        <header>
+            <div>
+                <h1>운영자 대시보드</h1>
+                <p class="sub">비교과 프로그램 운영 · 승인 · 성과/통계를 한눈에 관리하는 화면입니다.</p>
+            </div>
+            <div class="last-update" id="op-lastUpdate">-</div>
+        </header>
 
-    <!-- KPI 카드 4개 -->
-    <section class="grid grid-4" style="margin-bottom:16px;">
-        <div class="card">
-            <div class="card-title">승인 대기 프로그램</div>
-            <div class="kpi-value" id="kpi-pendingApproval">0</div>
-            <div class="kpi-label">승인 요청 상태(DRAFT → PENDING)</div>
-            <div class="btn-row">
-                <button class="btn-primary btn" onclick="goToUrl('/operator/program/approval')">승인관리 바로가기</button>
+        <!-- KPI 카드 4개 -->
+        <section class="grid grid-4" style="margin-bottom:16px;">
+            <div class="card">
+                <div class="card-title">승인 대기 프로그램</div>
+                <div class="kpi-value" id="kpi-pendingApproval">0</div>
+                <div class="kpi-label">승인 요청 상태(DRAFT → PENDING)</div>
+                <div class="btn-row">
+                    <button class="btn-primary btn" onclick="goToUrl('/operator/program/approval')">승인관리 바로가기</button>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-title">금일 출석 관리</div>
-            <div class="kpi-value" id="kpi-todayAttendance">0</div>
-            <div class="kpi-label">오늘 출석 체크 해야 할 일정 수</div>
-            <div class="btn-row">
-                <button class="btn btn" onclick="goToUrl('/operator/attendance?today=true')">출석관리</button>
+            <div class="card">
+                <div class="card-title">금일 출석 관리</div>
+                <div class="kpi-value" id="kpi-todayAttendance">0</div>
+                <div class="kpi-label">오늘 출석 체크 해야 할 일정 수</div>
+                <div class="btn-row">
+                    <button class="btn btn" onclick="goToUrl('/operator/attendance?today=true')">출석관리</button>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-title">결과보고서 검토</div>
-            <div class="kpi-value" id="kpi-pendingReports">0</div>
-            <div class="kpi-label">운영자 검토가 필요한 결과보고서</div>
-            <div class="btn-row">
-                <button class="btn btn" onclick="goToUrl('/operator/result-reports')">결과보고서 목록</button>
+            <div class="card">
+                <div class="card-title">결과보고서 검토</div>
+                <div class="kpi-value" id="kpi-pendingReports">0</div>
+                <div class="kpi-label">운영자 검토가 필요한 결과보고서</div>
+                <div class="btn-row">
+                    <button class="btn btn" onclick="goToUrl('/operator/result-reports')">결과보고서 목록</button>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-title">이수처리 대기</div>
-            <div class="kpi-value" id="kpi-pendingCompletion">0</div>
-            <div class="kpi-label">이수 기준 충족 후 미처리 건</div>
-            <div class="btn-row">
-                <button class="btn btn" onclick="goToUrl('/operator/completion')">이수관리</button>
+            <div class="card">
+                <div class="card-title">이수처리 대기</div>
+                <div class="kpi-value" id="kpi-pendingCompletion">0</div>
+                <div class="kpi-label">이수 기준 충족 후 미처리 건</div>
+                <div class="btn-row">
+                    <button class="btn btn" onclick="goToUrl('/operator/completion')">이수관리</button>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 그래프 2개 -->
-    <section class="grid grid-2" style="margin-bottom:16px;">
-        <div class="card">
-            <div class="card-title">월별 프로그램 운영 현황</div>
-            <div class="card-sub">최근 6개월 기준 (개설 수 / 참여자)</div>
-            <div id="op-programChart" style="margin-top:8px;"></div>
-        </div>
-        <div class="card">
-            <div class="card-title">비교과 분야 / 역량 통계</div>
-            <div class="card-sub">인기 카테고리 TOP5 기준</div>
-            <div id="op-competencyChart" style="margin-top:8px;"></div>
-        </div>
-    </section>
-
-    <!-- 업무 목록 -->
-    <section class="grid grid-2">
-        <div class="card">
-            <div class="card-title">승인 요청 프로그램</div>
-            <div class="card-sub">최근 요청 기준</div>
-            <div class="scroll-area">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>프로그램명</th>
-                        <th>요청일</th>
-                        <th>상태</th>
-                    </tr>
-                    </thead>
-                    <tbody id="op-approvalTableBody">
-                    <!-- JS 렌더링 -->
-                    </tbody>
-                </table>
+        <!-- 그래프 2개 -->
+        <section class="grid grid-2" style="margin-bottom:16px;">
+            <div class="card">
+                <div class="card-title">월별 프로그램 운영 현황</div>
+                <div class="card-sub">최근 6개월 기준 (개설 수 / 참여자)</div>
+                <div id="op-programChart" style="margin-top:8px;"></div>
             </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">미처리 업무 (출석/성과/결과보고)</div>
-            <div class="card-sub">처리가 필요한 항목들입니다.</div>
-            <div class="scroll-area">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>유형</th>
-                        <th>프로그램명</th>
-                        <th>기한</th>
-                        <th>상태</th>
-                    </tr>
-                    </thead>
-                    <tbody id="op-taskTableBody">
-                    <!-- JS 렌더링 -->
-                    </tbody>
-                </table>
+            <div class="card">
+                <div class="card-title">비교과 분야 / 역량 통계</div>
+                <div class="card-sub">인기 카테고리 TOP5 기준</div>
+                <div id="op-competencyChart" style="margin-top:8px;"></div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- 업무 목록 -->
+        <section class="grid grid-2">
+            <div class="card">
+                <div class="card-title">승인 요청 프로그램</div>
+                <div class="card-sub">최근 요청 기준</div>
+                <div class="scroll-area">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>프로그램명</th>
+                            <th>요청일</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="op-approvalTableBody">
+                        <!-- JS 렌더링 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">미처리 업무 (출석/성과/결과보고)</div>
+                <div class="card-sub">처리가 필요한 항목들입니다.</div>
+                <div class="scroll-area">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>유형</th>
+                            <th>프로그램명</th>
+                            <th>기한</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="op-taskTableBody">
+                        <!-- JS 렌더링 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
-
 <script>
     const OP_API = {
         dashboard: '/api/operator/dashboard'

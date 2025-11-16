@@ -14,40 +14,40 @@
 <main th:fragment="content" class="container-lg my-5">
     <div class="assessment-result-container">
         <div class="result-header">
-            <h2 class="main-title" th:text="${result.title}">2025년 역량진단 결과</h2>
+            <h2 class="main-title" th:text="${assessmentResultData.assessmentTitle}">2025년 역량진단 결과</h2>
             <p class="sub-title">
-                <span th:text="${user.name}">홍길동</span> 님의 진단 결과입니다.
-                (진단 완료일: <span th:text="${#temporals.format(result.submittedAt, 'yyyy.MM.dd')}">2025.03.14</span>)
+                <span th:text="${assessmentResultData.userName}">홍길동</span> 님의 진단 결과입니다.
+                (진단 완료일: <span th:text="${#temporals.format(assessmentResultData.submittedAt, 'yyyy.MM.dd')}">2025.03.14</span>)
             </p>
         </div>
 
         <div class="result-card mb-4">
             <h5 class="card-title">1. 전체 요약</h5>
             <div class="chart-container">
-                <canvas id="competencyRadarChart"></canvas>
+                <div id="tui-radar-chart"></div>
             </div>
         </div>
 
         <div class="result-card mb-4">
             <h5 class="card-title">2. 상세 점수 분석</h5>
             <div class="detail-scores-container">
-                <div class="parent-competency-group" th:each="parentResult : ${parentCompetencyResults}">
+                <div class="parent-competency-group" th:each="parentResult : ${assessmentResultData.scoreDetails}">
 
                     <h6 class="parent-title">
-                        [<span th:text="${parentResult.parentName}">핵심역량 1</span>]
-                        <span th:text="${parentResult.parentCompetencyName}">통합적 사고</span>
+                        [핵심역량]
+                        <span th:text="${parentResult.name}">통합적 사고</span>
                         (평균 점수: <span th:text="${#numbers.formatDecimal(parentResult.parentAverageScore, 1, 2)}">4.5</span>점)
                     </h6>
 
                     <div class="child-competency-list">
                         <div class="child-score-item" th:each="child : ${parentResult.children}">
-                            <span class="child-name" th:text="${child.childName}">분석적 사고</span>
+                            <span class="child-name" th:text="${child.name}">분석적 사고</span>
                             <div class="score-bar-container">
                                 <div class="score-bar"
-                                     th:style="'width: ' + (${child.childScore} / 5 * 100) + '%;'">
+                                     th:style="'width: ' + (${child.score} / 5 * 100) + '%;'">
                                 </div>
                             </div>
-                            <span class="child-score" th:text="${#numbers.formatDecimal(child.childScore, 1, 2)} + '점'">xx점</span>
+                            <span class="child-score" th:text="${#numbers.formatDecimal(child.score, 1, 2)} + '점'">xx점</span>
                         </div>
                     </div>
 
@@ -62,9 +62,9 @@
                     <div class="feedback-box strength">
                         <h6 class="feedback-title">강점 (Top 2)</h6>
                         <ul class="feedback-list">
-                            <li th:each="item : ${feedbackData.topStrengths}">
-                                <strong th:text="${item.name}">분석적 사고</strong>:
-                                <span th:text="${item.description}">예) 분석적 사고 잘함</span>
+                            <li th:each="item : ${assessmentResultData.strengths}">
+                                <strong th:text="${item.competencyName}">분석적 사고</strong>:
+                                <span th:text="${item.advice}">예) 분석적 사고 잘함</span>
                             </li>
                         </ul>
                     </div>
@@ -74,24 +74,24 @@
                     <div class="feedback-box weakness">
                         <h6 class="feedback-title">성장 제안 (Bottom 2)</h6>
                         <ul class="feedback-list">
-                            <li th:each="item : ${feedbackData.bottomWeaknesses}">
-                                <strong th:text="${item.name}">협업 능력</strong>
-                                (<span th:text="${#numbers.formatDecimal(item.score, 1, 2)} + '점'">30점</span>)
+                            <li th:each="item : ${assessmentResultData.weaknesses}">
+                                <strong th:text="${item.competencyName}">협업 능력</strong>
+<!--                                (<span th:text="${#numbers.formatDecimal(item.score, 1, 2)} + '점'">0점</span>)-->
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <div class="advice-section">
+            <div class="advice-section" th:if="${!#lists.isEmpty(assessmentResultData.weaknesses)}">
                 <h6 class="advice-title">성장을 위한 맞춤 조언</h6>
                 <p>
-                    <strong th:text="'\'\'' + ${feedbackData.weakestCompetencyName} + '\' 역량 향상을 위한 Tip!'">
-                        '협업 능력' 향상을 위한 Tip!
+                    <strong th:text="'\'\'' + ${assessmentResultData.weaknesses[0].competencyName} + '\' 역량 향상을 위한 Tip!'">
+                        역량 향상을 위한 Tip!
                     </strong>
                 </p>
-                <p class="advice-content" th:text="${feedbackData.growthAdvice}">
-                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                <p class="advice-content" th:text="${assessmentResultData.weaknesses[0].advice}">
+                    해당 역량을 키우기 위해 관련 비교과 프로그램에 참여해보세요
                 </p>
             </div>
 
@@ -100,73 +100,64 @@
 
 <th:block th:fragment="scripts" id="page-scripts">
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
-    <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css" />
 
     <script th:inline="javascript">
         /*<![CDATA[*/
 
-        const chartData = /*[[${chartData}]]*/ {
-            labels: ["창의성", "대인관계", "실무활용", "통합적 사고"],
-            myScores: [4.2, 3.8, 5.0, 4.0],
-            deptScores: [3.5, 4.0, 4.2, 3.8],
-            univScores: [3.3, 3.8, 4.0, 3.5]
-        };
+        // 1. Controller에서 넘겨준 DTO 내부의 radarChartData를 가져옵니다.
+        // (RadarChartData: { labels: [...], scores: [...] })
+        const serverChartData = /*[[${assessmentResultData.radarChartData}]]*/ null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            if (!serverChartData) return;
 
-            // 1. Toast UI Chart를 위한 데이터 구조로 변환
-            const tuiData = {
-                categories: chartData.labels, // 레이블은 categories
+            const el = document.getElementById('tui-radar-chart');
+
+            const fixedWidth = el.offsetWidth;
+
+            // 2. 데이터 설정
+            const data = {
+                categories: serverChartData.labels,
                 series: [
                     {
-                        name: '내 점수',
-                        data: chartData.myScores,
-                    },
-                    {
-                        name: '학과 평균',
-                        data: chartData.deptScores,
-                    },
-                    {
-                        name: '학교 평균',
-                        data: chartData.univScores,
+                        name: '나의 점수',
+                        data: serverChartData.scores
                     }
                 ]
             };
 
-            // 2. Toast UI Chart 옵션 설정
-            const tuiOptions = {
+            // 3. 옵션 설정
+            const options = {
                 chart: {
-                    width: 'auto',
-                    height: 450, // 차트 높이 설정
+                    width: fixedWidth,    // 부모 div 너비에 맞춤
+                    height: 450       // ✅ 높이를 고정해서 "지랄맞은" 리사이징 방지
                 },
-                legend: {
-                    visible: true,
-                    align: 'bottom', // 범례를 하단으로
+                legend: { align: 'bottom' },
+                series: {
+                    showDot: true,
+                    showArea: true
                 },
-                // ⭐️ 0점 ~ 5점 척도 설정
-                scale: {
-                    limit: {
-                        min: 0,
-                        max: 5,
-                    },
-                    stepSize: 1, // 1점 단위 눈금
+                plot: { type: 'radar' },
+                yAxis: {
+                    scale: { min: 0, max: 5 }, // 5점 만점 고정
+                    min: 0, max: 5, stepSize: 1
                 },
-                exportMenu: {
-                    visible: false
+                // ✅ [추가] 소수점 깔끔하게 자르기 (툴팁)
+                tooltip: {
+                    formatter: (value) => Number(value).toFixed(1) + '점'
                 },
-                plot: {
-                    // 차트의 영역 배경색을 투명하게 설정하여 캔버스 배경과 통일
-                    visible: true,
-                    showLine: true
-                }
+                // (선택) 차트 내보내기 메뉴 숨김
+                exportMenu: { visible: false }
             };
 
-            // 3. 차트 생성
-            new tui.chart.RadialChart({
-                el: document.getElementById('competencyRadarChart'),
-                data: tuiData,
-                options: tuiOptions,
-            });
+            // 4. 차트 그리기
+            // Toast UI Chart 버전에 따라 함수명이 다를 수 있어 안전하게 처리
+            if (toastui.Chart.radarChart) {
+                toastui.Chart.radarChart({ el, data, options });
+            } else {
+                // 구버전 호환
+                new toastui.Chart.radarChart({ el, data, options });
+            }
         });
 
         /*]]>*/

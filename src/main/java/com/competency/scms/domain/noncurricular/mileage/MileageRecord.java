@@ -20,12 +20,12 @@ public class MileageRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "mileage_id")
     private Long mileageId;
 
     // 학생
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User student;
 
 

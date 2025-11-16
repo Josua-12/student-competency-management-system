@@ -83,12 +83,12 @@ public interface ProgramApplicationRepository
 
     long countByStudentIdAndStatusIn(Long studentId, List<ApplicationStatus> statuses);
 
-    long countByStudentIdAndCompletedTrue(Long studentId);
+    long countByStudent_IdAndStatus(Long studentId, ApplicationStatus status);
 
     // 학생 최근 신청 3건
     @Query("""
-        select new com.competency.scms.dto.dashboard.StudentLatestApplicationDto(
-            p.id,
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentLatestApplicationDto(
+            p.programId,
             p.title,
             concat(
                 function('date_format', p.programStartAt, '%Y-%m-%d'),
@@ -106,8 +106,8 @@ public interface ProgramApplicationRepository
 
     // 운영자 승인 요청 목록 (최근 n개)
     @Query("""
-        select new com.competency.scms.dto.dashboard.OperatorApprovalRequestDto(
-            p.id,
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorApprovalRequestDto(
+            p.programId,
             p.title,
             function('date', app.appliedAt),
             app.status

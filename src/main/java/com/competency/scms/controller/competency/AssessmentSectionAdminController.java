@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/admin/assessment-section")
+@RequestMapping("/competency-admin/assessment-section")
 @RequiredArgsConstructor
 public class AssessmentSectionAdminController {
 
@@ -32,7 +32,7 @@ public class AssessmentSectionAdminController {
     }
 
     // 3. API: 섹션 상세 조회
-    @GetMapping("/api/section/{id}")
+    @GetMapping("/api/sections/{id}")
     @ResponseBody
     public ResponseEntity<AssessmentSectionFormDto> getSectionDetails(@PathVariable("id") Long id) {
         AssessmentSectionFormDto dto = sectionAdminService.getSectionDetails(id);

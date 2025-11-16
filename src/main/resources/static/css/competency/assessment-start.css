@@ -116,3 +116,39 @@
     padding: 10px 20px;
     font-weight: 600;
 }
+
+/* ============================================
+   [UX 개선] 프로그레스 바 상단 고정 (Sticky)
+   ============================================ */
+
+/* 1. 프로그레스 바 컨테이너 고정 */
+.assessment-header .progress {
+    position: -webkit-sticky; /* 사파리 브라우저 호환 */
+    position: sticky;
+    top: 0;               /* 화면 맨 위(0px)에 고정 */
+    z-index: 1050;        /* 다른 요소들보다 위에 떠 있도록 설정 */
+
+    height: 1.8rem;       /* 높이를 조금 키워서 눈에 잘 띄게 */
+    font-size: 1rem;      /* 글자 크기 키움 */
+    font-weight: bold;
+
+    border-radius: 0 0 8px 8px; /* 아래쪽만 둥글게 (선택사항) */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 그림자를 줘서 본문과 구분 */
+    margin-bottom: 2rem;  /* 본문과의 간격 확보 */
+}
+
+/* 2. (선택사항) 만약 상단 네비게이션 바(Header)가 고정(fixed)되어 있다면? */
+/* 네비게이션 바 높이만큼 top 값을 조정해야 가려지지 않습니다. */
+/* 예: 네비게이션 높이가 60px라면 */
+/*
+.assessment-header .progress {
+    top: 60px;
+}
+*/
+
+/* 3. 진행률 숫자 텍스트 스타일 */
+.progress-bar {
+    line-height: 1.8rem; /* 텍스트 수직 중앙 정렬 */
+    background-color: #0d6efd; /* (기본 파란색 유지 or 변경 가능) */
+    transition: width 0.4s ease; /* 부드럽게 차오르는 애니메이션 */
+}

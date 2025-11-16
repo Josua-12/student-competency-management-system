@@ -1,6 +1,8 @@
 package com.competency.scms.service.noncurricular.noncurriDashboard;
 
+import com.competency.scms.domain.noncurricular.operation.AttendanceStatus;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
+import com.competency.scms.domain.noncurricular.report.ReportStatus;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorDashboardResponse;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorPendingTaskDto;
 import com.competency.scms.repository.noncurricular.mileage.MileageRecordRepository;
@@ -27,13 +29,13 @@ public class OperatorDashboardServiceImpl implements OperatorDashboardService {
     private final ProgramReportRepository reportRepository;
 
     @Override
-    public OperatorDashboardResponse getDashboard() {
+    public OperatorDashboardResponse getDashboard(Long userId) {
 
         // KPI
         long pendingApproval = programRepository.countByStatus(ProgramStatus.PENDING);
         long todayAttendance = attendanceRepository.countByAttendDate(LocalDate.now());
-        long pendingReports   = reportRepository.countByReviewedFalse();
-        long pendingCompletion = attendanceRepository.countByStatusAndCompletedFalse("PRESENT");
+        long pendingReports   = reportRepository.countByStatus(ReportStatus.SUBMITTED);
+        long pendingCompletion = attendanceRepository.countByStatus(AttendanceStatus.PRESENT);
 
         // 최근 6개월 기준
         var fromDate = LocalDate.now().minus(6, ChronoUnit.MONTHS);

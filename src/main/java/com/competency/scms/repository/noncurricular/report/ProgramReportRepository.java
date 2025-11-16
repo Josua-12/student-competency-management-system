@@ -57,8 +57,8 @@ public interface ProgramReportRepository
                                           @Param("reportType") ReportType reportType,
                                           Pageable pageable);
 
-        // 미검토 결과보고서 수 (reviewed = false 라는 필드가 있다고 가정)
-        long countByReviewedFalse();
+        // 미검토 결과보고서 수
+        long countByStatus(ReportStatus status);
 
 }
 

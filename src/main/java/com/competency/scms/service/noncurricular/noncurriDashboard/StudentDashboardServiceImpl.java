@@ -7,7 +7,6 @@ import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentDa
 import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentRecommendationDto;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentSummaryDto;
 import com.competency.scms.repository.competency.AssessmentResultRepository;
-import com.competency.scms.repository.competency.AssessmentScoreRepository;
 import com.competency.scms.repository.noncurricular.mileage.MileageRecordRepository;
 import com.competency.scms.repository.noncurricular.operation.ProgramApplicationRepository;
 import com.competency.scms.repository.noncurricular.program.ProgramRepository;
@@ -36,7 +35,7 @@ public class StudentDashboardServiceImpl implements StudentDashboardService {
                 studentId,
                 List.of(ApplicationStatus.APPROVED, ApplicationStatus.PENDING)
         );
-        long completed = applicationRepository.countByStudentIdAndCompletedTrue(studentId);
+        long completed = applicationRepository.countByStudent_IdAndStatus(studentId, ApplicationStatus.APPROVED);
         long mileage = mileageRecordRepository.sumPointsByStudent(studentId);
 
         var summary = StudentSummaryDto.builder()

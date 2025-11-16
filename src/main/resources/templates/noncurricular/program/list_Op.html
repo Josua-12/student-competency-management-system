@@ -398,11 +398,11 @@
                 const id = e.currentTarget.dataset.id;
                 const act = e.currentTarget.dataset.act;
                 if(act==='detail'){
-                    // 실제 연결 예시: /operator/programs/${id}
-                    toast(`상세 보기: /operator/programs/${id}`);
+                    // 실제 연결 예시: /noncurricular-operator/programs/${id}
+                    toast(`상세 보기: /noncurricular-operator/programs/${id}`);
                 }else if(act==='edit'){
-                    // 실제 연결 예시: /operator/programs/${id}/edit
-                    toast(`수정: /operator/programs/${id}/edit`);
+                    // 실제 연결 예시: /noncurricular-operator/programs/${id}/edit
+                    toast(`수정: /noncurricular-operator/programs/${id}/edit`);
                 }else if(act==='approve'){
                     toast(`승인요청 전송 완료(#${id})`);
                 }else if(act==='delete'){
@@ -464,8 +464,8 @@
         }
     });
     $('#btnNew').addEventListener('click', ()=>{
-        // 실제 연결 예: /operator/programs/new
-        toast('신규 등록: /operator/programs/new');
+        // 실제 연결 예: /noncurricular-operator/programs/new
+        toast('신규 등록: /noncurricular-operator/programs/new');
     });
 
     // 초기 렌더

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>비교과 프로그램 조회 (운영자)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root{
+            --bg:#f7f8fa; --card:#fff; --line:#e6e8ee; --text:#1f2937; --muted:#6b7280;
+            --primary:#2563eb; --primary-weak:#e8efff; --success:#16a34a; --warn:#d97706; --danger:#dc2626;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Noto Sans KR,sans-serif}
+        .wrap{max-width:1200px;margin:24px auto;padding:0 16px}
+        h1{font-size:20px;margin:0 0 16px}
+        .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+        .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+        .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
+        .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+        .filter{padding:16px}
+        .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+        @media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
+        @media (max-width:560px){.grid{grid-template-columns:1fr}}
+        label{display:block;font-weight:600;margin-bottom:6px}
+        input[type="text"],input[type="date"],select{
+            width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff
+        }
+        .filter-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+        .table{width:100%;border-collapse:separate;border-spacing:0}
+        .table thead th{background:#f3f4f6;text-align:left;font-weight:700;padding:12px;border-bottom:1px solid var(--line);position:sticky;top:0}
+        .table tbody td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+        .table tbody tr:hover{background:#fafbff}
+        .th-sort{cursor:pointer;user-select:none}
+        .muted{color:var(--muted)}
+        .badges{display:flex;gap:6px;flex-wrap:wrap}
+        .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid transparent}
+        .badge.status-DRAFT{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+        .badge.status-PENDING{background:#fffbeb;border-color:#fde68a;color:#b45309}
+        .badge.status-APPROVED{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+        .badge.status-ONGOING{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
+        .badge.status-COMPLETED{background:#f1f5f9;border-color:#cbd5e1;color:#334155}
+        .badge.status-REJECTED{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+        .badge.approval-REQ{background:var(--primary-weak);border-color:#c7d2fe;color:#1d4ed8}
+        .badge.approval-WAIT{background:#fffbeb;border-color:#fde68a;color:#b45309}
+        .badge.approval-DONE{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+        .kpi{font-weight:700}
+        .actions{display:flex;gap:6px;flex-wrap:wrap}
+        .btn.ghost{background:#fff}
+        .pagination{display:flex;justify-content:center;gap:6px;padding:12px}
+        .page{border:1px solid var(--line);background:#fff;padding:6px 10px;border-radius:8px;cursor:pointer}
+        .page.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+        .empty{padding:24px;text-align:center;color:var(--muted)}
+        /* 토스트 */
+        .toast{
+            position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:9999
+        }
+        .toast-item{background:#111827;color:#fff;padding:10px 12px;border-radius:10px;opacity:.95;box-shadow:0 10px 20px rgba(0,0,0,.12)}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>비교과 프로그램 조회 <span class="muted">(운영자)</span></h1>
+
+    <!-- 상단 툴바 -->
+    <div class="toolbar">
+        <button class="btn primary" id="btnNew">신규 등록</button>
+        <button class="btn" id="btnBulkApprove" disabled>일괄 승인요청</button>
+        <button class="btn" id="btnBulkDelete" disabled>일괄 삭제</button>
+        <span class="muted" id="selCount">선택 0건</span>
+    </div>
+
+    <!-- 필터 카드 -->
+    <div class="card filter" id="filterCard">
+        <div class="grid">
+            <div>
+                <label>프로그램명/코드</label>
+                <input type="text" id="q" placeholder="프로그램명 또는 코드" />
+            </div>
+            <div>
+                <label>운영부서</label>
+                <select id="dept">
+                    <option value="">전체</option>
+                    <option>학생성장지원센터</option>
+                    <option>취업진로처</option>
+                    <option>도서관</option>
+                    <option>SW교육센터</option>
+                </select>
+            </div>
+            <div>
+                <label>모집상태</label>
+                <select id="recruit">
+                    <option value="">전체</option>
+                    <option value="READY">대기</option>
+                    <option value="OPEN">모집중</option>
+                    <option value="CLOSED">모집마감</option>
+                </select>
+            </div>
+            <div>
+                <label>승인상태</label>
+                <select id="approval">
+                    <option value="">전체</option>
+                    <option value="REQ">승인요청</option>
+                    <option value="WAIT">검토중</option>
+                    <option value="DONE">승인완료</option>
+                    <option value="REJ">반려</option>
+                </select>
+            </div>
+
+            <div>
+                <label>신청기간(시작)</label>
+                <input type="date" id="appStartFrom" />
+            </div>
+            <div>
+                <label>신청기간(끝)</label>
+                <input type="date" id="appStartTo" />
+            </div>
+            <div>
+                <label>운영기간(시작)</label>
+                <input type="date" id="runStartFrom" />
+            </div>
+            <div>
+                <label>운영기간(끝)</label>
+                <input type="date" id="runStartTo" />
+            </div>
+
+            <div>
+                <label>상태(진행)</label>
+                <select id="status">
+                    <option value="">전체</option>
+                    <option value="DRAFT">임시저장</option>
+                    <option value="PENDING">승인대기</option>
+                    <option value="APPROVED">승인</option>
+                    <option value="ONGOING">진행중</option>
+                    <option value="COMPLETED">종료</option>
+                    <option value="REJECTED">반려</option>
+                </select>
+            </div>
+            <div>
+                <label>포인트(최소)</label>
+                <input type="text" id="mileMin" inputmode="numeric" placeholder="예: 10" />
+            </div>
+            <div>
+                <label>포인트(최대)</label>
+                <input type="text" id="mileMax" inputmode="numeric" placeholder="예: 100" />
+            </div>
+            <div>
+                <label>정렬</label>
+                <select id="sort">
+                    <option value="created_desc">등록일 ↓</option>
+                    <option value="created_asc">등록일 ↑</option>
+                    <option value="appstart_desc">신청시작 ↓</option>
+                    <option value="appstart_asc">신청시작 ↑</option>
+                    <option value="runstart_desc">운영시작 ↓</option>
+                    <option value="runstart_asc">운영시작 ↑</option>
+                    <option value="title_asc">프로그램명 A→Z</option>
+                    <option value="title_desc">프로그램명 Z→A</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button class="btn" id="btnReset">초기화</button>
+            <button class="btn primary" id="btnSearch">조회</button>
+        </div>
+    </div>
+
+    <!-- 결과 카드 -->
+    <div class="card" style="margin-top:12px;overflow:auto">
+        <table class="table" id="resultTable">
+            <thead>
+            <tr>
+                <th style="width:38px;"><input type="checkbox" id="chkAll"></th>
+                <th class="th-sort" data-sort="code">코드</th>
+                <th class="th-sort" data-sort="title">프로그램명</th>
+                <th>운영부서</th>
+                <th>모집</th>
+                <th>신청기간</th>
+                <th>운영기간</th>
+                <th>정원/신청</th>
+                <th>승인</th>
+                <th class="th-sort" data-sort="status">상태</th>
+                <th>등록자</th>
+                <th class="th-sort" data-sort="created">등록일</th>
+                <th>행동</th>
+            </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty" class="empty" style="display:none">조회 결과가 없습니다.</div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ======= 모의 데이터 =======
+    const mock = [
+        {
+            id: 101, code: 'NC-2025-001', title: '취업역량 강화 캠프', dept: '취업진로처',
+            recruit:'OPEN', appStart:'2025-11-01', appEnd:'2025-11-20',
+            runStart:'2025-11-25', runEnd:'2025-11-27',
+            capacity: 50, applied: 41, mileage: 30,
+            approval:'DONE', status:'ONGOING', writer:'홍길동', created:'2025-10-28'
+        },
+        {
+            id: 102, code: 'NC-2025-002', title: '파이썬 기초 부트캠프', dept: 'SW교육센터',
+            recruit:'READY', appStart:'2025-11-20', appEnd:'2025-12-01',
+            runStart:'2025-12-05', runEnd:'2025-12-20',
+            capacity: 40, applied: 0, mileage: 20,
+            approval:'REQ', status:'DRAFT', writer:'김운영', created:'2025-11-02'
+        },
+        {
+            id: 103, code: 'NC-2025-003', title: '도서관 정보활용 특강', dept: '도서관',
+            recruit:'OPEN', appStart:'2025-11-05', appEnd:'2025-11-15',
+            runStart:'2025-11-18', runEnd:'2025-11-18',
+            capacity: 120, applied: 118, mileage: 10,
+            approval:'WAIT', status:'PENDING', writer:'박민수', created:'2025-10-20'
+        },
+        {
+            id: 104, code: 'NC-2025-004', title: '리더십 향상 워크숍', dept: '학생성장지원센터',
+            recruit:'CLOSED', appStart:'2025-10-01', appEnd:'2025-10-10',
+            runStart:'2025-10-15', runEnd:'2025-10-16',
+            capacity: 30, applied: 30, mileage: 25,
+            approval:'DONE', status:'COMPLETED', writer:'이지원', created:'2025-09-25'
+        },
+        {
+            id: 105, code: 'NC-2025-005', title: '면접 스피치 코칭', dept: '취업진로처',
+            recruit:'OPEN', appStart:'2025-11-03', appEnd:'2025-11-14',
+            runStart:'2025-11-20', runEnd:'2025-11-21',
+            capacity: 25, applied: 12, mileage: 15,
+            approval:'DONE', status:'APPROVED', writer:'홍길동', created:'2025-10-30'
+        }
+    ];
+
+    // ======= 상태 배지 렌더링 =======
+    const recruitLabel = {READY:'대기', OPEN:'모집중', CLOSED:'마감'};
+    const approvalLabel = {REQ:'승인요청', WAIT:'검토중', DONE:'승인완료', REJ:'반려'};
+    const statusLabel = {
+        DRAFT:'임시저장', PENDING:'승인대기', APPROVED:'승인', ONGOING:'진행중', COMPLETED:'종료', REJECTED:'반려'
+    };
+
+    // ======= 유틸 =======
+    const $ = s=>document.querySelector(s);
+    const $$ = s=>document.querySelectorAll(s);
+    const fmtRange = (s,e)=>`${s} ~ ${e}`;
+    const toNum = v => (v===''||isNaN(Number(v))) ? null : Number(v);
+    const toast = (msg, ms=2000)=>{
+        const box = $('#toast'); const el = document.createElement('div');
+        el.className='toast-item'; el.textContent = msg; box.append(el);
+        setTimeout(()=>{ el.remove(); }, ms);
+    };
+
+    // ======= 상태 =======
+    let state = {
+        rows: [...mock],
+        page: 1,
+        size: 10,
+        sort: 'created_desc',
+        selected: new Set()
+    };
+
+    // ======= 필터 수집 & 적용 =======
+    function collectFilters(){
+        return {
+            q: $('#q').value.trim().toLowerCase(),
+            dept: $('#dept').value,
+            recruit: $('#recruit').value,
+            approval: $('#approval').value,
+            appFrom: $('#appStartFrom').value,
+            appTo: $('#appStartTo').value,
+            runFrom: $('#runStartFrom').value,
+            runTo: $('#runStartTo').value,
+            status: $('#status').value,
+            mileMin: toNum($('#mileMin').value),
+            mileMax: toNum($('#mileMax').value),
+            sort: $('#sort').value
+        };
+    }
+
+    function applyFilters(){
+        const f = collectFilters();
+        let rows = [...mock];
+
+        if(f.q){
+            rows = rows.filter(r=>
+            r.title.toLowerCase().includes(f.q) || r.code.toLowerCase().includes(f.q)
+            );
+        }
+        if(f.dept) rows = rows.filter(r=>r.dept===f.dept);
+        if(f.recruit) rows = rows.filter(r=>r.recruit===f.recruit);
+        if(f.approval) rows = rows.filter(r=>(r.approval===f.approval));
+        if(f.status) rows = rows.filter(r=>r.status===f.status);
+        if(f.mileMin!=null) rows = rows.filter(r=>r.mileage>=f.mileMin);
+        if(f.mileMax!=null) rows = rows.filter(r=>r.mileage<=f.mileMax);
+        if(f.appFrom) rows = rows.filter(r=>r.appStart>=f.appFrom);
+        if(f.appTo) rows = rows.filter(r=>r.appStart<=f.appTo);
+        if(f.runFrom) rows = rows.filter(r=>r.runStart>=f.runFrom);
+        if(f.runTo) rows = rows.filter(r=>r.runStart<=f.runTo);
+
+        // sort
+        const cmp = {
+            created_desc:(a,b)=>b.created.localeCompare(a.created),
+            created_asc:(a,b)=>a.created.localeCompare(b.created),
+            appstart_desc:(a,b)=>b.appStart.localeCompare(a.appStart),
+            appstart_asc:(a,b)=>a.appStart.localeCompare(b.appStart),
+            runstart_desc:(a,b)=>b.runStart.localeCompare(a.runStart),
+            runstart_asc:(a,b)=>a.runStart.localeCompare(b.runStart),
+            title_asc:(a,b)=>a.title.localeCompare(b.title),
+            title_desc:(a,b)=>b.title.localeCompare(a.title),
+        }[f.sort] || ((a,b)=>0);
+        rows.sort(cmp);
+
+        state.rows = rows;
+        state.page = 1;
+        state.sort = f.sort;
+        state.selected.clear();
+        render();
+    }
+
+    // ======= 렌더 =======
+    function render(){
+        const tbody = $('#tbody');
+        const empty = $('#empty');
+        const pag = $('#pagination');
+        tbody.innerHTML = '';
+        pag.innerHTML = '';
+        $('#selCount').textContent = `선택 ${state.selected.size}건`;
+        $('#btnBulkApprove').disabled = state.selected.size===0;
+        $('#btnBulkDelete').disabled = state.selected.size===0;
+
+        const total = state.rows.length;
+        if(total===0){
+            empty.style.display = 'block';
+            $('#chkAll').checked = false;
+            return;
+        }
+        empty.style.display = 'none';
+
+        const start = (state.page-1)*state.size;
+        const pageRows = state.rows.slice(start, start+state.size);
+
+        for(const r of pageRows){
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+        <td><input type="checkbox" class="rowchk" data-id="${r.id}" ${state.selected.has(r.id)?'checked':''}></td>
+        <td>${r.code}</td>
+        <td><div style="font-weight:600">${r.title}</div><div class="muted">${r.mileage} 점</div></td>
+        <td>${r.dept}</td>
+        <td><span class="badge">${recruitLabel[r.recruit]||'-'}</span></td>
+        <td>${fmtRange(r.appStart, r.appEnd)}</td>
+        <td>${fmtRange(r.runStart, r.runEnd)}</td>
+        <td><span class="kpi">${r.applied}</span>/<span class="muted">${r.capacity}</span></td>
+        <td><span class="badge approval-${r.approval}">${approvalLabel[r.approval]||'-'}</span></td>
+        <td><span class="badge status-${r.status}">${statusLabel[r.status]||'-'}</span></td>
+        <td>${r.writer}</td>
+        <td>${r.created}</td>
+        <td>
+          <div class="actions">
+            <button class="btn ghost" data-act="detail" data-id="${r.id}">상세</button>
+            <button class="btn ghost" data-act="edit" data-id="${r.id}">수정</button>
+            <button class="btn ghost" data-act="approve" data-id="${r.id}">승인요청</button>
+            <button class="btn ghost" data-act="delete" data-id="${r.id}">삭제</button>
+          </div>
+        </td>
+      `;
+            tbody.append(tr);
+        }
+
+        // 페이지네이션
+        const pages = Math.ceil(total/state.size);
+        for(let i=1;i<=pages;i++){
+            const b = document.createElement('button');
+            b.className = 'page'+(i===state.page?' active':'');
+            b.textContent = i;
+            b.addEventListener('click',()=>{ state.page=i; $('#chkAll').checked=false; render(); });
+            pag.append(b);
+        }
+
+        // 이벤트 바인딩
+        $$('.rowchk').forEach(el=>{
+            el.addEventListener('change',e=>{
+                const id = Number(e.target.dataset.id);
+                if(e.target.checked) state.selected.add(id);
+                else state.selected.delete(id);
+                $('#selCount').textContent = `선택 ${state.selected.size}건`;
+                $('#btnBulkApprove').disabled = state.selected.size===0;
+                $('#btnBulkDelete').disabled = state.selected.size===0;
+                $('#chkAll').checked = pageRows.every(r=>state.selected.has(r.id));
+            });
+        });
+
+        // 액션 버튼
+        $$('.actions .btn').forEach(btn=>{
+            btn.addEventListener('click', e=>{
+                const id = e.currentTarget.dataset.id;
+                const act = e.currentTarget.dataset.act;
+                if(act==='detail'){
+                    // 실제 연결 예시: /operator/programs/${id}
+                    toast(`상세 보기: /operator/programs/${id}`);
+                }else if(act==='edit'){
+                    // 실제 연결 예시: /operator/programs/${id}/edit
+                    toast(`수정: /operator/programs/${id}/edit`);
+                }else if(act==='approve'){
+                    toast(`승인요청 전송 완료(#${id})`);
+                }else if(act==='delete'){
+                    if(confirm('삭제하시겠습니까?')){
+                        const idx = mock.findIndex(m=>m.id==id);
+                        if(idx>-1){ mock.splice(idx,1); applyFilters(); toast('삭제되었습니다.');}
+                    }
+                }
+            });
+        });
+    }
+
+    // ======= 헤더 정렬(보조) =======
+    $$('.th-sort').forEach(th=>{
+        th.addEventListener('click', ()=>{
+            const key = th.dataset.sort;
+            const map = {
+                code:['code_asc','code_desc'],
+                title:['title_asc','title_desc'],
+                status:['status_asc','status_desc'],
+                created:['created_asc','created_desc']
+            };
+            const pair = map[key]||[];
+            const next = (state.sort===pair[0])?pair[1]:pair[0]||state.sort;
+            $('#sort').value = next;
+            applyFilters();
+        });
+    });
+
+    // ======= 필터/버튼 이벤트 =======
+    $('#btnSearch').addEventListener('click', applyFilters);
+    $('#btnReset').addEventListener('click', ()=>{
+        $('#filterCard').querySelectorAll('input,select').forEach(el=>el.value='');
+        $('#sort').value='created_desc';
+        applyFilters();
+    });
+    $('#chkAll').addEventListener('change', (e)=>{
+        const check = e.target.checked;
+        const start = (state.page-1)*state.size;
+        const pageRows = state.rows.slice(start, start+state.size);
+        pageRows.forEach(r=> check ? state.selected.add(r.id) : state.selected.delete(r.id));
+        render();
+    });
+    $('#btnBulkApprove').addEventListener('click', ()=>{
+        if(state.selected.size===0) return;
+        toast(`선택 ${state.selected.size}건 승인요청 처리`);
+    });
+    $('#btnBulkDelete').addEventListener('click', ()=>{
+        if(state.selected.size===0) return;
+        if(confirm(`선택 ${state.selected.size}건을 삭제하시겠습니까?`)){
+            const ids = Array.from(state.selected);
+            for(const id of ids){
+                const idx = mock.findIndex(m=>m.id===id);
+                if(idx>-1) mock.splice(idx,1);
+            }
+            state.selected.clear();
+            applyFilters();
+            toast('일괄 삭제 완료');
+        }
+    });
+    $('#btnNew').addEventListener('click', ()=>{
+        // 실제 연결 예: /operator/programs/new
+        toast('신규 등록: /operator/programs/new');
+    });
+
+    // 초기 렌더
+    applyFilters();
+</script>
+</body>
+</html>

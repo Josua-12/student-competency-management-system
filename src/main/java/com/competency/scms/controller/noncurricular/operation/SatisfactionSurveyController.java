@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/op/programs/{programId}/surveys/satisfaction")
+@RequestMapping("/api/noncurricular-operator/programs/{programId}/surveys/satisfaction")
 public class SatisfactionSurveyController {
 
     private final SatisfactionSurveyCommandService commandService;

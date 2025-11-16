@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 @ToString(exclude = {"assessmentSection", "user", "responses"})
 @Table(name = "assessment_results")
 @SQLDelete(sql = "UPDATE assessment_results SET deleted_at = CURRENT_TIMESTAMP WHERE rslt_id = ?")
+@SQLRestriction("deleted_at is NULL")
 public class AssessmentResult extends CompetencyBaseEntity {
 
     @Id

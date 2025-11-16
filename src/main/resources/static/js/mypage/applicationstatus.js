@@ -1,59 +1,71 @@
- // alert() 대신 사용할 커스텀 모달 기능
-    const customModal = document.getElementById('custom-modal');
-    const modalMessage = document.getElementById('modal-message');
-    const modalCloseBtn = document.getElementById('modal-close-btn'); // 확인 버튼 요소 재정의
+// DOM이 완전히 로드된 후 스크립트 실행
+document.addEventListener("DOMContentLoaded", () => {
 
-    /**
-     * 커스텀 모달을 표시하는 함수
-     * @param {string} message - 모달에 표시할 메시지
-     */
-    function showCustomModal(message) {
-        modalMessage.textContent = message;
-        customModal.style.display = 'flex';
+    // --- 1. 모바일 햄버거 메뉴 토글 기능 ---
+    const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener("click", () => {
+            // 햄버거 버튼 클릭 시 모바일 메뉴를 보여주거나 숨김
+            const isExpanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+            mobileMenuBtn.setAttribute("aria-expanded", !isExpanded);
+
+            if (mobileMenu.style.display === "block") {
+                mobileMenu.style.display = "none";
+            } else {
+                mobileMenu.style.display = "block";
+            }
+        });
     }
 
-    // 모달 닫기 버튼 이벤트 리스너: 확인 버튼 클릭 시 닫기
-    modalCloseBtn.addEventListener('click', () => {
-        customModal.style.display = 'none';
-    });
+    // --- 2. Custom Modal (alert 대체) 기능 ---
+    const modal = document.getElementById("custom-modal");
+    const modalMessage = document.getElementById("modal-message");
+    const modalCloseBtn = document.getElementById("modal-close-btn");
 
-    // 이전에 있던 배경 클릭으로 닫는 로직은 제거됨.
+    // 모달창 닫기 버튼 이벤트
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
 
-    // 테이블 상호작용 로직
-    document.addEventListener('DOMContentLoaded', () => {
-        const tableBody = document.getElementById('applicationTableBody');
+    // 모달창 표시 함수
+    function showModal(message) {
+        if (modal && modalMessage) {
+            modalMessage.textContent = message;
+            modal.style.display = "flex";
+        } else {
+            // 모달이 없으면 console.log로 대체
+            console.log("Modal message:", message);
+        }
+    }
 
-        // 테이블 본문 클릭 이벤트 리스너
-        tableBody.addEventListener('click', (event) => {
-            const target = event.target;
+    // --- 3. 테이블 내 버튼 클릭 이벤트 (모달 사용) ---
+    const tableBody = document.getElementById("applicationTableBody");
 
-            // 클릭된 요소가 'action-btn' 클래스를 가지는지 확인
-            if (target.classList.contains('action-btn')) {
-                const action = target.getAttribute('data-action');
-                const row = target.closest('tr');
-                const programName = row.getAttribute('data-program');
-                const status = row.getAttribute('data-status');
+    if (tableBody) {
+        tableBody.addEventListener("click", (event) => {
+            // 클릭된 요소가 'action-btn' 클래스를 가졌는지 확인
+            if (event.target.classList.contains("action-btn")) {
+                const button = event.target;
+                const action = button.dataset.action; // data-action 값 (cancel, register)
 
-                // '취소' 버튼 클릭 시 로직
-                if (action === 'cancel') {
-                    if (status === '신청 완료') {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램 신청을 정말로 취소하시겠습니까? (기능 구현 필요). 닫으려면 확인 버튼을 클릭하세요.`);
-                    } else {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램은 현재 '${status}' 상태이므로 취소할 수 없습니다. 닫으려면 확인 버튼을 클릭하세요.`);
-                    }
-                }
-                // '산출물 등록' 버튼 클릭 시 로직
-                else if (action === 'register') {
-                    if (status === '이수 완료') {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램의 산출물 등록 페이지로 이동합니다. (기능 구현 필요). 닫으려면 확인 버튼을 클릭하세요.`);
-                    } else {
-                        // 메시지 수정: 닫으려면 확인 버튼을 클릭하도록 안내
-                        showCustomModal(`'${programName}' 프로그램은 아직 이수 완료 상태가 아닙니다. 산출물 등록이 불가능합니다. 닫으려면 확인 버튼을 클릭하세요.`);
-                    }
+                // 버튼이 속한 행(tr)을 찾음
+                const row = button.closest("tr");
+                const programName = row.dataset.program;
+
+                if (action === "cancel") {
+                    // '취소' 버튼 클릭 시
+                    showModal(`'${programName}' 프로그램의 신청을 취소하시겠습니까? (실제 취소 기능은 백엔드 구현이 필요합니다.)`);
+                    // 여기에 실제 취소 로직 (e.g., fetch API 호출) 추가 가능
+                } else if (action === "register") {
+                    // '산출물 등록' 버튼 클릭 시
+                    showModal(`'${programName}' 프로그램의 산출물을 등록합니다. (등록 페이지로 이동 또는 파일 업로드 로직)`);
+                    // 여기에 실제 산출물 등록 로직 (e.g., 페이지 이동) 추가 가능
                 }
             }
         });
-    });
+    }
+});

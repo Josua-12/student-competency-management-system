@@ -1,9 +1,11 @@
-<!doctype html>
-<html lang="ko">
-<head>
-    <meta charset="utf-8" />
-    <title>학생 대시보드</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!--<!doctype html>-->
+<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org">-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="content">
+<!--<head>-->
+<!--    <meta charset="utf-8" />-->
+<!--    <title>학생 대시보드</title>-->
+<!--    <meta name="viewport" content="width=device-width,initial-scale=1" />-->
     <style>
         :root{
             --bg:#ffffff;
@@ -236,79 +238,78 @@
         .muted{color:var(--muted);font-size:12px;}
     </style>
 </head>
-<body>
-<div class="layout">
-    <header>
-        <div>
-            <h1>나의 대시보드</h1>
-            <p class="sub">신청한 비교과, 이수 현황, 포인트, 추천 프로그램을 한 번에 확인하세요.</p>
-        </div>
-        <div class="last-update" id="stu-lastUpdate">-</div>
-    </header>
+<!--<body>-->
+    <div class="layout">
+        <header>
+            <div>
+                <h1>나의 대시보드</h1>
+                <p class="sub">신청한 비교과, 이수 현황, 포인트, 추천 프로그램을 한 번에 확인하세요.</p>
+            </div>
+            <div class="last-update" id="stu-lastUpdate">-</div>
+        </header>
+        <!-- 상단 요약 영역 -->
+        <section class="card" style="margin-bottom:16px;">
+            <div class="card-title">나의 비교과 요약</div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">총 신청 프로그램</div>
+                    <div class="summary-value" id="sum-totalApplied">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">참여중</div>
+                    <div class="summary-value" id="sum-active">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">이수 완료</div>
+                    <div class="summary-value" id="sum-completed">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">누적 비교과 포인트</div>
+                    <div class="summary-value" id="sum-mileage">0</div>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn-primary btn" onclick="goToUrl('/student/applications')">신청 내역 전체보기</button>
+                <button class="btn btn" onclick="goToUrl('/student/programs')">비교과 프로그램 전체보기</button>
+            </div>
+        </section>
 
-    <!-- 상단 요약 영역 -->
-    <section class="card" style="margin-bottom:16px;">
-        <div class="card-title">나의 비교과 요약</div>
-        <div class="summary-grid">
-            <div class="summary-item">
-                <div class="summary-label">총 신청 프로그램</div>
-                <div class="summary-value" id="sum-totalApplied">0</div>
+        <!-- 중간: 왼쪽 신청 프로그램, 오른쪽 추천 프로그램 -->
+        <section class="grid grid-2" style="margin-bottom:16px;">
+            <div class="card">
+                <div class="card-title">최근 신청한 프로그램</div>
+                <div class="card-sub">최근 신청 기준 3개</div>
+                <div class="program-list" id="stu-latestApps">
+                    <!-- JS 렌더링 -->
+                </div>
             </div>
-            <div class="summary-item">
-                <div class="summary-label">참여중</div>
-                <div class="summary-value" id="sum-active">0</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">이수 완료</div>
-                <div class="summary-value" id="sum-completed">0</div>
-            </div>
-            <div class="summary-item">
-                <div class="summary-label">누적 비교과 포인트</div>
-                <div class="summary-value" id="sum-mileage">0</div>
-            </div>
-        </div>
-        <div class="btn-row">
-            <button class="btn-primary btn" onclick="goToUrl('/student/applications')">신청 내역 전체보기</button>
-            <button class="btn btn" onclick="goToUrl('/student/programs')">비교과 프로그램 전체보기</button>
-        </div>
-    </section>
 
-    <!-- 중간: 왼쪽 신청 프로그램, 오른쪽 추천 프로그램 -->
-    <section class="grid grid-2" style="margin-bottom:16px;">
-        <div class="card">
-            <div class="card-title">최근 신청한 프로그램</div>
-            <div class="card-sub">최근 신청 기준 3개</div>
-            <div class="program-list" id="stu-latestApps">
+            <div class="card">
+                <div class="card-title">추천 비교과 프로그램</div>
+                <div class="card-sub">나의 역량/관심사 기반 추천</div>
+                <div class="recommend-grid" id="stu-recommendations">
+                    <!-- JS 렌더링 -->
+                </div>
+    <!--            <div class="btn-row">-->
+    <!--                <button class="btn btn" onclick="goToUrl('/student/programs/recommend')">추천 더보기</button>-->
+    <!--            </div>-->
+            </div>
+        </section>
+
+        <!-- 하단: 역량 진단 -->
+        <section class="card">
+            <div class="card-title">나의 역량 진단 현황</div>
+            <div class="card-sub" id="stu-assessInfo">최근 진단 정보가 없습니다.</div>
+            <div class="competency-list" id="stu-competencyChart">
                 <!-- JS 렌더링 -->
             </div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">추천 비교과 프로그램</div>
-            <div class="card-sub">나의 역량/관심사 기반 추천</div>
-            <div class="recommend-grid" id="stu-recommendations">
-                <!-- JS 렌더링 -->
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="goToUrl('/assessment')">역량 진단하러 가기</button>
             </div>
-<!--            <div class="btn-row">-->
-<!--                <button class="btn btn" onclick="goToUrl('/student/programs/recommend')">추천 더보기</button>-->
-<!--            </div>-->
-        </div>
-    </section>
+        </section>
+    </div>
 
-    <!-- 하단: 역량 진단 -->
-    <section class="card">
-        <div class="card-title">나의 역량 진단 현황</div>
-        <div class="card-sub" id="stu-assessInfo">최근 진단 정보가 없습니다.</div>
-        <div class="competency-list" id="stu-competencyChart">
-            <!-- JS 렌더링 -->
-        </div>
-        <div class="btn-row">
-            <button class="btn btn-primary" onclick="goToUrl('/assessment')">역량 진단하러 가기</button>
-        </div>
-    </section>
-</div>
-
-<script>
+<script th:inline="javascript">
     const STU_API = {
         dashboard: '/api/student/dashboard'
     };
@@ -514,5 +515,6 @@
 
     document.addEventListener('DOMContentLoaded', initStudentDashboard);
 </script>
-</body>
-</html>
+<!--</body>-->
+</div>
+<!--</html>-->

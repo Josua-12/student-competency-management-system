@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle} ?: '비교과 프로그램'">비교과 프로그램</title>
+
+    <!-- 부트스트랩 / 공통 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/noncurricular/noncurricular.css}">
+    <th:block th:replace="common/header :: headerStyles"></th:block>
+    <th:block th:replace="common/footer :: footerStyles"></th:block>
+</head>
+
+<body  class="d-flex flex-column min-vh-100">
+    <!-- 상단 헤더 -->
+    <div th:replace="common/header :: header"></div>
+<!--            class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top"-->
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 좌측 사이드바 -->
+            <aside class="col-12 col-md-3 col-lg-2 p-0 sidebar-col">
+                <div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+            </aside>
+
+            <!-- 우측 메인 컨텐츠 영역 -->
+            <main class="col-12 col-md-9 col-lg-10 py-4">
+                <!-- 컨텐츠 프래그먼트 교체 영역 -->
+                <div th:replace="__${contentFragment}__">
+                    <p>표시할 컨텐츠가 없습니다.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- 하단 푸터 -->
+    <div th:replace="~{common/footer :: footer}"></div>
+    <!-- 공통 JS -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/noncurricular.js}"></script>
+    <div th:replace="common/header :: headerScript"></div>
+<!--    <div th:replace="common/footer :: footerScript"></div>-->
+</body>
+</html>

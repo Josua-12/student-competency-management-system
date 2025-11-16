@@ -2,17 +2,49 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        await Promise.all([
-            loadUserInfo(),
-            loadCompetency(),
-            loadConsultations(),
-            loadRecentPrograms()
-        ]);
+        // 서버에서 전달받은 데이터 사용
+        if (window.dashboardData) {
+            loadUserInfoFromServer(window.dashboardData);
+            loadCompetencyFromServer(window.dashboardData);
+        } else {
+            // API 호출 방식 (기존)
+            await Promise.all([
+                loadUserInfo(),
+                loadCompetency(),
+                loadConsultations(),
+                loadRecentPrograms()
+            ]);
+        }
     } catch (e) {
         console.error('대시보드 초기화 실패', e);
-//        location.href = '/auth/login';
     }
 });
+
+// 서버에서 전달받은 데이터 사용
+function loadUserInfoFromServer(data) {
+    const { userName, userEmail, mileage, programCount } = data;
+    setText('#user-name', userName || '');
+    setText('#user-email', userEmail || '');
+    setText('#user-mileage', (mileage ?? 0) + '점');
+    setText('#user-program-count', (programCount ?? 0) + '건');
+    setInitial('#user-initial', userName);
+}
+
+function loadCompetencyFromServer(data) {
+    const { competencyScore } = data;
+    if (competencyScore && competencyScore.length > 0) {
+        renderCompetencyList('#competency-list', competencyScore);
+        // 차트 데이터 준비
+        const chartData = {
+            labels: competencyScore.map(item => item.competencyName),
+            datasets: [{
+                label: '역량 점수',
+                data: competencyScore.map(item => item.score)
+            }]
+        };
+        renderCompetencyChart('competencyChart', chartData);
+    }
+}
 
 async function loadUserInfo() {
     const res = await Api.getJson('/api/dashboard/user'); // Api.get → Api.getJson

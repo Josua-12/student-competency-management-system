@@ -3,6 +3,7 @@ package com.competency.scms.domain.competency;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
@@ -11,6 +12,7 @@ import org.hibernate.annotations.SQLDelete;
 @Builder
 @Table(name = "assessment_responses")
 @SQLDelete(sql = "UPDATE assessment_responses SET deleted_at = CURRENT_TIMESTAMP WHERE resp_id = ?")
+@SQLRestriction("deleted_at is NULL")
 public class AssessmentResponse extends CompetencyBaseEntity {
 
     /**

@@ -161,29 +161,47 @@ public class AssessmentService {
         }
 
         // 3. DB에서 모든 역량/문항/보기 데이터를 Fetch Join으로 한 번에 조회
-        List<Competency> rootComps = competencyRepository.findActiveRootCompetenciesForAssessment();
+        List<Competency> rootComps = competencyRepository.findByParentIsNullAndIsActiveTrueOrderByDisplayOrderAsc();
 
         // 4. 이전에 임시저장한 응답(Response)이 있는지 조회
         List<AssessmentResponse> responses = assessmentResponseRepository.findByAssessmentResultId(resultId);
 
         // 5. 응답을 (QuestionId, OptionId) 맵으로 변환 (나중에 DTO에 담기)
-        Map<Long, Long> savedResponseMap = responses.stream()
+        Map<Long, Long> responseMap = responses.stream()
                 .collect(Collectors.toMap(
                         resp -> resp.getQuestion().getId(), // Key: 문항 ID
                         resp -> resp.getAssessmentOption().getId()  // Value: 선택한 보기 ID
                 ));
 
-        // 6. [데이터 변환] Entity -> DTO
+        // 6. 계층형 DTO 변환 (Root -> Sub -> Question)
+        List<RootCompetencyDto> rootDtos = rootComps.stream()
+                .map(this::mapRootCompetencyToDto)
+                .toList();
+
+        // 7. 계층형 구조를 평탄화하여 '모든 문항 리스트' 추출
+        List<QuestionDto> allQuestions = new ArrayList<>();
+
+        for (RootCompetencyDto root : rootDtos) {
+            if (root.getSubCompetencies() != null) {
+                for (SubCompetencyDto sub : root.getSubCompetencies()) {
+                    if (sub.getQuestions() != null) {
+                        allQuestions.addAll(sub.getQuestions());
+                    }
+                }
+            }
+        }
+
+        // 8. [데이터 변환] Entity -> DTO
         AssessmentPageDto pageDto = new AssessmentPageDto();
         pageDto.setResultId(resultId);
         pageDto.setAssessmentTitle(result.getAssessmentSection().getTitle());
-        pageDto.setSavedResponses(savedResponseMap); // 5번 맵 설정
+        pageDto.setAssessmentDescription(result.getAssessmentSection().getDescription());
 
-        pageDto.setRootCompetencies(
-                rootComps.stream()
-                        .map(this::mapRootCompetencyToDto)
-                        .collect(Collectors.toList())
-        );
+        pageDto.setRootCompetencies(rootDtos);
+
+        pageDto.setQuestions(allQuestions);
+        pageDto.setResponses(responseMap); // 5번 맵 설정
+
 
         return pageDto;
     }
@@ -367,7 +385,11 @@ public class AssessmentService {
                             .map(Competency::getDisplayOrder)
                             .orElse(0)
             ));
-            scoreDetailsList.add(new ResultParentCompetencyDto(parent.getName(), childDtos));
+            scoreDetailsList.add(new ResultParentCompetencyDto(
+                    parent.getName(),
+                    parentAvgScore,
+                    childDtos
+            ));
         }
 
         // 7. 강점/약점 분석 (하위 역량 기준 Top 2, Bottom 2)
@@ -384,12 +406,14 @@ public class AssessmentService {
 
         for (Map.Entry<Competency, Double> entry : bottom2) {
             Competency child = entry.getKey();
-            if (child.getAdviceLow() != null) {
-                weaknesses.add(new ResultFeedbackDto(
-                        child.getName(),
-                        child.getAdviceLow()
-                ));
+            String advice = child.getAdviceLow();
+            if (child.getAdviceLow() == null || advice.isBlank()) {
+                advice = "해당 역량에 대한 성장 가이드가 준비 중입니다.";
             }
+            weaknesses.add(new ResultFeedbackDto(
+                    child.getName(),
+                    advice
+            ));
         }
 
         // 7-2. 강점 (가장 높은 2개)
@@ -399,12 +423,16 @@ public class AssessmentService {
 
         for (Map.Entry<Competency, Double> entry : top2) {
             Competency child = entry.getKey();
-            if (child.getAdviceHigh() != null) {
-                strengths.add(new ResultFeedbackDto(
-                        child.getName(),
-                        child.getAdviceHigh()
-                ));
+
+            String advice = child.getAdviceHigh();
+            if (advice == null || advice.isBlank()) {
+                advice = "탁월한 역량을 보유하고 계시군요!";
             }
+
+            strengths.add(new ResultFeedbackDto(
+                    child.getName(),
+                    advice
+            ));
         }
 
         // 8. 최종 DTO 설정

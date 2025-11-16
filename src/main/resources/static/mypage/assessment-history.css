@@ -1,47 +1,70 @@
-/* 폰트 및 기본 배경 설정 */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
+<!-- 통합된 CSS 스타일 -->
+        /* CSS from assessment-history.css and fragment styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+KR:wght@100..900&display=swap');
 
-body {
-    font-family: 'Noto Sans KR', 'Inter', sans-serif;
-    background-color: #f7f9fb;
-}
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            display: flex; /* For sticky footer/layout control */
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-/* 차트 컨테이너 높이 설정 */
-#historyChart {
-    width: 100%;
-    height: 400px;
-}
+        /* Chart container height */
+        #historyChart {
+            width: 100%;
+            height: 400px;
+        }
 
-/* 메인 콘텐츠 영역 최소 높이 설정 */
-.main-content {
-    min-height: 100vh;
-}
+        /* Main content area minimum height (Adjusted for sticky footer) */
+        .main-content {
+            flex-grow: 1; /* Allows main content to take up remaining space */
+            padding-top: 1rem;
+        }
 
-/* 테이블 스타일 */
-.history-table th, .history-table td {
-    padding: 1rem 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-.history-table thead th {
-    background-color: #f3f4f6;
-    font-weight: 600;
-    color: #374151;
-    /* 작은 화면에서 텍스트가 잘리지 않도록 강제 줄바꿈 방지 */
-    white-space: nowrap;
-}
+        /* Table styles */
+        .history-table th, .history-table td {
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .history-table thead th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+        }
 
-/* 사이드바 활성 링크 스타일 */
-.sidebar a.active {
-    background-color: #e5e7eb;
-    color: #1f2937;
-    font-weight: 600;
-    border-left: 4px solid #3b82f6;
-}
+        /* Sidebar active link style */
+        .sidebar a.active {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        /* Sidebar layout for fixed position on desktop */
+        .sidebar {
+             position: fixed;
+             top: 56px; /* Adjust for fixed navbar height */
+             bottom: 0;
+             left: 0;
+             z-index: 1000;
+             padding: 16px 0 0;
+             width: 200px;
+             box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+             background-color: #fff;
+             display: none; /* Hide on mobile by default */
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                display: block !important;
+            }
+            .main-content-row {
+                padding-left: 200px; /* Offset for fixed sidebar */
+            }
+        }
 
-/* 카드 헤더 스타일 */
-.card-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 1rem 1.5rem;
-}
+        /* Footer link hover effect */
+        footer a:hover {
+            color: #ccc !important;
+            text-decoration: underline !important;
+        }

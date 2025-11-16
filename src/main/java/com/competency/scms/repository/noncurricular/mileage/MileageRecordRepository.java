@@ -52,7 +52,6 @@ public interface MileageRecordRepository
         select coalesce(sum(m.points), 0)
         from MileageRecord m
         where m.student.id = :studentId
-          and m.deletedAt is null
         """)
     long sumPointsByStudent(Long studentId);
 
