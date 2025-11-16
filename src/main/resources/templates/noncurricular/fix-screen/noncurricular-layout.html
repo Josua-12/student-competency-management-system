@@ -1,44 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
 <head>
     <meta charset="UTF-8">
     <title th:text="${pageTitle} ?: '비교과 프로그램'">비교과 프로그램</title>
 
-    <!-- 공통 CSS -->
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <!-- 부트스트랩 / 공통 CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/noncurricular.css}">
 </head>
-<body>
 
-<div class="page-wrapper">
+<body class="d-flex flex-column min-vh-100">
 
-    <header th:replace="common/header :: header"></header>
+<!-- 상단 헤더 -->
+<header th:replace="common/header :: header"></header>
 
-    <div class="layout">
-        <!-- 왼쪽 사이드바 -->
-        <div th:replace="fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+<div class="container-fluid">
+    <div class="row">
 
-        <!-- 오른쪽 컨텐츠 -->
-        <main class="content">
-            <div th:replace="${content}">컨텐츠</div>
+        <!-- 좌측 사이드바 -->
+        <aside class="col-12 col-md-3 col-lg-2 p-0">
+            <div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
+        </aside>
+
+        <!-- 우측 메인 컨텐츠 영역 -->
+        <main class="col-12 col-md-9 col-lg-10 py-4">
+
+            <!-- 컨텐츠 프래그먼트 교체 영역 -->
+            <!-- 컨트롤러에서 model.addAttribute("content", "경로 :: fragmentName") 로 내려보낸 값 사용 -->
+            <div th:if="${contentFragment != null}"
+                 th:replace="~{${contentFragment}}">
+
+            <!-- content가 없을 때 보이는 기본 내용 -->
+                <p>표시할 컨텐츠가 없습니다.</p>
+            </div>
+
         </main>
-    </div>
 
-    <!-- footer fragment (있다고 가정) -->
-    <footer th:replace="common/footer :: footer"></footer>
+    </div>
 </div>
 
+<!-- 하단 푸터 -->
+<footer th:replace="common/footer :: footer"></footer>
+
 <!-- 공통 JS -->
-<!--<script th:src="@{/js/main.js}"></script>-->
-
-<!-- 사이드바 스크립트 -->
-<div th:replace="fix-screen/noncurricular-sidebar :: noncurricularSidebarScript"></div>
-
-<!-- 페이지별 스크립트 (선택) -->
-<div th:if="${pageScript != null}"
-     th:replace="${pageScript}"></div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/noncurricular.js}"></script>
 
 </body>
 </html>

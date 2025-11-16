@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="87e3488b-3b1e-4e15-bd1d-6ad8e2fd8fc4" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/NoncurricularDashboardApiController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NoncurricularOperatorViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NoncurricularAdminViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/NoncurricularAdminViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NoncurricularDashboardViewController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NoncurricularEntryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/NoncurricularEntryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NoncurricularStudentViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/NoncurricularStudentViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OperatorDashboardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/StudentDashboardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../service/noncurricular/noncurriDashboard/OperatorDashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../service/noncurricular/noncurriDashboard/OperatorDashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../service/noncurricular/noncurriDashboard/OperatorDashboardServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../service/noncurricular/noncurriDashboard/OperatorDashboardServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../service/noncurricular/noncurriDashboard/StudentDashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../service/noncurricular/noncurriDashboard/StudentDashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../resources/templates/common/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../../resources/templates/common/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../resources/templates/noncurricular/fix-screen/noncurricular-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../../resources/templates/noncurricular/fix-screen/noncurricular-layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../../../../../resources/templates/noncurricular/noncurriDashboard/student-dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../../resources/templates/noncurricular/noncurriDashboard/student-dashboard.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../../../../../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="35XkxFjknii3dtQ5KZGOdYBq8Lp" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="87e3488b-3b1e-4e15-bd1d-6ad8e2fd8fc4" name="변경" comment="" />
+      <created>1763264049089</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763264049089</updated>
+    </task>
+    <servers />
+  </component>
+</project>
