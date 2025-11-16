@@ -1,24 +1,20 @@
 package com.competency.scms.dto.dashboard;
 
-import com.competency.scms.dto.competency.CompetencyScoreDto;
-import com.competency.scms.dto.noncurricular.program.op.ProgramBasicDto;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
-@Data
-@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DashboardResponseDto {
     private String userName;
-    private String userEmail;
-    private String profileImageUrl;
-    private Integer mileage;
-    private Integer programCount;
-    private Integer counselingCount;
-    private List<CompetencyScoreDto> competencyScore;
-    private List<ProgramBasicDto> recentPrograms;
-
-
+    private String userNum;
+    private CompetencyChartDto competencyChart;
+    private List<ConsultationHistoryDto> recentConsultations;
+    private List<RecentProgramDto> recentPrograms;
 }

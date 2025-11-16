@@ -46,6 +46,7 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private CounselingSubFieldRepository subFieldRepository;
     @Autowired
     private TestCounselingReservationRepository testCounselingReservationRepository;
+    @Autowired
     private DepartmentRepository departmentRepository;
 
     //--쿼리문 있는 Repos--//
@@ -57,8 +58,6 @@ public class CounselingRepositoryTest { //@Query문만 검사
     private CounselingScheduleRepository counselingScheduleRepository;
     @Autowired
     private SatisfactionAnswerRepository satisfactionAnswerRepository;
-    @Autowired
-    private DepartmentRepository departmentRepository;
 
     private User testStudent;
     private User testCounselor;
