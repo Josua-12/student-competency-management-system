@@ -1,7 +1,7 @@
 <!--<!doctype html>-->
 <!--<html lang="ko" xmlns:th="http://www.thymeleaf.org">-->
 <div xmlns:th="http://www.thymeleaf.org"
-     th:fragment="content">
+     th:fragment="contentStyles">
 <!--<head>-->
 <!--    <meta charset="utf-8" />-->
 <!--    <title>학생 대시보드</title>-->
@@ -237,8 +237,11 @@
 
         .muted{color:var(--muted);font-size:12px;}
     </style>
-</head>
+</div>
+<!--</head>-->
 <!--<body>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
     <div class="layout">
         <header>
             <div>
@@ -308,7 +311,9 @@
             </div>
         </section>
     </div>
-
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
 <script th:inline="javascript">
     const STU_API = {
         dashboard: '/api/student/dashboard'
