@@ -41,6 +41,6 @@ public interface CompetencyRepository extends JpaRepository<Competency, Long> {
     boolean existsByCompCode(String compCode);
   
     // 담당자 조회 메서드
-    List<Competency> findAllByAdminId(Long adminId); // CompetencyRepository
+//    List<Competency> findAllByAdminId(Long adminId); // CompetencyRepository
 
 }

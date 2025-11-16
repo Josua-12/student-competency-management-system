@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(
+      th:replace="~{competency/competency_layout :: layout(
                     title='나의 역량 현황',
                     content=~{::main},
                     css=~{::#page-css},
-                    scripts=~{::#page-scripts}
+                    scripts=~{::#page-scripts},
+                    hideSidebar=false  )}">
                   )}">
 
 <th:block th:fragment="css" id="page-css">
@@ -40,7 +41,7 @@
             </div>
             <div class="card-body">
                 <div class="chart-container-wrapper">
-                    <div id="historyChart"></div>
+                    <div id="historyChart" style="width: 100%; height: 320px;"></div>
                 </div>
             </div>
         </div>
@@ -68,7 +69,7 @@
                             </td>
                         </tr>
                         <tr th:each="row : ${historyData}">
-                            <td th:text="${row.diagnosisTitle}">2025년 1학기 진단</td>
+                            <td th:text="${row.assessmentTitle}">2025년 1학기 진단</td>
 
                             <td th:each="score : ${row.scores}"
                                 th:text="${#numbers.formatDecimal(score, 1, 1)}">
@@ -76,7 +77,7 @@
                             </td>
 
                             <td class="text-center">
-                                <a th:href="@{/assessment/result/{id}(id=${row.resultId})}"
+                                <a th:href="@{/student/assessment/result/{id}(id=${row.resultId})}"
                                    class="btn btn-outline-secondary btn-sm">
                                     자세히 보기
                                 </a>
@@ -93,20 +94,19 @@
 
 <th:block th:fragment="scripts" id="page-scripts">
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
-    <script th:src="@{/js/competency/assessment-history.js}"></script>
 
     <script th:inline="javascript">
         /*<![CDATA[*/
 
-        // (A) 컨트롤러에서 받은 데이터를 JS 변수로 변환
-        // (뷰-우선 작업을 위해 예시 더미 데이터를 넣어둠)
-        const competencyLabels = /*[[${competencyLabels}]]*/ ["창의성", "통합적 사고", "실무활용", "협업"];
-        const historyData = /*[[${historyData}]]*/ [
-            { diagnosisTitle: "2025년", scores: [4.6, 3.5, 3.8, 2.2] },
-            { diagnosisTitle: "2024년", scores: [4.0, 3.8, 3.5, 3.0] }
-        ];
+
+        // 백엔드에서 받은 진짜 데이터를 전역 변수로 선언
+        const competencyLabels = /*[[${competencyLabels}]]*/ [];
+        const historyData = /*[[${historyData}]]*/ [];
 
         /*]]>*/
     </script>
+
+    <script th:src="@{/js/competency/assessment-history.js}"></script>
 </th:block>
+</html>
 </html>

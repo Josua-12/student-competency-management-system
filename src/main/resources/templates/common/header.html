@@ -39,8 +39,12 @@
                     <a class="nav-link" th:href="@{/dashboard}">홈</a>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="hasRole('STUDENT')">
                     <a class="nav-link" th:href="@{/student/assessment}">역량진단</a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasAnyRole('SUPER_ADMIN', 'COMPETENCY_ADMIN')">
+                    <a class="nav-link" th:href="@{/competency-admin/competency}">역량진단</a>
                 </li>
 
                 <li class="nav-item">
