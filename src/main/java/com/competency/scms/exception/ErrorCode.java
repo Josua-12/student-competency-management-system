@@ -55,13 +55,16 @@ public enum ErrorCode {
     INVALID_RESERVATION_STATUS("CNSL-002", "유효하지 않은 예약 상태입니다."),
     RECORD_NOT_FOUND("CNSL-003", "상담일지를 찾을 수 없습니다."),
     SATISFACTION_ALREADY_SUBMITTED("CNSL-004", "이미 만족도 조사를 제출했습니다."),
+    SATISFACTION_NOT_FOUND("CNSL-004", "만족도 조사를 찾을 수 없습니다."),
     QUESTION_NOT_FOUND("CNSL-005", "설문 문항을 찾을 수 없습니다."),
     OPTION_NOT_FOUND("CNSL-006", "설문 옵션을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND("CNSL-007", "상담 분류를 찾을 수 없습니다."),
     COUNSELOR_NOT_FOUND("CNSL-008", "상담사를 찾을 수 없습니다."),
     CANNOT_MODIFY_SYSTEM_QUESTION("CNSL-009", "시스템 기본 질문은 수정할 수 없습니다."),
     CANNOT_DELETE_SYSTEM_QUESTION("CNSL-010", "시스템 기본 질문은 삭제할 수 없습니다."),
-    COUNSELOR_REQUIRED_FOR_CONFIRMED("CNSL-011", "상담 예약 확정시에는 상담사 정보가 필요합니다.");
+    COUNSELOR_REQUIRED_FOR_CONFIRMED("CNSL-011", "상담 예약 확정시에는 상담사 정보가 필요합니다."),
+    RECORD_ALREADY_EXISTS("CNSL-012", "해당 예약에 대한 상담일지가 이미 존재합니다."),
+    FILE_UPLOAD_FAILED("FILE-001", "파일 업로드에 실패했습니다.");
 
     private final String code;
     private final String message;

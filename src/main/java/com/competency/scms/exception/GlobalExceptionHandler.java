@@ -123,6 +123,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 파일 크기 초과 예외 처리
+     */
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(
+            org.springframework.web.multipart.MaxUploadSizeExceededException ex) {
+        log.error("File size exceeded: ", ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, "파일 크기가 초과되었습니다. 최대 10MB까지 업로드 가능합니다.")
+        );
+    }
+
+    /**
      * 기타 모든 예외 처리
      */
     @ExceptionHandler(Exception.class)

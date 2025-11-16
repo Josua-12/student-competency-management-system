@@ -17,9 +17,15 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
 
     // 상담 분야별 활성화된 상담사 조회
     Page<Counselor> findByCounselingFieldAndIsActiveTrueOrderByCreatedAtDesc(CounselingField counselingField, Pageable pageable);
+    
+    // 상담 분야별 활성화된 상담사 목록 조회 (페이징 없음)
+    List<Counselor> findByCounselingFieldAndIsActiveTrue(CounselingField counselingField);
 
     // 사용자 ID로 상담사 정보 조회
     Optional<Counselor> findByCounselorId(Long counselorId);
+    
+    // User로 상담사 정보 조회
+    Optional<Counselor> findByUser(com.competency.scms.domain.user.User user);
 
     // 대시보드 분리를 위한 상담사 조회 메서드
     List<Counselor> findAllByCounselorId(Long counselorId); // CounselRepository

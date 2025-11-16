@@ -30,13 +30,38 @@ public class CounselingReservationService {
     private final CounselingReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final CounselingSubFieldRepository subFieldRepository;
+    private final com.competency.scms.repository.counseling.CounselingSatisfactionRepository satisfactionRepository;
+    private final com.competency.scms.repository.counseling.CounselingAttachmentRepository attachmentRepository;
+    private final com.competency.scms.repository.counseling.CounselingRecordRepository recordRepository;
+    private final FileStorageService fileStorageService;
     private final CounselingMapper mapper = new CounselingMapper();
     // JSA 이메일 자동 발송 로직 수정
     private final ApplicationEventPublisher eventPublisher;
 
     // CNSL-001: 상담 예약 등록
     @Transactional
+    public Long createReservation(CounselingReservationDto.CreateRequest request, User currentUser, 
+            org.springframework.web.multipart.MultipartFile resumeFile, 
+            org.springframework.web.multipart.MultipartFile coverLetterFile) {
+        Long reservationId = createReservation(request, currentUser);
+        
+        if (resumeFile != null && !resumeFile.isEmpty()) {
+            saveAttachment(reservationId, resumeFile, com.competency.scms.domain.counseling.AttachmentType.RESUME);
+        }
+        if (coverLetterFile != null && !coverLetterFile.isEmpty()) {
+            saveAttachment(reservationId, coverLetterFile, com.competency.scms.domain.counseling.AttachmentType.COVER_LETTER);
+        }
+        
+        return reservationId;
+    }
+    
+    @Transactional
     public Long createReservation(CounselingReservationDto.CreateRequest request, User currentUser) {
+        if (currentUser == null) {
+            currentUser = userRepository.findByUserNum(20213901)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        }
+        
         User student;
         ReservationStatus initialStatus;
         User assignedCounselor = null;
@@ -46,10 +71,15 @@ public class CounselingReservationService {
             student = findStudentById(request.getStudentId());
             initialStatus = ReservationStatus.CONFIRMED;
             assignedCounselor = currentUser.getRole() == UserRole.COUNSELOR ? currentUser : null; //상담사가 생성 시 본인 자동 배정
-        } else { // 학생이 본인을 위해 예약 생성하는 경우
-            validateStudentRole(currentUser);
+        } else { // 본인을 위해 예약 생성하는 경우
             student = currentUser;
             initialStatus = ReservationStatus.PENDING;
+            
+            // 학생이 상담사를 지정한 경우 (취업상담 등)
+            if (request.getCounselorId() != null) {
+                assignedCounselor = userRepository.findById(request.getCounselorId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+            }
         }
 
         CounselingSubField subField = findSubFieldById(request.getSubFieldId());
@@ -78,8 +108,15 @@ public class CounselingReservationService {
 
     // CNSL-002: 상담 예약 목록 조회 (학생)
     public Page<CounselingReservationDto.ListResponse> getMyReservations(User student, CounselingReservationDto.SearchCondition condition, Pageable pageable) {
+        if (student == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
         Page<CounselingReservation> reservations = reservationRepository.findByStudentOrderByCreatedAtDesc(student, pageable);
-        return reservations.map(mapper::toListResponse);
+        return reservations.map(r -> {
+            var response = mapper.toListResponse(r);
+            response.setHasSatisfaction(satisfactionRepository.findByReservationId(r.getId()).isPresent());
+            return response;
+        });
     }
 
     // CNSL-003: 상담 예약 상세 조회
@@ -88,7 +125,8 @@ public class CounselingReservationService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
 
         validateAccessPermission(reservation, currentUser);
-        return mapper.toDetailResponse(reservation);
+        Long recordId = recordRepository.findByReservationId(reservationId).map(r -> r.getId()).orElse(null);
+        return mapper.toDetailResponse(reservation, recordId);
     }
 
     // CNSL-004: 상담 예약 취소
@@ -169,6 +207,32 @@ public class CounselingReservationService {
                 reservation.getReservationDate() + " " + reservation.getStartTime()
         ));
     }
+    
+    // 상담 완료 처리
+    @Transactional
+    public void completeReservation(Long reservationId, User currentUser, org.springframework.web.multipart.MultipartFile[] files) {
+        CounselingReservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+        
+        if (!reservation.getCounselor().getId().equals(currentUser.getId())) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+        
+        if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
+            throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
+        
+        reservation.setStatus(ReservationStatus.COMPLETED);
+        reservation.setCompletedAt(LocalDateTime.now());
+        
+        if (files != null) {
+            for (org.springframework.web.multipart.MultipartFile file : files) {
+                if (file != null && !file.isEmpty()) {
+                    saveAttachment(reservationId, file, com.competency.scms.domain.counseling.AttachmentType.DOCUMENT);
+                }
+            }
+        }
+    }
 
     // CNSL-011: 배정된 상담 일정 조회 (상담사)
     public Page<CounselingReservationDto.ListResponse> getAssignedReservations(User counselor, Pageable pageable) {
@@ -176,15 +240,16 @@ public class CounselingReservationService {
                 counselor, ReservationStatus.CONFIRMED, pageable);
         return reservations.map(mapper::toListResponse);
     }
+    
+    // 상담사 예약 승인 관리 - 대기중인 예약 조회
+    public Page<CounselingReservationDto.ListResponse> getCounselorPendingReservations(User counselor, Pageable pageable) {
+        Page<CounselingReservation> reservations = reservationRepository.findByCounselorAndStatusOrderByCreatedAtAsc(
+                counselor, ReservationStatus.PENDING, pageable);
+        return reservations.map(mapper::toListResponse);
+    }
 
     private void validateCounselorOrAdminRole(User user) {
         if (user.getRole() != UserRole.COUNSELOR && user.getRole() != UserRole.COUNSELING_ADMIN) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-    }
-
-    private void validateStudentRole(User user) {
-        if (user.getRole() != UserRole.STUDENT) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
     }
@@ -212,6 +277,57 @@ public class CounselingReservationService {
 
         if (!isStudent && !isCounselor && !isAdmin) {
             throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
+    }
+    
+    private void saveAttachment(Long reservationId, org.springframework.web.multipart.MultipartFile file, 
+            com.competency.scms.domain.counseling.AttachmentType type) {
+        try {
+            String storedPath = fileStorageService.storeFile(file);
+            CounselingReservation reservation = reservationRepository.findById(reservationId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.RESERVATION_NOT_FOUND));
+            
+            com.competency.scms.domain.counseling.CounselingAttachment attachment = 
+                    com.competency.scms.domain.counseling.CounselingAttachment.builder()
+                    .reservation(reservation)
+                    .originalName(file.getOriginalFilename())
+                    .storedPath(storedPath)
+                    .fileSize(file.getSize())
+                    .contentType(file.getContentType())
+                    .attachmentType(type)
+                    .uploadedAt(LocalDateTime.now())
+                    .build();
+            
+            attachmentRepository.save(attachment);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED);
+        }
+    }
+    
+    public java.util.List<com.competency.scms.domain.counseling.CounselingAttachment> getAttachments(Long reservationId) {
+        return attachmentRepository.findByReservationId(reservationId);
+    }
+    
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadAttachment(Long attachmentId) {
+        com.competency.scms.domain.counseling.CounselingAttachment attachment = 
+            attachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE));
+        
+        try {
+            java.nio.file.Path filePath = fileStorageService.loadFile(attachment.getStoredPath());
+            org.springframework.core.io.Resource resource = 
+                new org.springframework.core.io.UrlResource(filePath.toUri());
+            
+            String encodedFilename = java.net.URLEncoder.encode(attachment.getOriginalName(), "UTF-8")
+                .replaceAll("\\+", "%20");
+            
+            return org.springframework.http.ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM)
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, 
+                    "attachment; filename*=UTF-8''" + encodedFilename)
+                .body(resource);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
     }
 

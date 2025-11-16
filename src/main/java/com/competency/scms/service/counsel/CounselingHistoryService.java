@@ -23,6 +23,7 @@ import java.util.List;
 public class CounselingHistoryService {
 
     private final CounselingReservationRepository reservationRepository;
+    private final com.competency.scms.repository.counseling.CounselingRecordRepository recordRepository;
 
     // CNSL-015: 전체 상담 이력 조회
     public Page<CounselingHistoryDto.HistoryResponse> getAllHistory(CounselingHistoryDto.SearchCondition condition, 
@@ -92,6 +93,7 @@ public class CounselingHistoryService {
         response.setStatus(reservation.getStatus());
         response.setCreatedAt(reservation.getCreatedAt());
         response.setCompletedAt(reservation.getCompletedAt());
+        response.setHasRecord(recordRepository.findByReservationId(reservation.getId()).isPresent());
         return response;
     }
 }

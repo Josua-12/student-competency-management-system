@@ -37,7 +37,7 @@ public class CounselingSatisfaction { // 상담별 만족도 설문 결과(통�
     @JoinColumn(name = "counselor_user_id", nullable = false)
     private User counselor;
     
-    @OneToMany(mappedBy = "satisfaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "satisfaction", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SatisfactionAnswer> answers = new ArrayList<>();
     
     @Column(nullable = false)

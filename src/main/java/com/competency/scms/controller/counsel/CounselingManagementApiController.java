@@ -67,8 +67,12 @@ public class CounselingManagementApiController {
     }
 
     @GetMapping("/counselors")
-    public ResponseEntity<Page<CounselingManagementDto.CounselorResponse>> getAllCounselors(Pageable pageable) {
-        Page<CounselingManagementDto.CounselorResponse> counselors = managementService.getAllCounselors(pageable);
+    public ResponseEntity<Page<CounselingManagementDto.CounselorResponse>> getAllCounselors(
+            @RequestParam(required = false) String field,
+            Pageable pageable) {
+        Page<CounselingManagementDto.CounselorResponse> counselors = field != null ? 
+            managementService.getCounselorsByField(field, pageable) : 
+            managementService.getAllCounselors(pageable);
         return ResponseEntity.ok(counselors);
     }
 

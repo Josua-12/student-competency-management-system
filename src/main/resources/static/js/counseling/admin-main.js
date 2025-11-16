@@ -1,101 +1,103 @@
-const API_BASE = '/api/counseling';
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadAdminStats();
-    loadPendingApprovals();
-    loadCounselorStats();
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadDashboardData();
 });
 
-async function loadAdminStats() {
+async function loadDashboardData() {
+    const token = localStorage.getItem('accessToken');
+    
     try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE}/statistics/overview`, {
+        const response = await fetch('/api/counseling/statistics/admin/dashboard', {
             headers: {'Authorization': `Bearer ${token}`}
         });
-
+        
         if (response.ok) {
-            const stats = await response.json();
-            updateStatCards(stats);
+            const data = await response.json();
+            document.getElementById('totalReservations').textContent = `${data.totalReservations || 0}건`;
+            document.getElementById('pendingApprovals').textContent = `${data.pendingApprovals || 0}건`;
+            document.getElementById('activeCounselors').textContent = `${data.activeCounselors || 0}명`;
+            document.getElementById('avgSatisfaction').textContent = `${data.avgSatisfaction || 0}/5.0`;
+            
+            await loadPendingList();
+            await loadCounselorList();
         }
     } catch (error) {
-        console.error('통계 로드 실패:', error);
+        console.error('대시보드 데이터 로드 실패:', error);
     }
 }
 
-function updateStatCards(stats) {
-    const cards = document.querySelectorAll('.card-body .h5');
-    if (stats.totalReservations) cards[0].textContent = `${stats.totalReservations}건`;
-    if (stats.pendingCount) cards[1].textContent = `${stats.pendingCount}건`;
-    if (stats.activeCounselors) cards[2].textContent = `${stats.activeCounselors}명`;
-    if (stats.avgSatisfaction) cards[3].textContent = `${stats.avgSatisfaction}/5.0`;
-}
-
-async function loadPendingApprovals() {
+async function loadPendingList() {
+    const token = localStorage.getItem('accessToken');
+    
     try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE}/reservations?status=PENDING`, {
+        const response = await fetch('/api/counseling/management/approvals?status=PENDING&size=5', {
             headers: {'Authorization': `Bearer ${token}`}
         });
-
+        
         if (response.ok) {
             const data = await response.json();
-            renderPendingTable(data.content || []);
+            const list = data.content || [];
+            const tbody = document.getElementById('pendingList');
+            
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">승인 대기 내역이 없습니다.</td></tr>';
+            } else {
+                tbody.innerHTML = list.map(item => `
+                    <tr>
+                        <td>${item.studentName}</td>
+                        <td>${getFieldName(item.counselingField)}</td>
+                        <td>${formatDate(item.createdAt)}</td>
+                        <td><a href="/counseling/admin/approvals" class="btn btn-sm btn-primary">관리</a></td>
+                    </tr>
+                `).join('');
+            }
         }
     } catch (error) {
         console.error('승인 대기 목록 로드 실패:', error);
     }
 }
 
-function renderPendingTable(reservations) {
-    const tbody = document.querySelector('.table tbody');
-    if (reservations.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center">승인 대기 내역이 없습니다.</td></tr>';
-        return;
-    }
-    tbody.innerHTML = reservations.slice(0, 5).map(r => `
-        <tr>
-            <td>${r.studentName}</td>
-            <td>${r.counselingField}</td>
-            <td>${formatDate(r.createdAt)}</td>
-            <td><a href="/counseling/admin/approvals?id=${r.id}" class="btn btn-sm btn-primary">처리</a></td>
-        </tr>
-    `).join('');
-}
-
-async function loadCounselorStats() {
+async function loadCounselorList() {
+    const token = localStorage.getItem('accessToken');
+    
     try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${API_BASE}/statistics/counselors`, {
+        const response = await fetch('/api/counseling/management/counselors?isActive=true&size=5', {
             headers: {'Authorization': `Bearer ${token}`}
         });
-
+        
         if (response.ok) {
-            const counselors = await response.json();
-            renderCounselorTable(counselors);
+            const data = await response.json();
+            const list = data.content || [];
+            const tbody = document.getElementById('counselorList');
+            
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center">상담사 데이터가 없습니다.</td></tr>';
+            } else {
+                tbody.innerHTML = list.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${getFieldName(item.counselingField)}</td>
+                        <td>${item.monthlyCount || 0}건</td>
+                        <td>${item.avgSatisfaction || 0}/5.0</td>
+                    </tr>
+                `).join('');
+            }
         }
     } catch (error) {
-        console.error('상담사 통계 로드 실패:', error);
+        console.error('상담사 목록 로드 실패:', error);
     }
 }
 
-function renderCounselorTable(counselors) {
-    const tbody = document.querySelectorAll('.table')[1]?.querySelector('tbody');
-    if (tbody) {
-        if (counselors.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center">상담사 데이터가 없습니다.</td></tr>';
-            return;
-        }
-        tbody.innerHTML = counselors.slice(0, 5).map(c => `
-            <tr>
-                <td>${c.name}</td>
-                <td>${c.specialization}</td>
-                <td>${c.monthlyCount}건</td>
-                <td>${c.avgSatisfaction}</td>
-            </tr>
-        `).join('');
-    }
+function getFieldName(field) {
+    const fieldNames = {
+        'PSYCHOLOGICAL': '심리상담',
+        'CAREER': '진로상담',
+        'EMPLOYMENT': '취업상담',
+        'LEARNING': '학습상담'
+    };
+    return fieldNames[field] || field;
 }
 
 function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString('ko-KR', {month: '2-digit', day: '2-digit'});
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleDateString('ko-KR');
 }

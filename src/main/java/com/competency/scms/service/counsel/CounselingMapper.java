@@ -10,7 +10,7 @@ public class CounselingMapper {
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getSubfieldName());
+        response.setSubFieldName(reservation.getSubField() != null ? reservation.getSubField().getSubfieldName() : null);
         response.setReservationDate(reservation.getReservationDate());
         response.setStartTime(reservation.getStartTime());
         response.setEndTime(reservation.getEndTime());
@@ -19,15 +19,18 @@ public class CounselingMapper {
         response.setConfirmedEndTime(reservation.getConfirmedEndTime());
         response.setStatus(reservation.getStatus());
         response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
+        response.setRequestContent(reservation.getRequestContent());
+        response.setCreatedAt(reservation.getCreatedAt());
+        response.setHasSatisfaction(false);
         return response;
     }
 
-    public CounselingReservationDto.DetailResponse toDetailResponse(CounselingReservation reservation) {
+    public CounselingReservationDto.DetailResponse toDetailResponse(CounselingReservation reservation, Long recordId) {
         var response = new CounselingReservationDto.DetailResponse();
         response.setId(reservation.getId());
         response.setStudentName(reservation.getStudent().getName());
         response.setCounselingField(reservation.getCounselingField());
-        response.setSubFieldName(reservation.getSubField().getSubfieldName());
+        response.setSubFieldName(reservation.getSubField() != null ? reservation.getSubField().getSubfieldName() : null);
         response.setReservationDate(reservation.getReservationDate());
         response.setStartTime(reservation.getStartTime());
         response.setEndTime(reservation.getEndTime());
@@ -40,6 +43,7 @@ public class CounselingMapper {
         response.setMemo(reservation.getMemo());
         response.setRejectReason(reservation.getRejectReason());
         response.setCancelReason(reservation.getCancelReason());
+        response.setRecordId(recordId);
         return response;
     }
 }

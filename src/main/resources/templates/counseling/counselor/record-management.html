@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상담일지 관리</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <th:block th:fragment="css"></th:block>
 </head>
 <body>
-    <div th:replace="~{common/header :: header}"></div>
-    
+    <th:block th:fragment="content">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -96,7 +95,7 @@
                 <!-- 상담일지 목록 -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">상담일지 목록 <span class="badge bg-primary">15건</span></h5>
+                        <h5 class="mb-0">상담일지 목록 <span class="badge bg-primary" id="totalCount">0건</span></h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -111,42 +110,9 @@
                                         <th>관리</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="recordTableBody">
                                     <tr>
-                                        <td>2024-01-15</td>
-                                        <td>김학생</td>
-                                        <td>진로상담</td>
-                                        <td>IT 분야 진로 상담 및 취업 준비 방향 논의</td>
-                                        <td>2024-01-15</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewRecordModal" data-id="1">상세</button>
-                                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#recordModal" data-id="1">수정</button>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(1)">삭제</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-14</td>
-                                        <td>이학생</td>
-                                        <td>학업상담</td>
-                                        <td>학습 방법 개선 및 시간 관리 전략 수립</td>
-                                        <td>2024-01-14</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewRecordModal" data-id="2">상세</button>
-                                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#recordModal" data-id="2">수정</button>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(2)">삭제</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2024-01-12</td>
-                                        <td>박학생</td>
-                                        <td>심리상담</td>
-                                        <td>스트레스 관리 및 대인관계 개선 방안 논의</td>
-                                        <td>2024-01-12</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewRecordModal" data-id="3">상세</button>
-                                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#recordModal" data-id="3">수정</button>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(3)">삭제</button>
-                                        </td>
+                                        <td colspan="6" class="text-center">로딩 중...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -171,10 +137,12 @@
             </main>
         </div>
     </div>
+    </th:block>
 
+    <th:block th:fragment="scripts">
     <!-- 상담일지 작성/수정 모달 -->
     <div class="modal fade" id="recordModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">상담일지 작성</h5>
@@ -182,62 +150,13 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">학생명 <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" placeholder="학생명을 입력하세요" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">상담일 <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">상담 유형 <span class="text-danger">*</span></label>
-                                <select class="form-select" required>
-                                    <option value="">선택하세요</option>
-                                    <option value="CAREER">진로상담</option>
-                                    <option value="ACADEMIC">학업상담</option>
-                                    <option value="PSYCHOLOGICAL">심리상담</option>
-                                    <option value="EMPLOYMENT">취업상담</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">상담 시간</label>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="time" class="form-control" placeholder="시작 시간">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="time" class="form-control" placeholder="종료 시간">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">상담 주제 <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" placeholder="상담의 주요 주제를 입력하세요" required>
-                        </div>
                         <div class="mb-3">
                             <label class="form-label">상담 내용 <span class="text-danger">*</span></label>
-                            <textarea class="form-control" rows="6" placeholder="상담 진행 과정과 내용을 상세히 기록하세요" required></textarea>
+                            <textarea class="form-control" rows="6" placeholder="상담 내용을 입력하세요" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">학생 반응 및 태도</label>
-                            <textarea class="form-control" rows="3" placeholder="상담 중 학생의 반응과 태도를 기록하세요"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">상담 결과 및 성과</label>
-                            <textarea class="form-control" rows="3" placeholder="상담을 통해 얻은 결과나 성과를 기록하세요"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">향후 계획 및 과제</label>
-                            <textarea class="form-control" rows="3" placeholder="다음 상담을 위한 계획이나 학생에게 제시한 과제를 기록하세요"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">특이사항</label>
-                            <textarea class="form-control" rows="2" placeholder="기타 특이사항이나 주의할 점을 기록하세요"></textarea>
+                            <label class="form-label">비고</label>
+                            <textarea class="form-control" rows="4" placeholder="추가 메모나 특이사항을 입력하세요"></textarea>
                         </div>
                     </form>
                 </div>
@@ -251,7 +170,7 @@
 
     <!-- 상담일지 상세 조회 모달 -->
     <div class="modal fade" id="viewRecordModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">상담일지 상세 조회</h5>
@@ -259,103 +178,31 @@
                 </div>
                 <div class="modal-body">
                     <div class="row mb-3">
-                        <div class="col-md-3"><strong>학생명:</strong></div>
-                        <div class="col-md-3">김학생 (202012345)</div>
-                        <div class="col-md-3"><strong>상담일:</strong></div>
-                        <div class="col-md-3">2024년 1월 15일</div>
+                        <div class="col-sm-3"><strong>학생명:</strong></div>
+                        <div class="col-sm-9" id="viewStudentName">-</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-3"><strong>상담 유형:</strong></div>
-                        <div class="col-md-3">진로상담</div>
-                        <div class="col-md-3"><strong>상담 시간:</strong></div>
-                        <div class="col-md-3">14:00 ~ 15:00 (60분)</div>
+                        <div class="col-sm-3"><strong>상담일:</strong></div>
+                        <div class="col-sm-9" id="viewCounselingDate">-</div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-3"><strong>상담 주제:</strong></div>
-                        <div class="col-md-9">IT 분야 진로 선택 및 취업 준비 방향</div>
+                        <div class="col-sm-3"><strong>상담 내용:</strong></div>
+                        <div class="col-sm-9"><div class="border p-3 bg-light" id="viewRecordContent">-</div></div>
                     </div>
-                    <hr>
-                    <div class="mb-4">
-                        <h6><strong>상담 내용</strong></h6>
-                        <p class="border p-3 bg-light">
-                            학생이 컴퓨터공학과 3학년으로 졸업 후 진로에 대한 고민을 상담 요청했습니다. 
-                            현재 프로그래밍 실력과 관심 분야를 파악한 결과, 웹 개발 분야에 특히 관심이 많음을 확인했습니다.
-                            취업 시장 동향과 필요한 기술 스택에 대해 설명하고, 포트폴리오 준비 방법을 안내했습니다.
-                        </p>
-                    </div>
-                    <div class="mb-4">
-                        <h6><strong>학생 반응 및 태도</strong></h6>
-                        <p class="border p-3 bg-light">
-                            상담에 적극적으로 참여했으며, 진로에 대한 진지한 고민을 하고 있음을 확인했습니다.
-                            조언에 대해 긍정적으로 받아들였고, 구체적인 실행 계획을 세우고자 하는 의지를 보였습니다.
-                        </p>
-                    </div>
-                    <div class="mb-4">
-                        <h6><strong>상담 결과 및 성과</strong></h6>
-                        <p class="border p-3 bg-light">
-                            진로 방향을 웹 개발자로 구체화했으며, 필요한 기술 학습 로드맵을 제시했습니다.
-                            포트폴리오 프로젝트 아이디어를 함께 도출했고, 취업 준비 일정을 수립했습니다.
-                        </p>
-                    </div>
-                    <div class="mb-4">
-                        <h6><strong>향후 계획 및 과제</strong></h6>
-                        <p class="border p-3 bg-light">
-                            1개월 내 개인 프로젝트 1개 완성하기
-                            React, Node.js 기술 스택 학습 계획 수립
-                            다음 상담 시 진행 상황 점검 예정 (2주 후)
-                        </p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><strong>특이사항</strong></h6>
-                        <p class="border p-3 bg-light">
-                            학습 의욕이 높고 자기주도적 학습 능력이 우수함.
-                            다만 완벽주의 성향으로 인한 스트레스 관리가 필요할 것으로 보임.
-                        </p>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <strong>작성일:</strong> 2024년 1월 15일 17:30
-                        </div>
-                        <div class="col-md-6">
-                            <strong>최종 수정일:</strong> 2024년 1월 15일 17:30
-                        </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3"><strong>비고:</strong></div>
+                        <div class="col-sm-9"><div class="border p-3 bg-light" id="viewCounselorMemo">-</div></div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordModal">수정</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function deleteRecord(recordId) {
-            if (!confirm('상담일지를 삭제하시겠습니까?')) {
-                return;
-            }
-            
-            fetch(`/api/counseling/records/${recordId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('상담일지가 삭제되었습니다.');
-                    location.reload();
-                } else {
-                    alert('삭제에 실패했습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('삭제 중 오류가 발생했습니다.');
-            });
-        }
-    </script>
+    <script th:src="@{/js/counseling/counselor-record.js}"></script>
+    </th:block>
 </body>
 </html>

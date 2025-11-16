@@ -1,24 +1,22 @@
-const API_BASE = '/api/counseling';
-
 document.addEventListener('DOMContentLoaded', function() {
-    setupEventListeners();
-});
+    const goTo = {
+        '심리상담': '/counseling/student/psycho',
+        '진로상담': '/counseling/student/career',
+        '취업상담': '/counseling/student/job',
+        '학습상담': '/counseling/student/learning'
+    };
 
-function setupEventListeners() {
-    document.querySelectorAll('input[name="counselingType"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'state') window.location.href = '/counseling/student/status';
-        });
-    });
-
-    document.querySelectorAll('.btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-info').forEach(btn => {
+    document.querySelectorAll('.btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-info')
+        .forEach(btn => {
         btn.addEventListener('click', function() {
-            const counselingType = this.closest('.card').querySelector('.card-title').textContent.trim();
-            openReservationModal(counselingType);
+            const card = btn.closest('.card');
+            const counselingType = card.querySelector('.card-title').textContent.trim();
+            const url = goTo[counselingType];
+            if (url) {
+                window.location.href = url;
+            } else {
+                alert('해당 페이지 이동 기능이 없습니다.');
+            }
         });
     });
-}
-
-function openReservationModal(counselingType) {
-    alert(`${counselingType} 신청 기능은 준비 중입니다.`);
-}
+});

@@ -107,6 +107,13 @@ public class CounselingManagementService {
         return counselors.map(this::toCounselorResponse);
     }
 
+    // 분야에 해당하는 상담사 불러오기
+    public Page<CounselingManagementDto.CounselorResponse> getCounselorsByField(String field, Pageable pageable) {
+        CounselingField counselingField = CounselingField.valueOf(field);
+        Page<Counselor> counselors = counselorRepository.findByCounselingFieldAndIsActiveTrueOrderByCreatedAtDesc(counselingField, pageable);
+        return counselors.map(this::toCounselorResponse);
+    }
+
     // CNSL-024: 상담만족도 문항관리
     @Transactional
     public Long createQuestion(CounselingManagementDto.QuestionRequest request) {

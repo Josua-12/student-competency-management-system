@@ -35,8 +35,12 @@ public class CounselingRecordService {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
 
-        if(reservation.getStatus() != ReservationStatus.COMPLETED){   // 완료 상태일 때만 상담일지 작성하도록
+        if(reservation.getStatus() != ReservationStatus.COMPLETED){
             throw new BusinessException(ErrorCode.INVALID_RESERVATION_STATUS);
+        }
+        
+        if(recordRepository.findByReservationId(request.getReservationId()).isPresent()){
+            throw new BusinessException(ErrorCode.RECORD_ALREADY_EXISTS);
         }
         
         CounselingRecord record = new CounselingRecord();
@@ -70,18 +74,7 @@ public class CounselingRecordService {
         }
     }
 
-    // CNSL-012: 상담일지 삭제 (Soft Delete)
-    @Transactional
-    public void deleteRecord(Long recordId, User counselor) {
-        CounselingRecord record = recordRepository.findById(recordId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RECORD_NOT_FOUND));
-        
-        if (!record.getCounselor().getId().equals(counselor.getId())) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-        
-        recordRepository.delete(record);
-    }
+
 
     // CNSL-013: 상담일지 목록 조회
     public Page<CounselingRecordDto.ListResponse> getRecordList(User counselor, Pageable pageable) {
