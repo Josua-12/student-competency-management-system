@@ -7,196 +7,394 @@
 
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentStyles">
-<style>
-        :root{
-          /* Light theme tokens */
-          --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb; --chip:#f3f4f6; --card:#fafafa;
-          --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
-          --ok:#16a34a; --warn:#d97706; --err:#dc2626;
-          --radius:14px;
-        }
-        *{box-sizing:border-box}
-        body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif}
-        a{color:inherit;text-decoration:none}
-        .wrap{max-width:1180px;margin:32px auto;padding:0 16px}
+    <!-- contentStyles -->
+    <div xmlns:th="http://www.thymeleaf.org"
+         th:fragment="contentStyles">
+        <style>
+            /* 이 페이지 전용 네임스페이스 */
+            .noncurri-program-list-page{
+                /* 이 페이지 전용 CSS 변수 */
+                --bg:#ffffff;
+                --fg:#111827;
+                --muted:#6b7280;
+                --line:#e5e7eb;
+                --chip:#f3f4f6;
+                --card:#fafafa;
+                --pri:#2563eb;
+                --pri-600:#1d4ed8;
+                --pri-50:#eef2ff;
+                --ok:#16a34a;
+                --warn:#d97706;
+                --err:#dc2626;
+                --radius:14px;
 
-        /* Header */
-        .title-bar{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-        .title-bar h1{font-size:20px;margin:0}
-        .badge{padding:2px 8px;border-radius:999px;background:var(--pri-50);color:var(--pri-600);font-weight:600}
+                background:var(--bg);
+                color:var(--fg);
+                font:14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, sans-serif;
+            }
 
-        /* Search Card */
-        .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
-        .grid{display:grid;gap:12px}
-        .grid.cols-3{grid-template-columns:repeat(3,1fr)}
-        .grid.cols-4{grid-template-columns:repeat(4,1fr)}
-        .row{display:flex;gap:10px;align-items:center}
+            .noncurri-program-list-page *{
+                box-sizing:border-box;
+            }
 
-        label{display:block;font-weight:600;font-size:12px;color:var(--muted);margin-bottom:6px}
-        input[type="text"], input[type="date"], select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
-        input::placeholder{color:#9ca3af}
+            .noncurri-program-list-page a{
+                color:inherit;
+                text-decoration:none;
+            }
 
-        .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
-        .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 14px;cursor:pointer}
-        .btn.primary{background:var(--pri);border-color:var(--pri);color:#fff}
-        .btn.primary:hover{background:var(--pri-600)}
-        .btn.ghost{background:transparent}
+            .noncurri-program-list-page .wrap{
+                max-width:1180px;
+                margin:32px auto;
+                padding:0 16px;
+            }
 
-        /* List */
-        .list-head{display:flex;justify-content:space-between;align-items:center;margin:16px 4px}
-        .chip{background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted)}
+            /* Header */
+            .noncurri-program-list-page .title-bar{
+                display:flex;
+                gap:12px;
+                align-items:center;
+                margin-bottom:18px;
+            }
+            .noncurri-program-list-page .title-bar h1{
+                font-size:20px;
+                margin:0;
+            }
+            .noncurri-program-list-page .badge{
+                padding:2px 8px;
+                border-radius:999px;
+                background:var(--pri-50);
+                color:var(--pri-600);
+                font-weight:600;
+            }
 
-        .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-        .prog-card {
-          display: flex;
-          flex-direction: column;
-          background: #fff;
-          border: 1px solid var(--line);
-          border-radius: var(--radius);
-          overflow: hidden;
-          transition: transform .15s ease, box-shadow .15s ease;
-        }
-        .prog-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 4px 10px rgba(0,0,0,.05);
-        }
+            /* Search Card */
+            .noncurri-program-list-page .card{
+                background:var(--card);
+                border:1px solid var(--line);
+                border-radius:var(--radius);
+                padding:16px;
+            }
+            .noncurri-program-list-page .grid{
+                display:grid;
+                gap:12px;
+            }
+            .noncurri-program-list-page .grid.cols-3{
+                grid-template-columns:repeat(3,1fr);
+            }
+            .noncurri-program-list-page .grid.cols-4{
+                grid-template-columns:repeat(4,1fr);
+            }
+            .noncurri-program-list-page .row{
+                display:flex;
+                gap:10px;
+                align-items:center;
+            }
 
-        .prog-card .thumb {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 16 / 9;
-          overflow: hidden;
-          background: #f3f4f6;
-        }
-        .prog-card .thumb img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-        .prog-card .thumb .status {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-        }
-        .prog-card .body {
-          padding: 12px 14px 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        .prog-card h3{margin:0;font-size:16px}
-        .meta{display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:12px}
-        .meta .dot::before{content:"• ";margin:0 4px;color:#c4c4c4}
-        .stat{display:flex;gap:8px;align-items:center}
-        .stat b{font-weight:700}
-        .row.end{justify-content:flex-end}
+            .noncurri-program-list-page label{
+                display:block;
+                font-weight:600;
+                font-size:12px;
+                color:var(--muted);
+                margin-bottom:6px;
+            }
 
-        .status{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;}
-        .status.open{background:#eaf7ef;color:var(--ok);border:1px solid #b9e6c5}
-        .status.closed{background:#f3f4f6;color:#6b7280;border:1px solid var(--line)}
-        .status.done{background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe}
+            .noncurri-program-list-page input[type="text"],
+            .noncurri-program-list-page input[type="date"],
+            .noncurri-program-list-page select{
+                width:100%;
+                padding:10px 12px;
+                border:1px solid var(--line);
+                border-radius:10px;
+                background:#fff;
+            }
+            .noncurri-program-list-page input::placeholder{
+                color:#9ca3af;
+            }
 
-        /* Pagination */
-        .paging{display:flex;gap:6px;justify-content:center;margin:20px 0}
-        .page-btn{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
-        .page-btn[aria-current="true"]{background:var(--pri-50);border-color:var(--pri);}
+            .noncurri-program-list-page .actions{
+                display:flex;
+                gap:8px;
+                justify-content:flex-end;
+                margin-top:8px;
+            }
 
-        /* Skeleton */
-        .skeleton{background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:sk 1.2s infinite}
-        @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+            .noncurri-program-list-page .btn{
+                border:1px solid var(--line);
+                background:#fff;
+                border-radius:10px;
+                padding:10px 14px;
+                cursor:pointer;
+            }
+            .noncurri-program-list-page .btn.primary{
+                background:var(--pri);
+                border-color:var(--pri);
+                color:#fff;
+            }
+            .noncurri-program-list-page .btn.primary:hover{
+                background:var(--pri-600);
+            }
+            .noncurri-program-list-page .btn.ghost{
+                background:transparent;
+            }
 
-        /* Empty & Error */
-        .empty{padding:40px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted)}
-        .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:10px;opacity:.95}
+            /* List */
+            .noncurri-program-list-page .list-head{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin:16px 4px;
+            }
+            .noncurri-program-list-page .chip{
+                background:var(--chip);
+                border:1px solid var(--line);
+                border-radius:999px;
+                padding:6px 10px;
+                font-size:12px;
+                color:var(--muted);
+            }
 
-        /* Responsive */
-        @media (max-width:1024px){.cards{grid-template-columns:repeat(2,1fr)}}
-        @media (max-width:640px){.grid.cols-4,.grid.cols-3{grid-template-columns:1fr}.cards{grid-template-columns:1fr}}
-</style>
+            .noncurri-program-list-page .cards{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:14px;
+            }
+            .noncurri-program-list-page .prog-card{
+                display:flex;
+                flex-direction:column;
+                background:#fff;
+                border:1px solid var(--line);
+                border-radius:var(--radius);
+                overflow:hidden;
+                transition:transform .15s ease, box-shadow .15s ease;
+            }
+            .noncurri-program-list-page .prog-card:hover{
+                transform:translateY(-3px);
+                box-shadow:0 4px 10px rgba(0,0,0,.05);
+            }
+
+            .noncurri-program-list-page .prog-card .thumb{
+                position:relative;
+                width:100%;
+                aspect-ratio:16 / 9;
+                overflow:hidden;
+                background:#f3f4f6;
+            }
+            .noncurri-program-list-page .prog-card .thumb img{
+                width:100%;
+                height:100%;
+                object-fit:cover;
+                display:block;
+            }
+            .noncurri-program-list-page .prog-card .thumb .status{
+                position:absolute;
+                top:10px;
+                right:10px;
+            }
+            .noncurri-program-list-page .prog-card .body{
+                padding:12px 14px 16px;
+                display:flex;
+                flex-direction:column;
+                gap:8px;
+            }
+            .noncurri-program-list-page .prog-card h3{
+                margin:0;
+                font-size:16px;
+            }
+            .noncurri-program-list-page .meta{
+                display:flex;
+                flex-wrap:wrap;
+                gap:8px;
+                color:var(--muted);
+                font-size:12px;
+            }
+            .noncurri-program-list-page .meta .dot::before{
+                content:"• ";
+                margin:0 4px;
+                color:#c4c4c4;
+            }
+            .noncurri-program-list-page .stat{
+                display:flex;
+                gap:8px;
+                align-items:center;
+            }
+            .noncurri-program-list-page .stat b{
+                font-weight:700;
+            }
+            .noncurri-program-list-page .row.end{
+                justify-content:flex-end;
+            }
+
+            .noncurri-program-list-page .status{
+                padding:2px 8px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:700;
+            }
+            .noncurri-program-list-page .status.open{
+                background:#eaf7ef;
+                color:var(--ok);
+                border:1px solid #b9e6c5;
+            }
+            .noncurri-program-list-page .status.closed{
+                background:#f3f4f6;
+                color:#6b7280;
+                border:1px solid var(--line);
+            }
+            .noncurri-program-list-page .status.done{
+                background:#eef2ff;
+                color:#4338ca;
+                border:1px solid #c7d2fe;
+            }
+
+            /* Pagination */
+            .noncurri-program-list-page .paging{
+                display:flex;
+                gap:6px;
+                justify-content:center;
+                margin:20px 0;
+            }
+            .noncurri-program-list-page .page-btn{
+                padding:8px 12px;
+                border:1px solid var(--line);
+                border-radius:10px;
+                background:#fff;
+                cursor:pointer;
+            }
+            .noncurri-program-list-page .page-btn[aria-current="true"]{
+                background:var(--pri-50);
+                border-color:var(--pri);
+            }
+
+            /* Skeleton */
+            .noncurri-program-list-page .skeleton{
+                background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
+                background-size:200% 100%;
+                animation:sk 1.2s infinite;
+            }
+            @keyframes sk{
+                0%{background-position:200% 0}
+                100%{background-position:-200% 0}
+            }
+
+            /* Empty & Error */
+            .noncurri-program-list-page .empty{
+                padding:40px;
+                border:1px dashed var(--line);
+                border-radius:12px;
+                text-align:center;
+                color:var(--muted);
+            }
+            .noncurri-program-list-page .toast{
+                position:fixed;
+                right:16px;
+                bottom:16px;
+                background:#111827;
+                color:#fff;
+                padding:12px 14px;
+                border-radius:10px;
+                opacity:.95;
+            }
+
+            /* Responsive */
+            @media (max-width:1024px){
+                .noncurri-program-list-page .cards{
+                    grid-template-columns:repeat(2,1fr);
+                }
+            }
+            @media (max-width:640px){
+                .noncurri-program-list-page .grid.cols-4,
+                .noncurri-program-list-page .grid.cols-3{
+                    grid-template-columns:1fr;
+                }
+                .noncurri-program-list-page .cards{
+                    grid-template-columns:1fr;
+                }
+            }
+        </style>
+    </div>
 </div>
 
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentFragment">
-<div class="wrap">
-    <div class="title-bar">
-        <span class="badge">학생</span>
-        <h1>비교과 프로그램 조회</h1>
-        <span id="resultCount" class="chip" aria-live="polite"></span>
+    <div class="noncurri-program-list-page">
+        <div class="wrap">
+            <div class="title-bar">
+                <span class="badge">학생</span>
+                <h1>비교과 프로그램 조회</h1>
+                <span id="resultCount" class="chip" aria-live="polite"></span>
+            </div>
+
+            <!-- 검색 영역 -->
+            <form id="searchForm" class="card" autocomplete="off">
+                <div class="grid cols-4">
+                    <div>
+                        <label for="q">프로그램명</label>
+                        <input id="q" name="keyword" type="text" placeholder="예) 진로캠프, 리더십…" />
+                    </div>
+                    <div>
+                        <label for="category">분류</label>
+                        <select id="category" name="category">
+                            <option value="">전체</option>
+                            <option value="CAREER">진로</option>
+                            <option value="COMPETENCY">역량</option>
+                            <option value="VOLUNTEER">봉사</option>
+                            <option value="GLOBAL">글로벌</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dept">운영부서</label>
+                        <select id="dept" name="dept">
+                            <option value="">전체</option>
+                            <option value="NCC">비교과센터</option>
+                            <option value="JOB">취업지원센터</option>
+                            <option value="INTL">국제교류처</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="status">모집상태</label>
+                        <select id="status" name="status">
+                            <option value="">전체</option>
+                            <option value="OPEN">모집중</option>
+                            <option value="CLOSED">마감</option>
+                            <option value="DONE">종료</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid cols-3" style="margin-top:12px">
+                    <div>
+                        <label for="from">모집 시작일</label>
+                        <input id="from" name="from" type="date" />
+                    </div>
+                    <div>
+                        <label for="to">모집 종료일</label>
+                        <input id="to" name="to" type="date" />
+                    </div>
+                    <div class="actions" style="align-self:end">
+                        <button type="button" class="btn" id="resetBtn">초기화</button>
+                        <button type="submit" class="btn primary" aria-label="검색하기">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                 stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg> 검색
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="list-head">
+                <div class="chip">검색 결과</div>
+                <div class="row">
+                    <a class="btn ghost" href="/student/programs/my-applications">나의 신청내역 보기</a>
+                </div>
+            </div>
+
+            <!-- 목록 영역 -->
+            <section id="list" class="cards" aria-live="polite" aria-busy="false"></section>
+            <nav id="paging" class="paging" aria-label="페이지네이션"></nav>
+        </div>
+        <div id="toast" class="toast" hidden></div>
     </div>
-
-    <!-- 검색 영역 -->
-    <form id="searchForm" class="card" autocomplete="off">
-        <div class="grid cols-4">
-            <div>
-                <label for="q">프로그램명</label>
-                <input id="q" name="keyword" type="text" placeholder="예) 진로캠프, 리더십…" />
-            </div>
-            <div>
-                <label for="category">분류</label>
-                <select id="category" name="category">
-                    <option value="">전체</option>
-                    <option value="CAREER">진로</option>
-                    <option value="COMPETENCY">역량</option>
-                    <option value="VOLUNTEER">봉사</option>
-                    <option value="GLOBAL">글로벌</option>
-                </select>
-            </div>
-            <div>
-                <label for="dept">운영부서</label>
-                <select id="dept" name="dept">
-                    <option value="">전체</option>
-                    <option value="NCC">비교과센터</option>
-                    <option value="JOB">취업지원센터</option>
-                    <option value="INTL">국제교류처</option>
-                </select>
-            </div>
-            <div>
-                <label for="status">모집상태</label>
-                <select id="status" name="status">
-                    <option value="">전체</option>
-                    <option value="OPEN">모집중</option>
-                    <option value="CLOSED">마감</option>
-                    <option value="DONE">종료</option>
-                </select>
-            </div>
-        </div>
-        <div class="grid cols-3" style="margin-top:12px">
-            <div>
-                <label for="from">모집 시작일</label>
-                <input id="from" name="from" type="date" />
-            </div>
-            <div>
-                <label for="to">모집 종료일</label>
-                <input id="to" name="to" type="date" />
-            </div>
-            <div class="actions" style="align-self:end">
-                <button type="button" class="btn" id="resetBtn">초기화</button>
-                <button type="submit" class="btn primary" aria-label="검색하기">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                         stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg> 검색
-                </button>
-            </div>
-        </div>
-    </form>
-
-    <div class="list-head">
-        <div class="chip">검색 결과</div>
-        <div class="row">
-            <a class="btn ghost" href="/student/programs/my-applications">나의 신청내역 보기</a>
-        </div>
-    </div>
-
-    <!-- 목록 영역 -->
-    <section id="list" class="cards" aria-live="polite" aria-busy="false"></section>
-    <nav id="paging" class="paging" aria-label="페이지네이션"></nav>
-</div>
-
-<div id="toast" class="toast" hidden></div>
-
 </div>
 
 <div xmlns:th="http://www.thymeleaf.org"

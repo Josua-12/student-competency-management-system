@@ -3,8 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const questions = form.querySelectorAll('.question-card');
     const totalQuestions = questions.length;
 
-    const progressBar = document.getElementById('progressBar');
     const answeredCountEl = document.getElementById('answeredCount');
+
+    const footerProgressBar = document.getElementById('footerProgressBar');
+    const footerProgressText = document.getElementById('footerProgressText');
 
     const submitBtn = document.getElementById('submitButton');
     const draftBtn = document.getElementById('draftButton');
@@ -24,9 +26,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 진행도 업데이트
         const progressPercentage = (answeredQuestions / totalQuestions) * 100;
+        const roundedPercentage = Math.round(progressPercentage);
 
-        progressBar.style.width = progressPercentage + '%';
-        progressBar.textContent = Math.round(progressPercentage) + '%';
+        if (footerProgressBar) {
+            footerProgressBar.style.width = progressPercentage + '%';
+            footerProgressBar.setAttribute('aria-valuenow', progressPercentage);
+        }
+        if (footerProgressText) {
+            footerProgressText.textContent = roundedPercentage + '%';
+        }
+
         answeredCountEl.textContent = answeredQuestions;
 
         // (선택) 모든 문항에 응답하면 '최종제출' 버튼 활성화

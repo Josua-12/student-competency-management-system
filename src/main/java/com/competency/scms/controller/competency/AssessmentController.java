@@ -186,6 +186,10 @@ public class AssessmentController {
         }
     }
 
+    /**
+     * 역량 히스토리 페이지
+     * @return 히스토리 페이지 반환
+     */
     @GetMapping("/history")
     public String assessmentHistory(Model model,
                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
