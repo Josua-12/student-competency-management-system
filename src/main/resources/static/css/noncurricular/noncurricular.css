@@ -7,6 +7,14 @@ body {
     font-weight: 600;
 }
 
+
+
+.navbar-brand img {
+    object-fit: contain;
+    position: relative;
+        z-index: 1000;
+}
+
 .card-img-top {
     height: 150px;
     object-fit: cover;

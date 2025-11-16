@@ -4,6 +4,6 @@ import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentDa
 
 public interface StudentDashboardService {
 
-    StudentDashboardResponse getDashboard(Long studentId);
+    StudentDashboardResponse getDashboard(Long userId);
 }
 

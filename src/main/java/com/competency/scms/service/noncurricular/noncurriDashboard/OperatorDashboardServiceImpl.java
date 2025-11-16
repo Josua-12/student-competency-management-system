@@ -29,7 +29,7 @@ public class OperatorDashboardServiceImpl implements OperatorDashboardService {
     private final ProgramReportRepository reportRepository;
 
     @Override
-    public OperatorDashboardResponse getDashboard() {
+    public OperatorDashboardResponse getDashboard(Long userId) {
 
         // KPI
         long pendingApproval = programRepository.countByStatus(ProgramStatus.PENDING);

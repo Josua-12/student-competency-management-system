@@ -9,37 +9,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/noncurricular")
 public class NoncurricularEntryController {
 
     @GetMapping("/dashboard")
     public String redirectDashboardByRole(Authentication authentication) {
 
-        // 1) 인증 안 되어 있으면 로그인 화면으로
-        if (authentication == null || !authentication.isAuthenticated()
-                || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
-            return "redirect:/login";   // 실제 로그인 URL에 맞게 수정
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/auth/login";
         }
 
-        // 2) 여기까지 왔다는 건 인증 완료 → 역할 꺼내기
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        UserRole role = userDetails.getUser().getRole(); // STUDENT / OPERATOR / DEPARTMENT_ADMIN ...
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof CustomUserDetails customUserDetails)) {
+            return "redirect:/auth/login";
+        }
+
+        UserRole role = customUserDetails.getUser().getRole();
+        if (role == null) {
+            return "redirect:/auth/login";
+        }
 
         switch (role) {
             case STUDENT:
-                return "redirect:/student/noncurricular/dashboard";
+                return "redirect:/noncurricular/student/dashboard";
 
             case NONCURRICULAR_OPERATOR:
-                return "redirect:/noncurricular-operator/dashboard";
+                return "redirect:/noncurricular/operator/dashboard";
 
             case NONCURRICULAR_ADMIN:
-                return "redirect:/noncurricular-admin/dashboard";
+            case SUPER_ADMIN:
+                return "redirect:/noncurricular/admin/dashboard";
 
             default:
                 return "redirect:/auth/login";
         }
-
     }
 }
-

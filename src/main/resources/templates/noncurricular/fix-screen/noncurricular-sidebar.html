@@ -1,9 +1,13 @@
-<!doctype html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
+<!--<!doctype html>-->
+<!--<html lang="ko"-->
+<!--      xmlns:th="http://www.thymeleaf.org"-->
+<!--      >-->
+<aside class="sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+       th:fragment="noncurricularSidebar">
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
     <style>
         :root{
             --bg:#f9fafb;
@@ -14,19 +18,36 @@
             --accent:#2563eb;
             --accent-soft:#e5edff;
             --radius:12px;
+            --header-height: 40px;
+            --footer-height: 300px;
         }
-        .sidebar{
-            position:fixed; top:0; left:0; bottom:0;
-            width:260px;
-            background:#ffffff;
-            border-right:1px solid var(--line);
-            padding:20px 16px;
-            overflow-y:auto;
+        .navbar.sticky-top {
+            z-index: 1040;   /* Bootstrap 기본보다 살짝 높은 값으로 */
+        }
+        /* 사이드바 레이아웃 */
+        .sidebar {
+            /* 위치 고정 속성들은 전부 제거 */
+            position: static;           /* 기본값 */
+            /* top / bottom / height / z-index 전부 사용 X */
+
+            width: 100%;                /* 컬럼 안에서 꽉 차도록 */
+            max-width: 260px;           /* 넓이 너무 넓어지지 않게 */
+            background: #ffffff;
+            border-right: 1px solid var(--line);
+            padding: 20px 16px;
         }
         .sidebar-header{
             padding:0 8px 16px;
             border-bottom:1px solid var(--line);
             margin-bottom:16px;
+        }
+        .sidebar-col {
+            background-color: #ffffff;            /* 왼쪽 전체를 흰색 박스로 */
+        }
+
+        /* 사이드바 내용은 위에서부터 쭉 내려오게만 */
+        .sidebar-col > * {
+            height: 100%;       /* 안에 들어가는 div(sidebar fragment)를 컬럼 높이에 맞춤 */
         }
         .sidebar-title{font-size:18px;font-weight:700;}
         .sidebar-sub{font-size:12px;color:var(--muted);margin-top:4px;}
@@ -56,11 +77,10 @@
         .menu-link:hover{background:var(--accent-soft);color:var(--accent);}
         .menu-link.active{background:var(--accent);color:#fff;}
     </style>
-</head>
-<body>
-
+<!--</head>-->
+<!--<body>-->
 <!-- ========= 실제 사이드바 ========== -->
-<aside class="sidebar" th:fragment="noncurricularSidebar">
+
     <div class="sidebar-header">
         <div class="sidebar-title">비교과 프로그램</div>
         <div class="sidebar-sub">Non-curricular Program</div>
@@ -180,8 +200,6 @@
             <li><button class="menu-link" data-href="/noncurricular/admin/notifications/cancel-email">신청 취소 이메일</button></li>
         </ul>
     </section>
-</aside>
-
 <!-- ========= 스크립트 프래그먼트 ========== -->
 <script th:fragment="noncurricularSidebarScript">
     // 섹션 접기/펼치기
@@ -226,6 +244,6 @@
         }
     })();
 </script>
-
-</body>
-</html>
+</aside>
+<!--</body>-->
+<!--</html>-->
