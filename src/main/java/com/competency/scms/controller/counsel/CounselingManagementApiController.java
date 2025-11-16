@@ -70,7 +70,9 @@ public class CounselingManagementApiController {
     public ResponseEntity<Page<CounselingManagementDto.CounselorResponse>> getAllCounselors(
             @RequestParam(required = false) String field,
             Pageable pageable) {
-        Page<CounselingManagementDto.CounselorResponse> counselors = managementService.getAllCounselors(pageable);
+        Page<CounselingManagementDto.CounselorResponse> counselors = field != null ? 
+            managementService.getCounselorsByField(field, pageable) : 
+            managementService.getAllCounselors(pageable);
         return ResponseEntity.ok(counselors);
     }
 

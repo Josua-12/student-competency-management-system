@@ -260,6 +260,78 @@ public class CounselingScheduleService {
         return today;
     }
 
+    public List<CounselingScheduleDto.BaseScheduleResponse> getCounselorBaseSchedule(Long counselorId) {
+        User counselor = new User();
+        counselor.setId(counselorId);
+        List<CounselingBaseSchedule> schedules = scheduleRepository.findByCounselorOrderByDayOfWeek(counselor, Pageable.unpaged()).getContent();
+        
+        List<CounselingScheduleDto.BaseScheduleResponse> result = new ArrayList<>();
+        for (CounselingBaseSchedule schedule : schedules) {
+            for (int hour = 9; hour <= 17; hour++) {
+                Boolean available = schedule.getSlotAvailability(hour);
+                if (available != null && available) {
+                    CounselingScheduleDto.BaseScheduleResponse response = new CounselingScheduleDto.BaseScheduleResponse();
+                    response.setDayOfWeek(schedule.getDayOfWeek().getValue());
+                    response.setStartTime(String.format("%02d:00", hour));
+                    response.setEndTime(String.format("%02d:00", hour + 1));
+                    result.add(response);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Transactional
+    public void saveCounselorBaseSchedule(Long counselorId, List<CounselingScheduleDto.BaseScheduleRequest> schedules) {
+        User counselor = new User();
+        counselor.setId(counselorId);
+        
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) continue;
+            
+            CounselingBaseSchedule baseSchedule = scheduleRepository.findByCounselorAndDayOfWeek(counselor, day)
+                .orElseGet(() -> {
+                    CounselingBaseSchedule newSchedule = new CounselingBaseSchedule();
+                    newSchedule.setCounselor(counselor);
+                    newSchedule.setDayOfWeek(day);
+                    newSchedule.setSlot0910(false);
+                    newSchedule.setSlot1011(false);
+                    newSchedule.setSlot1112(false);
+                    newSchedule.setSlot1314(false);
+                    newSchedule.setSlot1415(false);
+                    newSchedule.setSlot1516(false);
+                    newSchedule.setSlot1617(false);
+                    newSchedule.setSlot1718(false);
+                    return scheduleRepository.save(newSchedule);
+                });
+            
+            baseSchedule.setSlot0910(false);
+            baseSchedule.setSlot1011(false);
+            baseSchedule.setSlot1112(false);
+            baseSchedule.setSlot1314(false);
+            baseSchedule.setSlot1415(false);
+            baseSchedule.setSlot1516(false);
+            baseSchedule.setSlot1617(false);
+            baseSchedule.setSlot1718(false);
+            
+            for (CounselingScheduleDto.BaseScheduleRequest req : schedules) {
+                if (req.getDayOfWeek().equals(day.getValue())) {
+                    int hour = Integer.parseInt(req.getStartTime().substring(0, 2));
+                    switch (hour) {
+                        case 9 -> baseSchedule.setSlot0910(true);
+                        case 10 -> baseSchedule.setSlot1011(true);
+                        case 11 -> baseSchedule.setSlot1112(true);
+                        case 13 -> baseSchedule.setSlot1314(true);
+                        case 14 -> baseSchedule.setSlot1415(true);
+                        case 15 -> baseSchedule.setSlot1516(true);
+                        case 16 -> baseSchedule.setSlot1617(true);
+                        case 17 -> baseSchedule.setSlot1718(true);
+                    }
+                }
+            }
+        }
+    }
+
     // 월간 일정 조회
     public List<CounselingScheduleDto.MonthlySchedule> getMonthlySchedules(LocalDate startDate, LocalDate endDate, CounselingField field, Long subfieldId) {
         List<CounselingScheduleDto.MonthlySchedule> schedules = new ArrayList<>();

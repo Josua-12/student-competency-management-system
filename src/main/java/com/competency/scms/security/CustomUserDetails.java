@@ -17,6 +17,10 @@ public class CustomUserDetails implements UserDetails {
 
     private final User user;
 
+    public Long getId() {
+        return user.getId();
+    }
+
     public CustomUserDetails(User user) {
         this.user = user;
     }

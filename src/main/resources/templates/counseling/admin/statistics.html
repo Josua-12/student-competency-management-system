@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{common/layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상담 통계</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <th:block th:fragment="css">
     <style>
         .sortable { cursor: pointer; }
         .sortable:hover { background-color: #f8f9fa; }
     </style>
-</head>
-<body>
-    <div th:replace="~{common/header :: header}"></div>
-    
+    </th:block>
+
+    <th:block th:fragment="content">
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
@@ -69,13 +69,13 @@
                             <div class="col-md-3">
                                 <label class="form-label">조회 기간</label>
                                 <div class="input-group">
-                                    <input type="date" class="form-control" value="2024-01-01">
+                                    <input type="date" class="form-control" id="startDate">
                                     <span class="input-group-text">~</span>
-                                    <input type="date" class="form-control" value="2024-01-31">
+                                    <input type="date" class="form-control" id="endDate">
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <button class="btn btn-primary w-100">조회</button>
+                                <button class="btn btn-primary w-100" id="searchBtn">조회</button>
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             총 상담 건수</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">156건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalCounseling">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-chat-dots text-primary" style="font-size: 2rem;"></i>
@@ -107,7 +107,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                             완료된 상담</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">142건</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="completedCounseling">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
@@ -124,7 +124,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                             평균 만족도</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">4.3/5.0</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="avgSatisfaction">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-star-fill text-info" style="font-size: 2rem;"></i>
@@ -141,7 +141,7 @@
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                             활성 상담사</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">8명</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="activeCounselors">-</div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="bi bi-people text-warning" style="font-size: 2rem;"></i>
@@ -208,46 +208,9 @@
                                                 <th class="sortable" data-sort="response">만족도 응답률 <i class="bi bi-arrow-down-up"></i></th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="counselorTableBody">
                                             <tr>
-                                                <td>김상담</td>
-                                                <td>진로상담</td>
-                                                <td>45</td>
-                                                <td>42</td>
-                                                <td>2</td>
-                                                <td>1</td>
-                                                <td>4.5</td>
-                                                <td>85</td>
-                                            </tr>
-                                            <tr>
-                                                <td>이상담</td>
-                                                <td>학업상담</td>
-                                                <td>38</td>
-                                                <td>35</td>
-                                                <td>1</td>
-                                                <td>2</td>
-                                                <td>4.2</td>
-                                                <td>78</td>
-                                            </tr>
-                                            <tr>
-                                                <td>박상담</td>
-                                                <td>심리상담</td>
-                                                <td>32</td>
-                                                <td>30</td>
-                                                <td>1</td>
-                                                <td>1</td>
-                                                <td>4.6</td>
-                                                <td>90</td>
-                                            </tr>
-                                            <tr>
-                                                <td>최상담</td>
-                                                <td>취업상담</td>
-                                                <td>41</td>
-                                                <td>35</td>
-                                                <td>3</td>
-                                                <td>3</td>
-                                                <td>4.1</td>
-                                                <td>72</td>
+                                                <td colspan="8" class="text-center">로딩 중...</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -299,75 +262,14 @@
             </main>
         </div>
     </div>
+    </th:block>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <th:block th:fragment="scripts">
+    <script th:src="@{/js/counseling/admin-statistics.js}"></script>
     <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
     <script>
-        // 상담 유형별 통계 차트
-        const typeChart = toastui.Chart.pieChart({
-            el: document.getElementById('typeChart'),
-            data: {
-                categories: ['진로상담', '학업상담', '심리상담', '취업상담'],
-                series: [
-                    { name: '진로상담', data: 45 },
-                    { name: '학업상담', data: 38 },
-                    { name: '심리상담', data: 32 },
-                    { name: '취업상담', data: 41 }
-                ]
-            },
-            options: {
-                chart: { width: 400, height: 300 }
-            }
-        });
-
-        // 월별 상담 현황 차트
-        const monthlyChart = toastui.Chart.lineChart({
-            el: document.getElementById('monthlyChart'),
-            data: {
-                categories: ['1월', '2월', '3월', '4월', '5월', '6월'],
-                series: [{
-                    name: '상담 건수',
-                    data: [25, 30, 28, 35, 32, 38]
-                }]
-            },
-            options: {
-                chart: { width: 400, height: 300 },
-                series: { spline: true }
-            }
-        });
-
-        // 만족도 분포 차트
-        const satisfactionChart = toastui.Chart.columnChart({
-            el: document.getElementById('satisfactionChart'),
-            data: {
-                categories: ['1점', '2점', '3점', '4점', '5점'],
-                series: [{
-                    name: '응답 수',
-                    data: [2, 5, 15, 45, 55]
-                }]
-            },
-            options: {
-                chart: { width: 400, height: 200 }
-            }
-        });
-
-        // 상담 상태별 현황 차트
-        const statusChart = toastui.Chart.pieChart({
-            el: document.getElementById('statusChart'),
-            data: {
-                categories: ['완료', '진행중', '취소', '거부'],
-                series: [
-                    { name: '완료', data: 142 },
-                    { name: '진행중', data: 8 },
-                    { name: '취소', data: 4 },
-                    { name: '거부', data: 2 }
-                ]
-            },
-            options: {
-                chart: { width: 400, height: 200 }
-            }
-        });
+        let typeChart, monthlyChart, satisfactionChart, statusChart;
 
         // 테이블 정렬 기능
         document.querySelectorAll('.sortable').forEach(header => {
@@ -425,5 +327,6 @@
             });
         });
     </script>
+    </th:block>
 </body>
 </html>

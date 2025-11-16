@@ -114,4 +114,18 @@ public class CounselingScheduleDto {
         private String subfieldName;
         private Boolean isAvailable;
     }
+
+    @Data
+    public static class BaseScheduleRequest {
+        private Integer dayOfWeek;
+        private String startTime;
+        private String endTime;
+    }
+
+    @Data
+    public static class BaseScheduleResponse {
+        private Integer dayOfWeek;
+        private String startTime;
+        private String endTime;
+    }
 }

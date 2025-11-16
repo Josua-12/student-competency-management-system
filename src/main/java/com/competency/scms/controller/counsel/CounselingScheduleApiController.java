@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/counseling/schedule")
+@RequestMapping("/api/counseling/schedules")
 @RequiredArgsConstructor
 public class CounselingScheduleApiController {
 
@@ -64,5 +64,18 @@ public class CounselingScheduleApiController {
         
         List<CounselingScheduleDto.MonthlySchedule> schedules = scheduleService.getMonthlySchedules(startDate, endDate, field, subfieldId);
         return ResponseEntity.ok(schedules);
+    }
+
+    // 관리자: 특정 상담사의 기본 일정 조회
+    @GetMapping("/base/{counselorId}")
+    public ResponseEntity<?> getCounselorBaseSchedule(@PathVariable Long counselorId) {
+        return ResponseEntity.ok(scheduleService.getCounselorBaseSchedule(counselorId));
+    }
+
+    // 관리자: 특정 상담사의 기본 일정 저장
+    @PutMapping("/base/{counselorId}")
+    public ResponseEntity<?> saveCounselorBaseSchedule(@PathVariable Long counselorId, @RequestBody List<CounselingScheduleDto.BaseScheduleRequest> schedules) {
+        scheduleService.saveCounselorBaseSchedule(counselorId, schedules);
+        return ResponseEntity.ok().build();
     }
 }

@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkAvailableSlots(date, callback) {
         const dateStr = date.toISOString().split('T')[0];
         
-        fetch(`/api/counseling/schedule/available-slots?date=${dateStr}&field=${counselingField}`)
+        fetch(`/api/counseling/schedules/available-slots?date=${dateStr}&field=${counselingField}`)
             .then(response => response.json())
             .then(slots => {
                 slots.forEach(slot => {

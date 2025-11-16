@@ -41,8 +41,8 @@
                     <a class="nav-link" th:href="@{/competency}">핵심역량</a>
                 </li>
 
-                <!-- 상담 드롭다운 -->
-                <li class="nav-item dropdown">
+                <!-- 상담 드롭다운 (학생) -->
+                <li class="nav-item dropdown" sec:authorize="hasAuthority('ROLE_STUDENT')">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" th:href="@{/counseling/student}">
                         상담
                     </a>
@@ -50,6 +50,16 @@
                         <li><a class="dropdown-item" th:href="@{/counseling/student}">상담 예약</a></li>
                         <li><a class="dropdown-item" th:href="@{/counseling/student/status}">내 예약 조회</a></li>
                     </ul>
+                </li>
+
+                <!-- 상담사 메뉴 -->
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_COUNSELOR')">
+                    <a class="nav-link" th:href="@{/counseling/counselor}">상담 관리</a>
+                </li>
+
+                <!-- 관리자 상담 메뉴 -->
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a class="nav-link" th:href="@{/counseling/admin}">상담 관리</a>
                 </li>
 
                 <!-- 비교과 프로그램 드롭다운 -->
