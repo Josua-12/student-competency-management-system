@@ -1,0 +1,399 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
+    <style>
+        .noncurri-mileage-operator-page{
+            --bg:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --card:#f9fafb;
+            --pri: #094081;
+            --pri-soft:#eff6ff;
+            --radius-lg:16px;
+        }
+        .noncurri-mileage-operator-page .layout{
+            max-width:1200px;
+            margin:0 auto;
+            padding:24px 16px 40px;
+        }
+        .noncurri-mileage-operator-page header{
+            margin-bottom:24px;
+        }
+        .noncurri-mileage-operator-page header h1{
+            font-size:24px;
+            font-weight:700;
+            margin-bottom:8px;
+        }
+        .noncurri-mileage-operator-page header .sub{
+            font-size:14px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-operator-page .card{
+            background:var(--card);
+            border-radius:var(--radius-lg);
+            border:1px solid var(--line);
+            padding:20px;
+            margin-bottom:20px;
+        }
+        .noncurri-mileage-operator-page .card-title{
+            font-size:16px;
+            font-weight:600;
+            margin-bottom:16px;
+        }
+        .noncurri-mileage-operator-page .filter-row{
+            display:flex;
+            gap:12px;
+            margin-bottom:20px;
+            flex-wrap:wrap;
+            align-items:end;
+        }
+        .noncurri-mileage-operator-page .filter-item{
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+        .noncurri-mileage-operator-page .filter-item label{
+            font-size:12px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-operator-page .filter-item select, .noncurri-mileage-operator-page .filter-item input{
+            padding:8px 12px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            font-size:14px;
+        }
+        .noncurri-mileage-operator-page .btn{
+            padding:8px 16px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            background:#ffffff;
+            cursor:pointer;
+            font-size:14px;
+        }
+        .noncurri-mileage-operator-page .btn-primary{
+            background:var(--pri);
+            border-color:var(--pri);
+            color:#ffffff;
+        }
+        .noncurri-mileage-operator-page .btn-success{
+            background:#059669;
+            border-color:#059669;
+            color:#ffffff;
+        }
+        .noncurri-mileage-operator-page .table-container{
+            overflow-x:auto;
+        }
+        .noncurri-mileage-operator-page table{
+            width:100%;
+            border-collapse:collapse;
+            background:#ffffff;
+            border-radius:8px;
+            overflow:hidden;
+        }
+        .noncurri-mileage-operator-page th, .noncurri-mileage-operator-page td{
+            padding:12px;
+            text-align:left;
+            border-bottom:1px solid var(--line);
+        }
+        .noncurri-mileage-operator-page th{
+            background:var(--card);
+            font-weight:600;
+            font-size:14px;
+        }
+        .noncurri-mileage-operator-page td{
+            font-size:14px;
+        }
+        .noncurri-mileage-operator-page .badge{
+            display:inline-flex;
+            padding:4px 8px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:500;
+        }
+        .noncurri-mileage-operator-page .badge-earn{background:#dcfce7;color:#166534;}
+        .noncurri-mileage-operator-page .badge-use{background:#fee2e2;color:#dc2626;}
+        .noncurri-mileage-operator-page .empty-state{
+            text-align:center;
+            padding:40px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-operator-page .stats-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+            gap:16px;
+            margin-bottom:20px;
+        }
+        .noncurri-mileage-operator-page .stats-item{
+            background:#ffffff;
+            border-radius:12px;
+            padding:16px;
+            border:1px solid var(--line);
+            text-align:center;
+        }
+        .noncurri-mileage-operator-page .stats-label{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:8px;
+        }
+        .noncurri-mileage-operator-page .stats-value{
+            font-size:20px;
+            font-weight:700;
+            color:var(--pri);
+        }
+    </style>
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
+    <div class="noncurri-mileage-operator-page layout">
+        <header>
+            <h1>비교과 포인트 조회 (운영자)</h1>
+            <p class="sub">학생들의 비교과 포인트 현황을 조회하고 관리할 수 있습니다.</p>
+        </header>
+
+        <!-- 통계 요약 -->
+        <section class="card">
+            <div class="card-title">포인트 통계</div>
+            <div class="stats-grid">
+                <div class="stats-item">
+                    <div class="stats-label">총 적립 포인트</div>
+                    <div class="stats-value" id="totalEarned">0</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-label">총 사용 포인트</div>
+                    <div class="stats-value" id="totalUsed">0</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-label">활성 학생 수</div>
+                    <div class="stats-value" id="activeStudents">0</div>
+                </div>
+                <div class="stats-item">
+                    <div class="stats-label">평균 보유 포인트</div>
+                    <div class="stats-value" id="avgPoints">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 검색 필터 -->
+        <section class="card">
+            <div class="card-title">검색 조건</div>
+            <div class="filter-row">
+                <div class="filter-item">
+                    <label>프로그램</label>
+                    <select id="programFilter">
+                        <option value="">전체 프로그램</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>학번/이름</label>
+                    <input type="text" id="studentFilter" placeholder="학번 또는 이름">
+                </div>
+                <div class="filter-item">
+                    <label>학과</label>
+                    <select id="deptFilter">
+                        <option value="">전체 학과</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>기간</label>
+                    <input type="date" id="fromDate">
+                </div>
+                <div class="filter-item">
+                    <label>~</label>
+                    <input type="date" id="toDate">
+                </div>
+                <div class="filter-item">
+                    <button class="btn btn-primary" onclick="searchStudentPoints()">검색</button>
+                    <button class="btn btn-success" onclick="exportToExcel()">엑셀 다운로드</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 학생별 포인트 현황 -->
+        <section class="card">
+            <div class="card-title">학생별 포인트 현황</div>
+            <div class="table-container">
+                <table id="studentPointsTable">
+                    <thead>
+                        <tr>
+                            <th>학번</th>
+                            <th>이름</th>
+                            <th>학과</th>
+                            <th>학년</th>
+                            <th>총 적립</th>
+                            <th>총 사용</th>
+                            <th>현재 보유</th>
+                            <th>최근 활동</th>
+                            <th>상세보기</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentPointsTableBody">
+                        <!-- JS로 렌더링 -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state" style="display:none;">
+                    검색 결과가 없습니다.
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<div th:fragment="contentScript">
+<script th:inline="javascript">
+    const OPERATOR_POINTS_API = {
+        stats: '/api/noncurricular-operator/mileages/stats',
+        students: '/api/noncurricular-operator/mileages/students',
+        programs: '/api/noncurricular-operator/mileages/programs/list',
+        departments: '/api/noncurricular-operator/mileages/departments'
+    };
+
+    let currentData = [];
+
+    async function fetchOperatorPointsData() {
+        try {
+            const [stats, students, programs, departments] = await Promise.all([
+                fetch(OPERATOR_POINTS_API.stats).then(r => r.json()),
+                fetch(OPERATOR_POINTS_API.students).then(r => r.json()),
+                fetch(OPERATOR_POINTS_API.programs).then(r => r.json()),
+                fetch(OPERATOR_POINTS_API.departments).then(r => r.json())
+            ]);
+            return { stats, students, programs, departments };
+        } catch (e) {
+            console.warn('운영자 포인트 API 실패, 더미 데이터 사용', e);
+            return {
+                stats: { totalEarned: 0, totalUsed: 0, activeStudents: 0, avgPoints: 0 },
+                students: [],
+                programs: [],
+                departments: []
+            };
+        }
+    }
+
+    function renderStats(stats) {
+        document.getElementById('totalEarned').textContent = stats.totalEarned || 0;
+        document.getElementById('totalUsed').textContent = stats.totalUsed || 0;
+        document.getElementById('activeStudents').textContent = stats.activeStudents || 0;
+        document.getElementById('avgPoints').textContent = stats.avgPoints || 0;
+    }
+
+    function renderFilters(data) {
+        // 프로그램 옵션
+        const programSelect = document.getElementById('programFilter');
+        programSelect.innerHTML = '<option value="">전체 프로그램</option>';
+        (data.programs || []).forEach(program => {
+            const option = document.createElement('option');
+            option.value = program.id;
+            option.textContent = program.title;
+            programSelect.appendChild(option);
+        });
+
+        // 학과 옵션
+        const deptSelect = document.getElementById('deptFilter');
+        deptSelect.innerHTML = '<option value="">전체 학과</option>';
+        (data.departments || []).forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept.code;
+            option.textContent = dept.name;
+            deptSelect.appendChild(option);
+        });
+    }
+
+    function renderStudentPointsTable(students) {
+        const tbody = document.getElementById('studentPointsTableBody');
+        const emptyState = document.getElementById('emptyState');
+        
+        tbody.innerHTML = '';
+        
+        if (!students || students.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        students.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.studentNo}</td>
+                <td>${student.name}</td>
+                <td>${student.department}</td>
+                <td>${student.grade}학년</td>
+                <td>${student.totalEarned}</td>
+                <td>${student.totalUsed}</td>
+                <td><strong>${student.currentPoints}</strong></td>
+                <td>${student.lastActivity}</td>
+                <td>
+                    <button class="btn" onclick="viewStudentDetail('${student.studentNo}')">
+                        상세보기
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function searchStudentPoints() {
+        const filters = {
+            program: document.getElementById('programFilter').value,
+            student: document.getElementById('studentFilter').value.trim().toLowerCase(),
+            department: document.getElementById('deptFilter').value,
+            fromDate: document.getElementById('fromDate').value,
+            toDate: document.getElementById('toDate').value
+        };
+        
+        let filteredStudents = currentData.students || [];
+        
+        // 학번/이름 필터
+        if (filters.student) {
+            filteredStudents = filteredStudents.filter(student => 
+                student.studentNo.toLowerCase().includes(filters.student) || 
+                student.name.toLowerCase().includes(filters.student)
+            );
+        }
+        
+        // 학과 필터
+        if (filters.department) {
+            filteredStudents = filteredStudents.filter(student => 
+                student.department && student.department.includes(filters.department)
+            );
+        }
+        
+        console.log('검색 결과:', filteredStudents.length, '명');
+        renderStudentPointsTable(filteredStudents);
+    }
+    
+    window.searchStudentPoints = searchStudentPoints;
+    window.viewStudentDetail = viewStudentDetail;
+    window.exportToExcel = exportToExcel;
+
+    function viewStudentDetail(studentNo) {
+        const student = currentData.students.find(s => s.studentNo === studentNo);
+        if (student) {
+            const detail = `
+학번: ${student.studentNo}
+이름: ${student.name}
+학과: ${student.department}
+학년: ${student.grade}학년
+총 적립: ${student.totalEarned}
+총 사용: ${student.totalUsed}
+현재 보유: ${student.currentPoints}
+최근 활동: ${student.lastActivity}
+            `;
+            alert(detail);
+        }
+    }
+
+    function exportToExcel() {
+        alert('엑셀 파일을 다운로드합니다.');
+        // 실제 구현 시 엑셀 다운로드 API 호출
+    }
+
+    async function initOperatorPointsPage() {
+        currentData = await fetchOperatorPointsData();
+        renderStats(currentData.stats);
+        renderFilters(currentData);
+        renderStudentPointsTable(currentData.students);
+    }
+
+    document.addEventListener('DOMContentLoaded', initOperatorPointsPage);
+</script>
+</div>

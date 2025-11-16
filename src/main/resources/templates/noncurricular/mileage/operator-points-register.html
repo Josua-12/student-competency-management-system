@@ -1,0 +1,618 @@
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
+    <style>
+        .noncurri-mileage-register-page{
+            --bg:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --card:#f9fafb;
+            --pri: #094081;
+            --pri-soft:#eff6ff;
+            --success:#059669;
+            --warning:#d97706;
+            --danger:#dc2626;
+            --radius-lg:16px;
+        }
+        .noncurri-mileage-register-page .layout{
+            max-width:1200px;
+            margin:0 auto;
+            padding:24px 16px 40px;
+        }
+        .noncurri-mileage-register-page header{
+            margin-bottom:24px;
+        }
+        .noncurri-mileage-register-page header h1{
+            font-size:24px;
+            font-weight:700;
+            margin-bottom:8px;
+        }
+        .noncurri-mileage-register-page header .sub{
+            font-size:14px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-register-page .card{
+            background:var(--card);
+            border-radius:var(--radius-lg);
+            border:1px solid var(--line);
+            padding:20px;
+            margin-bottom:20px;
+        }
+        .noncurri-mileage-register-page .card-title{
+            font-size:16px;
+            font-weight:600;
+            margin-bottom:16px;
+        }
+        .noncurri-mileage-register-page .form-row{
+            display:flex;
+            gap:16px;
+            margin-bottom:16px;
+            flex-wrap:wrap;
+        }
+        .noncurri-mileage-register-page .form-item{
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+            flex:1;
+            min-width:200px;
+        }
+        .noncurri-mileage-register-page .form-item label{
+            font-size:14px;
+            font-weight:500;
+            color:var(--fg);
+        }
+        .noncurri-mileage-register-page .form-item select, .noncurri-mileage-register-page .form-item input{
+            padding:10px 12px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            font-size:14px;
+        }
+        .noncurri-mileage-register-page .btn{
+            padding:10px 20px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            background:#ffffff;
+            cursor:pointer;
+            font-size:14px;
+            font-weight:500;
+        }
+        .noncurri-mileage-register-page .btn-primary{
+            background:var(--pri);
+            border-color:var(--pri);
+            color:#ffffff;
+        }
+        .noncurri-mileage-register-page .btn-success{
+            background:var(--success);
+            border-color:var(--success);
+            color:#ffffff;
+        }
+        .noncurri-mileage-register-page .btn-warning{
+            background:var(--warning);
+            border-color:var(--warning);
+            color:#ffffff;
+        }
+        .noncurri-mileage-register-page .btn-danger{
+            background:var(--danger);
+            border-color:var(--danger);
+            color:#ffffff;
+        }
+        .noncurri-mileage-register-page .btn-row{
+            display:flex;
+            gap:12px;
+            margin-top:16px;
+        }
+        .noncurri-mileage-register-page .table-container{
+            overflow-x:auto;
+            max-height:400px;
+            overflow-y:auto;
+        }
+        .noncurri-mileage-register-page table{
+            width:100%;
+            border-collapse:collapse;
+            background:#ffffff;
+            border-radius:8px;
+            overflow:hidden;
+        }
+        .noncurri-mileage-register-page th, .noncurri-mileage-register-page td{
+            padding:10px 12px;
+            text-align:left;
+            border-bottom:1px solid var(--line);
+        }
+        .noncurri-mileage-register-page th{
+            background:var(--card);
+            font-weight:600;
+            font-size:14px;
+            position:sticky;
+            top:0;
+        }
+        .noncurri-mileage-register-page td{
+            font-size:14px;
+        }
+        .noncurri-mileage-register-page .checkbox-cell{
+            width:40px;
+            text-align:center;
+        }
+        .noncurri-mileage-register-page .points-input{
+            width:80px;
+            padding:4px 8px;
+            border:1px solid var(--line);
+            border-radius:4px;
+        }
+        .noncurri-mileage-register-page .empty-state{
+            text-align:center;
+            padding:40px;
+            color:var(--muted);
+        }
+        .noncurri-mileage-register-page .upload-area{
+            border:2px dashed var(--line);
+            border-radius:8px;
+            padding:40px;
+            text-align:center;
+            margin-bottom:20px;
+        }
+        .noncurri-mileage-register-page .upload-area.dragover{
+            border-color:var(--pri);
+            background:var(--pri-soft);
+        }
+        .noncurri-mileage-register-page .file-input{
+            display:none;
+        }
+        .noncurri-mileage-register-page .alert{
+            padding:12px 16px;
+            border-radius:8px;
+            margin-bottom:16px;
+        }
+        .noncurri-mileage-register-page .alert-success{
+            background:#dcfce7;
+            color:#166534;
+            border:1px solid #bbf7d0;
+        }
+        .noncurri-mileage-register-page .alert-warning{
+            background:#fef3c7;
+            color:#92400e;
+            border:1px solid #fde68a;
+        }
+        .noncurri-mileage-register-page .alert-danger{
+            background:#fee2e2;
+            color:#dc2626;
+            border:1px solid #fecaca;
+        }
+    </style>
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
+    <div class="noncurri-mileage-register-page layout">
+        <header>
+            <h1>비교과 포인트 등록</h1>
+            <p class="sub">프로그램 참여 학생들에게 비교과 포인트를 일괄 등록할 수 있습니다.</p>
+        </header>
+
+        <!-- 알림 메시지 -->
+        <div id="alertContainer"></div>
+
+        <!-- 프로그램 선택 -->
+        <section class="card">
+            <div class="card-title">1단계: 프로그램 선택</div>
+            <div class="form-row">
+                <div class="form-item">
+                    <label>프로그램 *</label>
+                    <select id="programSelect" onchange="loadEligibleStudents()">
+                        <option value="">프로그램을 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>회차 (선택사항)</label>
+                    <select id="scheduleSelect">
+                        <option value="">전체</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>기본 포인트</label>
+                    <input type="number" id="defaultPoints" value="10" min="0" max="100">
+                </div>
+            </div>
+        </section>
+
+        <!-- 엑셀 업로드 -->
+        <section class="card">
+            <div class="card-title">2단계: 포인트 등록 방법 선택</div>
+            <div class="upload-area" id="uploadArea">
+                <p>엑셀 파일을 드래그하여 업로드하거나 클릭하여 파일을 선택하세요</p>
+                <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls,.csv" onchange="handleFileUpload(event)">
+                <div class="btn-row" style="justify-content:center; margin-top:16px;">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                        파일 선택
+                    </button>
+                    <button class="btn" onclick="downloadTemplate()">
+                        양식 다운로드
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 대상 학생 목록 -->
+        <section class="card">
+            <div class="card-title">3단계: 포인트 등록 대상 확인</div>
+            <div class="form-row">
+                <div class="form-item">
+                    <label>검색</label>
+                    <input type="text" id="studentSearch" placeholder="학번 또는 이름으로 검색" onkeyup="filterStudents()">
+                </div>
+                <div class="form-item">
+                    <label>학과 필터</label>
+                    <select id="deptFilter" onchange="filterStudents()">
+                        <option value="">전체 학과</option>
+                    </select>
+                </div>
+                <div class="form-item" style="justify-content:end;">
+                    <button class="btn" onclick="selectAllStudents()">전체 선택</button>
+                    <button class="btn" onclick="deselectAllStudents()">전체 해제</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">
+                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                            </th>
+                            <th>학번</th>
+                            <th>이름</th>
+                            <th>학과</th>
+                            <th>학년</th>
+                            <th>신청일</th>
+                            <th>상태</th>
+                            <th>포인트</th>
+                            <th>비고</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- JS로 렌더링 -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state" style="display:none;">
+                    프로그램을 선택하면 대상 학생 목록이 표시됩니다.
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-warning" onclick="saveDraft()">임시저장</button>
+                <button class="btn btn-success" onclick="commitPoints()">포인트 일괄 등록</button>
+            </div>
+        </section>
+
+        <!-- 등록 이력 -->
+        <section class="card">
+            <div class="card-title">등록 이력</div>
+            <div class="table-container">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>등록일시</th>
+                            <th>프로그램</th>
+                            <th>대상 학생 수</th>
+                            <th>총 포인트</th>
+                            <th>등록자</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- JS로 렌더링 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+<div th:fragment="contentScript">
+<script th:inline="javascript">
+    const REGISTER_API = {
+        programs: '/api/noncurricular-operator/programs/list',
+        eligible: '/api/noncurricular-operator/mileages/eligible',
+        template: '/api/noncurricular-operator/mileages/template',
+        upload: '/api/noncurricular-operator/mileages/upload',
+        draft: '/api/noncurricular-operator/mileages/draft',
+        commit: '/api/noncurricular-operator/mileages/commit',
+        history: '/api/noncurricular-operator/mileages/history'
+    };
+
+    let currentStudents = [];
+    let filteredStudents = [];
+
+    async function fetchPrograms() {
+        try {
+            const res = await fetch(REGISTER_API.programs);
+            if (!res.ok) throw new Error('API error');
+            return await res.json();
+        } catch (e) {
+            console.error('프로그램 목록 조회 실패', e);
+            return [];
+        }
+    }
+
+    async function loadEligibleStudents() {
+        const programId = document.getElementById('programSelect').value;
+        if (!programId) {
+            currentStudents = [];
+            filteredStudents = [];
+            renderStudentsTable([]);
+            document.getElementById('emptyState').style.display = 'block';
+            return;
+        }
+
+        try {
+            const res = await fetch(`${REGISTER_API.eligible}?progId=${programId}`);
+            if (!res.ok) throw new Error('API error');
+            const data = await res.json();
+            
+            const defaultPoints = document.getElementById('defaultPoints').value || 10;
+            
+            currentStudents = data.map(item => ({
+                studentNo: item.studentNo,
+                name: item.name,
+                department: item.dept,
+                grade: item.grade,
+                appliedAt: '-',
+                status: item.completionStatus || '이수완료',
+                points: defaultPoints,
+                remarks: ''
+            }));
+            
+            filteredStudents = [...currentStudents];
+            renderStudentsTable(filteredStudents);
+            
+            if (currentStudents.length > 0) {
+                showAlert(`${currentStudents.length}명의 대상 학생을 불러왔습니다.`, 'success');
+            } else {
+                showAlert('대상 학생이 없습니다.', 'warning');
+            }
+            
+        } catch (e) {
+            console.error('대상 학생 조회 실패', e);
+            showAlert('대상 학생 조회에 실패했습니다.', 'danger');
+        }
+    }
+
+    function renderStudentsTable(students) {
+        const tbody = document.getElementById('studentsTableBody');
+        const emptyState = document.getElementById('emptyState');
+        
+        tbody.innerHTML = '';
+        
+        if (!students || students.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        }
+        
+        emptyState.style.display = 'none';
+        
+        students.forEach((student, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="checkbox-cell">
+                    <input type="checkbox" class="student-checkbox" data-index="${index}" onchange="updateSelectAllCheckbox()">
+                </td>
+                <td>${student.studentNo}</td>
+                <td>${student.name}</td>
+                <td>${student.department}</td>
+                <td>${student.grade}학년</td>
+                <td>${student.appliedAt}</td>
+                <td>${student.status}</td>
+                <td>
+                    <input type="number" class="points-input" value="${student.points}" min="0" max="100" 
+                           onchange="updateStudentPoints(${index}, this.value)">
+                </td>
+                <td>
+                    <input type="text" style="width:100px;" value="${student.remarks}" 
+                           onchange="updateStudentRemarks(${index}, this.value)">
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function filterStudents() {
+        const search = document.getElementById('studentSearch').value.toLowerCase();
+        const dept = document.getElementById('deptFilter').value;
+        
+        filteredStudents = currentStudents.filter(student => {
+            const matchSearch = !search || 
+                student.studentNo.toLowerCase().includes(search) || 
+                student.name.toLowerCase().includes(search);
+            const matchDept = !dept || student.department.includes(dept);
+            return matchSearch && matchDept;
+        });
+        
+        renderStudentsTable(filteredStudents);
+    }
+
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAllCheckbox').checked;
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(cb => cb.checked = selectAll);
+    }
+
+    function updateSelectAllCheckbox() {
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        const checkedCount = document.querySelectorAll('.student-checkbox:checked').length;
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        
+        selectAllCheckbox.checked = checkedCount === checkboxes.length;
+        selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+    }
+
+    function selectAllStudents() {
+        document.getElementById('selectAllCheckbox').checked = true;
+        toggleSelectAll();
+    }
+
+    function deselectAllStudents() {
+        document.getElementById('selectAllCheckbox').checked = false;
+        toggleSelectAll();
+    }
+
+    function updateStudentPoints(index, points) {
+        if (filteredStudents[index]) {
+            filteredStudents[index].points = parseInt(points) || 0;
+        }
+    }
+
+    function updateStudentRemarks(index, remarks) {
+        if (filteredStudents[index]) {
+            filteredStudents[index].remarks = remarks;
+        }
+    }
+
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        showAlert('파일 업로드 기능은 구현 예정입니다.', 'warning');
+        // 실제 구현 시 파일 파싱 로직 추가
+    }
+
+    function downloadTemplate() {
+        // 실제 구현 시 템플릿 다운로드 API 호출
+        const link = document.createElement('a');
+        link.href = REGISTER_API.template;
+        link.download = 'mileage_template.csv';
+        link.click();
+    }
+
+    async function saveDraft() {
+        const selectedStudents = getSelectedStudents();
+        if (selectedStudents.length === 0) {
+            showAlert('등록할 학생을 선택해주세요.', 'warning');
+            return;
+        }
+        
+        const programId = document.getElementById('programSelect').value;
+        if (!programId) {
+            showAlert('프로그램을 선택해주세요.', 'warning');
+            return;
+        }
+        
+        console.log('임시저장:', { programId, students: selectedStudents });
+        showAlert(`${selectedStudents.length}명의 학생 포인트가 임시저장되었습니다.`, 'success');
+    }
+
+    async function commitPoints() {
+        const selectedStudents = getSelectedStudents();
+        if (selectedStudents.length === 0) {
+            showAlert('등록할 학생을 선택해주세요.', 'warning');
+            return;
+        }
+        
+        const programId = document.getElementById('programSelect').value;
+        if (!programId) {
+            showAlert('프로그램을 선택해주세요.', 'warning');
+            return;
+        }
+        
+        if (!confirm(`선택한 ${selectedStudents.length}명의 학생에게 포인트를 등록하시겠습니까?`)) {
+            return;
+        }
+        
+        try {
+            console.log('포인트 등록:', { programId, students: selectedStudents });
+            
+            // API 호출 (현재는 더미)
+            // const res = await fetch(REGISTER_API.commit, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ programId, students: selectedStudents })
+            // });
+            
+            showAlert(`${selectedStudents.length}명의 학생에게 포인트가 성공적으로 등록되었습니다.`, 'success');
+            
+            // 체크박스 초기화
+            document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = false);
+            document.getElementById('selectAllCheckbox').checked = false;
+            
+        } catch (e) {
+            console.error('포인트 등록 실패', e);
+            showAlert('포인트 등록에 실패했습니다.', 'danger');
+        }
+    }
+
+    function getSelectedStudents() {
+        const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+        return Array.from(checkboxes).map(cb => {
+            const index = parseInt(cb.dataset.index);
+            return filteredStudents[index];
+        });
+    }
+
+    function showAlert(message, type) {
+        const container = document.getElementById('alertContainer');
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.textContent = message;
+        
+        container.innerHTML = '';
+        container.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.remove();
+        }, 5000);
+    }
+
+    async function initRegisterPage() {
+        // 프로그램 목록 로드
+        const programs = await fetchPrograms();
+        const programSelect = document.getElementById('programSelect');
+        programs.forEach(program => {
+            const option = document.createElement('option');
+            option.value = program.id;
+            option.textContent = program.title;
+            option.dataset.defaultPoints = program.defaultPoints;
+            programSelect.appendChild(option);
+        });
+        
+        // 프로그램 선택 시 기본 포인트 설정
+        programSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.dataset.defaultPoints) {
+                document.getElementById('defaultPoints').value = selectedOption.dataset.defaultPoints;
+            }
+        });
+        
+        // 드래그 앤 드롭 설정
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                handleFileUpload({ target: { files } });
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initRegisterPage);
+    
+    // 디버깅: 함수가 전역으로 노출되었는지 확인
+    window.saveDraft = saveDraft;
+    window.commitPoints = commitPoints;
+    window.loadEligibleStudents = loadEligibleStudents;
+    window.filterStudents = filterStudents;
+    window.toggleSelectAll = toggleSelectAll;
+    window.updateSelectAllCheckbox = updateSelectAllCheckbox;
+    window.selectAllStudents = selectAllStudents;
+    window.deselectAllStudents = deselectAllStudents;
+    window.updateStudentPoints = updateStudentPoints;
+    window.updateStudentRemarks = updateStudentRemarks;
+    window.handleFileUpload = handleFileUpload;
+    window.downloadTemplate = downloadTemplate;
+</script>
+</div>

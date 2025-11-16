@@ -7,7 +7,6 @@
     <title th:text="${pageTitle} ?: '비교과 프로그램'">비교과 프로그램</title>
 
     <!-- 공통 CSS -->
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/noncurricular/noncurricular.css}">
     <th:block th:replace="common/header :: headerStyles"></th:block>
     <th:block th:replace="common/footer :: footerStyles"></th:block>
@@ -29,9 +28,8 @@
         <!-- 메인 컨텐츠 -->
         <main class="col-12 col-md-9 col-lg-10 py-4">
             <!-- 페이지 전용 본문 -->
-            <th:block th:if="${contentFragment != null}"
-                      th:replace="${content}">
-            </th:block>
+            <div th:if="${content != null}"
+                 th:replace="~{${content}}"></div>
         </main>
     </div>
 </div>
@@ -40,9 +38,8 @@
 <div th:replace="~{common/footer :: footer}"></div>
 
 <!-- 공통 JS -->
-<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/js/noncurricular.js}"></script>
 <div th:replace="common/header :: headerScript"></div>
+<!-- 페이지 전용 JS (fragment 없으면 무시) -->
 
 </body>
 </html>

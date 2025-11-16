@@ -33,6 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || uri.startsWith("/js/")
                 || uri.startsWith("/images/")
                 || uri.startsWith("/static/")
+                || uri.startsWith("/webjars/")
+                || uri.startsWith("/fonts/")
+                || uri.equals("/favicon.ico")
+                || uri.equals("/manifest.json")
                 || "/api/user/login".equals(uri)
                 || "/api/user/refresh".equals(uri);
     }

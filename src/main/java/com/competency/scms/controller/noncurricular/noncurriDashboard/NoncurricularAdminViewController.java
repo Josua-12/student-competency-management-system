@@ -13,10 +13,7 @@ public class NoncurricularAdminViewController {
     @GetMapping("/dashboard")
     public String adminDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 관리자 대시보드");
-        // 처음엔 operator-dashboard 화면 같이 써도 되고,
-        // 나중에 admin 전용 화면 따로 만들면 content만 바꿔주면 됨.
-        model.addAttribute("contentFragment",
-                "noncurricular/noncurriDashboard/operator-dashboard :: content");
+        model.addAttribute("content", "noncurricular/noncurriDashboard/operator-dashboard");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 

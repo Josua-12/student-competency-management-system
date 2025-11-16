@@ -4,17 +4,25 @@ package com.competency.scms.repository.noncurricular.operation;
 import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.operation.ProgramApplication;
 import com.competency.scms.domain.noncurricular.operation.ApplicationStatus;
+import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorApprovalRequestDto;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentLatestApplicationDto;
+import com.competency.scms.dto.noncurricular.operation.application.StudentApplicationListDto;
+import com.competency.scms.dto.noncurricular.operation.application.StudentApplicationSearchConditionDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ProgramApplicationRepository
         extends JpaRepository<ProgramApplication, Long>, JpaSpecificationExecutor<ProgramApplication> {
+
+    long count(); // 전체 신청 건수
+
+    long countByStatus(ApplicationStatus status); // 상태별 건수
 
     @Query(
             value = """
@@ -118,5 +126,65 @@ public interface ProgramApplicationRepository
         order by app.appliedAt desc
         """)
     List<OperatorApprovalRequestDto> findPendingApprovalRequests(Pageable pageable);
+
+    @Query(
+            value = """
+            select app
+            from ProgramApplication app
+            join fetch app.program p
+            left join fetch app.schedule s
+            where app.student.id = :studentId
+              and (:from is null or app.appliedAt >= :from)
+              and (:to   is null or app.appliedAt < :to)
+              and (:keyword is null or lower(p.title) like lower(concat('%', :keyword, '%')))
+              and (:category is null or p.category = :category)
+              and (:status   is null or app.status = :status)
+            order by app.appliedAt desc
+            """,
+            countQuery = """
+            select count(app)
+            from ProgramApplication app
+            join app.program p
+            where app.student.id = :studentId
+              and (:from is null or app.appliedAt >= :from)
+              and (:to   is null or app.appliedAt < :to)
+              and (:keyword is null or lower(p.title) like lower(concat('%', :keyword, '%')))
+              and (:category is null or p.category = :category)
+              and (:status   is null or app.status = :status)
+            """
+    )
+    Page<ProgramApplication> searchStudentApplications(
+            @Param("studentId") Long studentId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("keyword") String keyword,
+            @Param("category") com.competency.scms.domain.noncurricular.program.ProgramCategoryType category,
+            @Param("status") ApplicationStatus status,
+            Pageable pageable
+    );
+
+    @Query("""
+        select count(app)
+        from ProgramApplication app
+        join app.program p
+        where app.student.id = :studentId
+          and (:from is null or app.appliedAt >= :from)
+          and (:to   is null or app.appliedAt < :to)
+          and (:keyword is null or lower(p.title) like lower(concat('%', :keyword, '%')))
+          and (:category is null or p.category = :category)
+          and (:status   is null or app.status = :status)
+        """)
+    long countStudentApplications(
+            @Param("studentId") Long studentId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("keyword") String keyword,
+            @Param("category") com.competency.scms.domain.noncurricular.program.ProgramCategoryType category,
+            @Param("status") ApplicationStatus status
+    );
+
+
+
+
 }
 

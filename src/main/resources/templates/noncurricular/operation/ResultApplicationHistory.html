@@ -1,0 +1,617 @@
+<!--<!doctype html>-->
+<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="utf-8" />-->
+<!--    <meta name="viewport" content="width=device-width,initial-scale=1" />-->
+<!--    <title>비교과 프로그램 신청내역 (학생)</title>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
+    <!-- 부트스트랩 / 공통 CSS 필요하면 여기에 -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+
+    <style>
+        :root{
+            --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
+            --card:#fafafa; --chip:#f3f4f6;
+            --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eff6ff;
+            --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+            --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--fg);
+            font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+        }
+
+        .nc-app-page{
+            max-width:1200px;
+            margin:24px auto;
+            padding:0 16px 32px;
+        }
+        .nc-app-header{
+            margin-bottom:18px;
+        }
+        .nc-app-title{
+            font-size:22px;
+            font-weight:700;
+            margin:0 0 4px;
+        }
+        .nc-app-sub{
+            font-size:13px;
+            color:var(--muted);
+        }
+
+        /* 검색 영역 */
+        .nc-app-search{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:var(--radius);
+            padding:16px 18px 10px;
+            margin-bottom:16px;
+        }
+        .nc-search-grid{
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:12px 16px;
+        }
+        .nc-search-item{
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+        .nc-label{
+            font-size:12px;
+            color:var(--muted);
+        }
+        .nc-input, .nc-select{
+            width:100%;
+            border-radius:999px;
+            border:1px solid var(--line);
+            padding:6px 12px;
+            font-size:13px;
+            outline:none;
+            background:#fff;
+        }
+        .nc-input:focus, .nc-select:focus{
+            border-color:var(--pri);
+            box-shadow:0 0 0 1px rgba(37,99,235,0.15);
+        }
+        .nc-date-row{
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .nc-search-actions{
+            grid-column:1 / -1;
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:4px;
+        }
+        .nc-btn{
+            border-radius:999px;
+            border:1px solid transparent;
+            font-size:13px;
+            padding:6px 14px;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            background:#fff;
+        }
+        .nc-btn-primary{
+            background:var(--pri);
+            color:#fff;
+            border-color:var(--pri);
+        }
+        .nc-btn-primary:hover{
+            background:var(--pri-600);
+        }
+        .nc-btn-ghost{
+            border-color:var(--line);
+            background:#fff;
+            color:var(--muted);
+        }
+        .nc-btn-ghost:hover{
+            background:#f9fafb;
+        }
+
+        /* 요약 카드 */
+        .nc-summary{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-bottom:12px;
+        }
+        .nc-summary-card{
+            flex:1 1 120px;
+            min-width:0;
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            padding:10px 12px;
+        }
+        .nc-summary-label{
+            font-size:11px;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+        .nc-summary-value{
+            font-size:16px;
+            font-weight:700;
+        }
+
+        /* 테이블 */
+        .nc-table-wrapper{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            overflow:hidden;
+        }
+        .nc-table-scroll{
+            width:100%;
+            overflow-x:auto;
+        }
+        table.nc-table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:900px;
+        }
+        .nc-table thead{
+            background:#f9fafb;
+        }
+        .nc-table th,
+        .nc-table td{
+            padding:9px 10px;
+            font-size:12px;
+            border-bottom:1px solid var(--line);
+            text-align:left;
+            white-space:nowrap;
+        }
+        .nc-table th{
+            font-weight:600;
+            color:#4b5563;
+        }
+        .nc-table tbody tr:hover{
+            background:#f9fafb;
+        }
+        .nc-col-title{
+            max-width:240px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .nc-link{
+            color:var(--pri);
+            text-decoration:none;
+        }
+        .nc-link:hover{
+            text-decoration:underline;
+        }
+
+        /* 상태 배지 */
+        .nc-badge{
+            display:inline-flex;
+            align-items:center;
+            padding:2px 8px;
+            border-radius:999px;
+            font-size:11px;
+            font-weight:500;
+        }
+        .nc-badge-pending{
+            background:#fef3c7;
+            color:#92400e;
+        }
+        .nc-badge-approved{
+            background:#dcfce7;
+            color:#166534;
+        }
+        .nc-badge-rejected{
+            background:#fee2e2;
+            color:#991b1b;
+        }
+        .nc-badge-cancelled{
+            background:#e5e7eb;
+            color:#374151;
+        }
+
+        /* 액션 버튼 */
+        .nc-table-actions{
+            display:flex;
+            flex-wrap:wrap;
+            gap:4px;
+        }
+        .nc-btn-xs{
+            padding:3px 8px;
+            font-size:11px;
+            border-radius:999px;
+            border:1px solid var(--line);
+            background:#fff;
+            cursor:pointer;
+            white-space:nowrap;
+        }
+        .nc-btn-xs-primary{
+            border-color:var(--pri);
+            color:var(--pri);
+        }
+        .nc-btn-xs-primary:hover{
+            background:var(--pri-50);
+        }
+        .nc-btn-xs:disabled{
+            opacity:0.4;
+            cursor:default;
+            background:#f9fafb;
+        }
+
+        /* 페이징 */
+        .nc-footer{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:8px 12px;
+            font-size:12px;
+            color:var(--muted);
+            background:#f9fafb;
+        }
+        .nc-pagination{
+            display:flex;
+            gap:4px;
+        }
+        .nc-page-btn{
+            min-width:26px;
+            height:26px;
+            border-radius:999px;
+            border:1px solid transparent;
+            background:transparent;
+            font-size:12px;
+            cursor:pointer;
+        }
+        .nc-page-btn:hover{
+            background:#e5e7eb;
+        }
+        .nc-page-btn.active{
+            background:var(--pri);
+            color:#fff;
+        }
+
+        .nc-empty{
+            padding:32px 16px;
+            text-align:center;
+            font-size:13px;
+            color:var(--muted);
+        }
+
+        @media (max-width:900px){
+            .nc-search-grid{
+                grid-template-columns:repeat(2,minmax(0,1fr));
+            }
+        }
+        @media (max-width:640px){
+            .nc-search-grid{
+                grid-template-columns:1fr;
+            }
+            .nc-footer{
+                flex-direction:column;
+                gap:6px;
+                align-items:flex-start;
+            }
+        }
+    </style>
+</div>
+<!--</head>-->
+<!--<body>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
+<main class="nc-app-page" id="noncurricular-application-page">
+
+    <!-- 헤더 -->
+    <section class="nc-app-header">
+        <h1 class="nc-app-title">비교과 프로그램 신청내역</h1>
+        <p class="nc-app-sub">
+            신청하신 비교과 프로그램의 진행 상태와 이수 여부를 확인할 수 있습니다.
+        </p>
+    </section>
+
+    <!-- 검색 영역 -->
+    <section class="nc-app-search">
+        <form id="application-search-form"
+              th:action="@{/noncurricular/student/applications}"
+              method="get">
+
+            <div class="nc-search-grid">
+                <!-- 기간 -->
+                <div class="nc-search-item">
+                    <label class="nc-label">신청일자</label>
+                    <div class="nc-date-row">
+                        <input type="date" name="fromDate"
+                               class="nc-input"
+                               th:value="${search.fromDate}">
+                        <span style="font-size:12px;color:var(--muted)">~</span>
+                        <input type="date" name="toDate"
+                               class="nc-input"
+                               th:value="${search.toDate}">
+                    </div>
+                </div>
+
+                <!-- 프로그램명 -->
+                <div class="nc-search-item">
+                    <label class="nc-label">프로그램명</label>
+                    <input type="text" name="keyword"
+                           placeholder="프로그램명 또는 키워드를 입력하세요"
+                           class="nc-input"
+                           th:value="${search.keyword}">
+                </div>
+
+                <!-- 분류 -->
+                <div class="nc-search-item">
+                    <label class="nc-label">프로그램 분류</label>
+                    <select name="category" class="nc-select">
+                        <option value="">전체</option>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat.code}"
+                                th:text="${cat.name}"
+                                th:selected="${search.category == cat.code}">
+                            진로·취업
+                        </option>
+                    </select>
+                </div>
+
+                <!-- 신청상태 -->
+                <div class="nc-search-item">
+                    <label class="nc-label">신청 상태</label>
+                    <select name="status" class="nc-select">
+                        <option value="">전체</option>
+                        <option value="PENDING"
+                                th:selected="${search.status == 'PENDING'}">대기</option>
+                        <option value="APPROVED"
+                                th:selected="${search.status == 'APPROVED'}">승인</option>
+                        <option value="REJECTED"
+                                th:selected="${search.status == 'REJECTED'}">반려</option>
+                        <option value="CANCELLED"
+                                th:selected="${search.status == 'CANCELLED'}">취소</option>
+                    </select>
+                </div>
+
+                <!-- 이수여부 -->
+                <div class="nc-search-item">
+                    <label class="nc-label">이수 여부</label>
+                    <select name="completion" class="nc-select">
+                        <option value="">전체</option>
+                        <option value="COMPLETED"
+                                th:selected="${search.completion == 'COMPLETED'}">이수</option>
+                        <option value="NOT_COMPLETED"
+                                th:selected="${search.completion == 'NOT_COMPLETED'}">미이수</option>
+                    </select>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="nc-search-actions">
+                    <button type="button"
+                            class="nc-btn nc-btn-ghost"
+                            id="btn-reset-search">
+                        초기화
+                    </button>
+                    <button type="submit"
+                            class="nc-btn nc-btn-primary">
+                        조회
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <!-- 요약 카드 -->
+    <section class="nc-summary">
+        <div class="nc-summary-card">
+            <div class="nc-summary-label">전체 신청 건수</div>
+            <div class="nc-summary-value"
+                 th:text="${summary.total}">12</div>
+        </div>
+        <div class="nc-summary-card">
+            <div class="nc-summary-label">승인</div>
+            <div class="nc-summary-value"
+                 th:text="${summary.approved}">5</div>
+        </div>
+        <div class="nc-summary-card">
+            <div class="nc-summary-label">대기</div>
+            <div class="nc-summary-value"
+                 th:text="${summary.pending}">3</div>
+        </div>
+        <div class="nc-summary-card">
+            <div class="nc-summary-label">반려</div>
+            <div class="nc-summary-value"
+                 th:text="${summary.rejected}">2</div>
+        </div>
+        <div class="nc-summary-card">
+            <div class="nc-summary-label">취소</div>
+            <div class="nc-summary-value"
+                 th:text="${summary.cancelled}">2</div>
+        </div>
+    </section>
+
+    <!-- 테이블 -->
+    <section class="nc-table-wrapper">
+        <div class="nc-table-scroll">
+
+            <!-- 데이터 없을 때 -->
+            <div class="nc-empty"
+                 th:if="${#lists.isEmpty(applications)}">
+                조건에 해당하는 신청내역이 없습니다.<br>
+                다른 기간이나 조건으로 다시 조회해 주세요.
+            </div>
+
+            <!-- 데이터 있을 때 -->
+            <table class="nc-table"
+                   th:if="${!#lists.isEmpty(applications)}">
+                <thead>
+                <tr>
+                    <th style="width:40px;">No</th>
+                    <th style="width:240px;">프로그램명</th>
+                    <th>분류</th>
+                    <th>운영기간</th>
+                    <th>신청일</th>
+                    <th>신청상태</th>
+                    <th>비교과 포인트</th>
+                    <th>이수 여부</th>
+                    <th>활동일정</th>
+                    <th style="width:210px;">관리</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="app, stat : ${applications}"
+                    th:data-status="${app.status}"
+                    th:data-start-date="${app.programStartDate}"
+                    th:data-application-id="${app.applicationId}">
+                    <td th:text="${stat.count}">1</td>
+                    <td class="nc-col-title">
+                        <a class="nc-link"
+                           th:text="${app.programTitle}"
+                           th:href="@{/noncurricular/student/programs/{progId}(progId=${app.programId}, applicationId=${app.applicationId})}">
+                            진로캠프 참가
+                        </a>
+                    </td>
+                    <td th:text="${app.categoryName}">진로·취업</td>
+                    <td th:text="${app.programPeriod}">2025-03-10 ~ 2025-03-12</td>
+                    <td th:text="${app.appliedAt}">2025-02-28</td>
+                    <td>
+                        <span class="nc-badge"
+                              th:classappend="${app.status} == 'PENDING'   ? ' nc-badge-pending'  :
+                                              ${app.status} == 'APPROVED'  ? ' nc-badge-approved' :
+                                              ${app.status} == 'REJECTED'  ? ' nc-badge-rejected' :
+                                              ${app.status} == 'CANCELLED' ? ' nc-badge-cancelled' : ''"
+                              th:text="${app.statusLabel}">
+                            승인
+                        </span>
+                    </td>
+                    <td th:text="${app.mileage} + '점'">10점</td>
+                    <td th:text="${app.completionLabel}">미이수</td>
+                    <td th:text="${app.activitySummary}">2025-03-10 14:00 ~ 16:00</td>
+                    <td>
+                        <div class="nc-table-actions">
+                            <button type="button"
+                                    class="nc-btn-xs nc-btn-xs-primary"
+                                    th:onclick="'location.href=\'' + @{/noncurricular/student/programs/{progId}(progId=${app.programId}, applicationId=${app.applicationId})} + '\';'">
+                                상세보기
+                            </button>
+
+                            <!-- 신청취소 -->
+                            <button type="button"
+                                    class="nc-btn-xs"
+                                    th:classappend="${app.cancelAvailable} ? ' nc-btn-xs-primary' : ''"
+                                    th:disabled="${!app.cancelAvailable}"
+                                    th:data-url="@{/noncurricular/student/applications/{id}/cancel(id=${app.applicationId})}"
+                                    data-action="cancel">
+                                신청취소
+                            </button>
+
+                            <!-- 만족도 조사 -->
+                            <button type="button"
+                                    class="nc-btn-xs"
+                                    th:if="${app.surveyAvailable}"
+                                    th:data-url="@{/noncurricular/student/applications/{id}/satisfaction(id=${app.applicationId})}"
+                                    data-action="survey">
+                                만족도 조사
+                            </button>
+
+                            <!-- 이수증 발급 -->
+                            <button type="button"
+                                    class="nc-btn-xs"
+                                    th:if="${app.certificateAvailable}"
+                                    th:data-url="@{/noncurricular/student/applications/{id}/certificate(id=${app.applicationId})}"
+                                    data-action="certificate">
+                                이수증 발급
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이징/안내 -->
+        <div class="nc-footer">
+            <div>
+                <span th:text="'총 ' + ${page.totalElements} + '건'">총 12건</span>
+                <span th:text="' · ' + ${page.number+1} + ' / ' + ${page.totalPages} + ' 페이지'">
+                    · 1 / 2 페이지
+                </span>
+            </div>
+            <div class="nc-pagination">
+                <button type="button" class="nc-page-btn"
+                        th:if="${page.hasPrevious()}"
+                        th:onclick="'location.href=\'' + @{/noncurricular/student/applications(page=${page.number-1})} + '\';'">
+                    ‹
+                </button>
+                <button type="button" class="nc-page-btn active"
+                        th:text="${page.number+1}">1</button>
+                <button type="button" class="nc-page-btn"
+                        th:if="${page.hasNext()}"
+                        th:text="${page.number+2}"
+                        th:onclick="'location.href=\'' + @{/noncurricular/student/applications(page=${page.number+1})} + '\';'">
+                    2
+                </button>
+                <button type="button" class="nc-page-btn"
+                        th:if="${page.hasNext()}"
+                        th:onclick="'location.href=\'' + @{/noncurricular/student/applications(page=${page.number+1})} + '\';'">
+                    ›
+                </button>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
+<script>
+    (function () {
+        const pageRoot = document.getElementById('noncurricular-application-page');
+        if (!pageRoot) return;
+
+        const searchForm = document.getElementById('application-search-form');
+        const resetBtn   = document.getElementById('btn-reset-search');
+
+        // 검색조건 초기화
+        if (resetBtn && searchForm) {
+            resetBtn.addEventListener('click', function () {
+                const inputs = searchForm.querySelectorAll('input[type="text"], input[type="date"]');
+                const selects = searchForm.querySelectorAll('select');
+
+                inputs.forEach(i => i.value = '');
+                selects.forEach(s => s.value = '');
+
+                // 필요하면 자동 재조회
+                // searchForm.submit();
+            });
+        }
+
+        // 테이블 내 버튼 액션
+        const table = pageRoot.querySelector('table.nc-table');
+        if (!table) return;
+
+        table.addEventListener('click', function (e) {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+
+            const action = btn.getAttribute('data-action');
+            const url    = btn.getAttribute('data-url');
+            if (!url) return;
+
+            if (action === 'cancel') {
+                if (!confirm('해당 신청을 취소하시겠습니까?')) return;
+
+                // TODO: CSRF 토큰 포함한 POST로 변경 (지금은 임시)
+                window.location.href = url;
+            } else if (action === 'survey') {
+                window.location.href = url;
+            } else if (action === 'certificate') {
+                window.location.href = url;
+            }
+        });
+    })();
+</script>
+</div>
+<!--</body>-->
+<!--</html>-->
