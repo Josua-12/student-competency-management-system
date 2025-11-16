@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             alert('신청이 완료되었습니다.');
-            window.location.href = '/counseling/student/state';
+            window.location.href = '/counseling/student/status';
         })
         .catch(error => {
             console.error('Error:', error);

@@ -45,6 +45,7 @@ public class Counselor {
         joinColumns = @JoinColumn(name = "counselor_id"),
         inverseJoinColumns = @JoinColumn(name = "subfield_id")
     )
+    @Builder.Default
     private List<CounselingSubField> specializations = new ArrayList<>();
     
     @Column(columnDefinition = "TEXT")

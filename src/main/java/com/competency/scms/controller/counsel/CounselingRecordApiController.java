@@ -1,7 +1,7 @@
 package com.competency.scms.controller.counsel;
 
-import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.counsel.CounselingRecordDto;
+import com.competency.scms.security.CustomUserDetails;
 import com.competency.scms.service.counsel.CounselingRecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,8 @@ public class CounselingRecordApiController {
     @PostMapping
     public ResponseEntity<Long> createRecord(
             @Valid @RequestBody CounselingRecordDto.CreateRequest request,
-            @AuthenticationPrincipal User currentUser) {
-        
-        Long recordId = recordService.createRecord(request, currentUser);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long recordId = recordService.createRecord(request, userDetails.getUser());
         return ResponseEntity.ok(recordId);
     }
 
@@ -33,9 +32,8 @@ public class CounselingRecordApiController {
     public ResponseEntity<Void> updateRecord(
             @PathVariable Long recordId,
             @Valid @RequestBody CounselingRecordDto.UpdateRequest request,
-            @AuthenticationPrincipal User currentUser) {
-        
-        recordService.updateRecord(recordId, request, currentUser);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        recordService.updateRecord(recordId, request, userDetails.getUser());
         return ResponseEntity.ok().build();
     }
     
@@ -43,9 +41,8 @@ public class CounselingRecordApiController {
     @DeleteMapping("/{recordId}")
     public ResponseEntity<Void> deleteRecord(
             @PathVariable Long recordId,
-            @AuthenticationPrincipal User currentUser) {
-        
-        recordService.deleteRecord(recordId, currentUser);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        recordService.deleteRecord(recordId, userDetails.getUser());
         return ResponseEntity.ok().build();
     }
 
@@ -53,9 +50,8 @@ public class CounselingRecordApiController {
     @GetMapping
     public ResponseEntity<Page<CounselingRecordDto.ListResponse>> getRecordList(
             Pageable pageable,
-            @AuthenticationPrincipal User currentUser) {
-        
-        Page<CounselingRecordDto.ListResponse> records = recordService.getRecordList(currentUser, pageable);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Page<CounselingRecordDto.ListResponse> records = recordService.getRecordList(userDetails.getUser(), pageable);
         return ResponseEntity.ok(records);
     }
 
@@ -63,9 +59,8 @@ public class CounselingRecordApiController {
     @GetMapping("/{recordId}")
     public ResponseEntity<CounselingRecordDto.DetailResponse> getRecordDetail(
             @PathVariable Long recordId,
-            @AuthenticationPrincipal User currentUser) {
-        
-        CounselingRecordDto.DetailResponse detail = recordService.getRecordDetail(recordId, currentUser);
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        CounselingRecordDto.DetailResponse detail = recordService.getRecordDetail(recordId, userDetails.getUser());
         return ResponseEntity.ok(detail);
     }
 }

@@ -135,6 +135,10 @@
                                 <div class="col-sm-3"><strong>관련 메모:</strong></div>
                                 <div class="col-sm-9" id="detailMemo"></div>
                             </div>
+                            <div class="row mb-3" id="detailAttachmentsSection" style="display: none;">
+                                <div class="col-sm-3"><strong>첨부파일:</strong></div>
+                                <div class="col-sm-9" id="detailAttachments"></div>
+                            </div>
 
                         </div>
                         <div class="modal-footer">
@@ -180,96 +184,12 @@
                         </div>
                         <div class="modal-body">
                             <form id="satisfactionForm">
-                                <!-- 전반적 만족도 -->
-                                <div class="mb-4">
-                                    <label class="form-label"><strong>1. 전반적인 상담 만족도는 어떠셨나요?</strong></label>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>매우 불만족</span>
-                                        <div class="btn-group" role="group">
-                                            <input type="radio" class="btn-check" name="overall" id="overall1" value="1">
-                                            <label class="btn btn-outline-primary" for="overall1">1</label>
-                                            <input type="radio" class="btn-check" name="overall" id="overall2" value="2">
-                                            <label class="btn btn-outline-primary" for="overall2">2</label>
-                                            <input type="radio" class="btn-check" name="overall" id="overall3" value="3">
-                                            <label class="btn btn-outline-primary" for="overall3">3</label>
-                                            <input type="radio" class="btn-check" name="overall" id="overall4" value="4">
-                                            <label class="btn btn-outline-primary" for="overall4">4</label>
-                                            <input type="radio" class="btn-check" name="overall" id="overall5" value="5">
-                                            <label class="btn btn-outline-primary" for="overall5">5</label>
-                                        </div>
-                                        <span>매우 만족</span>
-                                    </div>
-                                </div>
-
-                                <!-- 상담사 전문성 -->
-                                <div class="mb-4">
-                                    <label class="form-label"><strong>2. 상담사의 전문성은 어떠셨나요?</strong></label>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>매우 부족</span>
-                                        <div class="btn-group" role="group">
-                                            <input type="radio" class="btn-check" name="expertise" id="expertise1" value="1">
-                                            <label class="btn btn-outline-primary" for="expertise1">1</label>
-                                            <input type="radio" class="btn-check" name="expertise" id="expertise2" value="2">
-                                            <label class="btn btn-outline-primary" for="expertise2">2</label>
-                                            <input type="radio" class="btn-check" name="expertise" id="expertise3" value="3">
-                                            <label class="btn btn-outline-primary" for="expertise3">3</label>
-                                            <input type="radio" class="btn-check" name="expertise" id="expertise4" value="4">
-                                            <label class="btn btn-outline-primary" for="expertise4">4</label>
-                                            <input type="radio" class="btn-check" name="expertise" id="expertise5" value="5">
-                                            <label class="btn btn-outline-primary" for="expertise5">5</label>
-                                        </div>
-                                        <span>매우 우수</span>
-                                    </div>
-                                </div>
-
-                                <!-- 문제 해결 도움 정도 -->
-                                <div class="mb-4">
-                                    <label class="form-label"><strong>3. 상담이 문제 해결에 도움이 되었나요?</strong></label>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>전혀 도움 안됨</span>
-                                        <div class="btn-group" role="group">
-                                            <input type="radio" class="btn-check" name="helpfulness" id="help1" value="1">
-                                            <label class="btn btn-outline-primary" for="help1">1</label>
-                                            <input type="radio" class="btn-check" name="helpfulness" id="help2" value="2">
-                                            <label class="btn btn-outline-primary" for="help2">2</label>
-                                            <input type="radio" class="btn-check" name="helpfulness" id="help3" value="3">
-                                            <label class="btn btn-outline-primary" for="help3">3</label>
-                                            <input type="radio" class="btn-check" name="helpfulness" id="help4" value="4">
-                                            <label class="btn btn-outline-primary" for="help4">4</label>
-                                            <input type="radio" class="btn-check" name="helpfulness" id="help5" value="5">
-                                            <label class="btn btn-outline-primary" for="help5">5</label>
-                                        </div>
-                                        <span>매우 도움됨</span>
-                                    </div>
-                                </div>
-
-                                <!-- 재이용 의향 -->
-                                <div class="mb-4">
-                                    <label class="form-label"><strong>4. 향후 상담 서비스를 다시 이용하실 의향이 있나요?</strong></label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="reuse" id="reuse1" value="yes">
-                                        <label class="form-check-label" for="reuse1">예, 다시 이용하겠습니다</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="reuse" id="reuse2" value="no">
-                                        <label class="form-check-label" for="reuse2">아니오, 이용하지 않겠습니다</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="reuse" id="reuse3" value="maybe">
-                                        <label class="form-check-label" for="reuse3">잘 모르겠습니다</label>
-                                    </div>
-                                </div>
-
-                                <!-- 추가 의견 -->
-                                <div class="mb-3">
-                                    <label for="additionalFeedback" class="form-label"><strong>5. 추가 의견이나 개선사항이 있다면 자유롭게 작성해주세요</strong></label>
-                                    <textarea class="form-control" id="additionalFeedback" name="additionalFeedback" rows="4" placeholder="상담 서비스 개선을 위한 의견을 남겨주세요"></textarea>
-                                </div>
+                                <!-- 동적으로 생성됨 -->
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <button type="button" class="btn btn-primary">만족도 제출</button>
+                            <button type="button" class="btn btn-primary" id="submitSatisfaction">만족도 제출</button>
                         </div>
                     </div>
                 </div>

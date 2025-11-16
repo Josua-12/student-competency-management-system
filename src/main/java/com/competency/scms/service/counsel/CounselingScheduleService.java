@@ -109,10 +109,15 @@ public class CounselingScheduleService {
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         int hour = startTime.getHour();
         
+        List<Long> fieldCounselorUserIds = counselorRepository.findByCounselingFieldAndIsActiveTrue(field)
+            .stream()
+            .map(c -> c.getUser().getId())
+            .collect(Collectors.toList());
+        
         List<CounselingBaseSchedule> baseSchedules = scheduleRepository.findAvailableSchedulesByDayOfWeek(dayOfWeek, Pageable.unpaged()).getContent();
         
         return baseSchedules.stream()
-            .filter(schedule -> isCounselorForField(schedule.getCounselor(), field))
+            .filter(schedule -> fieldCounselorUserIds.contains(schedule.getCounselor().getId()))
             .filter(schedule -> isSlotAvailable(schedule, hour, date, schedule.getCounselor()))
             .map(schedule -> {
                 CounselingScheduleDto.AvailableSlot slot = new CounselingScheduleDto.AvailableSlot();
@@ -126,9 +131,15 @@ public class CounselingScheduleService {
             .collect(Collectors.toList());
     }
 
-    // 특정 날짜의 모든 시간대별 예약 가능한 상담사 조회
-    public List<CounselingScheduleDto.AvailableSlot> getAvailableSlotsGrouped(LocalDate date, CounselingField field) {
+    // 특정 날짜의 예약 가능한 시간대 조회
+    public List<CounselingScheduleDto.AvailableSlot> getAvailableSlots(LocalDate date, CounselingField field) {
         DayOfWeek dayOfWeek = date.getDayOfWeek();
+        
+        List<Long> fieldCounselorUserIds = counselorRepository.findByCounselingFieldAndIsActiveTrue(field)
+            .stream()
+            .map(c -> c.getUser().getId())
+            .collect(Collectors.toList());
+        
         List<CounselingBaseSchedule> baseSchedules = scheduleRepository.findAvailableSchedulesByDayOfWeek(dayOfWeek, Pageable.unpaged()).getContent();
         
         List<CounselingScheduleDto.AvailableSlot> availableSlots = new ArrayList<>();
@@ -136,7 +147,7 @@ public class CounselingScheduleService {
         for (CounselingBaseSchedule schedule : baseSchedules) {
             User counselor = schedule.getCounselor();
             
-            if (!isCounselorForField(counselor, field)) {
+            if (!fieldCounselorUserIds.contains(counselor.getId())) {
                 continue;
             }
             
@@ -156,36 +167,8 @@ public class CounselingScheduleService {
         return availableSlots;
     }
 
-    // 특정 날짜의 예약 가능한 시간대 조회 (기본 스케줄 + 예외 스케줄 통합)
-    public List<CounselingScheduleDto.AvailableSlot> getAvailableSlots(LocalDate date, CounselingField field) {
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        List<CounselingBaseSchedule> baseSchedules = scheduleRepository.findAvailableSchedulesByDayOfWeek(dayOfWeek, Pageable.unpaged()).getContent();
-        
-        List<CounselingScheduleDto.AvailableSlot> availableSlots = new ArrayList<>();
-        
-        for (CounselingBaseSchedule schedule : baseSchedules) {
-            User counselor = schedule.getCounselor();
-            
-            // 해당 상담 분야의 상담사만 필터링
-            if (!isCounselorForField(counselor, field)) {
-                continue;
-            }
-            
-            // 각 시간대별로 확인
-            for (int hour = 9; hour <= 17; hour++) {
-                if (isSlotAvailable(schedule, hour, date, counselor)) {
-                    CounselingScheduleDto.AvailableSlot slot = new CounselingScheduleDto.AvailableSlot();
-                    slot.setDate(date);
-                    slot.setStartTime(LocalTime.of(hour, 0));
-                    slot.setEndTime(LocalTime.of(hour + 1, 0));
-                    slot.setCounselorId(counselor.getId());
-                    slot.setCounselorName(counselor.getName());
-                    availableSlots.add(slot);
-                }
-            }
-        }
-        
-        return availableSlots;
+    public List<CounselingScheduleDto.AvailableSlot> getAvailableSlotsGrouped(LocalDate date, CounselingField field) {
+        return getAvailableSlots(date, field);
     }
 
     private boolean isCounselorForField(User counselor, CounselingField field) {
@@ -197,7 +180,7 @@ public class CounselingScheduleService {
     private boolean isSlotAvailable(CounselingBaseSchedule baseSchedule, int hour, LocalDate date, User counselor) {
         // 기본 스케줄에서 해당 시간대가 가능한지 확인
         Boolean baseAvailable = baseSchedule.getSlotAvailability(hour);
-        if (!baseAvailable) {
+        if (baseAvailable == null || !baseAvailable) {
             return false;
         }
         
@@ -232,52 +215,106 @@ public class CounselingScheduleService {
         };
     }
 
+    // 기본 달력 날짜 계산 (금요일 17:00 이후면 다음 주 월요일)
+    public LocalDate getDefaultCalendarDate() {
+        LocalDate today = LocalDate.now();
+        DayOfWeek dayOfWeek = today.getDayOfWeek();
+        LocalTime now = LocalTime.now();
+        
+        // 금요일 17:00 이후면 다음 주 월요일로
+        if (dayOfWeek == DayOfWeek.FRIDAY && now.isAfter(LocalTime.of(17, 0))) {
+            return today.plusDays(3); // 금요일 + 3일 = 다음 주 월요일
+        }
+        // 토요일이면 다음 주 월요일로
+        if (dayOfWeek == DayOfWeek.SATURDAY) {
+            return today.plusDays(2);
+        }
+        // 일요일이면 다음 날(월요일)로
+        if (dayOfWeek == DayOfWeek.SUNDAY) {
+            return today.plusDays(1);
+        }
+        
+        return today;
+    }
+
     // 월간 일정 조회
     public List<CounselingScheduleDto.MonthlySchedule> getMonthlySchedules(LocalDate startDate, LocalDate endDate, CounselingField field, Long subfieldId) {
         List<CounselingScheduleDto.MonthlySchedule> schedules = new ArrayList<>();
         
+        // 해당 필드의 활성화된 상담사 목록 먼저 조회
+        List<com.competency.scms.domain.counseling.Counselor> fieldCounselors = counselorRepository.findByCounselingFieldAndIsActiveTrue(field);
+        List<Long> fieldCounselorUserIds = fieldCounselors.stream()
+            .map(c -> c.getUser().getId())
+            .collect(Collectors.toList());
+        
+        System.out.println("[DEBUG] Field: " + field + ", Counselor User IDs: " + fieldCounselorUserIds);
+        fieldCounselors.forEach(c -> System.out.println("  - " + c.getUser().getName() + " (User ID: " + c.getUser().getId() + ", Field: " + c.getCounselingField() + ")"));
+        
+        if (fieldCounselorUserIds.isEmpty()) {
+            return schedules;
+        }
+        
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             DayOfWeek dayOfWeek = date.getDayOfWeek();
+            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) continue;
+            
             List<CounselingBaseSchedule> baseSchedules = scheduleRepository.findAvailableSchedulesByDayOfWeek(dayOfWeek, Pageable.unpaged()).getContent();
             
             for (CounselingBaseSchedule schedule : baseSchedules) {
                 User counselor = schedule.getCounselor();
                 
-                if (!isCounselorForField(counselor, field)) {
+                // 해당 필드의 상담사가 아니면 스킵
+                if (!fieldCounselorUserIds.contains(counselor.getId())) {
                     continue;
                 }
                 
                 var counselorInfo = counselorRepository.findByCounselorId(counselor.getId()).orElse(null);
                 if (counselorInfo == null) continue;
                 
-                // subfieldId 필터링: 상담사의 specializations에 해당 subfield가 있는지 확인
-                if (subfieldId != null && field == CounselingField.EMPLOYMENT) {
-                    boolean hasSubfield = counselorInfo.getSpecializations().stream()
-                        .anyMatch(sf -> sf.getId().equals(subfieldId));
-                    if (!hasSubfield) continue;
-                }
-                
-                for (int hour = 9; hour <= 17; hour++) {
-                    boolean isAvailable = isSlotAvailable(schedule, hour, date, counselor);
+                if (field == CounselingField.EMPLOYMENT) {
+                    if (counselorInfo.getSpecializations().isEmpty()) continue;
                     
-                    // BaseSchedule의 subField 사용 (있는 경우)
-                    String subfieldName = schedule.getSubField() != null ? 
-                        schedule.getSubField().getSubfieldName() : 
-                        (counselorInfo.getSpecialization() != null ? counselorInfo.getSpecialization() : "일반");
-                    Long actualSubfieldId = schedule.getSubField() != null ? 
-                        schedule.getSubField().getId() : subfieldId;
+                    var subfield = counselorInfo.getSpecializations().get(0);
                     
-                    CounselingScheduleDto.MonthlySchedule monthlySchedule = new CounselingScheduleDto.MonthlySchedule();
-                    monthlySchedule.setDate(date.toString());
-                    monthlySchedule.setStartTime(LocalTime.of(hour, 0));
-                    monthlySchedule.setEndTime(LocalTime.of(hour + 1, 0));
-                    monthlySchedule.setCounselorId(counselor.getId());
-                    monthlySchedule.setCounselorName(counselor.getName());
-                    monthlySchedule.setSubfieldId(actualSubfieldId);
-                    monthlySchedule.setSubfieldName(subfieldName);
-                    monthlySchedule.setIsAvailable(isAvailable);
+                    if (subfieldId != null && !subfield.getId().equals(subfieldId)) continue;
                     
-                    schedules.add(monthlySchedule);
+                    for (int hour = 9; hour <= 17; hour++) {
+                        Boolean baseAvailable = schedule.getSlotAvailability(hour);
+                        if (baseAvailable == null || !baseAvailable) continue;
+                        
+                        LocalTime startTime = LocalTime.of(hour, 0);
+                        boolean isReserved = reservationRepository.existsByCounselorAndReservationDateAndStartTime(counselor, date, startTime);
+                        
+                        CounselingScheduleDto.MonthlySchedule monthlySchedule = new CounselingScheduleDto.MonthlySchedule();
+                        monthlySchedule.setDate(date.toString());
+                        monthlySchedule.setStartTime(LocalTime.of(hour, 0));
+                        monthlySchedule.setEndTime(LocalTime.of(hour + 1, 0));
+                        monthlySchedule.setCounselorId(counselor.getId());
+                        monthlySchedule.setCounselorName(counselor.getName());
+                        monthlySchedule.setSubfieldId(subfield.getId());
+                        monthlySchedule.setSubfieldName(subfield.getSubfieldName());
+                        monthlySchedule.setIsAvailable(!isReserved);
+                        schedules.add(monthlySchedule);
+                    }
+                } else {
+                    for (int hour = 9; hour <= 17; hour++) {
+                        Boolean baseAvailable = schedule.getSlotAvailability(hour);
+                        if (baseAvailable == null || !baseAvailable) continue;
+                        
+                        LocalTime startTime = LocalTime.of(hour, 0);
+                        boolean isReserved = reservationRepository.existsByCounselorAndReservationDateAndStartTime(counselor, date, startTime);
+                        
+                        CounselingScheduleDto.MonthlySchedule monthlySchedule = new CounselingScheduleDto.MonthlySchedule();
+                        monthlySchedule.setDate(date.toString());
+                        monthlySchedule.setStartTime(LocalTime.of(hour, 0));
+                        monthlySchedule.setEndTime(LocalTime.of(hour + 1, 0));
+                        monthlySchedule.setCounselorId(counselor.getId());
+                        monthlySchedule.setCounselorName(counselor.getName());
+                        monthlySchedule.setSubfieldId(null);
+                        monthlySchedule.setSubfieldName(counselorInfo.getSpecialization());
+                        monthlySchedule.setIsAvailable(!isReserved);
+                        schedules.add(monthlySchedule);
+                    }
                 }
             }
         }

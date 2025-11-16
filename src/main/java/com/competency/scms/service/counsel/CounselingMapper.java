@@ -21,6 +21,7 @@ public class CounselingMapper {
         response.setCounselorName(reservation.getCounselor() != null ? reservation.getCounselor().getName() : null);
         response.setRequestContent(reservation.getRequestContent());
         response.setCreatedAt(reservation.getCreatedAt());
+        response.setHasSatisfaction(false);
         return response;
     }
 

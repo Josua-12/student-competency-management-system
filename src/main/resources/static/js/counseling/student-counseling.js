@@ -27,8 +27,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (dayOfWeek === 5 && hour >= 17) {
             const nextMonday = new Date(now);
-            nextMonday.setDate(now.getDate() + (8 - dayOfWeek));
-            return getMonday(nextMonday);
+            nextMonday.setDate(now.getDate() + 3);
+            return nextMonday;
+        }
+        if (dayOfWeek === 6) {
+            const nextMonday = new Date(now);
+            nextMonday.setDate(now.getDate() + 2);
+            return nextMonday;
+        }
+        if (dayOfWeek === 0) {
+            const nextMonday = new Date(now);
+            nextMonday.setDate(now.getDate() + 1);
+            return nextMonday;
         }
         
         return getMonday(now);

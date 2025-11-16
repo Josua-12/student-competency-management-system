@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.add('active');
                 selectedSubfield = this.dataset.subfield;
                 loadMonthSchedules();
+                renderCalendar();
             });
         });
     }
@@ -109,7 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/api/counseling/schedule/monthly?${params}`)
             .then(response => response.json())
             .then(schedules => {
-                schedules.forEach(schedule => {
+                const filteredSchedules = selectedSubfield === 'all' 
+                    ? schedules 
+                    : schedules.filter(s => s.subfieldId == selectedSubfield);
+                
+                filteredSchedules.forEach(schedule => {
                     const dateKey = schedule.date;
                     if (!monthSchedules[dateKey]) {
                         monthSchedules[dateKey] = [];
@@ -202,10 +207,52 @@ document.addEventListener('DOMContentLoaded', function() {
         timeSelect.innerHTML = `<option value="${time}">${time}</option>`;
         timeSelect.disabled = true;
         
-        const categorySelect = document.getElementById('counselingCategory');
-        categorySelect.dataset.subfieldId = subfieldId;
+        document.getElementById('counselingCategoryDisplay').value = subfieldName;
+        document.getElementById('counselingCategory').value = subfieldId;
         
         const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
         modal.show();
+        
+        document.getElementById('submitReservation').onclick = function() {
+            submitReservation(date, time, counselorId, subfieldId);
+        };
     };
+    
+    function submitReservation(date, time, counselorId, subfieldId) {
+        const resumeFile = document.getElementById('resumeFile').files[0];
+        const coverLetterFile = document.getElementById('coverLetterFile').files[0];
+        const content = document.getElementById('counselingContent').value;
+        
+        if (!resumeFile || !coverLetterFile || !content) {
+            alert('모든 필수 항목을 입력해주세요.');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('counselorId', counselorId);
+        formData.append('subfieldId', subfieldId);
+        formData.append('reservationDate', date);
+        formData.append('reservationTime', time);
+        formData.append('content', content);
+        formData.append('resumeFile', resumeFile);
+        formData.append('coverLetterFile', coverLetterFile);
+        
+        fetch('/api/counseling/reservations', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('예약 실패');
+            return response.json();
+        })
+        .then(data => {
+            alert('예약이 완료되었습니다.');
+            bootstrap.Modal.getInstance(document.getElementById('reservationModal')).hide();
+            window.location.href = '/counseling/student/status';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('예약 중 오류가 발생했습니다.');
+        });
+    }
 });

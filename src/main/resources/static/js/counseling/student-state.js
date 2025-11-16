@@ -30,10 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 검색 조건 수집
     function getSearchCondition() {
-        const dateType = document.querySelector('input[name="dateTypeRadio"]:checked').value;
-        const startDate = document.querySelectorAll('input[type="text"]')[0].value;
-        const endDate = document.querySelectorAll('input[type="text"]')[1].value;
-        const status = document.querySelector('select').value;
+        const dateTypeEl = document.querySelector('input[name="dateTypeRadio"]:checked');
+        const dateType = dateTypeEl ? dateTypeEl.value : 'reservation';
+        const dateInputs = document.querySelectorAll('input[type="text"]');
+        const startDate = dateInputs[0] ? dateInputs[0].value : '';
+        const endDate = dateInputs[1] ? dateInputs[1].value : '';
+        const statusEl = document.querySelector('select');
+        const status = statusEl ? statusEl.value : '전체';
 
         const params = {
             page: currentPage,
@@ -84,7 +87,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (reservation.status === 'PENDING' || reservation.status === 'CONFIRMED') {
             return `<button class="btn btn-outline-danger btn-sm" onclick="showCancelModal(${reservation.id})">취소</button>`;
         } else if (reservation.status === 'COMPLETED') {
-            return `<button class="btn btn-outline-success btn-sm" onclick="showSatisfactionModal(${reservation.id})">만족도</button>`;
+            if (reservation.hasSatisfaction) {
+                return `<button class="btn btn-outline-info btn-sm" onclick="showSatisfactionResult(${reservation.id})">만족도 조회</button>`;
+            } else {
+                return `<button class="btn btn-outline-success btn-sm" onclick="showSatisfactionModal(${reservation.id})">만족도 작성</button>`;
+            }
         }
         return '';
     }
@@ -111,6 +118,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     document.getElementById('detailMemoSection').style.display = 'none';
                 }
+                
+                if (reservation.counselingField === 'EMPLOYMENT') {
+                    loadAttachmentsForDetail(reservationId);
+                } else {
+                    document.getElementById('detailAttachmentsSection').style.display = 'none';
+                }
 
                 new bootstrap.Modal(document.getElementById('detailModal')).show();
             })
@@ -127,12 +140,207 @@ document.addEventListener('DOMContentLoaded', function() {
         new bootstrap.Modal(document.getElementById('cancelModal')).show();
     };
 
-    // 만족도 모달 표시
+    // 만족도 작성 모달 표시
     window.showSatisfactionModal = function(reservationId) {
         currentReservation = reservationId;
-        document.getElementById('satisfactionForm').reset();
-        new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
+        loadSatisfactionSurvey(reservationId, false);
     };
+
+    // 만족도 조회 모달 표시
+    window.showSatisfactionResult = function(reservationId) {
+        currentReservation = reservationId;
+        loadSatisfactionResult(reservationId);
+    };
+
+    // 만족도 설문 로드
+    function loadSatisfactionSurvey(reservationId, isEdit) {
+        fetch(`/api/counseling/satisfaction/survey/${reservationId}`)
+            .then(response => response.json())
+            .then(survey => {
+                if (isEdit) {
+                    fetch(`/api/counseling/satisfaction/result/${reservationId}`)
+                        .then(res => res.json())
+                        .then(result => {
+                            renderSatisfactionForm(survey, result);
+                            document.getElementById('submitSatisfaction').textContent = '만족도 수정';
+                            document.getElementById('submitSatisfaction').dataset.satisfactionId = result.satisfactionId;
+                            new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
+                        });
+                } else {
+                    renderSatisfactionForm(survey);
+                    document.getElementById('submitSatisfaction').textContent = '만족도 제출';
+                    delete document.getElementById('submitSatisfaction').dataset.satisfactionId;
+                    new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('만족도 설문을 불러오는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 만족도 결과 조회
+    function loadSatisfactionResult(reservationId) {
+        fetch(`/api/counseling/satisfaction/result/${reservationId}`)
+            .then(response => response.json())
+            .then(result => {
+                renderSatisfactionResult(result);
+                new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('만족도 결과를 불러오는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 만족도 폼 렌더링
+    function renderSatisfactionForm(survey, existingResult) {
+        const form = document.getElementById('satisfactionForm');
+        form.innerHTML = '';
+        
+        survey.questions.forEach((question, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'mb-4';
+            
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.innerHTML = `<strong>${index + 1}. ${question.questionText}${question.isRequired ? ' <span class="text-danger">*</span>' : ''}</strong>`;
+            questionDiv.appendChild(label);
+            
+            const existingAnswer = existingResult?.answers.find(a => a.questionId === question.questionId);
+            
+            if (question.questionType === 'RATING') {
+                questionDiv.appendChild(createRatingInput(question, existingAnswer?.ratingValue));
+            } else if (question.questionType === 'TEXT') {
+                questionDiv.appendChild(createTextInput(question, existingAnswer?.answerText));
+            } else if (question.questionType === 'MULTIPLE_CHOICE') {
+                questionDiv.appendChild(createMultipleChoiceInput(question, existingAnswer?.selectedOptionId));
+            }
+            
+            form.appendChild(questionDiv);
+        });
+    }
+
+    // 만족도 결과 표시
+    function renderSatisfactionResult(result) {
+        const form = document.getElementById('satisfactionForm');
+        form.innerHTML = '';
+        
+        result.answers.forEach((answer, index) => {
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'mb-4';
+            
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.innerHTML = `<strong>${index + 1}. ${answer.questionText}</strong>`;
+            answerDiv.appendChild(label);
+            
+            const valueDiv = document.createElement('div');
+            valueDiv.className = 'p-3 bg-light rounded';
+            
+            if (answer.questionType === 'RATING') {
+                valueDiv.textContent = `${answer.ratingValue}점`;
+            } else if (answer.questionType === 'TEXT') {
+                valueDiv.textContent = answer.answerText || '-';
+            } else if (answer.questionType === 'MULTIPLE_CHOICE') {
+                valueDiv.textContent = answer.selectedOptionText || '-';
+            }
+            
+            answerDiv.appendChild(valueDiv);
+            form.appendChild(answerDiv);
+        });
+        
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'btn btn-warning mt-3';
+        editBtn.textContent = '수정';
+        editBtn.onclick = () => {
+            bootstrap.Modal.getInstance(document.getElementById('satisfactionModal')).hide();
+            loadSatisfactionSurvey(result.reservationId, true);
+        };
+        form.appendChild(editBtn);
+        
+        document.getElementById('submitSatisfaction').style.display = 'none';
+    }
+
+    // 평점형 입력 생성
+    function createRatingInput(question, defaultValue) {
+        const container = document.createElement('div');
+        container.className = 'd-flex justify-content-between align-items-center';
+        
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'btn-group';
+        btnGroup.setAttribute('role', 'group');
+        
+        for (let i = 1; i <= 5; i++) {
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.className = 'btn-check';
+            input.name = `question_${question.questionId}`;
+            input.id = `q${question.questionId}_${i}`;
+            input.value = i;
+            input.dataset.questionId = question.questionId;
+            input.dataset.type = 'rating';
+            if (question.isRequired) input.required = true;
+            if (defaultValue && defaultValue === i) input.checked = true;
+            
+            const label = document.createElement('label');
+            label.className = 'btn btn-outline-primary';
+            label.setAttribute('for', `q${question.questionId}_${i}`);
+            label.textContent = i;
+            
+            btnGroup.appendChild(input);
+            btnGroup.appendChild(label);
+        }
+        
+        container.appendChild(btnGroup);
+        return container;
+    }
+
+    // 텍스트형 입력 생성
+    function createTextInput(question, defaultValue) {
+        const textarea = document.createElement('textarea');
+        textarea.className = 'form-control';
+        textarea.name = `question_${question.questionId}`;
+        textarea.rows = 4;
+        textarea.dataset.questionId = question.questionId;
+        textarea.dataset.type = 'text';
+        if (question.isRequired) textarea.required = true;
+        if (defaultValue) textarea.value = defaultValue;
+        return textarea;
+    }
+
+    // 객관식 입력 생성
+    function createMultipleChoiceInput(question, defaultValue) {
+        const container = document.createElement('div');
+        
+        question.options.forEach(option => {
+            const div = document.createElement('div');
+            div.className = 'form-check';
+            
+            const input = document.createElement('input');
+            input.className = 'form-check-input';
+            input.type = 'radio';
+            input.name = `question_${question.questionId}`;
+            input.id = `opt${option.optionId}`;
+            input.value = option.optionId;
+            input.dataset.questionId = question.questionId;
+            input.dataset.type = 'option';
+            if (question.isRequired) input.required = true;
+            if (defaultValue && defaultValue === option.optionId) input.checked = true;
+            
+            const label = document.createElement('label');
+            label.className = 'form-check-label';
+            label.setAttribute('for', `opt${option.optionId}`);
+            label.textContent = option.optionText;
+            
+            div.appendChild(input);
+            div.appendChild(label);
+            container.appendChild(div);
+        });
+        
+        return container;
+    }
 
     // 취소 확정 버튼 이벤트
     document.querySelector('#cancelModal .btn-danger').addEventListener('click', function() {
@@ -165,27 +373,45 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 만족도 제출 버튼 이벤트
-    document.querySelector('#satisfactionModal .btn-primary').addEventListener('click', function() {
-        const formData = new FormData(document.getElementById('satisfactionForm'));
-        const satisfactionData = Object.fromEntries(formData);
-
-        // 필수 항목 체크
-        if (!satisfactionData.overall || !satisfactionData.expertise || !satisfactionData.helpfulness || !satisfactionData.reuse) {
-            alert('모든 필수 항목을 선택해주세요.');
+    document.getElementById('submitSatisfaction').addEventListener('click', function() {
+        const form = document.getElementById('satisfactionForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
             return;
         }
 
+        const answers = [];
+        const inputs = form.querySelectorAll('input[data-question-id], textarea[data-question-id]');
+        
+        inputs.forEach(input => {
+            if (input.type === 'radio' && !input.checked) return;
+            
+            const answer = {
+                questionId: parseInt(input.dataset.questionId)
+            };
+            
+            if (input.dataset.type === 'rating') {
+                answer.ratingValue = parseInt(input.value);
+            } else if (input.dataset.type === 'text') {
+                answer.answerText = input.value;
+            } else if (input.dataset.type === 'option') {
+                answer.selectedOptionId = parseInt(input.value);
+            }
+            
+            answers.push(answer);
+        });
+
         const submitData = {
             reservationId: currentReservation,
-            overallSatisfaction: parseInt(satisfactionData.overall),
-            expertiseSatisfaction: parseInt(satisfactionData.expertise),
-            helpfulnessSatisfaction: parseInt(satisfactionData.helpfulness),
-            reuseIntention: satisfactionData.reuse,
-            additionalFeedback: satisfactionData.additionalFeedback || ''
+            answers: answers
         };
 
-        fetch('/api/counseling/satisfaction', {
-            method: 'POST',
+        const satisfactionId = this.dataset.satisfactionId;
+        const url = satisfactionId ? `/api/counseling/satisfaction/${satisfactionId}` : '/api/counseling/satisfaction';
+        const method = satisfactionId ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -193,8 +419,9 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.ok) {
-                alert('만족도 조사가 제출되었습니다.');
+                alert(satisfactionId ? '만족도가 수정되었습니다.' : '만족도 조사가 제출되었습니다.');
                 bootstrap.Modal.getInstance(document.getElementById('satisfactionModal')).hide();
+                loadReservations();
             } else {
                 throw new Error('만족도 제출 중 오류가 발생했습니다.');
             }
@@ -203,6 +430,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             alert('만족도 제출 중 오류가 발생했습니다.');
         });
+    });
+
+    // 모달 닫힐 때 제출 버튼 복원
+    document.getElementById('satisfactionModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('submitSatisfaction').style.display = 'inline-block';
     });
 
     // 페이지네이션 렌더링
@@ -253,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'ACADEMIC': '학업 상담',
             'CAREER': '진로 상담', 
             'PSYCHOLOGICAL': '심리 상담',
+            'EMPLOYMENT': '취업 상담',
             'JOB': '취업 상담'
         };
         return fieldMap[field] || field;
@@ -301,5 +534,36 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatTime(timeStr) {
         if (!timeStr) return '-';
         return timeStr.substring(0, 5);
+    }
+    
+    function loadAttachmentsForDetail(reservationId) {
+        fetch(`/api/counseling/reservations/${reservationId}/attachments`)
+            .then(response => response.json())
+            .then(attachments => {
+                const section = document.getElementById('detailAttachmentsSection');
+                const container = document.getElementById('detailAttachments');
+                
+                if (attachments.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                section.style.display = 'block';
+                container.innerHTML = '';
+                
+                attachments.forEach(att => {
+                    const typeDisplay = att.attachmentType === 'RESUME' ? '이력서' : 
+                                       att.attachmentType === 'COVER_LETTER' ? '자기소개서' : '서류';
+                    const link = document.createElement('a');
+                    link.href = `/api/counseling/reservations/attachments/${att.id}/download`;
+                    link.download = att.originalName;
+                    link.className = 'btn btn-sm btn-outline-secondary me-2 mb-2';
+                    link.innerHTML = `<i class="bi bi-download"></i> ${typeDisplay}: ${att.originalName}`;
+                    container.appendChild(link);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 });

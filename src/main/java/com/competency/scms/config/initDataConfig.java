@@ -115,14 +115,14 @@ public class initDataConfig implements CommandLineRunner {
         counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.CAREER).subfieldName("기타").description("기타 진로상담").build());
 
         // 취업상담 서브필드
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("일반 서류면접").description("일반 서류면접 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("외국계").description("외국계 기업 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("이공계").description("이공계 취업 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("콘텐츠엔터").description("콘텐츠엔터 취업 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("공기업").description("공기업 취업 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("임원면접").description("임원면접 상담").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("국문 이력서 또는 자기소개서").description("국문 이력서 또는 자기소개서 첨삭").build());
-        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("영문 이력서 또는 자기소개서").description("영문 이력서 또는 자기소개서 첨삭").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("일반 서류면접").consultingType(CounselingSubField.ConsultingType.INTERVIEW).description("일반 서류면접 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("외국계").consultingType(CounselingSubField.ConsultingType.INTERVIEW).description("외국계 기업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("이공계").consultingType(CounselingSubField.ConsultingType.INTERVIEW).description("이공계 취업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("콘텐츠엔터").consultingType(CounselingSubField.ConsultingType.INTERVIEW).description("콘텐츠엔터 취업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("공기업").consultingType(CounselingSubField.ConsultingType.INTERVIEW).description("공기업 취업 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("임원면접").consultingType(CounselingSubField.ConsultingType.INTERVIEW).description("임원면접 상담").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("국문 이력서 또는 자기소개서").consultingType(CounselingSubField.ConsultingType.WRITTEN_EDITING).description("국문 이력서 또는 자기소개서 첨삭").build());
+        counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.EMPLOYMENT).subfieldName("영문 이력서 또는 자기소개서").consultingType(CounselingSubField.ConsultingType.WRITTEN_EDITING).description("영문 이력서 또는 자기소개서 첨삭").build());
 
         // 학습상담 서브필드
         counselingSubFieldRepository.save(CounselingSubField.builder().counselingField(CounselingField.ACADEMIC).subfieldName("학습방법 상담").description("학습방법 상담").build());
@@ -135,30 +135,38 @@ public class initDataConfig implements CommandLineRunner {
         log.info("✅ 상담 서브필드 초기 데이터 27건이 생성되었습니다.");
 
         // 상담사 12명 (학생상담센터)
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150001).name("정준호").email("jungjoonho@pureum.ac.kr").phone("010-3191-1123")
+        User counselorUser1 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150001).name("정준호").email("jungjoonho@pureum.ac.kr").phone("010-3191-1123")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1983, 11, 14)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150002).name("조수빈").email("chosubin@pureum.ac.kr").phone("010-9053-2777")
+        User counselorUser2 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150002).name("조수빈").email("chosubin@pureum.ac.kr").phone("010-9053-2777")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1968, 12, 5)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150003).name("강준호").email("kangjoonho@pureum.ac.kr").phone("010-8022-6241")
+        User counselorUser3 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150003).name("강준호").email("kangjoonho@pureum.ac.kr").phone("010-8022-6241")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1988, 5, 19)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150004).name("강현우").email("kanghyunwoo@pureum.ac.kr").phone("010-2701-1701")
+        User counselorUser4 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150004).name("강현우").email("kanghyunwoo@pureum.ac.kr").phone("010-2701-1701")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1989, 4, 24)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150005).name("최하은").email("choihaeun@pureum.ac.kr").phone("010-3882-5110")
+        User counselorUser5 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150005).name("최하은").email("choihaeun@pureum.ac.kr").phone("010-3882-5110")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 4, 19)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150006).name("임서연").email("limseoyeon@pureum.ac.kr").phone("010-6770-2619")
+        User counselorUser6 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150006).name("임서연").email("limseoyeon@pureum.ac.kr").phone("010-6770-2619")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1968, 8, 3)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150007).name("박지민").email("parkjimin@pureum.ac.kr").phone("010-8274-4740")
+        User counselorUser7 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150007).name("박지민").email("parkjimin@pureum.ac.kr").phone("010-8274-4740")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1988, 9, 13)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150008).name("장민수").email("jangminsu@pureum.ac.kr").phone("010-7510-1526")
+        User counselorUser8 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150008).name("장민수").email("jangminsu@pureum.ac.kr").phone("010-7510-1526")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1974, 11, 17)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150009).name("김지연").email("kimjiyeon@pureum.ac.kr").phone("010-3820-1250")
+        User counselorUser9 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150009).name("김지연").email("kimjiyeon@pureum.ac.kr").phone("010-3820-1250")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1971, 9, 3)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150010).name("정유진").email("jungyujin@pureum.ac.kr").phone("010-8174-9986")
+        User counselorUser10 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150010).name("정유진").email("jungyujin@pureum.ac.kr").phone("010-8174-9986")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1975, 9, 16)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150011).name("최예린").email("choiyerin@pureum.ac.kr").phone("010-5069-1842")
+        User counselorUser11 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150011).name("최예린").email("choiyerin@pureum.ac.kr").phone("010-5069-1842")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1970, 10, 10)).department(deptCounselCenter).build());
-        userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150012).name("김민수").email("kimminsu@pureum.ac.kr").phone("010-7556-2469")
+        User counselorUser12 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150012).name("김민수").email("kimminsu@pureum.ac.kr").phone("010-7556-2469")
                 .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1984, 9, 16)).department(deptCounselCenter).build());
+        User counselorUser13 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150013).name("이서준").email("leeseojun@pureum.ac.kr").phone("010-4521-8763")
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1979, 3, 22)).department(deptCounselCenter).build());
+        User counselorUser14 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150014).name("박민지").email("parkminji@pureum.ac.kr").phone("010-6789-3214")
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1986, 7, 8)).department(deptCounselCenter).build());
+        User counselorUser15 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150015).name("최영수").email("choiyoungsu@pureum.ac.kr").phone("010-8523-9641")
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1982, 11, 30)).department(deptCounselCenter).build());
+        User counselorUser16 = userRepository.save(User.builder().role(UserRole.COUNSELOR).userNum(150016).name("정하윤").email("junghayun@pureum.ac.kr").phone("010-7412-5896")
+                .password(passwordEncoder.encode(("counselor123"))).birthDate(LocalDate.of(1985, 2, 14)).department(deptCounselCenter).build());
 
         // 학생 데이터 50명
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213901).name("김서윤").email("20213901@school.edu").phone("010-2958-4213")
@@ -262,91 +270,154 @@ public class initDataConfig implements CommandLineRunner {
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210150).name("노태경").email("20210150@school.edu").phone("010-7441-6833")
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 1)).department(ensureDept("ARCHITECTURE", "건축학과")).grade(3).build());
 
-        log.info("✅ User 초기 데이터 56건이 생성되었습니다.");
-
+        log.info("✅ User 초기 데이터 60건이 생성되었습니다.");
 
         Counselor counselorEntity1 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150001)).counselingField(CounselingField.PSYCHOLOGICAL)
+                .counselorId(counselorUser1.getId()).counselingField(CounselingField.PSYCHOLOGICAL)
                 .specialization("심리상담 전문").isActive(true).build());
 
         Counselor counselorEntity2 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150002)).counselingField(CounselingField.CAREER)
+                .counselorId(counselorUser2.getId()).counselingField(CounselingField.CAREER)
                 .specialization("진로 및 취업상담 전문").isActive(true).build());
 
         Counselor counselorEntity3 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150003)).counselingField(CounselingField.PSYCHOLOGICAL)
+                .counselorId(counselorUser3.getId()).counselingField(CounselingField.PSYCHOLOGICAL)
                 .specialization("심리상담 전문").isActive(true).build());
 
         Counselor counselorEntity4 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150004)).counselingField(CounselingField.CAREER)
+                .counselorId(counselorUser4.getId()).counselingField(CounselingField.CAREER)
                 .specialization("진로상담 전문").isActive(true).build());
 
         Counselor counselorEntity5 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150005)).counselingField(CounselingField.EMPLOYMENT)
+                .counselorId(counselorUser5.getId()).counselingField(CounselingField.EMPLOYMENT)
                 .specialization("취업상담 전문").isActive(true).build());
 
         Counselor counselorEntity6 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150006)).counselingField(CounselingField.ACADEMIC)
+                .counselorId(counselorUser6.getId()).counselingField(CounselingField.ACADEMIC)
                 .specialization("학업상담 전문").isActive(true).build());
 
         Counselor counselorEntity7 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150007)).counselingField(CounselingField.PSYCHOLOGICAL)
+                .counselorId(counselorUser7.getId()).counselingField(CounselingField.PSYCHOLOGICAL)
                 .specialization("심리상담 전문").isActive(true).build());
 
         Counselor counselorEntity8 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150008)).counselingField(CounselingField.CAREER)
+                .counselorId(counselorUser8.getId()).counselingField(CounselingField.CAREER)
                 .specialization("진로상담 전문").isActive(true).build());
 
         Counselor counselorEntity9 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150009)).counselingField(CounselingField.EMPLOYMENT)
+                .counselorId(counselorUser9.getId()).counselingField(CounselingField.EMPLOYMENT)
                 .specialization("취업상담 전문").isActive(true).build());
 
         Counselor counselorEntity10 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150010)).counselingField(CounselingField.ACADEMIC)
+                .counselorId(counselorUser10.getId()).counselingField(CounselingField.ACADEMIC)
                 .specialization("학업상담 전문").isActive(true).build());
 
         Counselor counselorEntity11 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150011)).counselingField(CounselingField.PSYCHOLOGICAL)
+                .counselorId(counselorUser11.getId()).counselingField(CounselingField.PSYCHOLOGICAL)
                 .specialization("심리상담 전문").isActive(true).build());
 
         Counselor counselorEntity12 = counselorRepository.save(Counselor.builder()
-                .counselorId(getUserId(150012)).counselingField(CounselingField.CAREER)
+                .counselorId(counselorUser12.getId()).counselingField(CounselingField.CAREER)
                 .specialization("진로 및 취업상담 전문").isActive(true).build());
 
-        log.info("✅ Counselor 초기 데이터 12건이 생성되었습니다.");
+        Counselor counselorEntity13 = counselorRepository.save(Counselor.builder()
+                .counselorId(counselorUser13.getId()).counselingField(CounselingField.EMPLOYMENT)
+                .specialization("취업상담 전문").isActive(true).build());
+
+        Counselor counselorEntity14 = counselorRepository.save(Counselor.builder()
+                .counselorId(counselorUser14.getId()).counselingField(CounselingField.EMPLOYMENT)
+                .specialization("취업상담 전문").isActive(true).build());
+
+        Counselor counselorEntity15 = counselorRepository.save(Counselor.builder()
+                .counselorId(counselorUser15.getId()).counselingField(CounselingField.EMPLOYMENT)
+                .specialization("취업상담 전문").isActive(true).build());
+
+        Counselor counselorEntity16 = counselorRepository.save(Counselor.builder()
+                .counselorId(counselorUser16.getId()).counselingField(CounselingField.EMPLOYMENT)
+                .specialization("취업상담 전문").isActive(true).build());
+
+        // 취업상담 서브필드 할당
+        CounselingSubField empGeneral = counselingSubFieldRepository.findAll().stream()
+                .filter(sf -> sf.getCounselingField() == CounselingField.EMPLOYMENT && sf.getSubfieldName().equals("일반 서류면접"))
+                .findFirst().orElseThrow();
+        CounselingSubField empForeign = counselingSubFieldRepository.findAll().stream()
+                .filter(sf -> sf.getCounselingField() == CounselingField.EMPLOYMENT && sf.getSubfieldName().equals("외국계"))
+                .findFirst().orElseThrow();
+        CounselingSubField empEngineering = counselingSubFieldRepository.findAll().stream()
+                .filter(sf -> sf.getCounselingField() == CounselingField.EMPLOYMENT && sf.getSubfieldName().equals("이공계"))
+                .findFirst().orElseThrow();
+        CounselingSubField empPublic = counselingSubFieldRepository.findAll().stream()
+                .filter(sf -> sf.getCounselingField() == CounselingField.EMPLOYMENT && sf.getSubfieldName().equals("공기업"))
+                .findFirst().orElseThrow();
+        CounselingSubField empContent = counselingSubFieldRepository.findAll().stream()
+                .filter(sf -> sf.getCounselingField() == CounselingField.EMPLOYMENT && sf.getSubfieldName().equals("콘텐츠엔터"))
+                .findFirst().orElseThrow();
+        CounselingSubField empExecutive = counselingSubFieldRepository.findAll().stream()
+                .filter(sf -> sf.getCounselingField() == CounselingField.EMPLOYMENT && sf.getSubfieldName().equals("임원면접"))
+                .findFirst().orElseThrow();
+        
+        counselorEntity5.getSpecializations().add(empGeneral);
+        counselorEntity9.getSpecializations().add(empEngineering);
+        counselorEntity13.getSpecializations().add(empForeign);
+        counselorEntity14.getSpecializations().add(empContent);
+        counselorEntity15.getSpecializations().add(empPublic);
+        counselorEntity16.getSpecializations().add(empExecutive);
+        counselorRepository.save(counselorEntity5);
+        counselorRepository.save(counselorEntity9);
+        counselorRepository.save(counselorEntity13);
+        counselorRepository.save(counselorEntity14);
+        counselorRepository.save(counselorEntity15);
+        counselorRepository.save(counselorEntity16);
+
+        log.info("✅ Counselor 초기 데이터 16건이 생성되었습니다.");
 
         // 상담사별 기본 스케줄 생성 (월-금)
         List<User> counselorUsers = List.of(
-            getUser(150001), getUser(150002), getUser(150003), getUser(150004),
-            getUser(150005), getUser(150006), getUser(150007), getUser(150008),
-            getUser(150009), getUser(150010), getUser(150011), getUser(150012)
+            counselorUser1, counselorUser2, counselorUser3, counselorUser4,
+            counselorUser5, counselorUser6, counselorUser7, counselorUser8,
+            counselorUser9, counselorUser10, counselorUser11, counselorUser12,
+            counselorUser13, counselorUser14, counselorUser15, counselorUser16
         );
         
+        List<User> employmentCounselors = List.of(counselorUser5, counselorUser9, counselorUser13, counselorUser14, counselorUser15, counselorUser16);
+        
         for (User counselor : counselorUsers) {
+            boolean isEmploymentCounselor = employmentCounselors.contains(counselor);
             for (DayOfWeek day : List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)) {
                 CounselingBaseSchedule schedule = new CounselingBaseSchedule();
                 schedule.setCounselor(counselor);
                 schedule.setDayOfWeek(day);
-                schedule.setSlot0910(true);
-                schedule.setSlot1011(true);
-                schedule.setSlot1112(true);
-                schedule.setSlot1213(false); // 점심시간
-                schedule.setSlot1314(true);
-                schedule.setSlot1415(true);
-                schedule.setSlot1516(true);
-                schedule.setSlot1617(true);
-                schedule.setSlot1718(false); // 마감시간
-                
+                if (isEmploymentCounselor) {
+                    schedule.setSlot0910(true);
+                    schedule.setSlot1011(false);
+                    schedule.setSlot1112(false);
+                    schedule.setSlot1213(false);
+                    schedule.setSlot1314(false);
+                    schedule.setSlot1415(true);
+                    schedule.setSlot1516(false);
+                    schedule.setSlot1617(false);
+                    schedule.setSlot1718(false);
+                } else {
+                    schedule.setSlot0910(true);
+                    schedule.setSlot1011(true);
+                    schedule.setSlot1112(true);
+                    schedule.setSlot1213(false);
+                    schedule.setSlot1314(true);
+                    schedule.setSlot1415(true);
+                    schedule.setSlot1516(true);
+                    schedule.setSlot1617(true);
+                    schedule.setSlot1718(false);
+                }
                 counselingScheduleRepository.save(schedule);
             }
         }
         
-        log.info("✅ 상담사 기본 스케줄 60건이 생성되었습니다.");
+        log.info("✅ 상담사 기본 스케줄 80건이 생성되었습니다.");
 
         // 상담 예약 데이터 (완료된 상담)
-        counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20213901)).counselor(getUser(150001)).counselingField(CounselingField.PSYCHOLOGICAL).subField(counselingSubFieldRepository.findAll().get(0)).reservationDate(LocalDate.of(2025, 3, 15)).startTime(LocalTime.of(10, 0)).endTime(LocalTime.of(11, 0)).requestContent("학업 스트레스 상담").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 10, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 10, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 15, 11, 0)).build());
-        counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20212802)).counselor(getUser(150002)).counselingField(CounselingField.CAREER).subField(counselingSubFieldRepository.findAll().get(2)).reservationDate(LocalDate.of(2025, 3, 20)).startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(15, 0)).requestContent("진로 고민 상담").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 15, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 15, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 20, 15, 0)).build());
-        counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20214503)).counselor(getUser(150001)).counselingField(CounselingField.PSYCHOLOGICAL).subField(counselingSubFieldRepository.findAll().get(1)).reservationDate(LocalDate.of(2025, 3, 25)).startTime(LocalTime.of(11, 0)).endTime(LocalTime.of(12, 0)).requestContent("대인관계 고민").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 20, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 20, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 25, 12, 0)).build());
+        counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20213901)).counselor(counselorUser1).counselingField(CounselingField.PSYCHOLOGICAL).subField(counselingSubFieldRepository.findAll().get(0)).reservationDate(LocalDate.of(2025, 3, 15)).startTime(LocalTime.of(10, 0)).endTime(LocalTime.of(11, 0)).requestContent("학업 스트레스 상담").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 10, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 10, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 15, 11, 0)).build());
+        counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20212802)).counselor(counselorUser2).counselingField(CounselingField.CAREER).subField(counselingSubFieldRepository.findAll().get(2)).reservationDate(LocalDate.of(2025, 3, 20)).startTime(LocalTime.of(14, 0)).endTime(LocalTime.of(15, 0)).requestContent("진로 고민 상담").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 15, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 15, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 20, 15, 0)).build());
+        counselingReservationRepository.save(CounselingReservation.builder().student(getUser(20214503)).counselor(counselorUser1).counselingField(CounselingField.PSYCHOLOGICAL).subField(counselingSubFieldRepository.findAll().get(1)).reservationDate(LocalDate.of(2025, 3, 25)).startTime(LocalTime.of(11, 0)).endTime(LocalTime.of(12, 0)).requestContent("대인관계 고민").status(ReservationStatus.COMPLETED).createdAt(LocalDateTime.of(2025, 3, 20, 9, 0)).confirmedAt(LocalDateTime.of(2025, 3, 20, 10, 0)).completedAt(LocalDateTime.of(2025, 3, 25, 12, 0)).build());
 
         log.info("✅ 상담 예약 초기 데이터 3건이 생성되었습니다.");
 

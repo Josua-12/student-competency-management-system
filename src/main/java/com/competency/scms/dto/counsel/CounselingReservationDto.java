@@ -48,6 +48,7 @@ public class CounselingReservationDto {
         private String counselorName;
         private String requestContent;
         private java.time.LocalDateTime createdAt;
+        private Boolean hasSatisfaction;
     }
     
     // 예약 목록 검색 조건
