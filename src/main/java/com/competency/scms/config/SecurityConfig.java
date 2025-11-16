@@ -51,6 +51,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .frameOptions().deny()
+                        .contentTypeOptions().and()
+                        .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                                .maxAgeInSeconds(31536000)
+                                .includeSubdomains(true))
+                        .and())
 
                 .authorizeHttpRequests(authz -> authz
                         // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
