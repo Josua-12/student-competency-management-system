@@ -3,7 +3,11 @@ package com.competency.scms.dto.competency;
 import com.competency.scms.domain.competency.AssessmentQuestion;
 import com.competency.scms.domain.competency.QuestionType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Setter
 @Getter
 public class QuestionListDto {
 

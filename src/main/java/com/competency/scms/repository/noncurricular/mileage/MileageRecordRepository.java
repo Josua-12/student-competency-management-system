@@ -47,5 +47,13 @@ public interface MileageRecordRepository
 
     /** 프로그램 기준 조회 (Program 연관의 PK는 programId) */
     List<MileageRecord> findAllByProgram_ProgramId(Long programId);
+
+    @Query("""
+        select coalesce(sum(m.points), 0)
+        from MileageRecord m
+        where m.student.id = :studentId
+        """)
+    long sumPointsByStudent(Long studentId);
+
 }
 

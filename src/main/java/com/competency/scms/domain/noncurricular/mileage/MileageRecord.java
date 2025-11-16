@@ -10,7 +10,7 @@ import lombok.*;
 @Entity
 @Table(name = "mileage_records",
         indexes = {
-                @Index(name = "ix_mileage_student", columnList = "student_id"),
+                @Index(name = "ix_mileage_student", columnList = "user_id"),
                 @Index(name = "ix_mileage_program", columnList = "prog_id"),
                 @Index(name = "ix_mileage_type", columnList = "type")
         }
@@ -25,7 +25,7 @@ public class MileageRecord extends BaseEntity {
 
     // 학생
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User student;
 
 

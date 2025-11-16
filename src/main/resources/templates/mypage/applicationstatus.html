@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{mypage/mypage-layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+<head>
+    <title>비교과 프로그램 신청 현황</title>
+    <th:block th:fragment="css">
+        <style>
+            .table-hover tbody tr:hover {
+                background-color: #f5f5f5;
+            }
+            #custom-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1050;
+            }
+            #modal-content {
+                background: white;
+                padding: 2rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                max-width: 400px;
+                text-align: center;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Custom Modal Structure -->
+        <div id="custom-modal">
+            <div id="modal-content">
+                <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
+                <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">비교과 프로그램 신청 현황</h1>
+        </div>
+        <p class="text-muted mb-4">신청 및 완료된 비교과 프로그램의 목록과 상태를 확인하세요.</p>
+
+        <!-- 탭 네비게이션 -->
+        <ul class="nav nav-tabs mb-4" id="myPageTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="noncurricular-tab" data-bs-toggle="tab" data-bs-target="#noncurricular" type="button" role="tab" aria-controls="noncurricular" aria-selected="true">
+                    <i class="fas fa-list-check me-2"></i>신청 현황
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="assessment-tab" data-bs-toggle="tab" data-bs-target="#assessment" type="button" role="tab" aria-controls="assessment" aria-selected="false">
+                    <i class="fas fa-chart-line me-2"></i>역량 진단 이력
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="counseling-tab" data-bs-toggle="tab" data-bs-target="#counseling" type="button" role="tab" aria-controls="counseling" aria-selected="false">
+                    <i class="fas fa-comments me-2"></i>상담 이력
+                </button>
+            </li>
+        </ul>
+
+        <!-- 탭 콘텐츠 -->
+        <div class="tab-content" id="myPageTabContent">
+            <div class="tab-pane fade show active" id="noncurricular" role="tabpanel" aria-labelledby="noncurricular-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">비교과 프로그램 목록</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" aria-label="비교과 프로그램 신청 목록">
+                                <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 text-start text-sm fw-medium text-muted text-uppercase">프로그램명</th>
+                                    <th scope="col" class="py-3 px-4 text-center text-sm fw-medium text-muted text-uppercase">신청일</th>
+                                    <th scope="col" class="py-3 px-4 text-center text-sm fw-medium text-muted text-uppercase">상태</th>
+                                    <th scope="col" class="py-3 px-4 text-center text-sm fw-medium text-muted text-uppercase">조치</th>
+                                </tr>
+                                </thead>
+                                <tbody id="applicationTableBody">
+                                <tr data-program="글쓰기 역량 강화 특강">
+                                    <td class="py-3 px-4 fw-medium">글쓰기 역량 강화 특강</td>
+                                    <td class="py-3 px-4 text-center text-muted">2024.05.01</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="badge bg-warning text-dark rounded-pill">신청 중</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button class="btn btn-sm btn-danger rounded-pill action-btn" data-action="cancel">취소</button>
+                                    </td>
+                                </tr>
+                                <tr data-program="인공지능 실무자 과정">
+                                    <td class="py-3 px-4 fw-medium">인공지능 실무자 과정</td>
+                                    <td class="py-3 px-4 text-center text-muted">2024.04.15</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="badge bg-success rounded-pill">참여 완료</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button class="btn btn-sm btn-primary rounded-pill action-btn" data-action="register">산출물 등록</button>
+                                    </td>
+                                </tr>
+                                <tr data-program="봉사활동: 지역 사회 멘토링">
+                                    <td class="py-3 px-4 fw-medium">봉사활동: 지역 사회 멘토링</td>
+                                    <td class="py-3 px-4 text-center text-muted">2024.03.10</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="badge bg-secondary rounded-pill">취소됨</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button class="btn btn-sm btn-secondary rounded-pill" disabled>취소됨</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="assessment" role="tabpanel" aria-labelledby="assessment-tab">
+                <p class="text-muted p-4">역량 진단 이력 관련 내용은 여기에 표시됩니다.</p>
+            </div>
+            <div class="tab-pane fade" id="counseling" role="tabpanel" aria-labelledby="counseling-tab">
+                <p class="text-muted p-4">상담 이력 관련 내용은 여기에 표시됩니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const actionButtons = document.querySelectorAll('.action-btn');
+                const modal = document.getElementById('custom-modal');
+                const modalMessage = document.getElementById('modal-message');
+                const modalCloseBtn = document.getElementById('modal-close-btn');
+
+                actionButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const action = this.getAttribute('data-action');
+                        const programRow = this.closest('tr');
+                        const programName = programRow.getAttribute('data-program');
+
+                        if (action === 'cancel') {
+                            modalMessage.textContent = `"${programName}" 프로그램 신청을 취소하시겠습니까?`;
+                            modal.style.display = 'flex';
+                        } else if (action === 'register') {
+                            modalMessage.textContent = `"${programName}" 프로그램의 산출물을 등록하시겠습니까?`;
+                            modal.style.display = 'flex';
+                        }
+                    });
+                });
+
+                modalCloseBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

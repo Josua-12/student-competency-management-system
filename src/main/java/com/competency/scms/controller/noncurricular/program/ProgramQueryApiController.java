@@ -1,18 +1,19 @@
 package com.competency.scms.controller.noncurricular.program;
 
+import com.competency.scms.dto.noncurricular.program.op.ProgramDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/operator/noncurricular/programs")
+@RequestMapping("/api/noncurricular-operator/programs/query")
 public class ProgramQueryApiController {
 
     private final com.competency.scms.service.noncurricular.program.ProgramQueryService programQueryService;
 
     @GetMapping("/{programId}")
-    public com.competency.scms.dto.noncurricular.program.ProgramDetailDto getDetail(@PathVariable Long programId, Authentication auth) {
+    public ProgramDetailDto getDetail(@PathVariable Long programId, Authentication auth) {
         Long operatorId = getOperatorId(auth);
         return programQueryService.getDetailForOperator(operatorId, programId);
     }

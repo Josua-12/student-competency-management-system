@@ -1,0 +1,76 @@
+/* /css/competency/sidebar.css */
+
+/* * 사이드바 스타일
+ */
+.sidebar {
+    width: 240px;      /* 사이드바 너비 */
+    flex-shrink: 0;  /* [중요] flex 컨테이너 안에서 너비가 줄어들지 않도록 함 */
+    background-color: var(--bg-body);
+    border-right: 1px solid var(--border-color);
+
+    /* [중요] fixed 대신 sticky 사용 */
+    position: sticky;
+
+    /* [중요] header.html의 sticky-top을 고려하여 헤더 높이만큼(약 56px) 아래에 붙임 */
+    top: 56px;
+
+    /* [중요] 헤더 높이를 뺀 나머지 뷰포트 높이를 꽉 채움 */
+    height: calc(100vh - 56px);
+
+    /* 사이드바 메뉴가 길어질 경우를 대비해 자체 스크롤 생성 */
+    overflow-y: auto;
+}
+
+/* * 메인 컨텐츠 영역 스타일 (style.css의 .main-content를 덮어씀)
+ */
+.main-content {
+    flex-grow: 1; /* [중요] 남은 공간을 모두 차지함 */
+
+    /* [중요] 사이드바와 마찬가지로 헤더 높이를 뺀 높이를 가짐 */
+    height: calc(100vh - 56px);
+
+    /* [중요] 컨텐츠가 길어지면 이 영역만 스크롤 됨 */
+    overflow-y: auto;
+
+    /* 기존 style.css에 있던 패딩 유지 */
+    padding: var(--spacing-lg) 0;
+}
+
+/* --- 사이드바 내부 메뉴 스타일 (기존에 있다면 유지/수정) --- */
+.sidebar-nav {
+    padding: var(--spacing-md);
+}
+
+.sidebar-header {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    text-transform: uppercase;
+}
+
+.sidebar-nav-item a {
+    display: block;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-size: 0.95rem;
+}
+
+.sidebar-nav-item a:hover {
+    background-color: #e9ecef;
+    color: var(--primary-color);
+}
+
+.sidebar-nav-item a.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+}
+
+.sidebar-nav-item a .fa-fw {
+    margin-right: var(--spacing-sm);
+}

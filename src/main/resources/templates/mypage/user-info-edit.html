@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{mypage/mypage-layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+<head>
+    <title>사용자 정보 수정</title>
+    <th:block th:fragment="css">
+        <style>
+            .user-info-container {
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 2rem;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            .error-message {
+                color: #dc3545;
+                font-size: 0.875em;
+                margin-top: 0.25rem;
+            }
+            .sidebar a[href="/mypage/user-info-edit"] {
+                background-color: #e9ecef;
+                font-weight: 600;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div th:fragment="content">
+    <h2 class="mb-4">사용자 정보 수정</h2>
+    
+    <div class="user-info-container">
+        <form id="userInfoForm">
+            <div class="form-group mb-3">
+                <label for="name" class="form-label">이름</label>
+                <input type="text" class="form-control" id="name" disabled>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="studentId" class="form-label">학번</label>
+                <input type="text" class="form-control" id="studentId" disabled>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="major" class="form-label">학과</label>
+                <input type="text" class="form-control" id="major" disabled>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="email" class="form-label">이메일 *</label>
+                <input type="email" class="form-control" id="email" required>
+                <div class="error-message" id="email-error"></div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="phone" class="form-label">휴대폰 번호 *</label>
+                <input type="tel" class="form-control" id="phone" placeholder="010-XXXX-XXXX" required>
+                <div class="error-message" id="phone-error"></div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
+                <button type="submit" class="btn btn-primary" id="updateBtn">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<th:block th:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 임시 데이터 로드
+            document.getElementById('name').value = '김서윤';
+            document.getElementById('studentId').value = '20213901';
+            document.getElementById('major').value = '국어국문학과';
+            document.getElementById('email').value = 'jsua86268@gmail.com';
+            document.getElementById('phone').value = '010-2857-1311';
+            
+            // 취소 버튼
+            document.getElementById('cancelBtn').addEventListener('click', function() {
+                if (confirm('수정을 취소하시겠습니까?')) {
+                    window.location.href = '/mypage';
+                }
+            });
+            
+            // 저장 버튼
+            document.getElementById('userInfoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('정보가 저장되었습니다.');
+                window.location.href = '/mypage';
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

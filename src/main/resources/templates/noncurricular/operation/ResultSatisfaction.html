@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8" />
-    <title>OP-005 만족도 결과 조회</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Chart.js (순수 JS 라이브러리) -->
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <title>OP-005 만족도 결과 조회</title>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1" />-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
+<!-- Chart.js (순수 JS 라이브러리) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root{
@@ -82,8 +84,11 @@
         .toast.warn{background:#7c2d12}
         .toast.info{background:#1f2937}
     </style>
-</head>
-<body>
+</div>
+<!--</head>-->
+<!--<body>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
 <div class="wrap">
     <!-- 검색/필터 -->
     <div class="card">
@@ -237,7 +242,11 @@
 
 <!-- Toast Container -->
 <div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+</div>
 
+
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
 <script>
     /* =========================
        순수 JS: 상태/유틸/이벤트/렌더
@@ -412,7 +421,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
       <td>${no}</td>
-      <td><a class="badge" href="/operator/programs/${row.programId}" target="_blank" style="text-decoration:none;background:var(--brand-weak);padding:4px 8px;border-radius:20px;color:#1e40af">${esc(row.programTitle)}</a></td>
+      <td><a class="badge" href="/noncurricular-operator/programs/${row.programId}" target="_blank" style="text-decoration:none;background:var(--brand-weak);padding:4px 8px;border-radius:20px;color:#1e40af">${esc(row.programTitle)}</a></td>
       <td>${esc(row.scheduleName ?? '-')}</td>
       <td>${esc(row.studentNoMasked ?? '-')}</td>
       <td>${esc(row.studentNameMasked ?? '-')}</td>
@@ -497,7 +506,7 @@
         $('#dStars').textContent = starText(r.rating);
         $('#dSubmitted').textContent = formatDateTime(r.submittedAt);
         $('#dFeedback').textContent = r.feedback ?? '-';
-        $('#btnGoProgram').setAttribute('href', `/operator/programs/${programId ?? r.programId}`);
+        $('#btnGoProgram').setAttribute('href', `/noncurricular-operator/programs/${programId ?? r.programId}`);
         openDetail();
     }
     function openDetail(){ $('#detailModal').classList.add('open'); $('#detailModal').setAttribute('aria-hidden','false'); }
@@ -583,5 +592,6 @@
         return base;
     }
 </script>
-</body>
-</html>
+</div>
+<!--</body>-->
+<!--</html>-->

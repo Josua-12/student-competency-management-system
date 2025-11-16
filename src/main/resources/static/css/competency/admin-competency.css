@@ -91,3 +91,37 @@
     border-radius: 8px;
     border: 1px solid #eee;
 }
+
+/* ===========================================================
+   [최종 수정] 클릭 먹통 & 디자인 깨짐 동시 해결
+   =========================================================== */
+
+/* 1. Bootstrap의 방해 요소(점, 불필요한 여백)만 핀셋으로 제거 */
+#competencyTree ul {
+    list-style: none !important;       /* 점 제거 */
+    padding-left: 0px !important;      /* 전체 목록의 왼쪽 여백 제거 */
+    margin-left: 0px !important;
+}
+
+#competencyTree li {
+    list-style: none !important;       /* 점 제거 */
+    border: none !important;
+    /* ⚠️ 중요: li의 padding-left는 절대 건드리지 마세요! (TUI Tree가 씁니다) */
+}
+
+/* 2. 클릭 영역 강제 심폐소생 (가장 중요) */
+/* 텍스트와 그 주변 박스를 클릭 가능한 상태로 강제 변환합니다 */
+.tui-tree-node .tui-tree-content-wrapper,
+.tui-tree-node .tui-tree-content,
+.tui-tree-node .tui-tree-text {
+    cursor: pointer !important;        /* 마우스 올리면 무조건 손가락 모양 */
+    pointer-events: auto !important;   /* 클릭 이벤트 강제 허용 */
+    position: relative !important;
+    z-index: 100 !important;           /* 다른 요소보다 무조건 위에 오게 함 */
+}
+
+/* 3. 클릭 영역을 눈에 보이지 않게 살짝 넓혀줌 (클릭 미스 방지) */
+.tui-tree-text {
+    display: inline-block;
+    padding: 5px 10px;                 /* 글자 주변으로 클릭 영역 확장 */
+}

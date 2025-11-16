@@ -1,8 +1,11 @@
 package com.competency.scms.repository.noncurricular.operation;
 
 
+import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.operation.ProgramApplication;
 import com.competency.scms.domain.noncurricular.operation.ApplicationStatus;
+import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorApprovalRequestDto;
+import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentLatestApplicationDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
@@ -72,5 +75,48 @@ public interface ProgramApplicationRepository
     List<ProgramApplication> findEligibleForMileage(
             @Param("progId") Long progId,
             @Param("schdId") Long schdId);
+
+    int countByProgram_ProgramIdAndStatus(Long programId, ApprovalStatus status);
+
+    // 학생 대시보드 요약
+    long countByStudentId(Long studentId);
+
+    long countByStudentIdAndStatusIn(Long studentId, List<ApplicationStatus> statuses);
+
+    long countByStudent_IdAndStatus(Long studentId, ApplicationStatus status);
+
+    // 학생 최근 신청 3건
+    @Query("""
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentLatestApplicationDto(
+            p.programId,
+            p.title,
+            concat(
+                function('date_format', p.programStartAt, '%Y-%m-%d'),
+                ' ~ ',
+                function('date_format', p.programEndAt, '%Y-%m-%d')
+            ),
+            app.status
+        )
+        from ProgramApplication app
+        join app.program p
+        where app.student.id = :studentId
+        order by app.appliedAt desc
+        """)
+    List<StudentLatestApplicationDto> findLatestApplications(Long studentId, Pageable pageable);
+
+    // 운영자 승인 요청 목록 (최근 n개)
+    @Query("""
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorApprovalRequestDto(
+            p.programId,
+            p.title,
+            function('date', app.appliedAt),
+            app.status
+        )
+        from ProgramApplication app
+        join app.program p
+        where app.status = com.competency.scms.domain.noncurricular.operation.ApplicationStatus.PENDING
+        order by app.appliedAt desc
+        """)
+    List<OperatorApprovalRequestDto> findPendingApprovalRequests(Pageable pageable);
 }
 

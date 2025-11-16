@@ -13,10 +13,12 @@ import com.competency.scms.dto.user.*;
 import com.competency.scms.service.auth.UserService;
 import com.competency.scms.service.user.PasswordResetService;
 import com.competency.scms.service.user.PhoneVerificationService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ public class UserController {
     private final UserService authenticationService;
     private final PhoneVerificationService phoneVerificationService;
     private final PasswordResetService passwordResetService;
+
     private final JwtUtil jwtUtil;
 
     /**
@@ -151,5 +154,33 @@ public class UserController {
                 .accessToken(newAccessToken)
                 .build());
     }
+
+    /**
+     * 로그아웃 (API)
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(jakarta.servlet.http.HttpServletResponse response) {
+        log.info("로그아웃 요청");
+        
+        // 쿠키 삭제
+        jakarta.servlet.http.Cookie accessTokenCookie = new jakarta.servlet.http.Cookie("accessToken", null);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setHttpOnly(true);
+        response.addCookie(accessTokenCookie);
+        
+        jakarta.servlet.http.Cookie refreshTokenCookie = new jakarta.servlet.http.Cookie("refreshToken", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        response.addCookie(refreshTokenCookie);
+        
+        return ResponseEntity.ok(Map.of(
+                "message", "로그아웃이 완료되었습니다.",
+                "redirectUrl", "/auth/login"
+        ));
+    }
+
+
 
 }

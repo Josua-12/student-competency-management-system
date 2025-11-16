@@ -1,8 +1,8 @@
 package com.competency.scms.controller.noncurricular.program;
 
 
-import com.competency.scms.dto.noncurricular.program.ProgramPageResponseDto;
-import com.competency.scms.dto.noncurricular.program.ProgramSearchCondDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramPageResponseDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramSearchCondDto;
 import com.competency.scms.service.noncurricular.program.ProgramCommandService;
 import com.competency.scms.service.noncurricular.program.ProgramQueryService;
 import lombok.RequiredArgsConstructor;
@@ -27,24 +27,24 @@ public class OperatorProgramApiController {
 
     // 단건 승인요청
     @PostMapping("/{programId}/approval-request")
-    public void requestApproval(@PathVariable Long programId){
+    public void requestSingleApproval(@PathVariable Long programId){
         programCommandService.requestApproval(programId);
     }
 
     // 일괄 승인요청
-    @PostMapping("/approval-request")
-    public void requestApprovalBulk(@RequestParam("ids") java.util.List<Long> ids){
+    @PostMapping("/bulk-approval-request")
+    public void requestBulkApproval(@RequestParam("ids") java.util.List<Long> ids){
         programCommandService.requestApproval(ids);
     }
 
     // 단건 삭제
     @DeleteMapping("/{programId}")
-    public void delete(@PathVariable Long programId){
+    public void deleteSingle(@PathVariable Long programId){
         programCommandService.delete(programId);
     }
 
     // 일괄 삭제
-    @DeleteMapping
+    @DeleteMapping("/bulk")
     public void deleteBulk(@RequestParam("ids") java.util.List<Long> ids){
         programCommandService.delete(ids);
     }

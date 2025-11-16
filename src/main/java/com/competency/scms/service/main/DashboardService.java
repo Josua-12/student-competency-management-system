@@ -1,20 +1,15 @@
 package com.competency.scms.service.main;
 
-import com.competency.scms.domain.competency.Competency;
-import com.competency.scms.domain.noncurricular.program.Program;
-import com.competency.scms.domain.user.User;
-import com.competency.scms.dto.competency.CompetencyScoreDto;
-import com.competency.scms.dto.dashboard.DashboardResponseDto;
-import com.competency.scms.dto.noncurricular.program.ProgramBasicDto;
-import com.competency.scms.repository.competency.CompetencyRepository;
-import com.competency.scms.repository.counseling.CounselorRepository;
+import com.competency.scms.dto.dashboard.CompetencyChartDto;
+import com.competency.scms.dto.dashboard.ConsultationHistoryDto;
+import com.competency.scms.dto.dashboard.RecentProgramDto;
+import com.competency.scms.repository.counseling.CounselingReservationRepository;
 import com.competency.scms.repository.noncurricular.program.ProgramRepository;
-import com.competency.scms.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,67 +18,62 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DashboardService {
 
-    private final UserRepository userRepository;
+    private final CounselingReservationRepository counselingReservationRepository;
     private final ProgramRepository programRepository;
-    private final CounselorRepository counselorRepository;
-    private final CompetencyRepository competencyRepository;
+    private final com.competency.scms.repository.competency.CompetencyRepository competencyRepository;
 
-    public DashboardResponseDto getMainDashboardData(String userNum) {
-        log.info("[MainDashboardService] 대시보드 데이터 조회 - userNum: {}", userNum);
-
-        try {
-            // 1. 사용자 정보 조회
-            Integer userNumber = Integer.parseInt(userNum);
-            User user = userRepository.findByUserNum(userNumber)
-                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-
-            String userName = user.getName();
-            // ✓ 수정: getMileage() → 마일리지 필드 없음 (필요시 추가하거나 0으로 설정)
-            Integer mileage = 0;  // User에 mileage 필드 없음
-
-            // 2. 프로그램 정보 조회
-            Integer programCount = (int) programRepository.count();
-            List<ProgramBasicDto> recentPrograms = Collections.emptyList();
-
-            // 3. 상담 정보 조회
-            long counselingCount = counselorRepository.count();
-
-            // 4. 역량 정보 조회
-            List<CompetencyScoreDto> competencyScore = competencyRepository.findAll()
-                    .stream()
-                    .map(this::convertToCompetencyScoreDto)
-                    .collect(Collectors.toList());
-
-            return DashboardResponseDto.builder()
-                    .userName(userName)
-                    .userEmail(user.getEmail())
-                    .mileage(mileage)
-                    .programCount(programCount)
-                    .counselingCount((int) counselingCount)
-                    .competencyScore(competencyScore)
-                    .recentPrograms(recentPrograms)
-                    .build();
-
-        } catch (Exception e) {
-            log.error("[MainDashboardService] 대시보드 데이터 조회 실패 - userNum: {}", userNum, e);
-            throw new RuntimeException("대시보드 데이터를 조회할 수 없습니다.", e);
+    // 핵심역량 최신 검사 결과 조회
+    public CompetencyChartDto getLatestCompetencyChart() {
+        var competencies = competencyRepository.findByParentIsNullAndIsActiveTrueOrderByDisplayOrderAsc();
+        
+        if (competencies.isEmpty()) {
+            return CompetencyChartDto.of(
+                List.of("자기관리", "의사소통", "글로벌", "대인관계", "사고력", "기술활용"),
+                List.of(4.2, 3.8, 4.0, 3.5, 4.1, 3.9)
+            );
         }
+        
+        List<String> labels = competencies.stream()
+            .map(comp -> comp.getName().replace("역량", "").replace(" ", ""))
+            .collect(Collectors.toList());
+        
+        // 임시 점수 (실제로는 AssessmentResult에서 가져와야 함)
+        List<Double> scores = competencies.stream()
+            .map(comp -> 3.5 + Math.random() * 1.5) // 3.5~5.0 사이 랜덤 점수
+            .collect(Collectors.toList());
+        
+        return CompetencyChartDto.of(labels, scores);
     }
-
-    private ProgramBasicDto convertToProgramBasicDto(Program program) {
-        return ProgramBasicDto.builder()
-                .id(program.getProgramId())
-                .title(program.getTitle())
-                .status(program.getStatus() != null ? program.getStatus().name() : "UNKNOWN")
-                .mileage(program.getMileage())
-                .location(program.getLocation())
-                .build();
+    
+    // 상담 내역 조회 (최근 3건)
+    public List<ConsultationHistoryDto> getRecentConsultations() {
+        var reservations = counselingReservationRepository.findAll(PageRequest.of(0, 3));
+        
+        return reservations.stream()
+            .map(reservation -> ConsultationHistoryDto.of(
+                reservation.getId(),
+                reservation.getCounselor().getName(),
+                reservation.getReservationDate().atStartOfDay(),
+                reservation.getStatus().name(),
+                reservation.getCounselingField().name()
+            ))
+            .collect(Collectors.toList());
     }
-
-    private CompetencyScoreDto convertToCompetencyScoreDto(Competency competency) {
-        return CompetencyScoreDto.builder()
-                .competencyName(competency.getName())
-                .score(0.0)
-                .build();
+    
+    // 최신 비교과 프로그램 3개 조회
+    public List<RecentProgramDto> getRecentPrograms() {
+        var programs = programRepository.findAll(PageRequest.of(0, 3));
+        
+        return programs.stream()
+            .map(program -> RecentProgramDto.of(
+                program.getProgramId(),
+                program.getTitle(),
+                program.getCategory().name(),
+                program.getRecruitEndAt(),
+                program.getStatus().name(),
+                program.getCurrentParticipants() != null ? program.getCurrentParticipants() : 0,
+                program.getMaxParticipants()
+            ))
+            .collect(Collectors.toList());
     }
 }

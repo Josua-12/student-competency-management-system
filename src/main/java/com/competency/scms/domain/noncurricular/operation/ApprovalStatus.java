@@ -14,7 +14,7 @@ public enum ApprovalStatus {
     WAIT("검토중"),
 
     /** 승인 완료 (프로그램 운영 가능) */
-    DONE("승인완료"),
+    APPROVED("승인완료"),
 
     /** 반려 (승인 거절됨) */
     REJ("반려");

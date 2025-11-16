@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -53,22 +51,51 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .frameOptions().deny()
+                        .contentTypeOptions().and()
+                        .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                                .maxAgeInSeconds(31536000)
+                                .includeSubdomains(true))
+                        .and())
+
                 .authorizeHttpRequests(authz -> authz
-                        // 공개 경로: 초기 로그인 화면 및 정적 리소스
+                        // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
                         .requestMatchers(
-                                "/", "/index.html",
-                                "/auth/login", "/login", "/error",
+                                "/auth/**", "/login", "/logout", "/error",
                                 "/favicon.ico", "/manifest.json",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/fonts/**", "/static/**"
                         ).permitAll()
-                        // 인증 관련 공개 API (로그인/토큰/비번재설정/본인인증)
-                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/user/verify/**", "/api/password/**").permitAll()
 
-                        // 역할 기반 접근 제어 (AUTH-007, AUTH-008)
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/counselor/**").hasRole("COUNSELOR")
-                        .requestMatchers("/operator/**").hasRole("OPERATOR")
+                        // 인증 관련 공개 API
+                        .requestMatchers("/api/user/login", "/api/user/refresh", "/api/auth/**").permitAll()
+
+                        // 학생 전용 경로
                         .requestMatchers("/student/**").hasRole("STUDENT")
+                        .requestMatchers("/mypage/**").hasRole("STUDENT")
+                        .requestMatchers("/mypage").authenticated()
+
+                        // 상담 관련 - 세분화된 권한
+                        .requestMatchers("/counseling/student/**").hasRole("STUDENT")
+                        .requestMatchers("/counseling/counselor/**").hasAnyRole("COUNSELOR", "COUNSELING_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/counseling/admin/**").hasAnyRole("COUNSELING_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/counseling/admin/**").hasAnyRole("COUNSELING_ADMIN", "SUPER_ADMIN")
+
+                        // 비교과 관련 - 세분화된 권한
+                        .requestMatchers("/noncurricular/student/**").hasRole("STUDENT")
+                        .requestMatchers("/noncurricular/operator/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_ADMIN", "SUPER_ADMIN")
+
+                        // 역량진단 관련
+                        .requestMatchers("/competency/student/**").hasRole("STUDENT")
+                        .requestMatchers("/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/api/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/admin/assessment-section", "/admin/assessment-section/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+
+                        // 최고 관리자 전용
+                        .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
 
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
@@ -80,6 +107,7 @@ public class SecurityConfig {
                             response.sendRedirect("/auth/login");
                         })
                 )
+
                 // 폼로그인 비활성 (JWT 사용)
                 .formLogin(form -> form.disable())
                 // 사용자 인증 프로바이더
@@ -89,5 +117,4 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }

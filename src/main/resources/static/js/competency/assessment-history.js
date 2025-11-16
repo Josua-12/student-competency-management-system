@@ -1,89 +1,106 @@
-// assessment-history.js
+// 1. 차트 객체를 전역으로 관리 (수정/삭제 시 필요)
+let currentChart = null;
 
-// 1. TOAST UI가 요구하는 데이터 형식으로 변환
-// (HTML th:inline에서 선언한 competencyLabels, historyData 변수를 사용)
-const chartCategories = competencyLabels;
-const chartSeries = historyData.map(row => ({
-    name: row.diagnosisTitle, // 예: "2025년"
-    data: row.scores        // 예: [4.6, 3.5, 3.8, 2.2]
-}));
+// 2. 차트 생성 함수
+function createChart(type = 'line', labels, dataRows) {
+    const container = document.getElementById('historyChart');
 
-const chartOptions = {
-    chart: {
-        width: 'auto',
-        height: 350
-    },
-    yAxis: {
-        min: 0,
-        max: 5,
-        stepSize: 1
-    },
-    xAxis: {
-        title: '핵심역량'
-    },
-    legend: {
-        align: 'bottom'
+    // 기존 차트가 있으면 파괴
+    if (currentChart) {
+        currentChart.destroy();
     }
-};
 
-let currentChart = null; // 현재 차트 객체를 저장할 변수
-
-/**
- * 2. 차트를 생성하는 함수 (타입을 인자로 받음)
- * @param {'line' | 'bar'} chartType
- */
-function createChart(chartType) {
-    // 차트를 그릴 컨테이너
-    const el = document.getElementById('historyChart');
-    // 컨테이너 비우기 (기존 차트 삭제)
-    el.innerHTML = '';
-
-    const data = {
-        categories: chartCategories,
-        series: chartSeries
+    // 꺾은선/막대 차트 공통 옵션
+    const chartOptions = {
+        chart: {
+            width: 'auto',
+            height: 320
+        },
+        yAxis: {
+            min: 0,
+            max: 5,
+            title: '점수 (5점 만점)'
+        },
+        xAxis: {
+            title: '역량 항목'
+        },
+        legend: {
+            visible: true
+        },
+        tooltip: {
+            formatter: (value) => `${Number(value).toFixed(1)}점`
+        },
+        theme: {
+            chart: {
+                fontFamily: 'Noto Sans KR, sans-serif'
+            }
+        },
+        responsive: true
     };
 
-    if (chartType === 'line') {
-        currentChart = new toastui.Chart.lineChart({ el, data, options: chartOptions });
-    } else {
-        currentChart = new toastui.Chart.barChart({ el, data, options: chartOptions });
+    try {
+        if (type === 'line') {
+            // 꺾은선 차트 데이터 가공
+            const chartCategories = labels;
+            const chartSeries = dataRows.map(row => ({
+                name: row.assessmentTitle,
+                data: row.scores
+            }));
+
+            currentChart = new toastui.Chart.lineChart({
+                el: container,
+                data: { categories: chartCategories, series: chartSeries },
+                options: { ...chartOptions, title: '역량 변화 추이 (꺾은선)' }
+            });
+
+        } else if (type === 'bar') {
+            // 막대 차트 데이터 가공
+            const barCategories = dataRows.map(row => row.assessmentTitle); // 👈 필드명 일치
+            const barSeries = labels.map((label, index) => ({
+                name: label,
+                data: dataRows.map(row => row.scores[index])
+            }));
+
+            currentChart = new toastui.Chart.barChart({
+                el: container,
+                data: { categories: barCategories, series: barSeries },
+                options: { ...chartOptions, title: '역량 변화 추이 (막대)' }
+            });
+        }
+    } catch (error) {
+        console.error("차트 생성 중 오류 발생:", error);
+        container.innerHTML = `<div class="d-flex justify-content-center align-items-center h-100 text-danger"><i class="fas fa-exclamation-circle me-2"></i> 차트 로드 실패.</div>`;
     }
 }
 
-// 3. 버튼 이벤트 리스너 설정
+// 3. 페이지 로딩이 완료되면 실행
 document.addEventListener('DOMContentLoaded', () => {
     const btnLine = document.getElementById('btnShowLineChart');
     const btnBar = document.getElementById('btnShowBarChart');
 
-    // 꺾은선 버튼 클릭
-    btnLine.addEventListener('click', () => {
-        createChart('line');
-        btnLine.classList.add('active');
-        btnBar.classList.remove('active');
-    });
+    // 4.  HTML의 <script th:inline>에서 선언해준 '데이터'를 여기서 사용!
+    // (competencyLabels, historyData 변수는 HTML에 의해 전역 변수로 생성됨)
+    if (typeof competencyLabels === 'undefined' || typeof historyData === 'undefined') {
+        console.error("Thymeleaf 데이터(competencyLabels, historyData)가 로드되지 않았습니다.");
+        return;
+    }
 
-    // 막대 버튼 클릭
-    btnBar.addEventListener('click', () => {
-        createChart('bar');
-        btnBar.classList.add('active');
-        btnLine.classList.remove('active');
-    });
 
-    // 4. 페이지 첫 로드 시 꺾은선 차트를 기본으로 생성
-    if (historyData.length > 0) {
-        createChart('line');
+    // 6. 초기 차트 로드 (진짜 데이터로 꺾은선 차트 그리기)
+    createChart('line', competencyLabels, historyData);
 
-        // 차트를 그림과 동시에 '꺾은선' 버튼을 활성화(파란색)시킴
-        btnLine.classList.add('active');
-        btnBar.classList.remove('active');
+    // 7. 차트 전환 버튼 이벤트
+    if (btnLine && btnBar) {
+        btnLine.addEventListener('click', () => {
+            createChart('line', competencyLabels, historyData); // 진짜 데이터로 그리기
+            btnLine.classList.add('active');
+            btnBar.classList.remove('active');
+        });
 
-    } else {
-        // 데이터가 없으면 메시지 표시
-        document.getElementById('historyChart').innerHTML =
-            '<div class="no-data-message">진단 이력이 없어 차트를 표시할 수 없습니다.</div>';
-
-        // 데이터가 없어도 '꺾은선' 버튼이 기본 활성화 상태가 되도록 설정
-        btnLine.classList.add('active');
-        btnBar.classList.remove('active');
+        btnBar.addEventListener('click', () => {
+            createChart('bar', competencyLabels, historyData); // 진짜 데이터로 그리기
+            btnBar.classList.add('active');
+            btnLine.classList.remove('active');
+        });
     }
 });

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<aside th:fragment="sidebar" class="sidebar no-print">
+    <nav class="sidebar-nav">
+        <ul class="list-unstyled">
+
+            <div sec:authorize="hasRole('STUDENT')">
+                <li class="sidebar-header">역량 진단</li>
+                <li class="sidebar-nav-item">
+                    <a th:href="@{/student/assessment}"
+                       th:classappend="${#strings.startsWith(currentUri, '/student/assessment/page') or #strings.equals(currentUri, '/student/assessment')} ? 'active' : ''">
+                        <i class="fas fa-fw fa-diagnoses"></i> 진단하기
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a th:href="@{/student/assessment/history}"
+                       th:classappend="${#strings.startsWith(currentUri, '/student/assessment/history')} ? 'active' : ''">
+                        <i class="fas fa-fw fa-chart-pie"></i> 나의 역량 현황
+                    </a>
+                </li>
+            </div>
+
+            <div sec:authorize="hasAnyRole('ADMIN', 'COMPETENCY_ADMIN')">
+                <li class="sidebar-header">역량 관리 (Admin)</li>
+                <li class="sidebar-nav-item">
+                    <a th:href="@{/competency-admin/competency}"
+                       th:classappend="${#strings.startsWith(currentUri, '/competency-admin/competency')} ? 'active' : ''">
+                        <i class="fas fa-fw fa-sitemap"></i> 핵심 역량 관리
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a th:href="@{/competency-admin/assessment-section}"
+                       th:classappend="${#strings.startsWith(currentUri, '/competency-admin/assessment-section')} ? 'active' : ''">
+                        <i class="fas fa-fw fa-calendar-alt"></i> 진단 회차 관리
+                    </a>
+                </li>
+            </div>
+        </ul>
+    </nav>
+</aside>
+</html>

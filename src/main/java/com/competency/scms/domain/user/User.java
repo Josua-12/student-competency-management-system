@@ -32,6 +32,9 @@ public class User {
     @Column(name = "phone", length = 100)
     private String phone;
 
+    @Column(name = "address", length = 200)
+    private String address;
+
     @Column(name = "password", length = 255)
     private String password;
 
@@ -39,7 +42,7 @@ public class User {
     private LocalDate birthDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department")
+    @JoinColumn(name = "department_id")
     private Department department;
 
     @Column(name = "grade")
@@ -153,5 +156,22 @@ public class User {
         this.phone = phone;
         this.department = department;
         this.grade = grade;
+    }
+
+    public void updateInfo(String email, String phone) {
+        if (email != null) this.email = email;
+        if (phone != null) this.phone = phone;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void updatePhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void updateAddress(String address) {
+        this.address = address;
     }
 }

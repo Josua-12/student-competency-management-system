@@ -1,7 +1,7 @@
 package com.competency.scms.dto.dashboard;
 
 import com.competency.scms.dto.competency.CompetencyScoreDto;
-import com.competency.scms.dto.noncurricular.program.ProgramBasicDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramBasicDto;
 import lombok.*;
 
 import java.util.List;

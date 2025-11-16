@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(
+      th:replace="~{competency/competency_layout :: layout(
                     title='진단하기',
                     content=~{::main},
                     css=~{::#page-css},
-                    scripts=~{::#page-scripts}
-                  )}">
+                    scripts=~{::#page-scripts},
+                    hideSidebar=false  )}">
+)}">
 
 <th:block th:fragment="css" id="page-css">
     <link th:href="@{/css/competency/assessment.css}" rel="stylesheet">
@@ -53,7 +54,7 @@
                     <tr th:each="section, stat : ${assessmentSections}">
                         <td th:text="${stat.count}">1</td>
                         <td>
-                            <a th:href="${section.status == 'AVAILABLE' ? '/assessment/start/' + section.id : (section.status == 'COMPLETED' ? '/assessment/result/' + section.resultId : '#')}"
+                            <a th:href="${section.status == 'AVAILABLE' ? '/student/assessment/start/' + section.id : (section.status == 'COMPLETED' ? '/student/assessment/result/' + section.resultId : '#')}"
                                th:classappend="${section.status == 'EXPIRED' ? 'text-muted' : ''}"
                                th:text="${section.title}">
                                 2025학년도 1학기 핵심역량 진단
@@ -66,11 +67,11 @@
                         </td>
                         <td>
                             <a th:if="${section.status == 'AVAILABLE'}"
-                               th:href="@{/assessment/start/{id}(id=${section.id})}"
+                               th:href="@{/student/assessment/start/{id}(id=${section.id})}"
                                class="btn btn-primary btn-sm">진단하기</a>
                             <a th:if="${section.status == 'COMPLETED'}"
-                               th:href="@{/assessment/result/{id}(id=${section.resultId})}"
-                               class="btn btn-secondary btn-sm">결과보기</a>
+                               th:href="@{/student/assessment/result/{id}(id=${section.resultId})}"
+                               class="btn btn-info btn-sm">결과보기</a>
                             <button th:if="${section.status == 'EXPIRED'}" type="button" class="btn btn-outline-secondary btn-sm" disabled>기간종료</button>
                         </td>
                     </tr>
@@ -103,7 +104,7 @@
                         <td th:text="${result.title}">2024학년도 2학기 핵심역량 진단 (결과)</td>
                         <td th:text="${#temporals.format(result.submittedAt, 'yyyy.MM.dd')}">2024.09.05</td>
                         <td>
-                            <a th:href="@{/assessment/result/{id}(id=${result.id})}"
+                            <a th:href="@{/student/assessment/result/{id}(id=${result.id})}"
                                class="btn btn-info btn-sm">결과보기</a>
                         </td>
                     </tr>

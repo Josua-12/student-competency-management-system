@@ -190,6 +190,46 @@
 }
 
 /* ===== 상담 섹션 ===== */
+.empty-message {
+    text-align: center;
+    color: #999;
+    padding: 30px 0;
+    font-style: italic;
+}
+
+.history-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.history-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.history-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.history-meta .badge {
+    padding: 2px 8px;
+    background: #667eea;
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.history-meta .type {
+    color: #999;
+}
 .consultation-actions {
     display: flex;
     gap: 10px;
@@ -281,6 +321,79 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.program-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.program-card:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.program-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.program-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    flex: 1;
+}
+
+.program-category {
+    padding: 4px 12px;
+    background: #667eea;
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.program-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.program-deadline,
+.program-participants {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.program-status {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #28a745;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.program-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    align-self: flex-end;
+}
+
+.program-link:hover {
+    color: #5568d3;
 }
 
 .program-item {

@@ -2,7 +2,7 @@ package com.competency.scms.controller.noncurricular.program;
 
 
 import com.competency.scms.domain.noncurricular.program.Program;
-import com.competency.scms.dto.noncurricular.program.ProgramOpenRequestDto;
+import com.competency.scms.dto.noncurricular.program.op.ProgramOpenRequestDto;
 import com.competency.scms.service.noncurricular.program.ProgramOpenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/op/programs/{programId}/open")
+@RequestMapping("/noncurricular-operator/programs/{programId}/open")
 public class ProgramOpenController {
 
     private final ProgramOpenService programOpenService;

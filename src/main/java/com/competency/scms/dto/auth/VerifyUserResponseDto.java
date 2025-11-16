@@ -10,4 +10,6 @@ public class VerifyUserResponseDto {
     private String message;
     private String userNum;
     private String userName;
+    private String email;
+    private String realEmail;
 }

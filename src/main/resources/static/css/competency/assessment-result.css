@@ -136,3 +136,75 @@
     border-radius: 8px;
     line-height: 1.7;
 }
+
+/* ============================================
+   [차트 흔들림 방지] "콘크리트 고정" 스타일
+   ============================================ */
+
+.chart-container {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 450px !important;     /* 높이 고정 */
+    min-height: 450px !important; /* 최소 높이 고정 */
+    overflow: hidden !important;  /* 스크롤바 생성 방지 */
+}
+
+/* =========================================================
+   🚨 [긴급 수정] 차트 툴팁(점수판) 공중부양 처리
+   이 코드가 없으면 툴팁이 나올 때 차트를 아래로 밀어버립니다.
+   ========================================================= */
+
+/* 1. 툴팁을 감싸는 컨테이너를 '유령'으로 만듭니다 (공간 차지 X) */
+.toastui-chart-tooltip-container {
+    position: absolute !important; /* 무조건 공중부양 */
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 9999 !important;      /* 차트보다 위에 */
+    pointer-events: none !important; /* 마우스가 툴팁에 걸리지 않게 통과시킴 */
+}
+
+/* 2. 실제 툴팁 박스 디자인 (이건 보여야 함) */
+.toastui-chart-tooltip {
+    position: absolute !important;
+    z-index: 10000 !important;
+    pointer-events: none !important;
+    /* 툴팁이 차트 영역 밖으로 나가도 잘리지 않게 */
+    white-space: nowrap;
+}
+
+/* 3. 차트 내부 캔버스 고정 (한번 더 확실하게) */
+.toastui-chart-canvas-area {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* ============================================
+   [수정] 핵심역량별 막대그래프 및 "제목" 색상 구분
+   ============================================ */
+
+/* 1번째 핵심역량 (파랑) */
+.color-group-0 .score-bar { background-color: #0d6efd; }
+.color-group-0 .parent-title { color: #0d6efd; } /* 👈 제목 색상 추가 */
+
+/* 2번째 핵심역량 (초록) */
+.color-group-1 .score-bar { background-color: #198754; }
+.color-group-1 .parent-title { color: #198754; } /* 👈 제목 색상 추가 */
+
+/* 3번째 핵심역량 (노랑) - (글씨가 안보일까봐 어두운 노랑으로) */
+.color-group-2 .score-bar { background-color: #ffc107; }
+.color-group-2 .parent-title { color: #b8860b; } /* 👈 제목 색상 추가 */
+
+/* 4번째 핵심역량 (빨강) */
+.color-group-3 .score-bar { background-color: #dc3545; }
+.color-group-3 .parent-title { color: #dc3545; } /* 👈 제목 색상 추가 */
+
+/* 5번째 핵심역량 (보라) */
+.color-group-4 .score-bar { background-color: #6f42c1; }
+.color-group-4 .parent-title { color: #6f42c1; } /* 👈 제목 색상 추가 */
+
+/* 6번째 핵심역량 (청록) */
+.color-group-5 .score-bar { background-color: #20c997; }
+.color-group-5 .parent-title { color: #20c997; } /* 👈 제목 색상 추가 */

@@ -1,10 +1,13 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <title>비교과 프로그램 조회 (운영자)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> -->
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentStyles">
+<style>
         :root{
             --bg:#f7f8fa; --card:#fff; --line:#e6e8ee; --text:#1f2937; --muted:#6b7280;
             --primary:#2563eb; --primary-weak:#e8efff; --success:#16a34a; --warn:#d97706; --danger:#dc2626;
@@ -56,9 +59,11 @@
             position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:9999
         }
         .toast-item{background:#111827;color:#fff;padding:10px 12px;border-radius:10px;opacity:.95;box-shadow:0 10px 20px rgba(0,0,0,.12)}
-    </style>
-</head>
-<body>
+</style>
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentFragment">
 <div class="wrap">
     <h1>비교과 프로그램 조회 <span class="muted">(운영자)</span></h1>
 
@@ -195,6 +200,10 @@
 <!-- 토스트 -->
 <div class="toast" id="toast"></div>
 
+</div>
+
+<div xmlns:th="http://www.thymeleaf.org"
+th:fragment="contentScript">
 <script>
     // ======= 모의 데이터 =======
     const mock = [
@@ -471,5 +480,4 @@
     // 초기 렌더
     applyFilters();
 </script>
-</body>
-</html>
+</div>

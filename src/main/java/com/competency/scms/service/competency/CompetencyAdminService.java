@@ -3,6 +3,7 @@ package com.competency.scms.service.competency;
 import com.competency.scms.domain.competency.AssessmentOption;
 import com.competency.scms.domain.competency.AssessmentQuestion;
 import com.competency.scms.domain.competency.Competency;
+import com.competency.scms.domain.competency.QuestionType;
 import com.competency.scms.dto.competency.*;
 import com.competency.scms.repository.competency.AssessmentOptionRepository;
 import com.competency.scms.repository.competency.AssessmentQuestionRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,8 @@ public class CompetencyAdminService {
         // 부모가 null값인 역량 찾기 (핵심역량)
         List<Competency> rootCompetencies = competencyRepository.findByParentIsNull();
         return rootCompetencies.stream()
+                .sorted(java.util.Comparator.comparingInt(Competency::getDisplayOrder)
+                        .thenComparing(Competency::getId))
                 .map(this::convertToTreeDto)
                 .collect(Collectors.toList());
     }
@@ -40,6 +44,8 @@ public class CompetencyAdminService {
      */
     private CompetencyTreeDto convertToTreeDto(Competency competency) {
         List<CompetencyTreeDto> childDtos = competency.getChildren().stream()
+                .sorted(java.util.Comparator.comparingInt(Competency::getDisplayOrder)
+                        .thenComparing(Competency::getId))
                 .map(this::convertToTreeDto)
                 .collect(Collectors.toList());
 
@@ -48,6 +54,10 @@ public class CompetencyAdminService {
                 .text(competency.getName() + " (" + competency.getCompCode() + ")")
                 .children(childDtos)
                 .opened(true)   // 기본으로 열린 상태 -TUI-Tree
+                .data(Map.of(
+                        "competencyId", competency.getId(),
+                        "compCode", competency.getCompCode() != null ? competency.getCompCode() : ""
+                ))
                 .build();
     }
 
@@ -61,13 +71,16 @@ public class CompetencyAdminService {
         // 1. 부모 엔티티 찾기 (하위 역량 추가 시)
         Competency parent = null;
         if (dto.getParentId() != null) {
-            parent = competencyRepository.findById(dto.getId())
+            parent = competencyRepository.findById(dto.getParentId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상위 역량입니다."));
         }
 
         // 2. 생성, 수정
         Competency competency;
         if (dto.getId() == null) {
+            if (competencyRepository.existsByCompCode(dto.getCompCode())) {
+                throw new IllegalArgumentException("이미 존재하는 역량 코드입니다.: " + dto.getCompCode());
+            }
             // 신규 생성
             competency = Competency.createCompetency(dto, parent);
         } else {
@@ -152,7 +165,7 @@ public class CompetencyAdminService {
             question = AssessmentQuestion.createQuestion(dto, competency);
         } else {
             // 기존 문항 수정
-            question = questionRepository.findById(dto.getCompetencyId())
+            question = questionRepository.findById(dto.getId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문항입니다."));
             question.updateInfo(dto);
         }
@@ -201,8 +214,30 @@ public class CompetencyAdminService {
 
         // 3. 리스트를 리스트dto로 변환
         return questions.stream()
-                .map(QuestionListDto::new)
+                .map(q -> {
+                    QuestionListDto dto = new QuestionListDto();
+                    dto.setId(q.getId());
+                    dto.setQuestionCode(q.getQuestionCode());
+                    dto.setQuestionText(q.getQuestionText());
+
+                    // 🚨 [안전한 수정] null이면 건너뛰고, 값이 있을 때만 변환합니다.
+                    if (q.getQuestionType() != null) {
+                        // 1. 엔티티의 Enum을 문자열(name)로 바꾼 뒤
+                        String typeName = q.getQuestionType().toString();
+                        // 2. DTO의 Enum으로 다시 변환 (이러면 패키지가 달라도 호환됨)
+                        dto.setQuestionType(QuestionType.valueOf(typeName));
+                    } else {
+                        // null이면 DTO에도 null 설정 (빈 문자열 "" 넣으면 에러남!)
+                        dto.setQuestionType(null);
+                    }
+
+                    dto.setDisplayOrder(q.getDisplayOrder());
+                    dto.setActive(q.isActive());
+                    return dto;
+                })
+                .sorted(java.util.Comparator.comparingInt(QuestionListDto::getDisplayOrder))
                 .collect(Collectors.toList());
+
     }
 
     /**

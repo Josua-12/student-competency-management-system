@@ -206,3 +206,16 @@
     .assessment-table td:nth-of-type(3)::before { content: "진단기간"; }
     .assessment-table td:nth-of-type(4)::before { content: "진단하기"; }
 }
+
+
+.assessment-table .btn-primary {
+    background-color: #0d6efd; /* Bootstrap 기본 파란색 (진함) */
+    border-color: #0d6efd;
+    color: #ffffff !important; /* 글자색 흰색 강제 */
+}
+
+.assessment-table .btn-info {
+    background-color: #0dcaf0; /* Bootstrap 기본 하늘색 */
+    border-color: #0dcaf0;
+    color: #ffffff !important; /* 글자색 흰색 강제 */
+}

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 @Builder
 @ToString(exclude = {"results"})
 @Table(name = "assessment_sections")
-@SQLDelete(sql = "UPDATE assessment_sections SET deleted_at = CURRENT_TIMESTAMP, " +
+@SQLDelete(sql = "UPDATE assessment_sections SET " +
         "is_active = false WHERE section_id = ?")
 public class AssessmentSection {
 

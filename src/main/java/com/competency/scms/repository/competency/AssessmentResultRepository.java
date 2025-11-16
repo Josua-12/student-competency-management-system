@@ -1,9 +1,13 @@
 package com.competency.scms.repository.competency;
 
+import com.competency.scms.domain.Department;
 import com.competency.scms.domain.competency.AssessmentResult;
 import com.competency.scms.domain.competency.AssessmentResultStatus;
 import com.competency.scms.domain.competency.AssessmentSection;
 import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.competency.CompetencyAverageDto;
+import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentCompetencyScoreDto;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,4 +53,65 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
     Optional<AssessmentResult> findByAssessmentSectionIdAndUserIdAndStatus(
             Long sectionId, Long userId, AssessmentResultStatus status
     );
+
+    // 비교과 대시보드관련 필요에 의한 추가 - 2025.11.14 11:36 JHE
+    // 학생 최신 진단 1건
+    @Query("""
+        select ar
+        from AssessmentResult ar
+        where ar.user.id = :studentId
+        order by ar.submittedAt desc
+        """)
+    List<AssessmentResult> findLatestResult(Long studentId, Pageable pageable);
+
+    @Query("""
+        select new com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentCompetencyScoreDto(
+            'competency', 0.0
+        )
+        from AssessmentResult ar
+        where ar.id = :id
+        """)
+    List<StudentCompetencyScoreDto> findScoresByResultId(Long id);
+
+
+    // 통계 조회 메서드
+
+    /**
+     * 특정 학과의 평균 점수 계산 (viewResult에서 사용)
+     * - 특정 학과(department) 소속 사용자들이
+     * - 특정 핵심 역량들(parentIds)에 대해 완료한 응답의 평균 점수를 'CompetencyAverageDto'로 반환
+     */
+    @Query("SELECT new com.competency.scms.dto.competency.CompetencyAverageDto(c.parent.id, AVG(opt.score)) " +
+            "FROM AssessmentResponse res " +
+            "JOIN res.assessmentOption opt " +
+            "JOIN res.question q " +
+            "JOIN q.competency c " +
+            "JOIN res.assessmentResult ar " +
+            "JOIN ar.user u " +
+            "WHERE ar.status = 'COMPLETED' " +
+            "  AND u.department = :department " + // 학과 필터
+            "  AND c.parent.id IN :parentIds " +  // 핵심 역량 ID 리스트 필터
+            "GROUP BY c.parent.id")
+    List<CompetencyAverageDto> findDepartmentAverages(
+            @Param("department") Department department,
+            @Param("parentIds") List<Long> parentIds
+    );
+
+    /**
+     * [통계] 학교 전체 평균 점수 계산 (viewResult에서 사용)
+     */
+    @Query("SELECT new com.competency.scms.dto.competency.CompetencyAverageDto(c.parent.id, AVG(opt.score)) " +
+            "FROM AssessmentResponse res " +
+            "JOIN res.assessmentOption opt " +
+            "JOIN res.question q " +
+            "JOIN q.competency c " +
+            "JOIN res.assessmentResult ar " +
+            "WHERE ar.status = 'COMPLETED' " +
+            "  AND c.parent.id IN :parentIds " +
+            "GROUP BY c.parent.id")
+    List<CompetencyAverageDto> findUniversityAverages(
+            @Param("parentIds") List<Long> parentIds
+    );
+
+    Long user(User user);
 }
