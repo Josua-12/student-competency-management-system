@@ -57,12 +57,7 @@ public class MainController {
             String userNum = auth.getName();
             log.info("대시보드 조회할 사용자 학번: {}", userNum);
 
-            var dashboardData = mainDashboardService.getMainDashboardData(userNum);
-            model.addAttribute("dashboardData", dashboardData);
-            
-            // JavaScript에서 사용할 수 있도록 JSON 문자열로 전달
-            model.addAttribute("dashboardDataJson", 
-                new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(dashboardData));
+            // 대시보드 데이터는 API로 처리
         } catch (Exception e) {
             log.error("대시보드 데이터 로드 실패", e);
             model.addAttribute("errorMessage", "대시보드 데이터를 불러올 수 없습니다.");

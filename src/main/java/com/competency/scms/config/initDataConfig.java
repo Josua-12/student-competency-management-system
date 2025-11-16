@@ -43,6 +43,7 @@ public class initDataConfig implements CommandLineRunner {
     private final AssessmentSectionRepository assessmentSectionRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
+    private final com.competency.scms.repository.competency.CompetencyRepository competencyRepository;
 
     private User getUser(int userNum) {
         return userRepository.findByUserNum(userNum)
@@ -456,7 +457,91 @@ public class initDataConfig implements CommandLineRunner {
                 .reason(MileageReason.PROGRAM_COMPLETION).points(10).remarks("자기소개서·이력서 컨설팅 이수").build());
 
         log.info("✅ MileageRecord 초기 데이터 6건이 생성되었습니다.");
-}
+
+        // 역량 검사 섹션 생성
+        AssessmentSection section1 = assessmentSectionRepository.save(AssessmentSection.builder()
+                .title("자기관리 역량 검사").description("자기관리 능력 평가").isActive(true).build());
+        AssessmentSection section2 = assessmentSectionRepository.save(AssessmentSection.builder()
+                .title("의사소통 역량 검사").description("의사소통 능력 평가").isActive(true).build());
+        AssessmentSection section3 = assessmentSectionRepository.save(AssessmentSection.builder()
+                .title("글로벌 역량 검사").description("글로벌 능력 평가").isActive(true).build());
+        AssessmentSection section4 = assessmentSectionRepository.save(AssessmentSection.builder()
+                .title("대인관계 역량 검사").description("대인관계 능력 평가").isActive(true).build());
+        AssessmentSection section5 = assessmentSectionRepository.save(AssessmentSection.builder()
+                .title("종합적 사고력 검사").description("종합적 사고력 평가").isActive(true).build());
+        AssessmentSection section6 = assessmentSectionRepository.save(AssessmentSection.builder()
+                .title("자원·정보·기술 활용 역량 검사").description("자원·정보·기술 활용 능력 평가").isActive(true).build());
+
+        log.info("✅ AssessmentSection 초기 데이터 6건이 생성되었습니다.");
+
+        // 프로그램 신청 데이터 추가
+        programApplicationRepository.save(ProgramApplication.builder()
+                .program(prog1).student(getUser(20213901)).status(ApplicationStatus.APPROVED)
+                .appliedAt(LocalDateTime.now().minusDays(10)).build());
+        programApplicationRepository.save(ProgramApplication.builder()
+                .program(prog2).student(getUser(20212802)).status(ApplicationStatus.APPROVED)
+                .appliedAt(LocalDateTime.now().minusDays(8)).build());
+        programApplicationRepository.save(ProgramApplication.builder()
+                .program(prog3).student(getUser(20214503)).status(ApplicationStatus.APPROVED)
+                .appliedAt(LocalDateTime.now().minusDays(5)).build());
+        programApplicationRepository.save(ProgramApplication.builder()
+                .program(prog16).student(getUser(20214405)).status(ApplicationStatus.PENDING)
+                .appliedAt(LocalDateTime.now().minusDays(3)).build());
+        programApplicationRepository.save(ProgramApplication.builder()
+                .program(prog17).student(getUser(20212206)).status(ApplicationStatus.PENDING)
+                .appliedAt(LocalDateTime.now().minusDays(2)).build());
+        programApplicationRepository.save(ProgramApplication.builder()
+                .program(prog18).student(getUser(20211707)).status(ApplicationStatus.PENDING)
+                .appliedAt(LocalDateTime.now().minusDays(1)).build());
+
+        // 프로그램 현재 참여자 수 업데이트 (직접 필드 접근)
+        prog1.setCurrentParticipants(15);
+        prog2.setCurrentParticipants(8);
+        prog3.setCurrentParticipants(12);
+        prog16.setCurrentParticipants(25);
+        prog17.setCurrentParticipants(18);
+        prog18.setCurrentParticipants(10);
+        programRepository.saveAll(List.of(prog1, prog2, prog3, prog16, prog17, prog18));
+
+        log.info("✅ ProgramApplication 초기 데이터 6건이 생성되었습니다.");
+
+        // 역량 데이터 추가
+        createCompetencyData();
+    }
+
+    private void createCompetencyData() {
+        // 자기관리 역량 (C01)
+        com.competency.scms.domain.competency.Competency c01 = competencyRepository.save(
+            com.competency.scms.domain.competency.Competency.builder()
+                .name("자기관리 역량").compCode("C01").displayOrder(1).isActive(true).build());
+        
+        // 의사소통 역량 (C02)
+        com.competency.scms.domain.competency.Competency c02 = competencyRepository.save(
+            com.competency.scms.domain.competency.Competency.builder()
+                .name("의사소통 역량").compCode("C02").displayOrder(2).isActive(true).build());
+        
+        // 글로벌 역량 (C03)
+        com.competency.scms.domain.competency.Competency c03 = competencyRepository.save(
+            com.competency.scms.domain.competency.Competency.builder()
+                .name("글로벌 역량").compCode("C03").displayOrder(3).isActive(true).build());
+        
+        // 대인관계 역량 (C04)
+        com.competency.scms.domain.competency.Competency c04 = competencyRepository.save(
+            com.competency.scms.domain.competency.Competency.builder()
+                .name("대인관계 역량").compCode("C04").displayOrder(4).isActive(true).build());
+        
+        // 종합적 사고력 (C05)
+        com.competency.scms.domain.competency.Competency c05 = competencyRepository.save(
+            com.competency.scms.domain.competency.Competency.builder()
+                .name("종합적 사고력").compCode("C05").displayOrder(5).isActive(true).build());
+        
+        // 자원·정보·기술 활용 역량 (C06)
+        com.competency.scms.domain.competency.Competency c06 = competencyRepository.save(
+            com.competency.scms.domain.competency.Competency.builder()
+                .name("자원·정보·기술 활용 역량").compCode("C06").displayOrder(6).isActive(true).build());
+
+        log.info("✅ Competency 초기 데이터 6건이 생성되었습니다.");
+    }
 
     private Department ensureDept(String code, String name) {
     return departmentRepository.findByCode(code)
