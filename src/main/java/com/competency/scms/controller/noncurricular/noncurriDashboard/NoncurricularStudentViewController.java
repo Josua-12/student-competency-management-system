@@ -47,12 +47,12 @@ public class NoncurricularStudentViewController {
      * 신청/취소
      * GET /noncurricular/student/applications
      */
-    @GetMapping("/applications")
-    public String applications(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 신청/취소");
-        setView(model, "noncurricular/program/open");
-        return "noncurricular/fix-screen/noncurricular-layout";
-    }
+//    @GetMapping("/applications")
+//    public String applications(Model model) {
+//        model.addAttribute("pageTitle", "비교과 프로그램 - 신청/취소");
+//        setView(model, "noncurricular/program/open");
+//        return "noncurricular/fix-screen/noncurricular-layout";
+//    }
 
     /**
      * 신청 이력 조회
@@ -110,122 +110,4 @@ public class NoncurricularStudentViewController {
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 }
-
-
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-
-
-//@Controller
-//@RequestMapping("/noncurricular/student")
-//public class NoncurricularStudentViewController {
-//
-//    /**
-//     * 학생 대시보드
-//     * GET /noncurricular/student/dashboard
-//     */
-//    @GetMapping("/dashboard")
-//    public String studentDashboard(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/noncurriDashboard/student-dashboard :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 프로그램 목록(학생)
-//     * GET /noncurricular/student/programs
-//     */
-//    @GetMapping("/programs")
-//    public String studentProgramList(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 목록(학생)");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/program/list_User :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 신청/취소
-//     * GET /noncurricular/student/applications
-//     */
-//    @GetMapping("/applications")
-//    public String applications(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 신청/취소");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/program/open :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 신청 이력 조회
-//     * GET /noncurricular/student/applications/history
-//     */
-//    @GetMapping("/applications/history")
-//    public String applicationHistory(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 신청 이력");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/program/list_User :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 만족도 설문
-//     * GET /noncurricular/student/satisfaction
-//     */
-//    @GetMapping("/satisfaction")
-//    public String satisfaction(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 만족도 설문");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/operation/RegisterSatisfactionQuestion :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 결과보고서 등록
-//     * GET /noncurricular/student/reports
-//     */
-//    @GetMapping("/reports")
-//    public String reports(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 결과보고서 등록");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/report/RegisterResultsReport :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 이수내역 조회
-//     * GET /noncurricular/student/completions
-//     */
-//    @GetMapping("/completions")
-//    public String completions(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 이수내역 조회");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/operation/ResultSatisfaction :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//
-//    /**
-//     * 비교과 포인트 조회
-//     * GET /noncurricular/student/points
-//     */
-//    @GetMapping("/points")
-//    public String points(Model model) {
-//        model.addAttribute("pageTitle", "비교과 프로그램 - 포인트 조회");
-//        model.addAttribute("contentFragment",
-//                "noncurricular/noncurriDashboard/student-dashboard :: content");
-//        return "noncurricular/fix-screen/noncurricular-layout";
-//    }
-//}
-//
-//import org.springframework.stereotype.Controller;
-//import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//
-//
-
-
-
 
