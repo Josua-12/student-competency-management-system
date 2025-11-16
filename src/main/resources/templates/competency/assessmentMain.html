@@ -71,7 +71,7 @@
                                class="btn btn-primary btn-sm">진단하기</a>
                             <a th:if="${section.status == 'COMPLETED'}"
                                th:href="@{/student/assessment/result/{id}(id=${section.resultId})}"
-                               class="btn btn-secondary btn-sm">결과보기</a>
+                               class="btn btn-info btn-sm">결과보기</a>
                             <button th:if="${section.status == 'EXPIRED'}" type="button" class="btn btn-outline-secondary btn-sm" disabled>기간종료</button>
                         </td>
                     </tr>
