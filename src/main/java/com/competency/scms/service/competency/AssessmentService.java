@@ -1,5 +1,6 @@
 package com.competency.scms.service.competency;
 
+import com.competency.scms.domain.Department;
 import com.competency.scms.domain.competency.*;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.dto.competency.*;
@@ -357,23 +358,49 @@ public class AssessmentService {
 
 
         List<String> radarLabels = new ArrayList<>();
-        List<Double> radarScores = new ArrayList<>();
+        List<Double> myScoresList = new ArrayList<>();
+        List<Double> deptScoresList = new ArrayList<>();
+        List<Double> univScoresList = new ArrayList<>();
 
         // 6. '핵심 역량'을 순회하며 DTO 조립
         // (정렬: displayOrder 순)
         List<Competency> sortedParents = parentToScoresMap.keySet().stream()
-                .sorted(Comparator.comparingInt(Competency::getDisplayOrder))
+                .sorted(Comparator.comparingInt(Competency::getDisplayOrder)
+                .thenComparing(Competency::getId))
                 .toList();
+
+        Department userDepartment = result.getUser().getDepartment();
+        List<Long> parentIds = sortedParents.stream().map(Competency::getId).toList();
+
+        Map<Long, Double> deptAvgMap;
+
+        if (userDepartment != null) {
+            deptAvgMap = assessmentResultRepository.findDepartmentAverages(
+                            userDepartment,
+                            parentIds
+                    ).stream()
+                    .collect(Collectors.toMap(CompetencyAverageDto::getCompetencyId, CompetencyAverageDto::getAverageScore));
+        } else {
+            deptAvgMap = new HashMap<>();
+        }
+
+
+
+        Map<Long, Double> univAvgMap = assessmentResultRepository.findUniversityAverages(parentIds)
+                .stream()
+                .collect(Collectors.toMap(CompetencyAverageDto::getCompetencyId, CompetencyAverageDto::getAverageScore));
 
         for (Competency parent : sortedParents) {
             // 6-1. [레이더 차트] (핵심 역량의 평균 점수 계산)
-            double parentAvgScore = parentToScoresMap.get(parent).stream()
+            double myAvgScore = parentToScoresMap.get(parent).stream()
                     .mapToDouble(Double::doubleValue)
                     .average()
                     .orElse(0.0);
 
             radarLabels.add(parent.getName());
-            radarScores.add(parentAvgScore);
+            myScoresList.add(myAvgScore);
+            deptScoresList.add(deptAvgMap.getOrDefault(parent.getId(), 0.0));
+            univScoresList.add(univAvgMap.getOrDefault(parent.getId(), 0.0));
 
             // 6-2. [막대 그래프] (하위 역량 DTO 리스트)
             List<ResultChildCompetencyDto> childDtos = parentToChildrenDtoMap.get(parent);
@@ -387,10 +414,12 @@ public class AssessmentService {
             ));
             scoreDetailsList.add(new ResultParentCompetencyDto(
                     parent.getName(),
-                    parentAvgScore,
+                    myAvgScore,
                     childDtos
             ));
         }
+
+
 
         // 7. 강점/약점 분석 (하위 역량 기준 Top 2, Bottom 2)
         List<ResultFeedbackDto> strengths = new ArrayList<>();
@@ -435,13 +464,88 @@ public class AssessmentService {
             ));
         }
 
+        // 평균 점수 계산 로직
+
+
+
+
         // 8. 최종 DTO 설정
-        data.setRadarChartData(new RadarChartData(radarLabels, radarScores));
+        data.setRadarChartData(new RadarChartData(
+                radarLabels,
+                myScoresList,
+                deptScoresList,
+                univScoresList
+        ));
         data.setScoreDetails(scoreDetailsList);
         data.setStrengths(strengths);
         data.setWeaknesses(weaknesses);
 
         return data;
+    }
+
+    /**
+     * 나의 역량 현황 데이터 조히
+     */
+    public AssessmentHistoryPageDto getAssessmentHistoryData(Long userId) {
+        // 1. 활성화된 핵심 역량 목록 가져오기
+        List<Competency> coreCompetencies = competencyRepository
+                .findByParentIsNullAndIsActiveTrueOrderByDisplayOrderAsc();
+
+        // 1-1. 라벨 준비
+        List<String> competencyLabels = coreCompetencies.stream()
+                .map(Competency::getName)
+                .toList();
+
+        // 2. 사용자가 완료한 모든 진단 결과를 시간순으로 가져오기
+        List<AssessmentResult> completedResults = assessmentResultRepository.findCompletedWithSectionByUserId(userId);
+
+        completedResults.sort(Comparator.comparing(AssessmentResult::getSubmittedAt, Comparator.nullsLast(Comparator.reverseOrder())));
+
+        List<AssessmentHistoryDto2> historyData = new ArrayList<>();
+
+        // 3. 완료된 진단 결과를 하나씩 순회
+        for (AssessmentResult result : completedResults) {
+            // 4. 이 진단의 모든 응답을 가져오기
+            List<AssessmentResponse> responses = assessmentResponseRepository.findAllWithDetailsByResultId(result.getId());
+
+            // 5. 하위 역량별 평균 점수 계산
+            Map<Competency, Double> childAvgScores = responses.stream()
+                    .collect(Collectors.groupingBy(
+                            response -> response.getQuestion().getCompetency(),
+                            Collectors.averagingInt(r -> r.getAssessmentOption().getScore())
+                    ));
+
+            // 6. 핵심 역량별 평균 점수 계산
+            Map<Long, List<Double>> parentAvgScores = new HashMap<>();
+            for (Map.Entry<Competency, Double> entry : childAvgScores.entrySet()) {
+                Competency parent = entry.getKey().getParent();
+                if (parent != null) {
+                    parentAvgScores.computeIfAbsent(parent.getId(), k -> new ArrayList<>()).add(entry.getValue());
+                }
+            }
+
+            // 7. scores 리스트 생성
+            List<Double> orderdScores = new ArrayList<>();
+            for (Competency core : coreCompetencies) {
+                double avg = parentAvgScores.getOrDefault(core.getId(), Collections.emptyList())
+                        .stream()
+                        .mapToDouble(Double::doubleValue)
+                        .average()
+                        .orElse(0.0);
+
+                orderdScores.add(avg);
+            }
+
+            // 8. DTO 생성 및 리스트에 추가
+            historyData.add(new AssessmentHistoryDto2(
+                    result.getId(),
+                    result.getAssessmentSection().getTitle(),
+                    orderdScores
+            ));
+        }
+
+        // 9. 최종 페이지 DTO 반환
+        return new AssessmentHistoryPageDto(competencyLabels, historyData);
     }
 
     // --- DTO 변환 헬퍼 메서드들 ---

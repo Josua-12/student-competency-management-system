@@ -1,272 +1,167 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{mypage/mypage-layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>비교과 프로그램 신청 현황</title>
-    <!-- Tailwind CSS 로드 -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bootstrap 5 CSS 로드 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 아이콘 로드 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    <!-- 외부 CSS 파일 로드 -->
-    <link rel="stylesheet" th:href="@{/css/mypage/user-management.css}" />
-    <!-- 외부 CSS 파일 로드 (이 파일에서는 인라인 스타일로 대체되거나 Tailwind/Bootstrap에 의존) -->
-    <!-- <link rel="stylesheet" th:href="@{/css/mypage/user-management.css}" /> -->
-    <!-- Footer의 Stickiness를 위한 CSS 추가 및 통합 스타일 -->
-    <style>
-        /* Body 및 Main Content Layout for Sticky Footer */
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            background-color: #f8f9fa; /* bg-light 대체 */
-        }
-        main {
-            flex-grow: 1; /* 메인 콘텐츠가 남은 공간을 차지하도록 */
-        }
-        /* 푸터 링크 호버 효과 (footer.html에서 정의된 내용 통합) */
-        footer a:hover {
-            color: #ccc !important;
-            text-decoration: underline !important;
-        }
-        /* Custom Modal Style */
-        #custom-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none; /* 초기에는 숨김 */
-            justify-content: center;
-            align-items: center;
-            z-index: 1050; /* Bootstrap Modal보다 높게 */
-        }
-        #modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            text-align: center;
-        }
-        /* 테이블 반응형 디자인 (Tailwind/Bootstrap 사용) */
-        .table-hover tbody tr:hover {
-            background-color: #f5f5f5;
-        }
-    </style>
+    <th:block th:fragment="css">
+        <style>
+            .table-hover tbody tr:hover {
+                background-color: #f5f5f5;
+            }
+            #custom-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1050;
+            }
+            #modal-content {
+                background: white;
+                padding: 2rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                max-width: 400px;
+                text-align: center;
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-
-<!-- Custom Modal Structure (alert() 대체) -->
-<div id="custom-modal">
-    <div id="modal-content">
-        <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
-        <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
-    </div>
-</div>
-
-<!-- 1. HEADER (header.html Fragment 통합) -->
-<header class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
-        <!-- 로고/웹사이트명 -->
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="https://placehold.co/30x30/4f46e5/ffffff?text=LOGO"
-                 alt="scms 로고"
-                 class="me-2"
-                 style="height: 30px;">
-            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
-        </a>
-
-        <!-- 햄버거 토글 버튼 (모바일) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- 네비게이션 메뉴 -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">홈</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/assessment">역량진단</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/counselinguser/student">상담</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/user/noncurricular/programs">비교과 프로그램</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/mypage">마이페이지</a>
-                </li>
-            </ul>
+    <div th:fragment="content">
+        <!-- Custom Modal Structure -->
+        <div id="custom-modal">
+            <div id="modal-content">
+                <p id="modal-message" class="mb-4 fw-medium text-dark fs-6"></p>
+                <button id="modal-close-btn" class="btn btn-primary rounded-pill px-4">확인</button>
+            </div>
         </div>
-    </div>
-</header>
-<!-- End of HEADER -->
 
-<div class="container-fluid py-5 px-3 px-md-5">
-    <main class="main-content">
-        <div class="max-w-7xl mx-auto">
-            <!-- 페이지 제목 및 설명 -->
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">비교과 프로그램 신청 현황</h1>
-            <p class="text-gray-500 mb-6">신청 및 완료된 비교과 프로그램의 목록과 상태를 확인하세요.</p>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">비교과 프로그램 신청 현황</h1>
+        </div>
+        <p class="text-muted mb-4">신청 및 완료된 비교과 프로그램의 목록과 상태를 확인하세요.</p>
 
-            <!-- 탭 네비게이션 -->
-            <ul class="nav nav-tabs mb-4" id="myPageTab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="noncurricular-tab" data-bs-toggle="tab" data-bs-target="#noncurricular" type="button" role="tab" aria-controls="noncurricular" aria-selected="true">
-                        <i class="fas fa-list-check me-2"></i>신청 현황
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="assessment-tab" data-bs-toggle="tab" data-bs-target="#assessment" type="button" role="tab" aria-controls="assessment" aria-selected="false">
-                        <i class="fas fa-chart-line me-2"></i>역량 진단 이력
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="counseling-tab" data-bs-toggle="tab" data-bs-target="#counseling" type="button" role="tab" aria-controls="counseling" aria-selected="false">
-                        <i class="fas fa-comments me-2"></i>상담 이력
-                    </button>
-                </li>
-            </ul>
+        <!-- 탭 네비게이션 -->
+        <ul class="nav nav-tabs mb-4" id="myPageTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="noncurricular-tab" data-bs-toggle="tab" data-bs-target="#noncurricular" type="button" role="tab" aria-controls="noncurricular" aria-selected="true">
+                    <i class="fas fa-list-check me-2"></i>신청 현황
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="assessment-tab" data-bs-toggle="tab" data-bs-target="#assessment" type="button" role="tab" aria-controls="assessment" aria-selected="false">
+                    <i class="fas fa-chart-line me-2"></i>역량 진단 이력
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="counseling-tab" data-bs-toggle="tab" data-bs-target="#counseling" type="button" role="tab" aria-controls="counseling" aria-selected="false">
+                    <i class="fas fa-comments me-2"></i>상담 이력
+                </button>
+            </li>
+        </ul>
 
-            <!-- 탭 콘텐츠 -->
-            <div class="tab-content" id="myPageTabContent">
-                <div class="tab-pane fade show active" id="noncurricular" role="tabpanel" aria-labelledby="noncurricular-tab">
-                    <div class="bg-white shadow rounded-lg p-4 p-md-6 mb-8 overflow-x-auto">
-                        <h2 class="text-xl font-semibold text-gray-700 mb-4">비교과 프로그램 목록</h2>
-                        <table class="table table-hover align-middle min-w-full" aria-label="비교과 프로그램 신청 목록">
-                            <thead class="bg-gray-100">
-                            <tr>
-                                <th scope="col" class="py-3 px-4 text-start text-sm font-medium text-gray-500 uppercase tracking-wider">프로그램명</th>
-                                <th scope="col" class="py-3 px-4 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">신청일</th>
-                                <th scope="col" class="py-3 px-4 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">상태</th>
-                                <th scope="col" class="py-3 px-4 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">조치</th>
-                            </tr>
-                            </thead>
-                            <tbody id="applicationTableBody" class="divide-y divide-gray-200">
-                            <!-- 샘플 데이터 -->
-                            <tr data-program="글쓰기 역량 강화 특강">
-                                <td class="py-3 px-4 font-medium text-gray-900">글쓰기 역량 강화 특강</td>
-                                <td class="py-3 px-4 text-center text-gray-500">2024.05.01</td>
-                                <td class="py-3 px-4 text-center">
-                                    <span class="badge bg-warning text-dark rounded-pill">신청 중</span>
-                                </td>
-                                <td class="py-3 px-4 text-center">
-                                    <button class="btn btn-sm btn-danger rounded-pill action-btn" data-action="cancel">취소</button>
-                                </td>
-                            </tr>
-                            <tr data-program="인공지능 실무자 과정">
-                                <td class="py-3 px-4 font-medium text-gray-900">인공지능 실무자 과정</td>
-                                <td class="py-3 px-4 text-center text-gray-500">2024.04.15</td>
-                                <td class="py-3 px-4 text-center">
-                                    <span class="badge bg-success rounded-pill">참여 완료</span>
-                                </td>
-                                <td class="py-3 px-4 text-center">
-                                    <button class="btn btn-sm btn-primary rounded-pill action-btn" data-action="register">산출물 등록</button>
-                                </td>
-                            </tr>
-                            <tr data-program="봉사활동: 지역 사회 멘토링">
-                                <td class="py-3 px-4 font-medium text-gray-900">봉사활동: 지역 사회 멘토링</td>
-                                <td class="py-3 px-4 text-center text-gray-500">2024.03.10</td>
-                                <td class="py-3 px-4 text-center">
-                                    <span class="badge bg-secondary rounded-pill">취소됨</span>
-                                </td>
-                                <td class="py-3 px-4 text-center">
-                                    <button class="btn btn-sm btn-secondary rounded-pill" disabled>취소됨</button>
-                                </td >
-                            </tr>
-                            </tbody>
-                        </table>
+        <!-- 탭 콘텐츠 -->
+        <div class="tab-content" id="myPageTabContent">
+            <div class="tab-pane fade show active" id="noncurricular" role="tabpanel" aria-labelledby="noncurricular-tab">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">비교과 프로그램 목록</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle" aria-label="비교과 프로그램 신청 목록">
+                                <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 text-start text-sm fw-medium text-muted text-uppercase">프로그램명</th>
+                                    <th scope="col" class="py-3 px-4 text-center text-sm fw-medium text-muted text-uppercase">신청일</th>
+                                    <th scope="col" class="py-3 px-4 text-center text-sm fw-medium text-muted text-uppercase">상태</th>
+                                    <th scope="col" class="py-3 px-4 text-center text-sm fw-medium text-muted text-uppercase">조치</th>
+                                </tr>
+                                </thead>
+                                <tbody id="applicationTableBody">
+                                <tr data-program="글쓰기 역량 강화 특강">
+                                    <td class="py-3 px-4 fw-medium">글쓰기 역량 강화 특강</td>
+                                    <td class="py-3 px-4 text-center text-muted">2024.05.01</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="badge bg-warning text-dark rounded-pill">신청 중</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button class="btn btn-sm btn-danger rounded-pill action-btn" data-action="cancel">취소</button>
+                                    </td>
+                                </tr>
+                                <tr data-program="인공지능 실무자 과정">
+                                    <td class="py-3 px-4 fw-medium">인공지능 실무자 과정</td>
+                                    <td class="py-3 px-4 text-center text-muted">2024.04.15</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="badge bg-success rounded-pill">참여 완료</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button class="btn btn-sm btn-primary rounded-pill action-btn" data-action="register">산출물 등록</button>
+                                    </td>
+                                </tr>
+                                <tr data-program="봉사활동: 지역 사회 멘토링">
+                                    <td class="py-3 px-4 fw-medium">봉사활동: 지역 사회 멘토링</td>
+                                    <td class="py-3 px-4 text-center text-muted">2024.03.10</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="badge bg-secondary rounded-pill">취소됨</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button class="btn btn-sm btn-secondary rounded-pill" disabled>취소됨</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-
-                <!-- 다른 탭 콘텐츠는 현재 비어 있음 -->
-                <div class="tab-pane fade" id="assessment" role="tabpanel" aria-labelledby="assessment-tab">
-                    <p class="text-gray-500 p-4">역량 진단 이력 관련 내용은 여기에 표시됩니다.</p>
-                </div>
-                <div class="tab-pane fade" id="counseling" role="tabpanel" aria-labelledby="counseling-tab">
-                    <p class="text-gray-500 p-4">상담 이력 관련 내용은 여기에 표시됩니다.</p>
-                </div>
             </div>
 
-            <!-- 페이지 하단 여백 -->
-            <div class="py-5"></div>
-
-        </div>
-    </main>
-</div>
-
-<!-- 2. FOOTER (footer.html Fragment 통합) -->
-<footer class="bg-dark text-white pt-5 pb-4 mt-auto">
-    <div class="container">
-        <div class="row">
-            <!-- 푸터 로고 및 정보 -->
-            <div class="col-md-3 mb-4">
-                <h5 class="fw-bold mb-3">푸름대학교 SCMS</h5>
-                <p class="small text-light-emphasis">학생들의 역량 강화를 위한 종합 관리 시스템</p>
-                <p class="small text-light-emphasis">주소: (04000) 서울시 푸름로 123</p>
-                <p class="small text-light-emphasis">전화: 02-1234-5678</p>
-                <p class="small text-light-emphasis">이메일: scms@purum.ac.kr</p>
+            <div class="tab-pane fade" id="assessment" role="tabpanel" aria-labelledby="assessment-tab">
+                <p class="text-muted p-4">역량 진단 이력 관련 내용은 여기에 표시됩니다.</p>
             </div>
-
-            <!-- 주요 메뉴 - 역량진단 -->
-            <div class="col-md-3 mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-chart-line me-2"></i>주요 메뉴
-                </h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="/user/assessment" class="text-decoration-none text-light">진단 시작하기</a></li>
-                    <li class="mb-2"><a href="/user/assessment/history" class="text-decoration-none text-light">진단 이력</a></li>
-                    <li class="mb-2"><a href="/user/assessment/history/assessment" class="text-decoration-none text-light">진단 결과 확인하기</a></li>
-                </ul>
+            <div class="tab-pane fade" id="counseling" role="tabpanel" aria-labelledby="counseling-tab">
+                <p class="text-muted p-4">상담 이력 관련 내용은 여기에 표시됩니다.</p>
             </div>
-
-            <!-- 주요 메뉴 - 상담 예약 -->
-            <div class="col-md-3 mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-calendar-alt me-2"></i>상담예약
-                </h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="/counseling/user/student" class="text-decoration-none text-light">상담 예약하기</a></li>
-                    <li class="mb-2"><a href="/counseling/user/counseling/status" class="text-decoration-none text-light">내 예약 조회</a></li>
-                </ul>
-            </div>
-
-            <!-- 주요 메뉴 - 비교과 프로그램 -->
-            <div class="col-md-3 mb-4">
-                <h5 class="fw-bold mb-3">
-                    <i class="fas fa-book me-2"></i>비교과 프로그램
-                </h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="/user/noncurricular" class="text-decoration-none text-light">교내 비교과 프로그램</a></li>
-                    <li class="mb-2"><a href="/user/noncurricular" class="text-decoration-none text-light">교외 비교과 프로그램</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 하단 저작권 -->
-        <div class="border-top pt-3 mt-3 text-center">
-            <small class="text-light-emphasis">&copy; 2024 푸름대학교 학생역량관리센터. All rights reserved.</small>
         </div>
     </div>
-</footer>
-<!-- End of FOOTER -->
 
-<!-- Bootstrap 5 JS Bundle 로드 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- 외부 JS 파일 로드 (applicationstatus.js 내용도 여기에 포함하거나 별도로 로드) -->
-<script src="applicationstatus.js"></script>
+    <th:block th:fragment="scripts">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const actionButtons = document.querySelectorAll('.action-btn');
+                const modal = document.getElementById('custom-modal');
+                const modalMessage = document.getElementById('modal-message');
+                const modalCloseBtn = document.getElementById('modal-close-btn');
 
+                actionButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const action = this.getAttribute('data-action');
+                        const programRow = this.closest('tr');
+                        const programName = programRow.getAttribute('data-program');
+
+                        if (action === 'cancel') {
+                            modalMessage.textContent = `"${programName}" 프로그램 신청을 취소하시겠습니까?`;
+                            modal.style.display = 'flex';
+                        } else if (action === 'register') {
+                            modalMessage.textContent = `"${programName}" 프로그램의 산출물을 등록하시겠습니까?`;
+                            modal.style.display = 'flex';
+                        }
+                    });
+                });
+
+                modalCloseBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    </th:block>
 </body>
 </html>

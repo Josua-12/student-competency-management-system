@@ -51,6 +51,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .frameOptions().deny()
+                        .contentTypeOptions().and()
+                        .httpStrictTransportSecurity(hstsConfig -> hstsConfig
+                                .maxAgeInSeconds(31536000)
+                                .includeSubdomains(true))
+                        .and())
 
                 .authorizeHttpRequests(authz -> authz
                         // 공개 경로: 로그인, 비밀번호 찾기, 정적 리소스
@@ -84,6 +91,7 @@ public class SecurityConfig {
                         .requestMatchers("/competency/student/**").hasRole("STUDENT")
                         .requestMatchers("/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/competency/admin/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
+                        .requestMatchers("/admin/assessment-section", "/admin/assessment-section/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
 
                         // 최고 관리자 전용
                         .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")

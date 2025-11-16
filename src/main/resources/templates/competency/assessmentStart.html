@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(
+      th:replace="~{competency/competency_layout :: layout(
                     title='역량 진단하기',
                     content=~{::main},
                     css=~{::#page-css},
-                    scripts=~{::#page-scripts}
+                    scripts=~{::#page-scripts},
+                    hideSidebar=true
                   )}">
 
 <th:block th:fragment="css" id="page-css">
