@@ -84,16 +84,16 @@
         <ul class="menu-list">
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link"
-                   th:href="@{/noncurricular/student/dashboard}">개인 대시보드</a>
+                   th:href="@{/noncurricular/student/student-dashboard}">개인 대시보드</a>
             </li>
-            <li sec:authorize="hasRole('NONCURRICULAR_OPERATOR')">
+            <li sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
                 <a class="menu-link"
                    th:href="@{/noncurricular/operator/dashboard}">운영자 대시보드</a>
             </li>
-            <li sec:authorize="hasRole('NONCURRICULAR_ADMIN')">
-                <a class="menu-link"
-                   th:href="@{/noncurricular/admin/dashboard}">부서관리자 대시보드</a>
-            </li>
+<!--            <li sec:authorize="hasRole('NONCURRICULAR_ADMIN')">-->
+<!--                <a class="menu-link"-->
+<!--                   th:href="@{/noncurricular/admin/dashboard}">부서관리자 대시보드</a>-->
+<!--            </li>-->
         </ul>
     </section>
 

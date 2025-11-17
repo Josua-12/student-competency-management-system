@@ -185,7 +185,7 @@ public interface ProgramApplicationRepository
     /**
      * 학생 기준 전체 승인(=이수 가능) 신청 수
      */
-    long countByStudent_IdAndStatus(Long studentId, ApplicationStatus status);
+    long countByStudent_IdAndStatus(Long studentId, com.competency.scms.domain.noncurricular.program.CompletionStatus status);
 
     /**
      * 학생 기준, 특정 연도 승인(=이수 가능) 신청 수
@@ -195,12 +195,12 @@ public interface ProgramApplicationRepository
         select count(pa)
           from ProgramApplication pa
          where pa.student.id = :studentId
-           and pa.status = :status
-           and pa.approvedAt is not null
-           and function('year', pa.approvedAt) = :year
+           and pa.completionStatus = :status
+           and pa.completionDate is not null
+           and function('year', pa.completionDate) = :year
     """)
     long countCompletedThisYear(@Param("studentId") Long studentId,
-                                @Param("status") ApplicationStatus status,
+                                @Param("status") com.competency.scms.domain.noncurricular.program.CompletionStatus status,
                                 @Param("year") int year);
 
     // (1) 전체 이수완료 건수 (검색조건과 무관하게 학생 전체 기준)
@@ -208,40 +208,42 @@ public interface ProgramApplicationRepository
            select count(pa)
            from ProgramApplication pa
            where pa.student.id = :studentId
-             and pa.completionStatus = com.competency.scms.domain.noncurricular.operation.CompletionStatus.COMPLETED
+             and pa.completionStatus = :completionStatus
            """)
-    long countAllCompletedByStudent(@Param("studentId") Long studentId);
+    long countAllCompletedByStudent(@Param("studentId") Long studentId, @Param("completionStatus") com.competency.scms.domain.noncurricular.program.CompletionStatus completionStatus);
 
     // (2) 특정 연도 이수완료 건수
     @Query("""
            select count(pa)
            from ProgramApplication pa
            where pa.student.id = :studentId
-             and pa.completionStatus = com.competency.scms.domain.noncurricular.operation.CompletionStatus.COMPLETED
+             and pa.completionStatus = :completionStatus
              and function('year', pa.completionDate) = :year
            """)
     long countCompletedByStudentAndYear(@Param("studentId") Long studentId,
-                                        @Param("year") int year);
+                                        @Param("year") int year,
+                                        @Param("completionStatus") com.competency.scms.domain.noncurricular.program.CompletionStatus completionStatus);
 
     // (3) 전체 이수 포인트 합계
     @Query("""
            select coalesce(sum(pa.earnedPoint), 0)
            from ProgramApplication pa
            where pa.student.id = :studentId
-             and pa.completionStatus = com.competency.scms.domain.noncurricular.operation.CompletionStatus.COMPLETED
+             and pa.completionStatus = :completionStatus
            """)
-    int sumCompletedPointByStudent(@Param("studentId") Long studentId);
+    int sumCompletedPointByStudent(@Param("studentId") Long studentId, @Param("completionStatus") com.competency.scms.domain.noncurricular.program.CompletionStatus completionStatus);
 
     // (4) 특정 연도 이수 포인트 합계
     @Query("""
            select coalesce(sum(pa.earnedPoint), 0)
            from ProgramApplication pa
            where pa.student.id = :studentId
-             and pa.completionStatus = com.competency.scms.domain.noncurricular.operation.CompletionStatus.COMPLETED
+             and pa.completionStatus = :completionStatus
              and function('year', pa.completionDate) = :year
            """)
     int sumCompletedPointByStudentAndYear(@Param("studentId") Long studentId,
-                                          @Param("year") int year);
+                                          @Param("year") int year,
+                                          @Param("completionStatus") com.competency.scms.domain.noncurricular.program.CompletionStatus completionStatus);
 
 }
 

@@ -5,6 +5,7 @@ import com.competency.scms.domain.noncurricular.operation.ProgramApplication;
 import com.competency.scms.domain.noncurricular.operation.SatisfactionStatus;
 import com.competency.scms.domain.noncurricular.program.CompletionStatus;
 import com.competency.scms.domain.noncurricular.program.Program;
+import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import com.competency.scms.dto.noncurricular.operation.completion.StudentCompletionListItemDto;
 import com.competency.scms.dto.noncurricular.operation.completion.StudentCompletionSearchConditionDto;
 import com.competency.scms.dto.noncurricular.operation.completion.StudentCompletionSummaryDto;
@@ -50,11 +51,11 @@ public class StudentCompletionQueryServiceImpl implements StudentCompletionQuery
 
         int year = Year.now().getValue();
 
-        long totalCompleted = programApplicationRepository.countAllCompletedByStudent(studentId);
-        long yearCompleted = programApplicationRepository.countCompletedByStudentAndYear(studentId, year);
+        long totalCompleted = programApplicationRepository.countAllCompletedByStudent(studentId, CompletionStatus.COMPLETED);
+        long yearCompleted = programApplicationRepository.countCompletedByStudentAndYear(studentId, year, CompletionStatus.COMPLETED);
 
-        int totalPoint = programApplicationRepository.sumCompletedPointByStudent(studentId);
-        int yearPoint = programApplicationRepository.sumCompletedPointByStudentAndYear(studentId, year);
+        int totalPoint = programApplicationRepository.sumCompletedPointByStudent(studentId, CompletionStatus.COMPLETED);
+        int yearPoint = programApplicationRepository.sumCompletedPointByStudentAndYear(studentId, year, CompletionStatus.COMPLETED);
 
         return StudentCompletionSummaryDto.builder()
                 .totalCompletedCount(totalCompleted)

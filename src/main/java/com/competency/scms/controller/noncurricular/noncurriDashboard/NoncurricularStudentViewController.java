@@ -43,9 +43,9 @@ public class NoncurricularStudentViewController {
 
     /**
      * 학생 대시보드
-     * GET /noncurricular/student/dashboard
+     * GET /noncurricular/student/student-dashboard
      */
-    @GetMapping("/dashboard")
+    @GetMapping("/student-dashboard")
     public String studentDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
 //        model.addAttribute("content", "noncurricular/noncurriDashboard/student-dashboard");
@@ -113,6 +113,12 @@ public class NoncurricularStudentViewController {
     @GetMapping("/satisfaction")
     public String satisfaction(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 만족도 설문");
+        
+        // 더미 데이터 추가
+        java.util.Map<String, Object> program = new java.util.HashMap<>();
+        program.put("title", "취업 역량 강화를 위한 모의 면접 캐프");
+        model.addAttribute("program", program);
+        
         setView(model, "noncurricular/operation/ResponseSatisfactionSurvey");
         return "noncurricular/fix-screen/noncurricular-layout";
     }

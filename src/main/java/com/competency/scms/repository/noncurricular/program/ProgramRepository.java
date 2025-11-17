@@ -198,13 +198,13 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
             left join fetch p.category c
             left join fetch p.department d
         where (:title is null or p.title like concat('%', :title, '%'))
-          and (:deptId is null or d.deptId = :deptId)
-          and (:catgId is null or c.catgId = :catgId)
+          and (:deptId is null or d.id = :deptId)
+          and (:catgId is null or c = :catgId)
           and (:status is null or p.status = :status)
           and (:requestFrom is null or p.updatedAt >= :requestFrom)
           and (:requestTo is null or p.updatedAt <= :requestTo)
-          and (:appStartFrom is null or p.appStart >= :appStartFrom)
-          and (:appEndTo is null or p.appEnd <= :appEndTo)
+          and (:appStartFrom is null or p.recruitStartAt >= :appStartFrom)
+          and (:appEndTo is null or p.recruitEndAt <= :appEndTo)
     """)
     Page<Program> searchProgramsForApproval(
             @Param("title") String title,
