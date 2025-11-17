@@ -78,7 +78,18 @@
                 <a class="menu-link" th:href="@{/student/assessment/history}">진단 이력 조회</a>
             </li>
             <li sec:authorize="hasRole('COMPETENCY_ADMIN')">
-                <a class="menu-link" th:href="@{/competency/admin/dashboard}">관리자 대시보드</a>
+                <a class="menu-link" th:href="@{/competency-admin/assessment-section}">진단 회차 관리</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('COMPETENCY_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>진단 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/competency-admin/competency}">역량/문항 관리</a>
             </li>
         </ul>
     </section>
@@ -94,36 +105,7 @@
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasRole('COMPETENCY_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>진단 관리</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/assessments}">진단 관리</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/questions}">문항 관리</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/sections}">영역 관리</a>
-            </li>
-        </ul>
-    </section>
 
-    <section class="menu-section" sec:authorize="hasRole('COMPETENCY_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>통계</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/statistics}">진단 통계</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/reports}">결과 분석</a>
-            </li>
-        </ul>
-    </section>
 
     <script th:fragment="competencySidebarScript">
         document.querySelectorAll('.menu-section-toggle').forEach(btn => {
