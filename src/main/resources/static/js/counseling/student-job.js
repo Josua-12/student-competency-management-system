@@ -170,13 +170,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateCalendarDisplay() {
         const cells = document.querySelectorAll('#calendarBody td[data-date]');
+        const now = new Date();
+        
         cells.forEach(cell => {
             const dateStr = cell.dataset.date;
             const schedules = monthSchedules[dateStr] || [];
             
             if (schedules.length > 0) {
                 const available = schedules.filter(s => s.isAvailable);
-                const unavailable = schedules.filter(s => !s.isAvailable);
                 
                 let html = `<div class="fw-bold">${new Date(dateStr).getDate()}</div>`;
                 
@@ -197,8 +198,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (available.length > 0) {
                     cell.style.backgroundColor = '#d4edda';
+                    cell.classList.remove('text-muted');
+                    cell.style.cursor = 'pointer';
                 } else {
-                    cell.style.backgroundColor = '#f8d7da';
+                    cell.style.backgroundColor = '#e9ecef';
+                    cell.classList.add('text-muted');
+                    cell.style.cursor = 'not-allowed';
                 }
             }
         });

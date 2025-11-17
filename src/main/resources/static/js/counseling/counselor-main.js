@@ -7,15 +7,15 @@ async function loadDashboardData() {
     const token = localStorage.getItem('accessToken');
     
     try {
-        const response = await fetch('/api/counseling/reservations/counselor/stats', {
+        const response = await fetch('/api/counseling/history/status', {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
         if (response.ok) {
             const data = await response.json();
             document.getElementById('pendingReservations').textContent = `${data.pendingCount || 0}건`;
-            document.getElementById('todayCounseling').textContent = `${data.todayCount || 0}건`;
-            document.getElementById('monthlyCounseling').textContent = `${data.monthlyCount || 0}건`;
+            document.getElementById('todayCounseling').textContent = `${data.todayCount || data.completedCount || 0}건`;
+            document.getElementById('monthlyCounseling').textContent = `${data.monthlyCount || data.totalCount || 0}건`;
             document.getElementById('avgSatisfaction').textContent = `${data.avgSatisfaction || 0}/5.0`;
         }
     } catch (error) {
