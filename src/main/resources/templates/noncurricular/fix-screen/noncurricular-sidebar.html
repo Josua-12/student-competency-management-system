@@ -107,7 +107,7 @@
                 <!-- 학생 기준 프로그램 목록 -->
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link"
-                   th:href="@{/noncurricular/student/programs}">프로그램 조회</a>
+                   th:href="@{/noncurricular/student/program-list}">프로그램 조회</a>
             </li>
             <li sec:authorize="hasRole('NONCURRICULAR_OPERATOR')">
                 <a class="menu-link"

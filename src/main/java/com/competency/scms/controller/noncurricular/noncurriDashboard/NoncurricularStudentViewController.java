@@ -48,6 +48,7 @@ public class NoncurricularStudentViewController {
     @GetMapping("/dashboard")
     public String studentDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
+//        model.addAttribute("content", "noncurricular/noncurriDashboard/student-dashboard");
         setView(model, "noncurricular/noncurriDashboard/student-dashboard");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
@@ -56,7 +57,7 @@ public class NoncurricularStudentViewController {
      * 프로그램 목록(학생)
      * GET /noncurricular/student/programs
      */
-    @GetMapping("/programs")
+    @GetMapping("/program-list")
     public String studentProgramList(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 목록(학생)");
         setView(model, "noncurricular/program/list_User");

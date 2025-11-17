@@ -3,6 +3,7 @@ package com.competency.scms.service.noncurricular.operation;
 import com.competency.scms.domain.noncurricular.operation.ProgramSatisfaction;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import com.competency.scms.dto.noncurricular.operation.*;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.*;
 import com.competency.scms.repository.noncurricular.operation.SatisfactionRepository;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;

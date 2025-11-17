@@ -1,4 +1,4 @@
-package com.competency.scms.dto.noncurricular.operation;
+package com.competency.scms.dto.noncurricular.operation.participant;
 
 import lombok.Builder;
 import lombok.Value;

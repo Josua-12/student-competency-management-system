@@ -91,7 +91,6 @@ public interface ProgramApplicationRepository
 
     long countByStudentIdAndStatusIn(Long studentId, List<ApplicationStatus> statuses);
 
-    long countByStudent_IdAndStatus(Long studentId, ApplicationStatus status);
 
     // 학생 최근 신청 3건
     @Query("""
@@ -183,7 +182,26 @@ public interface ProgramApplicationRepository
             @Param("status") ApplicationStatus status
     );
 
+    /**
+     * 학생 기준 전체 승인(=이수 가능) 신청 수
+     */
+    long countByStudent_IdAndStatus(Long studentId, ApplicationStatus status);
 
+    /**
+     * 학생 기준, 특정 연도 승인(=이수 가능) 신청 수
+     * (approvedAt 기준)
+     */
+    @Query("""
+        select count(pa)
+          from ProgramApplication pa
+         where pa.student.id = :studentId
+           and pa.status = :status
+           and pa.approvedAt is not null
+           and function('year', pa.approvedAt) = :year
+    """)
+    long countCompletedThisYear(@Param("studentId") Long studentId,
+                                @Param("status") ApplicationStatus status,
+                                @Param("year") int year);
 
 
 }
