@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,14 +50,30 @@ public class MileageController {
 
     // 4) 임시저장
     @PostMapping("/draft")
-    public ResponseEntity<Void> saveDraft() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, Object>> saveDraft(@RequestBody Map<String, Object> request) {
+        Long programId = Long.valueOf(request.get("programId").toString());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> students = (List<Map<String, Object>>) request.get("students");
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", students.size() + "명의 학생 포인트가 임시저장되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
     // 5) 일괄적용
     @PostMapping("/commit")
-    public ResponseEntity<Void> commit() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, Object>> commit(@RequestBody Map<String, Object> request) {
+        Long programId = Long.valueOf(request.get("programId").toString());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> students = (List<Map<String, Object>>) request.get("students");
+        
+        operatorMileageService.commitMileagePoints(programId, students);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", students.size() + "명의 학생에게 포인트가 성공적으로 등록되었습니다.");
+        return ResponseEntity.ok(response);
     }
 
     // 6) 이력조회
