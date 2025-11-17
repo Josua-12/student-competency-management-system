@@ -3,6 +3,7 @@ package com.competency.scms.controller.noncurricular.noncurriDashboard;
 import com.competency.scms.dto.noncurricular.operation.pending.ProgramPendingListResultDto;
 import com.competency.scms.dto.noncurricular.operation.pending.ProgramPendingSearchConditionDto;
 import com.competency.scms.service.noncurricular.operation.ProgramApprovalService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/noncurricular")
 public class NoncurricularOperatorViewController {
 
-    private ProgramApprovalService programApprovalService;
+    private final ProgramApprovalService programApprovalService;
     /**
      * 공통 프래그먼트 설정
      * baseView: templates/ 이하 경로 (확장자 .html 제외)
@@ -57,10 +59,51 @@ public class NoncurricularOperatorViewController {
     public String operatorProgramList(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 목록(운영/부서)");
         // templates/noncurricular/program/list_Op.html
-        setView(model, "noncurricular/program/list_Op");
+        setView(model, "noncurricular/program/list");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
+    /* =========================
+     *  과정 관리
+     * ========================= */
+
+    /**
+     * 프로그램 과정 개설/수정/삭제
+     * GET /noncurricular/admin/program/open
+     */
+    @GetMapping("/admin/program/open")
+    public String openPprogram(Model model) {
+        model.addAttribute("pageTitle", "비교과 프로그램 - 과정 개설/수정/삭제");
+        setView(model, "noncurricular/program/open");
+        return "noncurricular/fix-screen/noncurricular-layout";
+    }
+
+    /**
+     * 승인대기 목록 화면
+     * GET /noncurricular/admin/programs/pending
+     */
+    @GetMapping("/admin/pending/list")
+    public String pendingList(@ModelAttribute("searchCondition") ProgramPendingSearchConditionDto condition,
+                              @RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "20") int size,
+                              Model model) {
+
+        // 기본 정렬: 승인요청일(=updatedAt) 최신순
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+        // 기본 상태값: PENDING
+        if (condition.getApprovalStatus() == null || condition.getApprovalStatus().isBlank()) {
+            condition.setApprovalStatus("PENDING");
+        }
+
+        ProgramPendingListResultDto result = programApprovalService.getPendingPrograms(condition, pageable);
+
+        model.addAttribute("result", result);
+        model.addAttribute("pageTitle", "비교과 프로그램 - 승인대기 목록");
+        setView(model, "noncurricular/program/pending-list");
+        // 아까 만든 HTML 템플릿
+        return "noncurricular/fix-screen/noncurricular-layout";
+    }
 
     /* =========================
      *  참여 관리
@@ -156,32 +199,6 @@ public class NoncurricularOperatorViewController {
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
-    /**
-     * 승인대기 목록 화면
-     * GET /noncurricular/admin/programs/pending
-     */
-    @GetMapping("/pending")
-    public String pendingList(@ModelAttribute("searchCondition") ProgramPendingSearchConditionDto condition,
-                              @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "20") int size,
-                              Model model) {
-
-        // 기본 정렬: 승인요청일(=updatedAt) 최신순
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-
-        // 기본 상태값: PENDING
-        if (condition.getApprovalStatus() == null || condition.getApprovalStatus().isBlank()) {
-            condition.setApprovalStatus("PENDING");
-        }
-
-        ProgramPendingListResultDto result = programApprovalService.getPendingPrograms(condition, pageable);
-
-        model.addAttribute("result", result);
-        model.addAttribute("pageTitle", "비교과 프로그램 승인대기 목록");
-
-        // 아까 만든 HTML 템플릿
-        return "noncurricular/admin/pending-list";
-    }
 
     /**
      * 결과보고서 관리

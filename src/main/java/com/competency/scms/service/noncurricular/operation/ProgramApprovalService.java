@@ -36,7 +36,6 @@ public class ProgramApprovalService {
         Page<Program> page = programRepository.searchProgramsForApproval(
                 condition.getProgramTitle(),
                 condition.getDepartmentId(),
-                condition.getCategoryId(),
                 status,
                 condition.getRequestDateFrom(),
                 condition.getRequestDateTo(),

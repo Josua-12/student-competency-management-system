@@ -193,23 +193,20 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
 
 
     @Query("""
-        select p
-        from Program p
-            left join fetch p.category c
-            left join fetch p.department d
-        where (:title is null or p.title like concat('%', :title, '%'))
-          and (:deptId is null or d.id = :deptId)
-          and (:catgId is null or c = :catgId)
-          and (:status is null or p.status = :status)
-          and (:requestFrom is null or p.updatedAt >= :requestFrom)
-          and (:requestTo is null or p.updatedAt <= :requestTo)
-          and (:appStartFrom is null or p.recruitStartAt >= :appStartFrom)
-          and (:appEndTo is null or p.recruitEndAt <= :appEndTo)
+    select p
+    from Program p
+        left join fetch p.department d
+    where (:title is null or p.title like concat('%', :title, '%'))
+      and (:deptId is null or d.id = :deptId)
+      and (:status is null or p.status = :status)
+      and (:requestFrom is null or p.updatedAt >= :requestFrom)
+      and (:requestTo is null or p.updatedAt <= :requestTo)
+      and (:appStartFrom is null or p.recruitStartAt >= :appStartFrom)
+      and (:appEndTo is null or p.recruitEndAt <= :appEndTo)
     """)
     Page<Program> searchProgramsForApproval(
             @Param("title") String title,
             @Param("deptId") Long departmentId,
-            @Param("catgId") Long categoryId,
             @Param("status") ProgramStatus status,
             @Param("requestFrom") LocalDateTime requestDateFrom,
             @Param("requestTo") LocalDateTime requestDateTo,

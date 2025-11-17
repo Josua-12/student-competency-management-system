@@ -237,7 +237,8 @@
         </section>
     </div>
 </div>
-<div th:fragment="contentScript">
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
 <script th:inline="javascript">
     const OPERATOR_POINTS_API = {
         stats: '/api/noncurricular-operator/mileages/stats',
