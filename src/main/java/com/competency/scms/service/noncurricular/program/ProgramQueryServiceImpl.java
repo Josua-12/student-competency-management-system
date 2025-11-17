@@ -49,8 +49,8 @@ public class ProgramQueryServiceImpl implements ProgramQueryService {
             if (cond.getDeptId()!=null) {
                 ps.add(cb.equal(root.get("department").get("id"), cond.getDeptId()));
             }
-            if (cond.getCategoryId()!=null) {
-                ps.add(cb.equal(root.get("category").get("id"), cond.getCategoryId()));
+            if (cond.getCategory()!=null) {
+                ps.add(cb.equal(root.get("category"), cond.getCategory()));
             }
             if (cond.getStatus()!=null) {
                 ps.add(cb.equal(root.get("status"), cond.getStatus()));

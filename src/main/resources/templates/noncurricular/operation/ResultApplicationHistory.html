@@ -493,7 +493,7 @@
                         <div class="nc-table-actions">
                             <button type="button"
                                     class="nc-btn-xs nc-btn-xs-primary"
-                                    th:onclick="'location.href=\'' + @{/noncurricular/student/programs/{progId}(progId=${app.programId}, applicationId=${app.applicationId})} + '\';'">
+                                    th:onclick="|location.href='@{/noncurricular/student/programs/{progId}(progId=${app.programId})}?applicationId=${app.applicationId}'|">
                                 상세보기
                             </button>
 

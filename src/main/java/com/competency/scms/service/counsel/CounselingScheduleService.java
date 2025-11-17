@@ -269,13 +269,12 @@ public class CounselingScheduleService {
         for (CounselingBaseSchedule schedule : schedules) {
             for (int hour = 9; hour <= 17; hour++) {
                 Boolean available = schedule.getSlotAvailability(hour);
-                if (available != null && available) {
-                    CounselingScheduleDto.BaseScheduleResponse response = new CounselingScheduleDto.BaseScheduleResponse();
-                    response.setDayOfWeek(schedule.getDayOfWeek().getValue());
-                    response.setStartTime(String.format("%02d:00", hour));
-                    response.setEndTime(String.format("%02d:00", hour + 1));
-                    result.add(response);
-                }
+                CounselingScheduleDto.BaseScheduleResponse response = new CounselingScheduleDto.BaseScheduleResponse();
+                response.setDayOfWeek(schedule.getDayOfWeek().getValue());
+                response.setStartTime(String.format("%02d:00", hour));
+                response.setEndTime(String.format("%02d:00", hour + 1));
+                response.setIsBaseSchedule(available);
+                result.add(response);
             }
         }
         return result;

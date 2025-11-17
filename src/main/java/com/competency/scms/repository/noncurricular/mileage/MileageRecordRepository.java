@@ -48,12 +48,27 @@ public interface MileageRecordRepository
     /** 프로그램 기준 조회 (Program 연관의 PK는 programId) */
     List<MileageRecord> findAllByProgram_ProgramId(Long programId);
 
+
+    /**
+     * 연도 구분 없이 전체 누적 포인트 합계 (이미 있는 메서드)
+     */
     @Query("""
         select coalesce(sum(m.points), 0)
         from MileageRecord m
         where m.student.id = :studentId
-        """)
-    long sumPointsByStudent(Long studentId);
+    """)
+    long sumPointsByStudent(@Param("studentId") Long studentId);
 
+    /**
+     * 특정 연도 포인트 합계 (createdAt 기준)
+     */
+    @Query("""
+        select coalesce(sum(m.points), 0)
+        from MileageRecord m
+        where m.student.id = :studentId
+          and function('year', m.createdAt) = :year
+    """)
+    long sumPointsByStudentAndYear(@Param("studentId") Long studentId,
+                                   @Param("year") int year);
 }
 

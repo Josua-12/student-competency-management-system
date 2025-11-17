@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const memo = document.querySelector('#assignModal textarea').value;
         
         if (!counselorId || !confirmedDate || !confirmedStartTime || !confirmedEndTime) {
-            alert('모든 필수 항목을 입력해주세요.');
+            alert(MESSAGES.REQUIRED_FIELDS);
             return;
         }
         
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const rejectReason = document.querySelector('#rejectModal textarea').value;
         
         if (!rejectReason.trim()) {
-            alert('거부 사유를 입력해주세요.');
+            alert(MESSAGES.REQUIRED_REASON);
             return;
         }
         
@@ -71,7 +71,7 @@ async function loadApprovals() {
     const searchText = document.querySelector('.card input[type="text"]')?.value || '';
     
     try {
-        const response = await fetch('/api/counseling/management/approvals', {
+        const response = await fetch('/api/counseling/reservations', {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
@@ -88,26 +88,24 @@ async function loadApprovals() {
                 item.studentName?.includes(searchText) || item.id?.toString().includes(searchText)
             );
             
-            document.getElementById('totalCount').textContent = `${list.length}건`;
+            document.getElementById('totalCount').textContent = `${list.length}${UNIT_COUNT}`;
             renderApprovalTable(list);
         }
     } catch (error) {
-        console.error('예약 목록 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
 function renderApprovalTable(list) {
     const tbody = document.getElementById('approvalTableBody');
     if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center">예약 내역이 없습니다.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center">${MESSAGES.NO_RESERVATION}</td></tr>`;
         return;
     }
     
     tbody.innerHTML = list.map(item => {
-        const statusBadge = item.status === 'PENDING' ? 'bg-warning' : 
-                           item.status === 'CONFIRMED' ? 'bg-success' : 'bg-danger';
-        const statusText = item.status === 'PENDING' ? '대기중' : 
-                          item.status === 'CONFIRMED' ? '승인됨' : '거부됨';
+        const statusBadge = STATUS_BADGE[item.status] || STATUS_BADGE.REJECTED;
+        const statusText = STATUS_TEXT[item.status] || item.status;
         
         let buttons = '';
         if (item.status === 'PENDING') {
@@ -173,23 +171,50 @@ async function loadCounselors() {
                 
                 const assignOption = document.createElement('option');
                 assignOption.value = counselor.userId;
-                assignOption.textContent = `${counselor.name} (${getFieldName(counselor.counselingField)} 전문)`;
+                const SPECIALIST_SUFFIX = '전문';
+                assignOption.textContent = `${counselor.name} (${getFieldName(counselor.counselingField)} ${SPECIALIST_SUFFIX})`;
                 assignCounselorSelect.appendChild(assignOption);
             });
         }
     } catch (error) {
-        console.error('상담사 목록 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
+const FIELD_NAMES = {
+    'PSYCHOLOGICAL': '심리상담',
+    'CAREER': '진로상담',
+    'EMPLOYMENT': '취업상담',
+    'LEARNING': '학습상담'
+};
+
+const STATUS_BADGE = {
+    'PENDING': 'bg-warning',
+    'CONFIRMED': 'bg-success',
+    'REJECTED': 'bg-danger'
+};
+
+const STATUS_TEXT = {
+    'PENDING': '대기중',
+    'CONFIRMED': '승인됨',
+    'REJECTED': '거부됨'
+};
+
+const MESSAGES = {
+    NO_RESERVATION: '예약 내역이 없습니다.',
+    REQUIRED_FIELDS: '모든 필수 항목을 입력해주세요.',
+    REQUIRED_REASON: '거부 사유를 입력해주세요.',
+    ASSIGN_SUCCESS: '상담사가 배정되고 예약이 승인되었습니다.',
+    REJECT_SUCCESS: '예약이 거부되었습니다.',
+    PROCESS_ERROR: '처리 중 오류가 발생했습니다.',
+    REJECT_ERROR: '거부 처리 중 오류가 발생했습니다.',
+    LOAD_ERROR: '로드 실패'
+};
+
+const UNIT_COUNT = '건';
+
 function getFieldName(field) {
-    const fieldNames = {
-        'PSYCHOLOGICAL': '심리상담',
-        'CAREER': '진로상담',
-        'EMPLOYMENT': '취업상담',
-        'LEARNING': '학습상담'
-    };
-    return fieldNames[field] || field;
+    return FIELD_NAMES[field] || field;
 }
 
 async function loadReservationForAssign(reservationId) {
@@ -212,7 +237,7 @@ async function loadReservationForAssign(reservationId) {
             }
         }
     } catch (error) {
-        console.error('예약 정보 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
@@ -237,15 +262,15 @@ async function assignAndApprove(reservationId, counselorId, confirmedDate, confi
         });
         
         if (response.ok) {
-            alert('상담사를 배정하고 예약을 승인했습니다');
+            alert(MESSAGES.ASSIGN_SUCCESS);
             bootstrap.Modal.getInstance(document.getElementById('assignModal')).hide();
             await loadApprovals();
         } else {
-            alert('처리 중 오류가 발생했습니다.');
+            alert(MESSAGES.PROCESS_ERROR);
         }
     } catch (error) {
-        console.error('배정 및 승인 실패:', error);
-        alert('처리 중 오류가 발생했습니다.');
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
+        alert(MESSAGES.PROCESS_ERROR);
     }
 }
 
@@ -259,15 +284,15 @@ async function rejectReservation(reservationId, rejectReason) {
         });
         
         if (response.ok) {
-            alert('예약을 거부했습니다');
+            alert(MESSAGES.REJECT_SUCCESS);
             bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
             await loadApprovals();
         } else {
-            alert('거부 처리 중 오류가 발생했습니다.');
+            alert(MESSAGES.REJECT_ERROR);
         }
     } catch (error) {
-        console.error('거부 처리 실패:', error);
-        alert('거부 처리 중 오류가 발생했습니다.');
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
+        alert(MESSAGES.REJECT_ERROR);
     }
 }
 
@@ -284,7 +309,7 @@ async function loadReservationDetail(reservationId) {
             renderReservationDetail(detail);
         }
     } catch (error) {
-        console.error('상세 정보 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
@@ -292,7 +317,8 @@ function renderReservationDetail(detail) {
     const modal = document.getElementById('detailModal');
     const rows = modal.querySelectorAll('.row');
     
-    rows[0].querySelector('.col-sm-9').textContent = `CNSL-${detail.id}`;
+    const ID_PREFIX = 'CNSL-';
+    rows[0].querySelector('.col-sm-9').textContent = `${ID_PREFIX}${detail.id}`;
     rows[1].querySelector('.col-sm-9').textContent = `${detail.studentName} (${detail.studentNumber || '-'}) / ${detail.department || '-'}`;
     rows[2].querySelector('.col-sm-9').textContent = getFieldName(detail.counselingField);
     rows[3].querySelector('.col-sm-9').textContent = detail.reservationDate && detail.startTime ? 

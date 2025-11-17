@@ -48,13 +48,29 @@ document.addEventListener('DOMContentLoaded', function() {
     initCalendar();
     
     document.getElementById('prevWeek')?.addEventListener('click', function() {
-        currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-        renderCalendar();
+        const today = new Date();
+        const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const prevWeek = new Date(currentWeekStart);
+        prevWeek.setDate(prevWeek.getDate() - 7);
+        
+        if (prevWeek >= thisMonthStart) {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            renderCalendar();
+            updateNavigationButtons();
+        }
     });
 
     document.getElementById('nextWeek')?.addEventListener('click', function() {
-        currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-        renderCalendar();
+        const today = new Date();
+        const nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+        const nextWeek = new Date(currentWeekStart);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        
+        if (nextWeek <= nextMonthEnd) {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            renderCalendar();
+            updateNavigationButtons();
+        }
     });
 
     const submitBtn = document.querySelector('.modal-footer .btn-primary') || document.querySelector('.modal-footer .btn-success');
@@ -64,6 +80,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function initCalendar() {
         renderCalendar();
+        updateNavigationButtons();
+    }
+
+    function updateNavigationButtons() {
+        const today = new Date();
+        const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const nextMonthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+        
+        const prevWeek = new Date(currentWeekStart);
+        prevWeek.setDate(prevWeek.getDate() - 7);
+        
+        const nextWeek = new Date(currentWeekStart);
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        
+        const prevBtn = document.getElementById('prevWeek');
+        const nextBtn = document.getElementById('nextWeek');
+        
+        if (prevBtn) prevBtn.disabled = prevWeek < thisMonthStart;
+        if (nextBtn) nextBtn.disabled = nextWeek > nextMonthEnd;
     }
 
     function renderCalendar() {
@@ -108,18 +143,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 cell.dataset.time = time;
                 cell.dataset.slotKey = slotKey;
                 
-                const isPast = new Date(`${dateStr}T${time}`) < now;
+                const slotDateTime = new Date(`${dateStr}T${time}`);
+                const isPast = slotDateTime < now;
                 
                 if (isPast) {
-                    cell.style.backgroundColor = '#f8f9fa';
+                    cell.style.backgroundColor = '#e9ecef';
                     cell.style.color = '#adb5bd';
                     cell.style.cursor = 'not-allowed';
-                    cell.textContent = '상담불가능';
+                    cell.textContent = '예약 불가 (0명)';
                     cell.classList.add('disabled');
                 } else {
-                    cell.textContent = '상담불가능';
-                    cell.style.backgroundColor = '#ffffff';
-                    cell.style.cursor = 'default';
+                    cell.textContent = '예약 불가 (0명)';
+                    cell.style.backgroundColor = '#e9ecef';
+                    cell.style.color = '#adb5bd';
+                    cell.style.cursor = 'not-allowed';
                 }
                 
                 row.appendChild(cell);
@@ -198,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (counselors && counselors.length > 0) {
                 cell.style.backgroundColor = '#d1ecf1';
                 cell.style.color = '#0c5460';
-                cell.textContent = `상담사 ${counselors.length}명`;
+                cell.textContent = `예약 가능 (${counselors.length})명`;
                 cell.style.fontWeight = 'bold';
                 cell.style.cursor = 'pointer';
                 cell.classList.add('has-counselors');
@@ -226,6 +263,14 @@ document.addEventListener('DOMContentLoaded', function() {
         dropdown.style.minWidth = '200px';
         dropdown.style.maxHeight = '300px';
         dropdown.style.overflowY = 'auto';
+        
+        const header = document.createElement('div');
+        header.style.padding = '10px 15px';
+        header.style.fontWeight = 'bold';
+        header.style.borderBottom = '2px solid #0c5460';
+        header.style.backgroundColor = '#f8f9fa';
+        header.textContent = '상담사 :';
+        dropdown.appendChild(header);
         
         counselors.forEach(counselor => {
             const item = document.createElement('div');

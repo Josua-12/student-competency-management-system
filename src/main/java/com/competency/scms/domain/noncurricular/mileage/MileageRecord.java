@@ -1,22 +1,25 @@
 package com.competency.scms.domain.noncurricular.mileage;
 
 
-import com.competency.scms.domain.BaseEntity;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "mileage_records",
+@Table(name = "mileage_record",
         indexes = {
-                @Index(name = "ix_mileage_student", columnList = "user_id"),
+                @Index(name = "ix_mileage_student", columnList = "student_id"),
                 @Index(name = "ix_mileage_program", columnList = "prog_id"),
                 @Index(name = "ix_mileage_type", columnList = "type")
         }
 )
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class MileageRecord extends BaseEntity {
+public class MileageRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +28,7 @@ public class MileageRecord extends BaseEntity {
 
     // 학생
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     private User student;
 
 
@@ -54,4 +57,11 @@ public class MileageRecord extends BaseEntity {
 
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="created_by_user_id")
     private User createdBy;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

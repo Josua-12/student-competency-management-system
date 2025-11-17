@@ -1,9 +1,48 @@
 // 상담분야 선택 시 상담사 목록 업데이트
+const FIELD_NAMES = {
+    'PSYCHOLOGICAL': '심리상담',
+    'CAREER': '진로상담',
+    'EMPLOYMENT': '취업상담',
+    'LEARNING': '학습상담'
+};
+
+const STATUS_BADGE = {
+    'PENDING': 'bg-warning',
+    'APPROVED': 'bg-success',
+    'REJECTED': 'bg-danger'
+};
+
+const STATUS_TEXT = {
+    'PENDING': '대기중',
+    'APPROVED': '승인됨',
+    'REJECTED': '거부됨'
+};
+
+const MESSAGES = {
+    SELECT_FIELD: '상담분류를 선택해주세요.',
+    SELECT_COUNSELOR: '상담사를 선택해주세요.',
+    SELECT_COUNSELOR_PLACEHOLDER: '상담사를 선택하세요',
+    NO_OFF_REQUEST: '휴무 신청 내역이 없습니다.',
+    SCHEDULE_SAVED: '일정이 저장되었습니다.',
+    SCHEDULE_SAVE_FAILED: '일정 저장에 실패했습니다.',
+    SCHEDULE_SAVE_ERROR: '일정 저장 중 오류가 발생했습니다.',
+    APPROVED: '승인되었습니다.',
+    APPROVE_FAILED: '승인에 실패했습니다.',
+    APPROVE_ERROR: '승인 중 오류가 발생했습니다.',
+    REJECTED: '거부되었습니다.',
+    REJECT_FAILED: '거부에 실패했습니다.',
+    REJECT_ERROR: '거부 중 오류가 발생했습니다.',
+    REQUIRED_REASON: '거부 사유를 입력해주세요.',
+    VIEW_DETAIL_TODO: '상세 보기 기능은 추후 구현 예정입니다.',
+    LOAD_ERROR: '로드 실패'
+};
+
+// 상담분류 선택 시 상담사 목록 업데이트
 document.getElementById('fieldSelect').addEventListener('change', async function() {
     const counselorSelect = document.getElementById('counselorSelect');
     const selectedField = this.value;
     
-    counselorSelect.innerHTML = '<option value="">상담사를 선택하세요</option>';
+    counselorSelect.innerHTML = `<option value="">${MESSAGES.SELECT_COUNSELOR_PLACEHOLDER}</option>`;
     
     if (selectedField) {
         try {
@@ -25,7 +64,7 @@ document.getElementById('fieldSelect').addEventListener('change', async function
                 });
             }
         } catch (error) {
-            console.error('상담사 목록 로드 실패:', error);
+            console.error(`${MESSAGES.LOAD_ERROR}:`, error);
             counselorSelect.disabled = true;
         }
     } else {
@@ -39,11 +78,11 @@ document.getElementById('loadSchedule').addEventListener('click', function() {
     const counselorSelect = document.getElementById('counselorSelect');
     
     if (!fieldSelect.value) {
-        alert('상담분야를 선택해주세요.');
+        alert(MESSAGES.SELECT_FIELD);
         return;
     }
     if (!counselorSelect.value) {
-        alert('상담사를 선택해주세요.');
+        alert(MESSAGES.SELECT_COUNSELOR);
         return;
     }
     
@@ -68,7 +107,7 @@ async function loadExistingSchedule(counselorId) {
             
             schedules.forEach(schedule => {
                 const day = dayMap[schedule.dayOfWeek];
-                if (day) {
+                if (day && schedule.isBaseSchedule) {
                     const time = schedule.startTime.substring(0, 2) + schedule.endTime.substring(0, 2);
                     const checkbox = document.querySelector(`input[name="slot${time}_${day}"]`);
                     if (checkbox) checkbox.checked = true;
@@ -76,59 +115,30 @@ async function loadExistingSchedule(counselorId) {
             });
         }
     } catch (error) {
-        console.error('일정 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
-// 휴무 신청 목록 로드
+// 휴무 신청 목록 로드 (API 미구현)
 async function loadOffRequests(counselorId) {
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/schedules/off-requests/${counselorId}`, {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            const requests = await response.json();
-            const tbody = document.querySelector('#offScheduleSection tbody');
-            
-            if (requests.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center">휴무 신청 내역이 없습니다.</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = requests.map(req => {
-                const statusBadge = req.status === 'PENDING' ? 'bg-warning' : 
-                                   req.status === 'APPROVED' ? 'bg-success' : 'bg-danger';
-                const statusText = req.status === 'PENDING' ? '대기중' : 
-                                  req.status === 'APPROVED' ? '승인됨' : '거절됨';
-                
-                const buttons = req.status === 'PENDING' ? 
-                    `<button class="btn btn-sm btn-success" onclick="approveOffRequest(${req.id})">승인</button>
-                     <button class="btn btn-sm btn-danger" onclick="rejectOffRequest(${req.id})">거절</button>` :
-                    `<button class="btn btn-sm btn-outline-info" onclick="viewOffRequest(${req.id})">상세</button>`;
-                
-                return `
-                    <tr>
-                        <td>${formatDate(req.createdAt)}</td>
-                        <td>${formatDate(req.startDate)} ~ ${formatDate(req.endDate)}</td>
-                        <td>${req.reason}</td>
-                        <td>${req.detailReason || '-'}</td>
-                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
-                        <td>${buttons}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-    } catch (error) {
-        console.error('휴무 신청 목록 로드 실패:', error);
-    }
+    const tbody = document.querySelector('#offScheduleSection tbody');
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center">${MESSAGES.NO_OFF_REQUEST}</td></tr>`;
+    // TODO: API 구현 후 활성화
+    // try {
+    //     const token = localStorage.getItem('accessToken');
+    //     const response = await fetch(`/api/counseling/schedules/off-requests/${counselorId}`, {
+    //         headers: {'Authorization': `Bearer ${token}`}
+    //     });
+    //     ...
+    // } catch (error) {
+    //     console.error(`${MESSAGES.LOAD_ERROR}:`, error);
+    // }
 }
 
 document.getElementById('saveSchedule').addEventListener('click', async function() {
     const counselorId = document.getElementById('counselorSelect').value;
     if (!counselorId) {
-        alert('상담사를 선택해주세요.');
+        alert(MESSAGES.SELECT_COUNSELOR);
         return;
     }
     
@@ -155,103 +165,44 @@ document.getElementById('saveSchedule').addEventListener('click', async function
         });
         
         if (response.ok) {
-            alert('일정이 저장되었습니다.');
+            alert(MESSAGES.SCHEDULE_SAVED);
             loadExistingSchedule(counselorId);
         } else {
-            alert('일정 저장에 실패했습니다.');
+            alert(MESSAGES.SCHEDULE_SAVE_FAILED);
         }
     } catch (error) {
-        console.error('일정 저장 실패:', error);
-        alert('일정 저장 중 오류가 발생했습니다.');
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
+        alert(MESSAGES.SCHEDULE_SAVE_ERROR);
     }
 });
 
 let currentRequestId = null;
 
-// 휴무 신청 승인
+// 휴무 신청 승인 (API 미구현)
 function approveOffRequest(requestId) {
-    currentRequestId = requestId;
-    const modal = new bootstrap.Modal(document.getElementById('approveModal'));
-    modal.show();
+    alert('휴무 신청 승인 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 구현 후 활성화
 }
 
-// 승인 확인 버튼
-document.getElementById('confirmApprove').addEventListener('click', async function() {
-    if (!currentRequestId) return;
-    
-    const memo = document.querySelector('#approveModal textarea').value;
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/schedules/off-requests/${currentRequestId}/approve`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({memo})
-        });
-        
-        if (response.ok) {
-            alert('승인되었습니다.');
-            bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
-            loadOffRequests(document.getElementById('counselorSelect').value);
-            currentRequestId = null;
-        } else {
-            alert('승인에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('승인 실패:', error);
-        alert('승인 중 오류가 발생했습니다.');
-    }
+// 승인 확인 버튼 (API 미구현)
+document.getElementById('confirmApprove')?.addEventListener('click', async function() {
+    alert('휴무 신청 승인 기능은 API 구현 후 사용 가능합니다.');
 });
 
-// 휴무 신청 거절
+// 휴무 신청 거부 (API 미구현)
 function rejectOffRequest(requestId) {
-    currentRequestId = requestId;
-    const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
-    document.querySelector('#rejectModal textarea').value = '';
-    modal.show();
+    alert('휴무 신청 거부 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 구현 후 활성화
 }
 
-// 거절 확인 버튼
-document.getElementById('confirmReject').addEventListener('click', async function() {
-    if (!currentRequestId) return;
-    
-    const reason = document.querySelector('#rejectModal textarea').value;
-    if (!reason.trim()) {
-        alert('거절 사유를 입력해주세요.');
-        return;
-    }
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/schedules/off-requests/${currentRequestId}/reject`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({reason})
-        });
-        
-        if (response.ok) {
-            alert('거절되었습니다.');
-            bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
-            loadOffRequests(document.getElementById('counselorSelect').value);
-            currentRequestId = null;
-        } else {
-            alert('거절에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('거절 실패:', error);
-        alert('거절 중 오류가 발생했습니다.');
-    }
+// 거부 확인 버튼 (API 미구현)
+document.getElementById('confirmReject')?.addEventListener('click', async function() {
+    alert('휴무 신청 거부 기능은 API 구현 후 사용 가능합니다.');
 });
 
 // 상세 보기
 function viewOffRequest(requestId) {
-    alert('상세 보기 기능은 추후 구현 예정입니다.');
+    alert(MESSAGES.VIEW_DETAIL_TODO);
 }
 
 function formatDate(dateStr) {

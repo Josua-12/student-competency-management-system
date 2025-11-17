@@ -1,4 +1,4 @@
-package com.competency.scms.dto.noncurricular.operation;
+package com.competency.scms.dto.noncurricular.operation.satisfaction;
 
 import lombok.*;
 import java.time.LocalDate;

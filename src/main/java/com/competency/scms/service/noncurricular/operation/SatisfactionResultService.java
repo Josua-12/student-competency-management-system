@@ -1,6 +1,8 @@
 package com.competency.scms.service.noncurricular.operation;
 
-import com.competency.scms.dto.noncurricular.operation.*;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionDetailDto;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionPageResponseDto;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionSearchConditionDto;
 
 public interface SatisfactionResultService {
     SatisfactionPageResponseDto search(SatisfactionSearchConditionDto cond);

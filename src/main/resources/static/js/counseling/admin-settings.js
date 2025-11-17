@@ -35,7 +35,10 @@ async function toggleCounselorStatus(userId, isActive) {
 }
 
 async function editCounselor(userId) {
-    try {
+    alert('상담원 수정 기능은 추후 구현 예정입니다.');
+    return;
+    // TODO: 상담원 상세 조회 API 미구현
+    /* try {
         const token = localStorage.getItem('accessToken');
         const response = await fetch(`/api/counseling/management/counselors/${userId}`, {
             headers: {'Authorization': `Bearer ${token}`}
@@ -175,22 +178,22 @@ function formatDate(dateStr) {
 }
 
 async function loadSubFields() {
-    const token = localStorage.getItem('accessToken');
-    try {
-        const response = await fetch('/api/counseling/subfields', {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        if (response.ok) {
-            const data = await response.json();
-            renderSubFields(data);
-        } else {
-            ['psychologicalList', 'careerList', 'employmentList', 'learningList'].forEach(id => {
-                document.getElementById(id).innerHTML = '<div class="text-center p-3">등록된 세부분류가 없습니다.</div>';
-            });
-        }
-    } catch (error) {
-        console.error('세부분류 로드 실패:', error);
-    }
+    // TODO: API 미구현 - 빈 데이터로 표시
+    ['psychologicalList', 'careerList', 'employmentList', 'learningList'].forEach(id => {
+        document.getElementById(id).innerHTML = '<div class="text-center p-3">등록된 세부분류가 없습니다.</div>';
+    });
+    // const token = localStorage.getItem('accessToken');
+    // try {
+    //     const response = await fetch('/api/counseling/subfields', {
+    //         headers: {'Authorization': `Bearer ${token}`}
+    //     });
+    //     if (response.ok) {
+    //         const data = await response.json();
+    //         renderSubFields(data);
+    //     }
+    // } catch (error) {
+    //     console.error('세부분류 로드 실패:', error);
+    // }
 }
 
 function renderSubFields(data) {
@@ -221,47 +224,13 @@ function renderSubFields(data) {
 }
 
 async function toggleSubfieldStatus(id, isActive) {
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/subfields/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({isActive})
-        });
-        
-        if (response.ok) {
-            loadSubFields();
-        } else {
-            alert('상태 변경에 실패했습니다.');
-            loadSubFields();
-        }
-    } catch (error) {
-        console.error('상태 변경 실패:', error);
-    }
+    alert('세부분류 상태 변경 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 미구현
 }
 
 async function deleteSubfield(id) {
-    if (!confirm('세부분류를 삭제하시겠습니까?')) return;
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/subfields/${id}`, {
-            method: 'DELETE',
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            alert('삭제되었습니다.');
-            loadSubFields();
-        } else {
-            alert('삭제에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('삭제 실패:', error);
-    }
+    alert('세부분류 삭제 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 미구현
 }
 
 document.querySelectorAll('[data-bs-target="#subfieldModal"]').forEach(button => {
@@ -277,73 +246,31 @@ document.querySelectorAll('[data-bs-target="#subfieldModal"]').forEach(button =>
     });
 });
 
-document.getElementById('saveSubfield').addEventListener('click', async function() {
-    const modal = document.getElementById('subfieldModal');
-    const name = modal.querySelectorAll('input[type="text"]')[1].value;
-    const description = modal.querySelector('textarea').value;
-    const isActive = modal.querySelector('#subfieldActive').checked;
-    
-    if (!name.trim()) {
-        alert('세부분류명을 입력해주세요.');
-        return;
-    }
-    
-    if (!currentField) {
-        alert('상위 분야를 선택해주세요.');
-        return;
-    }
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/counseling/subfields', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({subfieldName: name, description, field: currentField, isActive})
-        });
-        
-        if (response.ok) {
-            alert('저장되었습니다.');
-            bootstrap.Modal.getInstance(modal).hide();
-            modal.querySelectorAll('input[type="text"]')[1].value = '';
-            modal.querySelector('textarea').value = '';
-            loadSubFields();
-        } else {
-            const error = await response.json();
-            alert(error.message || '저장에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('저장 실패:', error);
-        alert('저장 중 오류가 발생했습니다.');
-    }
+document.getElementById('saveSubfield')?.addEventListener('click', async function() {
+    alert('세부분류 저장 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 미구현
 });
 
 async function loadSatisfactionQuestions() {
-    try {
-        const token = localStorage.getItem('accessToken');
-        const fieldFilter = document.getElementById('fieldFilter')?.value || 'ALL';
-        const url = fieldFilter && fieldFilter !== 'ALL' ? 
-            `/api/counseling/satisfaction/questions?field=${fieldFilter}` :
-            '/api/counseling/satisfaction/questions';
-        
-        const response = await fetch(url, {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            const questions = await response.json();
-            renderSatisfactionQuestions(questions);
-        } else {
-            document.getElementById('satisfactionQuestions').innerHTML = 
-                '<tr><td colspan="7" class="text-center">등록된 문항이 없습니다.</td></tr>';
-        }
-    } catch (error) {
-        console.error('만족도 문항 로드 실패:', error);
-        document.getElementById('satisfactionQuestions').innerHTML = 
-            '<tr><td colspan="7" class="text-center text-danger">로드 중 오류가 발생했습니다.</td></tr>';
-    }
+    // TODO: API 미구현 - 빈 데이터로 표시
+    document.getElementById('satisfactionQuestions').innerHTML = 
+        '<tr><td colspan="7" class="text-center">등록된 문항이 없습니다.</td></tr>';
+    // try {
+    //     const token = localStorage.getItem('accessToken');
+    //     const fieldFilter = document.getElementById('fieldFilter')?.value || 'ALL';
+    //     const url = fieldFilter && fieldFilter !== 'ALL' ? 
+    //         `/api/counseling/satisfaction/questions?field=${fieldFilter}` :
+    //         '/api/counseling/satisfaction/questions';
+    //     const response = await fetch(url, {
+    //         headers: {'Authorization': `Bearer ${token}`}
+    //     });
+    //     if (response.ok) {
+    //         const questions = await response.json();
+    //         renderSatisfactionQuestions(questions);
+    //     }
+    // } catch (error) {
+    //     console.error('만족도 문항 로드 실패:', error);
+    // }
 }
 
 function renderSatisfactionQuestions(questions) {
@@ -382,24 +309,8 @@ function renderSatisfactionQuestions(questions) {
 }
 
 async function deleteQuestion(id) {
-    if (!confirm('문항을 삭제하시겠습니까?')) return;
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/satisfaction/questions/${id}`, {
-            method: 'DELETE',
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            alert('삭제되었습니다.');
-            loadSatisfactionQuestions();
-        } else {
-            alert('삭제에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('삭제 실패:', error);
-    }
+    alert('문항 삭제 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 미구현
 }
 
 document.getElementById('fieldFilter')?.addEventListener('change', function() {

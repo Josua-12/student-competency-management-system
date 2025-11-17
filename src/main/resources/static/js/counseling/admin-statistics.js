@@ -17,22 +17,22 @@ async function loadStatistics() {
     const endDate = document.getElementById('endDate').value;
     
     try {
-        const response = await fetch(`/api/counseling/statistics/admin/summary?startDate=${startDate}&endDate=${endDate}`, {
+        const response = await fetch(`/api/counseling/statistics/overall?startDate=${startDate}&endDate=${endDate}`, {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
         if (response.ok) {
             const data = await response.json();
-            document.getElementById('totalCounseling').textContent = `${data.totalCounseling || 0}건`;
-            document.getElementById('completedCounseling').textContent = `${data.completedCounseling || 0}건`;
-            document.getElementById('avgSatisfaction').textContent = `${data.avgSatisfaction || 0}/5.0`;
-            document.getElementById('activeCounselors').textContent = `${data.activeCounselors || 0}명`;
+            document.getElementById('totalCounseling').textContent = `${data.totalCounseling || 0}${UNIT_COUNT}`;
+            document.getElementById('completedCounseling').textContent = `${data.completedCounseling || 0}${UNIT_COUNT}`;
+            document.getElementById('avgSatisfaction').textContent = `${data.avgSatisfaction || 0}/${RATING_MAX}`;
+            document.getElementById('activeCounselors').textContent = `${data.activeCounselors || 0}${UNIT_PERSON}`;
             
             await loadCounselorStats();
             renderCharts(data);
         }
     } catch (error) {
-        console.error('통계 데이터 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
@@ -42,7 +42,7 @@ async function loadCounselorStats() {
     const endDate = document.getElementById('endDate').value;
     
     try {
-        const response = await fetch(`/api/counseling/statistics/admin/counselors?startDate=${startDate}&endDate=${endDate}`, {
+        const response = await fetch(`/api/counseling/statistics/counselor?startDate=${startDate}&endDate=${endDate}`, {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
@@ -51,14 +51,14 @@ async function loadCounselorStats() {
             renderCounselorTable(data);
         }
     } catch (error) {
-        console.error('상담사 통계 로드 실패:', error);
+        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
     }
 }
 
 function renderCounselorTable(list) {
     const tbody = document.getElementById('counselorTableBody');
     if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">데이터가 없습니다.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center">${MESSAGES.NO_DATA}</td></tr>`;
         return;
     }
     tbody.innerHTML = list.map(item => `
@@ -81,15 +81,16 @@ function renderCharts(data) {
     if (window.satisfactionChart) window.satisfactionChart.destroy();
     if (window.statusChart) window.statusChart.destroy();
     
+    const typeCategories = [CHART_LABELS.CAREER, CHART_LABELS.LEARNING, CHART_LABELS.PSYCHOLOGICAL, CHART_LABELS.EMPLOYMENT];
     window.typeChart = toastui.Chart.pieChart({
         el: document.getElementById('typeChart'),
         data: {
-            categories: ['진로상담', '학업상담', '심리상담', '취업상담'],
+            categories: typeCategories,
             series: [
-                { name: '진로상담', data: data.careerCount || 0 },
-                { name: '학업상담', data: data.learningCount || 0 },
-                { name: '심리상담', data: data.psychologicalCount || 0 },
-                { name: '취업상담', data: data.employmentCount || 0 }
+                { name: CHART_LABELS.CAREER, data: data.careerCount || 0 },
+                { name: CHART_LABELS.LEARNING, data: data.learningCount || 0 },
+                { name: CHART_LABELS.PSYCHOLOGICAL, data: data.psychologicalCount || 0 },
+                { name: CHART_LABELS.EMPLOYMENT, data: data.employmentCount || 0 }
             ]
         },
         options: { chart: { width: 400, height: 300 } }
@@ -99,41 +100,66 @@ function renderCharts(data) {
         el: document.getElementById('monthlyChart'),
         data: {
             categories: data.monthlyLabels || [],
-            series: [{ name: '상담 건수', data: data.monthlyData || [] }]
+            series: [{ name: CHART_LABELS.COUNT, data: data.monthlyData || [] }]
         },
         options: { chart: { width: 400, height: 300 }, series: { spline: true } }
     });
     
+    const satisfactionCategories = ['1점', '2점', '3점', '4점', '5점'];
     window.satisfactionChart = toastui.Chart.columnChart({
         el: document.getElementById('satisfactionChart'),
         data: {
-            categories: ['1점', '2점', '3점', '4점', '5점'],
-            series: [{ name: '응답 수', data: data.satisfactionDistribution || [0,0,0,0,0] }]
+            categories: satisfactionCategories,
+            series: [{ name: CHART_LABELS.RESPONSE_COUNT, data: data.satisfactionDistribution || [0,0,0,0,0] }]
         },
         options: { chart: { width: 400, height: 200 } }
     });
     
+    const statusCategories = [CHART_LABELS.COMPLETED, CHART_LABELS.ONGOING, CHART_LABELS.CANCELLED, CHART_LABELS.REJECTED];
     window.statusChart = toastui.Chart.pieChart({
         el: document.getElementById('statusChart'),
         data: {
-            categories: ['완료', '진행중', '취소', '거절'],
+            categories: statusCategories,
             series: [
-                { name: '완료', data: data.completedCounseling || 0 },
-                { name: '진행중', data: data.ongoingCount || 0 },
-                { name: '취소', data: data.cancelledCount || 0 },
-                { name: '거절', data: data.rejectedCount || 0 }
+                { name: CHART_LABELS.COMPLETED, data: data.completedCounseling || 0 },
+                { name: CHART_LABELS.ONGOING, data: data.ongoingCount || 0 },
+                { name: CHART_LABELS.CANCELLED, data: data.cancelledCount || 0 },
+                { name: CHART_LABELS.REJECTED, data: data.rejectedCount || 0 }
             ]
         },
         options: { chart: { width: 400, height: 200 } }
     });
 }
 
+const FIELD_NAMES = {
+    'PSYCHOLOGICAL': '심리상담',
+    'CAREER': '진로상담',
+    'EMPLOYMENT': '취업상담',
+    'LEARNING': '학습상담'
+};
+
+const CHART_LABELS = {
+    CAREER: '진로상담',
+    LEARNING: '학업상담',
+    PSYCHOLOGICAL: '심리상담',
+    EMPLOYMENT: '취업상담',
+    COMPLETED: '완료',
+    ONGOING: '진행중',
+    CANCELLED: '취소',
+    REJECTED: '거부',
+    COUNT: '상담 건수',
+    RESPONSE_COUNT: '응답 수'
+};
+
+const MESSAGES = {
+    NO_DATA: '데이터가 없습니다.',
+    LOAD_ERROR: '로드 실패'
+};
+
+const UNIT_COUNT = '건';
+const UNIT_PERSON = '명';
+const RATING_MAX = '5.0';
+
 function getFieldName(field) {
-    const fieldNames = {
-        'PSYCHOLOGICAL': '심리상담',
-        'CAREER': '진로상담',
-        'EMPLOYMENT': '취업상담',
-        'LEARNING': '학습상담'
-    };
-    return fieldNames[field] || field;
+    return FIELD_NAMES[field] || field;
 }

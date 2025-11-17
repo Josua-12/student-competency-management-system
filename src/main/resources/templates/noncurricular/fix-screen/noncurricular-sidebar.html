@@ -139,21 +139,21 @@
         <ul class="menu-list">
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link"
-                   th:href="@{/noncurricular/student/dashboard}">개인 대시보드</a>
+                   th:href="@{/noncurricular/student/student-dashboard}">개인 대시보드</a>
             </li>
-            <li sec:authorize="hasRole('NONCURRICULAR_OPERATOR')">
+            <li sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
                 <a class="menu-link"
                    th:href="@{/noncurricular/operator/dashboard}">운영자 대시보드</a>
             </li>
-            <li sec:authorize="hasRole('NONCURRICULAR_ADMIN')">
-                <a class="menu-link"
-                   th:href="@{/noncurricular/admin/dashboard}">부서관리자 대시보드</a>
-            </li>
+<!--            <li sec:authorize="hasRole('NONCURRICULAR_ADMIN')">-->
+<!--                <a class="menu-link"-->
+<!--                   th:href="@{/noncurricular/admin/dashboard}">부서관리자 대시보드</a>-->
+<!--            </li>-->
         </ul>
     </section>
 
     <!-- 목록 (학생/운영자 공통이라 가정) -->
-    <section class="menu-section">
+    <section class="menu-section open">
         <button class="menu-section-toggle" type="button">
             <span>목록</span><span class="caret">▶</span>
         </button>
@@ -162,7 +162,7 @@
                 <!-- 학생 기준 프로그램 목록 -->
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link"
-                   th:href="@{/noncurricular/student/programs}">프로그램 조회</a>
+                   th:href="@{/noncurricular/student/program-list}">프로그램 조회</a>
             </li>
             <li sec:authorize="hasRole('NONCURRICULAR_OPERATOR')">
                 <a class="menu-link"
@@ -171,7 +171,7 @@
     </section>
 
     <!-- 신청 (학생만) -->
-    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+    <section class="menu-section open" sec:authorize="hasRole('STUDENT')">
         <button class="menu-section-toggle" type="button">
             <span>신청</span><span class="caret">▶</span>
         </button>
@@ -188,7 +188,7 @@
     </section>
 
     <!-- 참여 (학생만) -->
-    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+    <section class="menu-section open" sec:authorize="hasRole('STUDENT')">
         <button class="menu-section-toggle" type="button">
             <span>참여</span><span class="caret">▶</span>
         </button>
@@ -209,7 +209,7 @@
     </section>
 
     <!-- 비교과 포인트 (학생만) -->
-    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+    <section class="menu-section open" sec:authorize="hasRole('STUDENT')">
         <button class="menu-section-toggle" type="button">
             <span>비교과 포인트</span><span class="caret">▶</span>
         </button>
@@ -222,19 +222,23 @@
     </section>
 
     <!-- 과정/참여/포인트/관리/알림 (운영자 / 부서관리자) -->
-    <section class="menu-section" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
+    <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
         <button class="menu-section-toggle" type="button">
             <span>과정 관리</span><span class="caret">▶</span>
         </button>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
-                   th:href="@{/noncurricular/admin/programs}">프로그램 과정 개설/수정/삭제</a>
+                   th:href="@{/noncurricular/admin/program/open}">프로그램 과정 개설/수정/삭제</a>
+            </li>
+            <li>
+                <a class="menu-link"
+                   th:href="@{/noncurricular/admin/pending/list}">프로그램 승인대기 목록</a>
             </li>
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
+    <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
         <button class="menu-section-toggle" type="button">
             <span>참여 관리</span><span class="caret">▶</span>
         </button>
@@ -258,7 +262,7 @@
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
+    <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
         <button class="menu-section-toggle" type="button">
             <span>비교과 포인트 관리</span><span class="caret">▶</span>
         </button>
@@ -274,7 +278,7 @@
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
+    <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
         <button class="menu-section-toggle" type="button">
             <span>관리</span><span class="caret">▶</span>
         </button>
@@ -290,7 +294,7 @@
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
+    <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
         <button class="menu-section-toggle" type="button">
             <span>알림</span><span class="caret">▶</span>
         </button>

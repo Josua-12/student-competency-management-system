@@ -46,11 +46,12 @@ public class NoncurricularStudentViewController {
 
     /**
      * 학생 대시보드
-     * GET /noncurricular/student/dashboard
+     * GET /noncurricular/student/student-dashboard
      */
-    @GetMapping("/dashboard")
+    @GetMapping("/student-dashboard")
     public String studentDashboard(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 학생 대시보드");
+//        model.addAttribute("content", "noncurricular/noncurriDashboard/student-dashboard");
         setView(model, "noncurricular/noncurriDashboard/student-dashboard");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
@@ -59,7 +60,7 @@ public class NoncurricularStudentViewController {
      * 프로그램 목록(학생)
      * GET /noncurricular/student/programs
      */
-    @GetMapping("/programs")
+    @GetMapping("/program-list")
     public String studentProgramList(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 목록(학생)");
         setView(model, "noncurricular/program/list_User");
@@ -80,7 +81,6 @@ public class NoncurricularStudentViewController {
 
 
 
-
     /**
      * 만족도 설문
      * GET /noncurricular/student/satisfaction
@@ -88,7 +88,25 @@ public class NoncurricularStudentViewController {
     @GetMapping("/satisfaction")
     public String satisfaction(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 만족도 설문");
-        setView(model, "noncurricular/operation/RegisterSatisfactionQuestion");
+        
+        // 더미 데이터 추가
+        java.util.Map<String, Object> program = new java.util.HashMap<>();
+        program.put("title", "취업 역량 강화를 위한 모의 면접 캐프");
+        model.addAttribute("program", program);
+        
+        setView(model, "noncurricular/operation/ResponseSatisfactionSurvey");
+        return "noncurricular/fix-screen/noncurricular-layout";
+    }
+
+
+    /**
+     * 비교과 포인트 조회
+     * GET /noncurricular/student/points
+     */
+    @GetMapping("/points")
+    public String points(Model model) {
+        model.addAttribute("pageTitle", "비교과 포인트 조회");
+        setView(model, "noncurricular/mileage/student-points");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
@@ -110,7 +128,7 @@ public class NoncurricularStudentViewController {
     @GetMapping("/completions")
     public String completions(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 이수내역 조회");
-        setView(model, "noncurricular/operation/ResultSatisfaction");
+        setView(model, "noncurricular/operation/ResultCompletionHistory");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 

@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>비교과 프로그램 만족도 설문 응답</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        :root{
+            --bg:#f7f8fa;
+            --card:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --pri:#2563eb;
+            --pri-600:#1d4ed8;
+            --pri-soft:#e5edff;
+            --danger:#ef4444;
+            --ok:#16a34a;
+            --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--fg);
+            font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+        }
+        .wrap{
+            max-width:960px;
+            margin:24px auto 40px;
+            padding:0 16px;
+        }
+        h1{
+            margin:0 0 4px;
+            font-size:22px;
+            font-weight:700;
+        }
+        .breadcrumb{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:20px;
+        }
+
+        .card{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            padding:20px 20px 16px;
+            margin-bottom:16px;
+            box-shadow:0 8px 24px rgba(15,23,42,.04);
+        }
+        .card-header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom:12px;
+        }
+        .card-header-title{
+            font-size:15px;
+            font-weight:600;
+        }
+        .badge-soft{
+            font-size:11px;
+            padding:2px 8px;
+            border-radius:999px;
+            background:var(--pri-soft);
+            color:var(--pri-600);
+        }
+
+        /* 프로그램 기본 정보 */
+        .info-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+            gap:8px 24px;
+            font-size:13px;
+        }
+        .info-item-label{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:2px;
+        }
+        .info-item-value{
+            font-weight:500;
+        }
+
+        /* 안내 박스 */
+        .notice-box{
+            font-size:13px;
+            color:var(--muted);
+            background:#f9fafb;
+            border-radius:10px;
+            border:1px dashed var(--line);
+            padding:10px 12px;
+        }
+        .notice-box ul{
+            margin:4px 0 0;
+            padding-left:18px;
+        }
+        .notice-box li+li{margin-top:2px;}
+
+        /* 설문 문항 */
+        .question-group{
+            border-top:1px solid var(--line);
+            padding-top:12px;
+            margin-top:8px;
+        }
+        .question-label-row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:8px;
+            margin-bottom:6px;
+        }
+        .question-title{
+            font-size:14px;
+            font-weight:500;
+        }
+        .required-mark{
+            color:var(--danger);
+            font-size:12px;
+            margin-left:4px;
+        }
+
+        .radio-row{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px 16px;
+            font-size:13px;
+        }
+        .radio-chip{
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            padding:4px 10px;
+            border-radius:999px;
+            border:1px solid var(--line);
+            background:#f9fafb;
+            cursor:pointer;
+            transition:all .12s ease-out;
+        }
+        .radio-chip input{
+            accent-color:var(--pri);
+        }
+        .radio-chip:hover{
+            border-color:var(--pri-600);
+            background:#eff6ff;
+        }
+
+        /* 종합 만족도 & 의견 */
+        .overall-row{
+            display:flex;
+            gap:16px;
+            flex-wrap:wrap;
+        }
+        .overall-select{
+            min-width:140px;
+        }
+        select{
+            width:100%;
+            padding:6px 10px;
+            border-radius:8px;
+            border:1px solid var(--line);
+            background:#f9fafb;
+            font-size:13px;
+        }
+        textarea{
+            width:100%;
+            min-height:120px;
+            resize:vertical;
+            padding:8px 10px;
+            border-radius:8px;
+            border:1px solid var(--line);
+            font:13px/1.5 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+        }
+        textarea:focus,
+        select:focus{
+            outline:none;
+            border-color:var(--pri-600);
+            box-shadow:0 0 0 1px var(--pri-soft);
+        }
+        .char-counter{
+            margin-top:4px;
+            font-size:12px;
+            color:var(--muted);
+            text-align:right;
+        }
+
+        /* 버튼 영역 */
+        .btn-row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-top:20px;
+        }
+        .btn-group-left,
+        .btn-group-right{
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+        }
+        button{
+            cursor:pointer;
+            border-radius:999px;
+            border:none;
+            padding:7px 16px;
+            font-size:13px;
+            font-weight:500;
+        }
+        .btn-outline{
+            border:1px solid var(--line);
+            background:#fff;
+            color:var(--fg);
+        }
+        .btn-outline:hover{
+            border-color:var(--pri-600);
+        }
+        .btn-primary{
+            background:var(--pri);
+            color:#fff;
+        }
+        .btn-primary:hover{
+            background:var(--pri-600);
+        }
+        .btn-ghost{
+            background:transparent;
+            color:var(--muted);
+        }
+        .btn-ghost:hover{
+            background:#f3f4f6;
+        }
+
+        /* 검증 메세지 */
+        .error-text{
+            margin-top:4px;
+            font-size:12px;
+            color:var(--danger);
+        }
+
+        @media (max-width:600px){
+            .card{padding:16px 14px;}
+            .btn-row{flex-direction:column-reverse;align-items:stretch;}
+            .btn-group-left,.btn-group-right{justify-content:flex-end;}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <!-- 상단 제목/경로 -->
+    <header>
+        <h1>비교과 프로그램 만족도 설문</h1>
+        <div class="breadcrumb">
+            비교과 프로그램 &gt; 프로그램 활동 &gt; 만족도 설문 응답
+        </div>
+    </header>
+
+    <!-- 프로그램 기본 정보 -->
+    <section class="card">
+        <div class="card-header">
+            <div class="card-header-title">프로그램 기본 정보</div>
+            <span class="badge-soft">읽기전용</span>
+        </div>
+        <div class="info-grid">
+            <div>
+                <div class="info-item-label">프로그램명</div>
+                <div class="info-item-value" id="programTitle">
+                    취업 역량 강화를 위한 모의 면접 캠프
+                    <!-- 서버연동 시: [[${program.title}]] -->
+                </div>
+            </div>
+            <div>
+                <div class="info-item-label">회차/일정</div>
+                <div class="info-item-value" id="programSchedule">
+                    1회차 (2025-03-01 14:00 ~ 17:00)
+                </div>
+            </div>
+            <div>
+                <div class="info-item-label">운영기간</div>
+                <div class="info-item-value" id="programPeriod">
+                    2025-02-25 ~ 2025-03-10
+                </div>
+            </div>
+            <div>
+                <div class="info-item-label">참여상태</div>
+                <div class="info-item-value" id="participationStatus">
+                    이수 완료
+                </div>
+            </div>
+            <div>
+                <div class="info-item-label">담당부서</div>
+                <div class="info-item-value" id="departmentName">
+                    취업진로개발센터
+                </div>
+            </div>
+            <div>
+                <div class="info-item-label">담당자</div>
+                <div class="info-item-value" id="managerName">
+                    홍길동 (02-000-0000)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 안내/유의사항 -->
+    <section class="card">
+        <div class="card-header">
+            <div class="card-header-title">설문 안내</div>
+        </div>
+        <div class="notice-box">
+            <ul>
+                <li>본 설문은 프로그램 개선을 위한 목적으로만 사용됩니다.</li>
+                <li><span style="color:var(--danger)">*</span> 표시된 항목은 필수 응답입니다.</li>
+                <li>설문은 1회만 제출 가능하며, 제출 후에는 수정이 제한될 수 있습니다.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 설문 폼 -->
+    <form id="satisfactionForm">
+        <!-- 숨김 필드 (서버 바인딩) -->
+        <input type="hidden" id="programId" name="programId" value="1"><!-- [[${program.id}]] -->
+        <input type="hidden" id="applicationId" name="applicationId" value="10"><!-- [[${application.id}]] -->
+        <input type="hidden" id="studentId" name="studentId" value="1001"><!-- [[${student.id}]] -->
+        <input type="hidden" id="submittedYn" name="submittedYn" value="N"><!-- Y/N -->
+        <input type="hidden" id="readOnlyMode" name="readOnlyMode" value="false"><!-- true/false -->
+        <input type="hidden" id="actionType" name="actionType" value="">
+
+        <!-- 객관식 문항 -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-header-title">만족도 문항</div>
+            </div>
+
+            <!-- 문항1 -->
+            <div class="question-group">
+                <div class="question-label-row">
+                    <div class="question-title">
+                        1. 프로그램 전체에 대한 만족도는 어떠하십니까?
+                        <span class="required-mark">*</span>
+                    </div>
+                </div>
+                <div class="radio-row" data-q="q1Score">
+                    <label class="radio-chip">
+                        <input type="radio" name="q1Score" value="1"> 1점 (매우 불만족)
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q1Score" value="2"> 2점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q1Score" value="3"> 3점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q1Score" value="4"> 4점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q1Score" value="5"> 5점 (매우 만족)
+                    </label>
+                </div>
+                <div class="error-text" id="err-q1Score" style="display:none;">필수 문항입니다.</div>
+            </div>
+
+            <!-- 문항2 -->
+            <div class="question-group">
+                <div class="question-label-row">
+                    <div class="question-title">
+                        2. 프로그램 내용(커리큘럼)은 적절했습니까?
+                        <span class="required-mark">*</span>
+                    </div>
+                </div>
+                <div class="radio-row" data-q="q2Score">
+                    <label class="radio-chip">
+                        <input type="radio" name="q2Score" value="1"> 1점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q2Score" value="2"> 2점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q2Score" value="3"> 3점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q2Score" value="4"> 4점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q2Score" value="5"> 5점
+                    </label>
+                </div>
+                <div class="error-text" id="err-q2Score" style="display:none;">필수 문항입니다.</div>
+            </div>
+
+            <!-- 문항3 -->
+            <div class="question-group">
+                <div class="question-label-row">
+                    <div class="question-title">
+                        3. 운영(시간, 장소, 안내 등)은 만족스러웠습니까?
+                        <span class="required-mark">*</span>
+                    </div>
+                </div>
+                <div class="radio-row" data-q="q3Score">
+                    <label class="radio-chip">
+                        <input type="radio" name="q3Score" value="1"> 1점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q3Score" value="2"> 2점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q3Score" value="3"> 3점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q3Score" value="4"> 4점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q3Score" value="5"> 5점
+                    </label>
+                </div>
+                <div class="error-text" id="err-q3Score" style="display:none;">필수 문항입니다.</div>
+            </div>
+
+            <!-- 문항4 -->
+            <div class="question-group">
+                <div class="question-label-row">
+                    <div class="question-title">
+                        4. 본 프로그램이 역량 향상에 도움이 되었습니까?
+                        <span class="required-mark">*</span>
+                    </div>
+                </div>
+                <div class="radio-row" data-q="q4Score">
+                    <label class="radio-chip">
+                        <input type="radio" name="q4Score" value="1"> 1점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q4Score" value="2"> 2점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q4Score" value="3"> 3점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q4Score" value="4"> 4점
+                    </label>
+                    <label class="radio-chip">
+                        <input type="radio" name="q4Score" value="5"> 5점
+                    </label>
+                </div>
+                <div class="error-text" id="err-q4Score" style="display:none;">필수 문항입니다.</div>
+            </div>
+        </section>
+
+        <!-- 종합 만족도 & 자유 의견 -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-header-title">종합 만족도 및 의견</div>
+            </div>
+
+            <div class="overall-row" style="margin-bottom:14px;">
+                <div class="overall-select">
+                    <div class="question-title">
+                        종합 만족도<span class="required-mark">*</span>
+                    </div>
+                    <select id="overallRating" name="overallRating">
+                        <option value="">선택하세요</option>
+                        <option value="1">1점 (매우 불만족)</option>
+                        <option value="2">2점</option>
+                        <option value="3">3점 (보통)</option>
+                        <option value="4">4점</option>
+                        <option value="5">5점 (매우 만족)</option>
+                    </select>
+                    <div class="error-text" id="err-overallRating" style="display:none;">종합 만족도를 선택해주세요.</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="question-title">
+                    자유 의견(선택)
+                </div>
+                <textarea id="feedback" name="feedback" maxlength="1000"
+                          placeholder="프로그램에서 좋았던 점, 개선이 필요한 부분 등을 자유롭게 작성해주세요. (선택)"></textarea>
+                <div class="char-counter">
+                    <span id="feedbackCount">0</span> / 1000자
+                </div>
+            </div>
+        </section>
+
+        <!-- 버튼 영역 -->
+        <section class="card" style="margin-bottom:0;">
+            <div class="btn-row">
+                <div class="btn-group-left">
+                    <button type="button" class="btn-outline" id="btnReset">초기화</button>
+                </div>
+                <div class="btn-group-right">
+                    <button type="button" class="btn-ghost" id="btnList">목록으로</button>
+                    <button type="button" class="btn-outline" id="btnTempSave">임시저장</button>
+                    <button type="button" class="btn-primary" id="btnSubmit">제출</button>
+                </div>
+            </div>
+        </section>
+    </form>
+</div>
+
+<script>
+    (function(){
+        const form = document.getElementById('satisfactionForm');
+        const feedback = document.getElementById('feedback');
+        const feedbackCount = document.getElementById('feedbackCount');
+        const readOnlyMode = document.getElementById('readOnlyMode');
+        const submittedYn = document.getElementById('submittedYn');
+        const actionType = document.getElementById('actionType');
+        const programId = document.getElementById('programId');
+
+        // 문자수 카운트
+        function updateCharCount(){
+            feedbackCount.textContent = feedback.value.length.toString();
+        }
+
+        // 필수 문항 검증
+        function validateForm(isSubmit){
+            // 임시저장은 필수 검증 스킵 가능 (원하면 isSubmit 일 때만 체크)
+            const requiredNames = ['q1Score','q2Score','q3Score','q4Score'];
+            let valid = true;
+
+            requiredNames.forEach(name=>{
+                const errorEl = document.getElementById('err-' + name);
+                const checked = form.querySelector('input[name="'+name+'"]:checked');
+                if(isSubmit && !checked){
+                    errorEl.style.display = 'block';
+                    valid = false;
+                }else{
+                    errorEl.style.display = 'none';
+                }
+            });
+
+            const overall = document.getElementById('overallRating');
+            const overallErr = document.getElementById('err-overallRating');
+            if(isSubmit && !overall.value){
+                overallErr.style.display = 'block';
+                valid = false;
+            }else{
+                overallErr.style.display = 'none';
+            }
+
+            return valid;
+        }
+
+        // 읽기전용 모드 처리
+        function applyReadOnlyIfNeeded(){
+            const isReadOnly = readOnlyMode && readOnlyMode.value === 'true';
+            const isSubmitted = submittedYn && submittedYn.value === 'Y';
+
+            if(isReadOnly || isSubmitted){
+                // 입력 비활성화
+                Array.from(form.elements).forEach(el=>{
+                    if(el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA'){
+                        if(el.type !== 'hidden'){
+                            el.disabled = true;
+                        }
+                    }
+                });
+                // 버튼 숨기기 (목록만 보여주기)
+                document.getElementById('btnTempSave').style.display = 'none';
+                document.getElementById('btnSubmit').style.display = 'none';
+                document.getElementById('btnReset').style.display = 'none';
+            }
+        }
+
+        // 폼 submit (실서버에서는 form.action을 프로젝트 URL 규칙에 맞게 변경)
+        function submitForm(action){
+            const progId = programId ? programId.value : '';
+            if(!progId){
+                alert('프로그램 ID가 없습니다. 다시 시도해주세요.');
+                return;
+            }
+
+            // actionType hidden에 액션 구분값 세팅
+            actionType.value = action; // TEMP_SAVE or SUBMIT
+
+            // Spring MVC 기준 예시 URL (실제 구현 시 컨트롤러 URL에 맞춰 수정)
+            if(action === 'TEMP_SAVE'){
+                form.method = 'post';
+                form.action = '/noncurricular/student/programs/' + progId + '/satisfaction/save';
+            }else if(action === 'SUBMIT'){
+                form.method = 'post';
+                form.action = '/noncurricular/student/programs/' + progId + '/satisfaction/submit';
+            }
+
+            form.submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            // 문자수 이벤트
+            feedback.addEventListener('input', updateCharCount);
+            updateCharCount();
+
+            // 읽기전용 모드 적용
+            applyReadOnlyIfNeeded();
+
+            // 버튼 이벤트
+            document.getElementById('btnReset').addEventListener('click', function(){
+                if(!confirm('입력하신 내용을 모두 초기화하시겠습니까?')) return;
+                form.reset();
+                updateCharCount();
+
+                // 에러 메시지 초기화
+                ['q1Score','q2Score','q3Score','q4Score'].forEach(name=>{
+                    const errorEl = document.getElementById('err-' + name);
+                    if(errorEl) errorEl.style.display = 'none';
+                });
+                document.getElementById('err-overallRating').style.display = 'none';
+            });
+
+            document.getElementById('btnList').addEventListener('click', function(){
+                // 신청/이수내역 목록 URL (예시)
+                window.location.href = '/noncurricular/student/applications/completed';
+            });
+
+            document.getElementById('btnTempSave').addEventListener('click', function(){
+                // 임시저장은 필수값 검증 없이 저장한다는 가정
+                submitForm('TEMP_SAVE');
+            });
+
+            document.getElementById('btnSubmit').addEventListener('click', function(){
+                if(!validateForm(true)) {
+                    alert('필수 문항을 모두 입력해주세요.');
+                    return;
+                }
+                if(!confirm('설문을 제출하시겠습니까? 제출 후 수정이 제한될 수 있습니다.')) return;
+                submitForm('SUBMIT');
+            });
+        });
+    })();
+</script>
+</body>
+</html>

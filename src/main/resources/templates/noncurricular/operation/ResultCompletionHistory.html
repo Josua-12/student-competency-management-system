@@ -1,0 +1,731 @@
+<!--<!doctype html>-->
+<!--<html lang="ko" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="utf-8" />-->
+<!--    <meta name="viewport" content="width=device-width,initial-scale=1" />-->
+<!--    <title>비교과 프로그램 이수내역 조회</title>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentStyles">
+    <style>
+        :root{
+            --bg:#ffffff; --fg:#111827; --muted:#6b7280; --line:#e5e7eb;
+            --card:#fafafa; --chip:#f3f4f6;
+            --pri:#2563eb; --pri-600:#1d4ed8; --pri-50:#eef2ff;
+            --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+            --radius:14px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--fg);
+            font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+        }
+        .page{
+            max-width:1200px;
+            margin:24px auto 40px;
+            padding:0 16px;
+        }
+
+        /* 상단 헤더영역 */
+        .page-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:12px;
+            margin-bottom:12px;
+        }
+        .page-title{
+            font-size:20px;
+            font-weight:700;
+        }
+        .page-breadcrumb{
+            margin-top:4px;
+            font-size:12px;
+            color:var(--muted);
+        }
+        .page-actions{
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .icon-button{
+            border:none;
+            outline:none;
+            padding:6px 10px;
+            border-radius:999px;
+            background:var(--chip);
+            color:var(--muted);
+            font-size:12px;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            cursor:pointer;
+        }
+        .icon-button:hover{
+            background:#e5e7eb;
+        }
+
+        /* 카드 공통 */
+        .card{
+            background:var(--card);
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            padding:16px 18px;
+        }
+
+        /* 검색조건 영역 */
+        .search-card{
+            margin-top:12px;
+        }
+        .search-grid{
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:12px 16px;
+        }
+        @media (max-width:992px){
+            .search-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+        }
+        @media (max-width:600px){
+            .search-grid{grid-template-columns:1fr}
+        }
+        .field-label{
+            display:block;
+            font-size:12px;
+            font-weight:600;
+            margin-bottom:4px;
+            color:#374151;
+        }
+        .field-inline{
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .text-input,
+        .select-input,
+        .date-input{
+            width:100%;
+            border-radius:8px;
+            border:1px solid var(--line);
+            padding:6px 10px;
+            font-size:13px;
+            background:#ffffff;
+        }
+        .text-input:focus,
+        .select-input:focus,
+        .date-input:focus{
+            outline:none;
+            border-color:var(--pri-600);
+            box-shadow:0 0 0 1px rgba(37,99,235,.15);
+        }
+        .search-footer{
+            margin-top:12px;
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+        }
+        .btn{
+            border-radius:999px;
+            border:1px solid transparent;
+            padding:7px 14px;
+            font-size:13px;
+            font-weight:500;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+        }
+        .btn-ghost{
+            background:#ffffff;
+            border-color:var(--line);
+            color:var(--muted);
+        }
+        .btn-ghost:hover{
+            background:#f3f4f6;
+        }
+        .btn-primary{
+            background:var(--pri);
+            color:#ffffff;
+        }
+        .btn-primary:hover{
+            background:var(--pri-600);
+        }
+
+        /* 요약카드 */
+        .summary-wrap{
+            margin-top:16px;
+        }
+        .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:12px;
+        }
+        @media (max-width:992px){
+            .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+        }
+        @media (max-width:600px){
+            .summary-grid{grid-template-columns:1fr 1fr}
+        }
+        .summary-card{
+            background:#ffffff;
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            padding:12px 14px;
+        }
+        .summary-label{
+            font-size:11px;
+            color:var(--muted);
+            margin-bottom:6px;
+        }
+        .summary-value{
+            font-size:18px;
+            font-weight:700;
+        }
+        .summary-sub{
+            font-size:11px;
+            color:var(--muted);
+            margin-top:4px;
+        }
+
+        /* 목록 영역 */
+        .list-wrap{
+            margin-top:18px;
+        }
+        .list-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:8px;
+        }
+        .list-title{
+            font-size:14px;
+            font-weight:600;
+        }
+        .list-count{
+            font-size:12px;
+            color:var(--muted);
+        }
+        .table-card{
+            background:#ffffff;
+            border-radius:var(--radius);
+            border:1px solid var(--line);
+            overflow:hidden;
+        }
+        .table-responsive{
+            width:100%;
+            overflow-x:auto;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            font-size:13px;
+        }
+        thead{
+            background:#f9fafb;
+        }
+        th,td{
+            padding:8px 10px;
+            border-bottom:1px solid var(--line);
+            text-align:left;
+            vertical-align:top;
+        }
+        th{
+            font-size:12px;
+            font-weight:600;
+            color:#4b5563;
+            white-space:nowrap;
+        }
+        tbody tr:hover{
+            background:#f9fafb;
+        }
+        .cell-sub{
+            display:block;
+            font-size:11px;
+            color:var(--muted);
+        }
+        .chip{
+            display:inline-flex;
+            align-items:center;
+            padding:2px 8px;
+            border-radius:999px;
+            font-size:11px;
+            background:var(--chip);
+            color:#374151;
+            margin-right:4px;
+            margin-top:2px;
+        }
+        .badge-status{
+            display:inline-flex;
+            align-items:center;
+            padding:2px 8px;
+            border-radius:999px;
+            font-size:11px;
+            font-weight:600;
+        }
+        .badge-completed{
+            background:#ecfdf3;
+            color:#15803d;
+        }
+        .badge-inprogress{
+            background:#eff6ff;
+            color:#1d4ed8;
+        }
+        .badge-failed{
+            background:#fef2f2;
+            color:#b91c1c;
+        }
+        .btn-inline{
+            border-radius:999px;
+            border:1px solid var(--line);
+            background:#ffffff;
+            font-size:11px;
+            padding:3px 8px;
+            margin-right:4px;
+            margin-top:2px;
+            cursor:pointer;
+        }
+        .btn-inline:hover{
+            background:#f3f4f6;
+        }
+        .btn-inline-primary{
+            border-color:var(--pri-50);
+            color:var(--pri-600);
+        }
+
+        /* 페이징 */
+        .table-footer{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            padding:8px 12px;
+        }
+        .pagination{
+            display:flex;
+            align-items:center;
+            gap:4px;
+        }
+        .page-btn{
+            border-radius:6px;
+            border:1px solid transparent;
+            background:#ffffff;
+            font-size:12px;
+            padding:4px 8px;
+            cursor:pointer;
+            color:#4b5563;
+        }
+        .page-btn:hover{
+            background:#f3f4f6;
+        }
+        .page-btn.active{
+            border-color:var(--pri-600);
+            color:var(--pri-600);
+            font-weight:600;
+            background:#eff6ff;
+        }
+        .page-size{
+            font-size:12px;
+            color:var(--muted);
+        }
+
+        /* 하단 버튼영역 */
+        .bottom-actions{
+            margin-top:16px;
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+        }
+
+        /* checkbox 크기 */
+        input[type="checkbox"]{
+            width:14px;
+            height:14px;
+        }
+    </style>
+</div>
+<!--</head>-->
+<!--<body>-->
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentFragment">
+<div class="page">
+
+    <!-- 상단 헤더 -->
+    <header class="page-header">
+        <div>
+            <div class="page-title">비교과 프로그램 이수내역 조회</div>
+            <div class="page-breadcrumb">홈 &gt; 비교과 프로그램 &gt; 나의 이수내역</div>
+        </div>
+        <div class="page-actions">
+            <button type="button" class="icon-button" id="btnHelp">
+                <span>도움말</span>
+                <span>❓</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 검색 조건 -->
+    <section class="card search-card">
+        <form id="searchForm" method="get" action="/noncurricular/student/completions">
+            <div class="search-grid">
+                <!-- 이수기간 -->
+                <div>
+                    <label class="field-label">이수기간</label>
+                    <div class="field-inline">
+                        <input type="date" class="date-input" name="fromDate" />
+                        <span style="font-size:12px;color:var(--muted)">~</span>
+                        <input type="date" class="date-input" name="toDate" />
+                    </div>
+                </div>
+                <!-- 프로그램명 -->
+                <div>
+                    <label class="field-label">프로그램명</label>
+                    <input type="text" class="text-input" name="programName"
+                           placeholder="프로그램명을 입력하세요" />
+                </div>
+                <!-- 운영부서 -->
+                <div>
+                    <label class="field-label">운영부서</label>
+                    <select class="select-input" name="departmentId">
+                        <option value="">전체</option>
+                        <!-- th:each로 부서 목록 바인딩 예정 -->
+                        <!-- <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option> -->
+                    </select>
+                </div>
+                <!-- 이수상태 -->
+                <div>
+                    <label class="field-label">이수상태</label>
+                    <select class="select-input" name="completionStatus">
+                        <option value="">전체</option>
+                        <option value="COMPLETED">이수완료</option>
+                        <option value="IN_PROGRESS">이수중</option>
+                        <option value="NOT_COMPLETED">미이수</option>
+                    </select>
+                </div>
+                <!-- 포인트구분 -->
+                <div>
+                    <label class="field-label">포인트 구분</label>
+                    <select class="select-input" name="pointType">
+                        <option value="">전체</option>
+                        <option value="HAS_POINT">포인트 있음</option>
+                        <option value="NO_POINT">포인트 없음</option>
+                    </select>
+                </div>
+                <!-- 핵심역량 -->
+                <div>
+                    <label class="field-label">핵심역량</label>
+                    <select class="select-input" name="competencyId">
+                        <option value="">전체</option>
+                        <!-- <option th:each="c : ${competencies}" th:value="${c.id}" th:text="${c.name}"></option> -->
+                    </select>
+                </div>
+                <!-- (필요하면 여분 칸 활용) -->
+            </div>
+
+            <div class="search-footer">
+                <button type="button" class="btn btn-ghost" id="btnReset">초기화</button>
+                <button type="submit" class="btn btn-primary" id="btnSearch">조회</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- 요약 카드 -->
+    <section class="summary-wrap">
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">전체 이수 프로그램 수</div>
+                <div class="summary-value"
+                     th:text="${summary.totalCompletedCount}">12건</div>
+                <div class="summary-sub">검색 조건 기준</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">올해 이수 프로그램 수</div>
+                <div class="summary-value"
+                     th:text="${summary.thisYearCompletedCount}">4건</div>
+                <div class="summary-sub" th:text="${summary.yearLabel}">2025년 기준</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">누적 비교과 포인트</div>
+                <div class="summary-value"
+                     th:text="${summary.totalPoint}">120점</div>
+                <div class="summary-sub">전체 이수 기준</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">올해 비교과 포인트</div>
+                <div class="summary-value"
+                     th:text="${summary.thisYearPoint}">40점</div>
+                <div class="summary-sub" th:text="${summary.yearLabel}">2025년 기준</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 이수내역 목록 -->
+    <section class="list-wrap">
+        <div class="list-header">
+            <div class="list-title">이수내역 목록</div>
+            <div class="list-count">
+                총 <span th:text="${page.totalElements}">12</span>건
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" id="checkAll" /></th>
+                        <th>No</th>
+                        <th>프로그램명</th>
+                        <th>운영부서</th>
+                        <th>분류/유형 · 핵심역량</th>
+                        <th>활동기간 · 이수일</th>
+                        <th>이수상태 · 포인트</th>
+                        <th>만족도/기타</th>
+                        <th>액션</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- 실제 Thymeleaf 반복 예시
+                    <tr th:each="item, stat : ${page.content}"
+                        th:data-href="@{/noncurricular/student/programs/{id}(id=${item.programId})}"
+                        class="completion-row">
+                    -->
+                    <tr class="completion-row"
+                        data-href="/noncurricular/student/programs/1">
+                        <td>
+                            <input type="checkbox" class="row-check" />
+                        </td>
+                        <td>1</td>
+                        <td>
+                            <a href="/noncurricular/student/programs/1"
+                               style="color:var(--pri-600);text-decoration:none;font-weight:600;">
+                                진로탐색 캠프(1박2일)
+                            </a>
+                            <span class="cell-sub">2025학년도 1학기 비교과</span>
+                        </td>
+                        <td>
+                            취업지원센터
+                            <span class="cell-sub">학생취업경력개발처</span>
+                        </td>
+                        <td>
+                            <span class="chip">진로·취업</span>
+                            <span class="chip">집단프로그램</span>
+                            <span class="cell-sub">핵심역량: 자기개발 · 진로설계</span>
+                        </td>
+                        <td>
+                            2025-03-01 ~ 2025-03-02
+                            <span class="cell-sub">이수일: 2025-03-05</span>
+                        </td>
+                        <td>
+                            <span class="badge-status badge-completed">이수완료</span>
+                            <span class="cell-sub">포인트: 20점</span>
+                        </td>
+                        <td>
+                            <span class="cell-sub">만족도: 미제출</span>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn-inline btn-inline-primary"
+                                    onclick="event.stopPropagation(); goDetail('/noncurricular/student/programs/1')">
+                                상세
+                            </button>
+                            <button type="button"
+                                    class="btn-inline"
+                                    onclick="event.stopPropagation(); openCertificate('1')">
+                                이수증
+                            </button>
+                            <button type="button"
+                                    class="btn-inline"
+                                    onclick="event.stopPropagation(); openSurvey('1')">
+                                만족도 조사
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- 더미 행 2 -->
+                    <tr class="completion-row"
+                        data-href="/noncurricular/student/programs/2">
+                        <td>
+                            <input type="checkbox" class="row-check" />
+                        </td>
+                        <td>2</td>
+                        <td>
+                            <a href="/noncurricular/student/programs/2"
+                               style="color:var(--pri-600);text-decoration:none;font-weight:600;">
+                                글로벌 역량 특강
+                            </a>
+                            <span class="cell-sub">온라인 실시간</span>
+                        </td>
+                        <td>
+                            국제교류센터
+                            <span class="cell-sub">대외협력처</span>
+                        </td>
+                        <td>
+                            <span class="chip">글로벌</span>
+                            <span class="cell-sub">핵심역량: 의사소통 · 글로벌역량</span>
+                        </td>
+                        <td>
+                            2025-04-10
+                            <span class="cell-sub">이수일: 2025-04-10</span>
+                        </td>
+                        <td>
+                            <span class="badge-status badge-inprogress">이수중</span>
+                            <span class="cell-sub">포인트: 10점 (예정)</span>
+                        </td>
+                        <td>
+                            <span class="cell-sub">만족도: 대상 아님</span>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn-inline btn-inline-primary"
+                                    onclick="event.stopPropagation(); goDetail('/noncurricular/student/programs/2')">
+                                상세
+                            </button>
+                            <button type="button"
+                                    class="btn-inline"
+                                    onclick="event.stopPropagation(); openCertificate('2')"
+                                    disabled>
+                                이수증
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- 실제 적용 시:
+                    <tr th:each="item, stat : ${page.content}"
+                        th:class="'completion-row'"
+                        th:data-href="@{/noncurricular/student/programs/{id}(id=${item.programId})}">
+                        ...
+                    </tr>
+                    -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div class="page-size">
+                    페이지당 10개
+                    <!-- <span th:text="${page.size}">10</span>개 -->
+                </div>
+                <div class="pagination">
+                    <button type="button" class="page-btn">&laquo;</button>
+                    <button type="button" class="page-btn active">1</button>
+                    <button type="button" class="page-btn">2</button>
+                    <button type="button" class="page-btn">3</button>
+                    <button type="button" class="page-btn">&raquo;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 하단 버튼 -->
+    <section class="bottom-actions">
+        <button type="button" class="btn btn-ghost" id="btnExcel">
+            엑셀 다운로드
+        </button>
+        <button type="button" class="btn btn-primary" id="btnBulkCertificate">
+            선택 이수증 통합발급
+        </button>
+    </section>
+</div>
+</div>
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("searchForm");
+        const btnReset = document.getElementById("btnReset");
+        const checkAll = document.getElementById("checkAll");
+        const rowChecks = document.querySelectorAll(".row-check");
+        const rows = document.querySelectorAll(".completion-row");
+        const btnHelp = document.getElementById("btnHelp");
+        const btnExcel = document.getElementById("btnExcel");
+        const btnBulk = document.getElementById("btnBulkCertificate");
+
+        // 도움말
+        btnHelp?.addEventListener("click", function () {
+            alert("이수내역 조회 화면입니다.\n\n- 이수완료 기준\n- 포인트 산정 기준\n등은 학교 운영 기준에 따라 달라질 수 있습니다.");
+        });
+
+        // 검색 조건 초기화
+        btnReset?.addEventListener("click", function () {
+            form.reset();
+        });
+
+        // 전체 선택
+        if (checkAll) {
+            checkAll.addEventListener("change", function () {
+                rowChecks.forEach(chk => {
+                    chk.checked = checkAll.checked;
+                });
+            });
+        }
+
+        // 개별 체크 변화 시 전체선택 상태 갱신
+        rowChecks.forEach(chk => {
+            chk.addEventListener("change", function () {
+                if (!checkAll) return;
+                const allChecked = Array.from(rowChecks).every(c => c.checked);
+                const noneChecked = Array.from(rowChecks).every(c => !c.checked);
+                if (allChecked) {
+                    checkAll.checked = true;
+                    checkAll.indeterminate = false;
+                } else if (noneChecked) {
+                    checkAll.checked = false;
+                    checkAll.indeterminate = false;
+                } else {
+                    checkAll.indeterminate = true;
+                }
+            });
+        });
+
+        // 행 클릭 시 상세로 이동 (단, 버튼/체크박스 클릭은 제외)
+        rows.forEach(row => {
+            row.addEventListener("click", function (e) {
+                if (e.target.closest("button") || e.target.type === "checkbox") {
+                    return;
+                }
+                const href = row.getAttribute("data-href");
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+
+        // 엑셀 다운로드
+        btnExcel?.addEventListener("click", function () {
+            // 실제 구현 시: 검색 조건을 포함해 GET /export 호출
+            // window.location.href = '/noncurricular/student/completions/export?' + new URLSearchParams(new FormData(form));
+            alert("엑셀 다운로드 요청(백엔드 연동 필요)");
+        });
+
+        // 선택 이수증 통합발급
+        btnBulk?.addEventListener("click", function () {
+            const selected = Array.from(rowChecks)
+                .map((chk, idx) => chk.checked ? idx + 1 : null)
+                .filter(v => v !== null);
+            if (selected.length === 0) {
+                alert("통합발급할 이수내역을 선택해주세요.");
+                return;
+            }
+            // 실제 구현 시: 선택된 completionId 배열로 POST 요청
+            // fetch('/noncurricular/student/completions/certificates/bulk-download', {...})
+            alert("선택 이수증 통합발급 요청: " + selected.join(", "));
+        });
+    });
+
+    // 재사용용 함수들
+    function goDetail(url){
+        window.location.href = url;
+    }
+    function openCertificate(completionId){
+        // 새 창으로 팝업 등
+        window.open("/noncurricular/student/completions/" + completionId + "/certificate",
+            "_blank",
+            "width=900,height=700");
+    }
+    function openSurvey(programId){
+        window.location.href = "/noncurricular/student/satisfaction/" + programId;
+    }
+</script>
+</div>
+<!--</body>-->
+<!--</html>-->

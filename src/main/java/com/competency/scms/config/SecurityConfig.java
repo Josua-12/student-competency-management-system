@@ -84,6 +84,7 @@ public class SecurityConfig {
 
                         // 비교과 관련 - 세분화된 권한
                         .requestMatchers("/noncurricular/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .requestMatchers("/noncurricular/operator/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
@@ -96,7 +97,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/assessment-section", "/admin/assessment-section/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
 
                         // 최고 관리자 전용
-                        .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/**", "/super-admin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
 
                         // 나머지는 인증 필요

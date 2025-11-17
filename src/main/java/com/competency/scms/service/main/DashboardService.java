@@ -29,13 +29,27 @@ public class DashboardService {
     /**
      * 메인 대시보드 데이터 조회
      */
-    public DashboardResponseDto getMainDashboardData(String userEmail) {
-        log.info("[MainDashboardService] 대시보드 데이터 조회 - userEmail: {}", userEmail);
+    public DashboardResponseDto getMainDashboardData(String identifier) {
+        log.info("[MainDashboardService] 대시보드 데이터 조회 - identifier: {}", identifier);
         
         try {
-            // 이메일로 사용자 조회
-            User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            User user;
+            
+            // 이메일 형식인지 확인
+            if (identifier.contains("@")) {
+                user = userRepository.findByEmail(identifier)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+            } else {
+                // 이메일 형식이 아닌 경우 로그 찍기
+                log.debug("Identifier is not an email. Value: {}", identifier);                // 학번으로 조회
+                try {
+                    Integer userNum = Integer.parseInt(identifier);
+                    user = userRepository.findByUserNum(userNum)
+                        .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                } catch (NumberFormatException e) {
+                    throw new RuntimeException("잘못된 사용자 식별자입니다.");
+                }
+            }
             
             log.info("사용자 조회 성공 - userNum: {}, name: {}", user.getUserNum(), user.getName());
             
@@ -53,7 +67,7 @@ public class DashboardService {
                 .build();
                 
         } catch (Exception e) {
-            log.error("[MainDashboardService] 대시보드 데이터 조회 실패 - userEmail: {}", userEmail, e);
+            log.error("[MainDashboardService] 대시보드 데이터 조회 실패 - identifier: {}", identifier, e);
             throw new RuntimeException("대시보드 데이터를 조회할 수 없습니다.", e);
         }
     }
