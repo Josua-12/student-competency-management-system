@@ -372,12 +372,15 @@ public class AssessmentService {
         Department userDepartment = result.getUser().getDepartment();
         List<Long> parentIds = sortedParents.stream().map(Competency::getId).toList();
 
+        Long assessmentSectionId = result.getAssessmentSection().getId();
+
         Map<Long, Double> deptAvgMap;
 
         if (userDepartment != null) {
             deptAvgMap = assessmentResultRepository.findDepartmentAverages(
                             userDepartment,
-                            parentIds
+                            parentIds,
+                            assessmentSectionId
                     ).stream()
                     .collect(Collectors.toMap(CompetencyAverageDto::getCompetencyId, CompetencyAverageDto::getAverageScore));
         } else {
@@ -386,7 +389,7 @@ public class AssessmentService {
 
 
 
-        Map<Long, Double> univAvgMap = assessmentResultRepository.findUniversityAverages(parentIds)
+        Map<Long, Double> univAvgMap = assessmentResultRepository.findUniversityAverages(parentIds, assessmentSectionId)
                 .stream()
                 .collect(Collectors.toMap(CompetencyAverageDto::getCompetencyId, CompetencyAverageDto::getAverageScore));
 

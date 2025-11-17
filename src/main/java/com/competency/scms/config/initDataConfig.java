@@ -562,18 +562,27 @@ public class initDataConfig implements CommandLineRunner {
         log.info("✅ MileageRecord 초기 데이터 6건이 생성되었습니다.");
 
         // 역량 검사 섹션 생성
+        LocalDateTime assessmentStart = LocalDateTime.of(2025, 1, 1, 0, 0);
+        LocalDateTime assessmentEnd = LocalDateTime.of(2025, 12, 31, 23, 59);
+        
         AssessmentSection section1 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("자기관리 역량 검사").description("자기관리 능력 평가").isActive(true).build());
+                .title("자기관리 역량 검사").description("자기관리 능력 평가")
+                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
         AssessmentSection section2 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("의사소통 역량 검사").description("의사소통 능력 평가").isActive(true).build());
+                .title("의사소통 역량 검사").description("의사소통 능력 평가")
+                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
         AssessmentSection section3 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("글로벌 역량 검사").description("글로벌 능력 평가").isActive(true).build());
+                .title("글로벌 역량 검사").description("글로벌 능력 평가")
+                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
         AssessmentSection section4 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("대인관계 역량 검사").description("대인관계 능력 평가").isActive(true).build());
+                .title("대인관계 역량 검사").description("대인관계 능력 평가")
+                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
         AssessmentSection section5 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("종합적 사고력 검사").description("종합적 사고력 평가").isActive(true).build());
+                .title("종합적 사고력 검사").description("종합적 사고력 평가")
+                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
         AssessmentSection section6 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("자원·정보·기술 활용 역량 검사").description("자원·정보·기술 활용 능력 평가").isActive(true).build());
+                .title("자원·정보·기술 활용 역량 검사").description("자원·정보·기술 활용 능력 평가")
+                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
 
         log.info("✅ AssessmentSection 초기 데이터 6건이 생성되었습니다.");
 

@@ -84,6 +84,7 @@ public class SecurityConfig {
 
                         // 비교과 관련 - 세분화된 권한
                         .requestMatchers("/noncurricular/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .requestMatchers("/noncurricular/operator/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/noncurricular/admin/**").hasAnyRole("NONCURRICULAR_OPERATOR", "NONCURRICULAR_ADMIN", "SUPER_ADMIN")

@@ -159,5 +159,20 @@ public class NoncurricularStudentViewController {
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
+<<<<<<< HEAD
+=======
+
+
+    /**
+     * 비교과 포인트 조회
+     * GET /noncurricular/student/points
+     */
+    @GetMapping("/points")
+    public String points(Model model) {
+        model.addAttribute("pageTitle", "비교과 포인트 조회");
+        setView(model, "noncurricular/mileage/student-points");
+        return "noncurricular/fix-screen/noncurricular-layout";
+    }
+>>>>>>> e2842f546cd1696fe76423b0deb2af07101902c8
 }
 

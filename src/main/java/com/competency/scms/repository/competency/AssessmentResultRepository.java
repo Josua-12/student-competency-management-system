@@ -91,10 +91,12 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
             "WHERE ar.status = 'COMPLETED' " +
             "  AND u.department = :department " + // 학과 필터
             "  AND c.parent.id IN :parentIds " +  // 핵심 역량 ID 리스트 필터
+            "  AND ar.assessmentSection.id = :assessmentSectionId " +   // 진단 세션 ID 필터
             "GROUP BY c.parent.id")
     List<CompetencyAverageDto> findDepartmentAverages(
             @Param("department") Department department,
-            @Param("parentIds") List<Long> parentIds
+            @Param("parentIds") List<Long> parentIds,
+            @Param("assessmentSectionId") Long assessmentSectionId
     );
 
     /**
@@ -108,9 +110,11 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
             "JOIN res.assessmentResult ar " +
             "WHERE ar.status = 'COMPLETED' " +
             "  AND c.parent.id IN :parentIds " +
+            "  AND ar.assessmentSection.id = :assessmentSectionId " +
             "GROUP BY c.parent.id")
     List<CompetencyAverageDto> findUniversityAverages(
-            @Param("parentIds") List<Long> parentIds
+            @Param("parentIds") List<Long> parentIds,
+            @Param("assessmentSectionId") Long assessmentSectionId
     );
 
     Long user(User user);
