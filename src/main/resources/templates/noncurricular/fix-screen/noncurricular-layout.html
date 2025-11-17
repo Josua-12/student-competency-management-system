@@ -16,7 +16,6 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
         }
         
         .header {
@@ -37,14 +36,14 @@
         }
     </style>
     
-    <th:block th:replace="common/header :: headerStyles"></th:block>
-    <th:block th:replace="common/footer :: footerStyles"></th:block>
+    <th:block th:replace="common/header-student :: headerStyles"></th:block>
+    <th:block th:replace="common/footer-student :: footerStyles"></th:block>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
 
 <!-- 상단 헤더 -->
-<div th:replace="common/header :: header"></div>
+<div th:replace="common/header-student :: header"></div>
 
 <div class="main-wrapper flex-grow-1 d-flex">
 
@@ -61,10 +60,10 @@
 </div>
 
 <!-- 푸터 -->
-<div th:replace="~{common/footer :: footer}"></div>
+<div th:replace="~{common/footer-student :: footer}"></div>
 
 <!-- 공통 JS -->
-<div th:replace="common/header :: headerScript"></div>
+<div th:replace="common/header-student :: headerScript"></div>
 <!-- 페이지 전용 JS (fragment 없으면 무시) -->
 
 </body>
