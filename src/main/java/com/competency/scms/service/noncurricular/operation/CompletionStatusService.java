@@ -30,7 +30,7 @@ public class CompletionStatusService {
             Pageable pageable
     ) {
         // Repository @Query 메서드 호출
-        Page<OpCompletionStatusListItemDto> page =
+        Page<ProgramApplication> page =
                 programApplicationRepository.searchCompletionStatusList(
                         condition.getProgramName(),
                         condition.getProgId(),            // progCode
@@ -39,7 +39,9 @@ public class CompletionStatusService {
                         pageable
                 );
 
-        List<OpCompletionStatusListItemDto> items = page.getContent();
+        List<OpCompletionStatusListItemDto> items = page.getContent().stream()
+                .map(this::convertToDto)
+                .toList();
         long total = page.getTotalElements();
 
         long completeCount = items.stream()
@@ -148,6 +150,27 @@ public class CompletionStatusService {
         }
     }
 
+    private OpCompletionStatusListItemDto convertToDto(ProgramApplication app) {
+        return OpCompletionStatusListItemDto.builder()
+                .applicationId(app.getApplicationId())
+                .programId(app.getProgram().getProgramId())
+                .programCode(app.getProgram().getCode())
+                .programName(app.getProgram().getTitle())
+                .sessionName("")
+                .opDeptName(app.getProgram().getDepartment() != null ? app.getProgram().getDepartment().getName() : "")
+                .studentNo(String.valueOf(app.getStudent().getUserNum()))
+                .studentName(app.getStudent().getName())
+                .departmentName(app.getStudent().getDepartment() != null ? app.getStudent().getDepartment().getName() : "")
+                .gradeName(app.getStudent().getGrade() != null ? String.valueOf(app.getStudent().getGrade()) : "")
+                .attendanceRate(100)
+                .satisfactionSubmitted(false)
+                .satisfactionScore(0.0)
+                .completionStatus(app.getCompletionStatus())
+                .completionDate(app.getCompletionDate() != null ? app.getCompletionDate().toLocalDate() : null)
+                .certificateAvailable(false)
+                .lastModified(app.getUpdatedAt())
+                .build();
+    }
 
 }
 

@@ -255,57 +255,23 @@ public interface ProgramApplicationRepository
      * ProgramApplication / Program / ProgramSchedule / User 엔티티에
      * 맞게 이름만 바꿔줘야 해요.
      */
-    @Query(
-            value = """
-                select new com.competency.scms.dto.noncurricular.operation.completion.CompletionStatusListItemDto(
-                    app.id,
-                    prog.id,
-                    prog.programCode,             -- TODO: 프로그램 코드 필드명 맞게 수정 (없으면 null로 대체하거나 DTO에서 제거)
-                    prog.name,                    -- TODO: 프로그램명 필드명
-                    schd.sessionName,             -- TODO: 회차/일정명 (없으면 '-' 로)
-                    opDept.name,                  -- TODO: 운영부서명 (없으면 null)
-                    stu.studentNo,                -- TODO: 학번 필드
-                    stu.name,                     -- TODO: 학생 이름
-                    stuDept.name,                 -- TODO: 학생 학과명
-                    stu.gradeName,                -- TODO: 학년 (없으면 null)
-                    app.attendanceRate,           -- TODO: 출석률 (없으면 null)
-                    app.satisfactionSubmitted,    -- TODO: 만족도 설문 제출 여부 (없으면 null)
-                    app.satisfactionScore,        -- TODO: 만족도 점수 (없으면 null)
-                    app.completionStatus,
-                    app.completionDate,
-                    app.certificateIssued,        -- TODO: 이수증 발급 여부 필드명
-                    app.updatedAt                 -- TODO: BaseEntity 의 수정일자
-                )
-                from ProgramApplication app
-                    join app.program prog
-                    join app.schedule schd
-                    join app.student stu              -- ProgramApplication 에 학생 필드명이 student / user 인지 확인
-                    left join prog.operatingDept opDept
-                    left join stu.department stuDept
-                where
-                    (:programName is null or prog.name like concat('%', :programName, '%'))
-                    and (:progCode is null or prog.programCode like concat('%', :progCode, '%'))
-                    and (:status is null or app.completionStatus = :status)
-                    and (:operatorDeptId is null or opDept.id = :operatorDeptId)
-                """,
-            countQuery = """
-                select count(app)
-                from ProgramApplication app
-                    join app.program prog
-                    left join prog.operatingDept opDept
-                where
-                    (:programName is null or prog.name like concat('%', :programName, '%'))
-                    and (:progCode is null or prog.programCode like concat('%', :progCode, '%'))
-                    and (:status is null or app.completionStatus = :status)
-                    and (:operatorDeptId is null or opDept.id = :operatorDeptId)
-                """
-    )
-    Page<OpCompletionStatusListItemDto> searchCompletionStatusList(
-            @Param("programName") String programName,
-            @Param("progCode") String progCode,
+    @Query("""
+    select pa
+    from ProgramApplication pa
+        join fetch pa.program p
+        join fetch pa.student u
+    where (:keyword is null or p.title like concat('%', :keyword, '%'))
+      and (:studentNum is null or cast(u.userNum as string) like concat('%', :studentNum, '%'))
+      and (:status is null or pa.completionStatus = :status)
+      and (:operatorId is null or p.owner.id = :operatorId)
+    """)
+    Page<ProgramApplication> searchCompletionStatusList(
+            @Param("keyword") String keyword,
+            @Param("studentNum") String studentNum,
             @Param("status") CompletionStatus status,
-            @Param("operatorDeptId") Long operatorDeptId,
+            @Param("operatorId") Long operatorId,
             Pageable pageable
     );
+
 }
 
