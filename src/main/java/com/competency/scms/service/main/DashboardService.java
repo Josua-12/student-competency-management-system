@@ -41,8 +41,7 @@ public class DashboardService {
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
             } else {
                 // 이메일 형식이 아닌 경우 로그 찍기
-                System.out.println("Identifier is not an email. Value: " + identifier);
-                // 학번으로 조회
+                log.debug("Identifier is not an email. Value: {}", identifier);                // 학번으로 조회
                 try {
                     Integer userNum = Integer.parseInt(identifier);
                     user = userRepository.findByUserNum(userNum)

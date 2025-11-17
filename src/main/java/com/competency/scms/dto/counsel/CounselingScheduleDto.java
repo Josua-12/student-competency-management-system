@@ -127,5 +127,6 @@ public class CounselingScheduleDto {
         private Integer dayOfWeek;
         private String startTime;
         private String endTime;
+        private Boolean isBaseSchedule;
     }
 }
