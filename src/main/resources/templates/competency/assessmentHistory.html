@@ -96,16 +96,9 @@
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
 
     <script th:inline="javascript">
-        /*<![CDATA[*/
-
-
-        // 백엔드에서 받은 진짜 데이터를 전역 변수로 선언
-        const competencyLabels = /*[[${competencyLabels}]]*/ [];
-        const historyData = /*[[${historyData}]]*/ [];
-
-        /*]]>*/
+        window.competencyLabels = /*[[${competencyLabels}]]*/ [];
+        window.historyData = /*[[${historyData}]]*/ [];
     </script>
-
     <script th:src="@{/js/competency/assessment-history.js}"></script>
 </th:block>
 </html>
