@@ -15,19 +15,12 @@
             --radius:12px;
         }
         .sidebar {
-            position: sticky;
-            left: 0;
-            top: 0;
-            width: 20vw;
+            position: static;
+            width: 100%;
+            max-width: 260px;
             background: #ffffff;
             border-right: 1px solid var(--line);
             padding: 20px 16px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        
-        .main-content-shifted {
-            padding: 30px 20px;
         }
         .sidebar-header{
             padding:0 8px 16px;
@@ -65,8 +58,8 @@
     </style>
 
     <div class="sidebar-header">
-        <div class="sidebar-title">상담</div>
-        <div class="sidebar-sub">Counseling</div>
+        <div class="sidebar-title">상담 관리</div>
+        <div class="sidebar-sub">Counseling Management</div>
     </div>
 
     <section class="menu-section open">
@@ -74,98 +67,81 @@
             <span>대시보드</span><span class="caret">▶</span>
         </button>
         <ul class="menu-list">
-            <li sec:authorize="hasRole('STUDENT')">
-                <a class="menu-link" th:href="@{/counseling/student}">개인 대시보드</a>
-            </li>
-            <li sec:authorize="hasRole('COUNSELOR')">
-                <a class="menu-link" th:href="@{/counseling/counselor/dashboard}">상담사 대시보드</a>
-            </li>
-            <li sec:authorize="hasRole('COUNSELING_ADMIN')">
+            <li>
                 <a class="menu-link" th:href="@{/counseling/admin/dashboard}">관리자 대시보드</a>
             </li>
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 신청</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/counseling/student/psycho}">심리상담</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/counseling/student/career}">진로상담</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/counseling/student/learning}">학습상담</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/counseling/student/job}">취업상담</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 관리</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/counseling/student/status}">신청 현황</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section" sec:authorize="hasRole('COUNSELOR')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 관리</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/counseling/counselor/reservations}">예약 관리</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/counseling/counselor/schedule}">일정 관리</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/counseling/counselor/history}">상담 이력</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/counseling/counselor/records}">상담 기록</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section" sec:authorize="hasRole('COUNSELOR')">
-        <button class="menu-section-toggle" type="button">
-            <span>통계</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/counseling/counselor/satisfaction}">만족도 결과</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section" sec:authorize="hasRole('COUNSELING_ADMIN')">
+    <section class="menu-section">
         <button class="menu-section-toggle" type="button">
             <span>상담사 관리</span><span class="caret">▶</span>
         </button>
         <ul class="menu-list">
             <li>
-                <a class="menu-link" th:href="@{/counseling/admin/counselors}">상담사 관리</a>
+                <a class="menu-link" th:href="@{/counseling/admin/counselors}">상담사 목록</a>
             </li>
             <li>
-                <a class="menu-link" th:href="@{/counseling/admin/schedule}">일정 관리</a>
+                <a class="menu-link" th:href="@{/counseling/admin/counselors/create}">상담사 등록</a>
             </li>
             <li>
-                <a class="menu-link" th:href="@{/counseling/admin/settings}">설정 관리</a>
+                <a class="menu-link" th:href="@{/counseling/admin/counselors/approval}">승인 관리</a>
             </li>
         </ul>
     </section>
 
-    <section class="menu-section" sec:authorize="hasRole('COUNSELING_ADMIN')">
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>일정 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/schedule}">일정 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/schedule/off-requests}">휴무 신청 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/schedule/calendar}">전체 일정 조회</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>예약 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reservations}">예약 현황</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reservations/approval}">예약 승인</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reservations/history}">예약 이력</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>설정 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/settings}">상담 설정</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/settings/fields}">상담 분야 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/settings/satisfaction}">만족도 문항 관리</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section">
         <button class="menu-section-toggle" type="button">
             <span>통계</span><span class="caret">▶</span>
         </button>
@@ -174,12 +150,32 @@
                 <a class="menu-link" th:href="@{/counseling/admin/statistics}">상담 통계</a>
             </li>
             <li>
-                <a class="menu-link" th:href="@{/counseling/admin/reports}">결과 분석</a>
+                <a class="menu-link" th:href="@{/counseling/admin/statistics/counselor}">상담사별 통계</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/statistics/satisfaction}">만족도 통계</a>
             </li>
         </ul>
     </section>
 
-    <script th:fragment="counselingSidebarScript">
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>보고서</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reports/monthly}">월간 보고서</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reports/annual}">연간 보고서</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reports/export}">데이터 내보내기</a>
+            </li>
+        </ul>
+    </section>
+
+    <script th:fragment="counselingAdminSidebarScript">
         document.querySelectorAll('.menu-section-toggle').forEach(btn => {
             btn.addEventListener('click', () => {
                 const section = btn.closest('.menu-section');

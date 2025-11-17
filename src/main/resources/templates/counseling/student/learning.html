@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout('일반상담·컨설팅', ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{counseling/counseling_layout :: layout('학습상담', ~{::content}, ~{::css}, ~{::scripts}, false)}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,13 +11,19 @@
 </head>
 <body>
     <th:block th:fragment="content">
-        <div class="container-fluid">
-            <div class="container">
-                <!-- 페이지 상단 영역 -->
-                <div th:replace="~{counseling/student/sidebar :: sidebar(selectedTab='learning')}"></div>
-
-                <!-- 메인 콘텐츠 -->
-                <div class="row">
+        <!-- 페이지 헤더 -->
+        <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">학습상담</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="/counseling/student">상담신청</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">학습상담</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="row">
                     <div class="col-12">
                         <!-- 학습 컨설팅 소개 -->
                         <div class="bg-light p-4 rounded mb-4">

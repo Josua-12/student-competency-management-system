@@ -85,7 +85,7 @@ function renderOffRequests(requests) {
         const statusBadge = req.status === 'PENDING' ? 'bg-warning' : 
                            req.status === 'APPROVED' ? 'bg-success' : 'bg-danger';
         const statusText = req.status === 'PENDING' ? '대기중' : 
-                          req.status === 'APPROVED' ? '승인됨' : '거부됨';
+                          req.status === 'APPROVED' ? '승인됨' : '거절됨';
         
         const buttons = req.status === 'PENDING' ? 
             `<button class="btn btn-sm btn-outline-primary" onclick="editOffRequest(${req.id})">수정</button>
@@ -191,7 +191,7 @@ document.getElementById('submitOffRequest').addEventListener('click', async func
     }
     
     if (new Date(startDate) > new Date(endDate)) {
-        alert('종료일은 시작일보다 빠를 수 없습니다.');
+        alert('종료일이 시작일보다 빠를 수 없습니다.');
         return;
     }
     
@@ -393,7 +393,7 @@ function getStatusText(status) {
         'CONFIRMED': '승인됨',
         'COMPLETED': '완료됨',
         'CANCELLED': '취소됨',
-        'REJECTED': '거부됨'
+        'REJECTED': '거절됨'
     };
     return statusMap[status] || status;
 }

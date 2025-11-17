@@ -114,10 +114,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     cell.style.backgroundColor = '#f8f9fa';
                     cell.style.color = '#adb5bd';
                     cell.style.cursor = 'not-allowed';
-                    cell.textContent = '상담사 선택';
+                    cell.textContent = '상담불가능';
                     cell.classList.add('disabled');
                 } else {
-                    cell.textContent = '상담사 선택';
+                    cell.textContent = '상담불가능';
                     cell.style.backgroundColor = '#ffffff';
                     cell.style.cursor = 'default';
                 }
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 cell.style.backgroundColor = '#ffffff';
                 cell.style.color = '#6c757d';
-                cell.textContent = '상담사 선택';
+                cell.textContent = '상담불가능';
                 cell.style.cursor = 'default';
                 cell.classList.remove('has-counselors');
             }

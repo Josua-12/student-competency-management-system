@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         await approveReservation(currentReservationId, confirmedDate, confirmedStartTime, confirmedEndTime, memo);
     });
     
-    // 거부 모달 이벤트
+    // 거절 모달 이벤트
     let rejectReservationId = null;
     document.getElementById('rejectModal').addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
@@ -50,14 +50,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.querySelector('#rejectModal textarea').value = '';
     });
     
-    // 거부 버튼 클릭
+    // 거절 버튼 클릭
     document.querySelector('#rejectModal .btn-danger').addEventListener('click', async function() {
         if (!rejectReservationId) return;
         
         const rejectReason = document.querySelector('#rejectModal textarea').value;
         
         if (!rejectReason.trim()) {
-            alert('거부 사유를 입력해주세요.');
+            alert('거절 사유를 입력해주세요.');
             return;
         }
         
@@ -117,13 +117,13 @@ function renderReservationTable(list) {
         const statusBadge = item.status === 'PENDING' ? 'bg-warning' : 
                            item.status === 'CONFIRMED' ? 'bg-success' : 'bg-danger';
         const statusText = item.status === 'PENDING' ? '대기중' : 
-                          item.status === 'CONFIRMED' ? '승인됨' : '거부됨';
+                          item.status === 'CONFIRMED' ? '승인됨' : '거절됨';
         
         let buttons = '';
         if (item.status === 'PENDING') {
             buttons = `
                 <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#approveModal" data-id="${item.id}">승인</button>
-                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="${item.id}">거부</button>
+                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="${item.id}">거절</button>
             `;
         }
         buttons += `<button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="${item.id}">상세</button>`;
@@ -243,7 +243,7 @@ function getStatusText(status) {
         'CONFIRMED': '승인됨',
         'COMPLETED': '완료됨',
         'CANCELLED': '취소됨',
-        'REJECTED': '거부됨'
+        'REJECTED': '거절됨'
     };
     return statusMap[status] || status;
 }
@@ -361,14 +361,14 @@ async function rejectReservation(reservationId, rejectReason) {
         });
         
         if (response.ok) {
-            alert('예약이 거부되었습니다.');
+            alert('예약이 거절되었습니다.');
             bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
             await loadReservations();
         } else {
-            alert('거부 처리 중 오류가 발생했습니다.');
+            alert('거절 처리 중 오류가 발생했습니다.');
         }
     } catch (error) {
-        console.error('거부 처리 실패:', error);
-        alert('거부 처리 중 오류가 발생했습니다.');
+        console.error('거절 처리 실패:', error);
+        alert('거절 처리 중 오류가 발생했습니다.');
     }
 }

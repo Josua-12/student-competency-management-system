@@ -1,10 +1,10 @@
 // assessment-history.js
 
-// *참고: 이 JS는 Thymeleaf 변수를 가정하고 있지만, Canvas 환경을 위해 임시 데이터를 사용합니다.*
-// (반응형 햄버거 메뉴 기능은 Bootstrap 5의 JS/CSS를 통해 HTML에서 처리됩니다.)
+// *참고: 실제 JS에서 Thymeleaf 변수를 가져올 수 없으므로 Canvas 환경에서만 테스트 데이터를 사용합니다*
+// (반응형 네비게이션 메뉴 기능은 Bootstrap 5의 JS/CSS를 통해 HTML에서 처리됩니다)
 
-// 임시 데이터 (실제 서버에서는 Thymeleaf를 통해 주입될 예정)
-const competencyLabels = ['문제해결', '협업능력', '창의적사고', '리더십'];
+// 테스트 데이터 (실제 서버에서는 Thymeleaf를 통해 주입될 예정)
+const competencyLabels = ['문제해결', '협업능력', '창의사고', '리더십'];
 const historyData = [
     { diagnosisTitle: "2024년 1차 진단", scores: [4.2, 3.8, 4.0, 3.1] },
     { diagnosisTitle: "2024년 2차 진단", scores: [4.6, 4.0, 4.5, 3.5] },
@@ -50,7 +50,7 @@ let currentChart = null; // 현재 차트 객체를 저장할 변수
 function createChart(chartType) {
     // 차트를 그릴 컨테이너
     const el = document.getElementById('historyChart');
-    // 컨테이너 비우기 (기존 차트 삭제)
+    // 컨테이너 비우기 (기존 차트 제거)
     el.innerHTML = '';
 
     const data = {
@@ -59,7 +59,7 @@ function createChart(chartType) {
     };
 
     if (historyData.length === 0) {
-        // 데이터가 없으면 메시지 표시
+        // 데이터 없음 메시지 표시
         el.innerHTML = '<div class="no-data-message"><i class="fas fa-exclamation-circle me-2"></i> 진단 이력이 없어 차트를 표시할 수 없습니다.</div>';
         currentChart = null;
         return;
@@ -80,13 +80,13 @@ function createChart(chartType) {
 }
 
 /**
- * 테이블 데이터를 채우는 함수
+ * 데이터 테이블을 채우는 함수
  */
 function populateTable() {
     const tableBody = document.getElementById('scoreTableBody');
     tableBody.innerHTML = ''; // 기존 내용 제거
 
-    // 테이블 헤더 동적 설정
+    // 데이터 헤더 동적 설정
     const tableHeaders = document.querySelectorAll('th[data-label-placeholder]');
     chartCategories.forEach((label, index) => {
          if (tableHeaders[index]) {
@@ -103,10 +103,10 @@ function populateTable() {
         return;
     }
 
-    // 테이블 행 채우기
+    // 데이터 행 채우기
     historyData.forEach(row => {
         const tr = document.createElement('tr');
-        // 점수 셀 생성 (소수점 첫째 자리까지 표시)
+        // 점수 셀 생성 (점수를 첫째 자리까지 표시)
         let scoreCells = row.scores.map(score => `<td class="text-center">${score.toFixed(1)}</td>`).join('');
         tr.innerHTML = `
             <td class="px-4">${row.diagnosisTitle}</td>
@@ -125,26 +125,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLine = document.getElementById('btnShowLineChart');
     const btnBar = document.getElementById('btnShowBarChart');
 
-    // 테이블 데이터 먼저 채우기
+    // 데이터 테이블 먼저 채우기
     populateTable();
 
-    // 차트 버튼이 있을 때만 이벤트 리스너 설정
+    // 차트 버튼 클릭을 위한 이벤트 리스너 설정
     if (btnLine && btnBar) {
-        // 꺾은선 버튼 클릭 이벤트
+        // 꺾은선 차트 버튼 클릭 이벤트
         btnLine.addEventListener('click', () => {
             createChart('line');
             btnLine.classList.add('active');
             btnBar.classList.remove('active');
         });
 
-        // 막대 버튼 클릭 이벤트
+        // 막대 차트 버튼 클릭 이벤트
         btnBar.addEventListener('click', () => {
             createChart('bar');
             btnBar.classList.add('active');
             btnLine.classList.remove('active');
         });
 
-        // 페이지 첫 로드 시 꺾은선 차트를 기본으로 생성
+        // 페이지 로드 시 꺾은선 차트를 기본으로 생성
         createChart('line');
         // 기본 활성화 상태 설정 (CSS active 클래스 부여)
         btnLine.classList.add('active');

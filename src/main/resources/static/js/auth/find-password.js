@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.href = `/auth/verify-email?userNum=${encodeURIComponent(userNum)}&email=${encodeURIComponent(data.email)}&realEmail=${encodeURIComponent(data.realEmail)}&userName=${encodeURIComponent(userName)}`;
                 }, 1000);
             } else {
-                showAlert(data.message || '사용자 정보를 찾을 수 없습니다', 'danger');
+                showAlert(data.message || '해당 사용자 정보를 찾을 수 없습니다', 'danger');
             }
         } catch (error) {
             console.error('Error:', error);

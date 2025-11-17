@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 async function toggleCounselorStatus(userId, isActive) {
-    if (!confirm(`상담원을 ${isActive ? '활성' : '비활성'}화 하시겠습니까?`)) return;
+    if (!confirm(`상담사를 ${isActive ? '활성' : '비활성'}화 하시겠습니까?`)) return;
     
     try {
         const token = localStorage.getItem('accessToken');
@@ -46,7 +46,7 @@ async function editCounselor(userId) {
             currentCounselorId = userId;
             
             const modal = document.getElementById('counselorModal');
-            modal.querySelector('.modal-title').textContent = '상담원 수정';
+            modal.querySelector('.modal-title').textContent = '상담사 수정';
             modal.querySelectorAll('input[type="text"]')[0].value = counselor.name;
             modal.querySelector('input[type="email"]').value = counselor.email;
             modal.querySelector('select').value = counselor.counselingField;
@@ -56,8 +56,8 @@ async function editCounselor(userId) {
             new bootstrap.Modal(modal).show();
         }
     } catch (error) {
-        console.error('상담원 정보 로드 실패:', error);
-        alert('상담원 정보를 불러오는 중 오류가 발생했습니다.');
+        console.error('상담사 정보 로드 실패:', error);
+        alert('상담사 정보를 불러오는 중 오류가 발생했습니다.');
     }
 }
 
@@ -74,7 +74,7 @@ async function loadCounselors() {
             renderCounselorTable(counselors);
         }
     } catch (error) {
-        console.error('상담원 목록 로드 실패:', error);
+        console.error('상담사 목록 로드 실패:', error);
     }
 }
 
@@ -83,7 +83,7 @@ function renderCounselorTable(counselors) {
     if (!tbody) return;
     
     if (counselors.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">등록된 상담원이 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">등록된 상담사가 없습니다.</td></tr>';
         return;
     }
     
@@ -99,7 +99,7 @@ function renderCounselorTable(counselors) {
                 <button class="btn btn-sm btn-outline-primary" onclick="editCounselor(${c.userId})">수정</button>
                 <button class="btn btn-sm btn-outline-${c.isActive ? 'warning' : 'success'}" 
                         onclick="toggleCounselorStatus(${c.userId}, ${!c.isActive})">
-                    ${c.isActive ? '비활성' : '활성'}
+                    ${c.isActive ? '비활성화' : '활성화'}
                 </button>
             </td>
         </tr>
@@ -108,7 +108,7 @@ function renderCounselorTable(counselors) {
 
 document.getElementById('counselorModal').addEventListener('hidden.bs.modal', function() {
     currentCounselorId = null;
-    this.querySelector('.modal-title').textContent = '상담원 등록/수정';
+    this.querySelector('.modal-title').textContent = '상담사 등록/수정';
     this.querySelectorAll('input[type="text"]')[0].value = '';
     this.querySelector('input[type="email"]').value = '';
     this.querySelector('select').value = '';
@@ -359,7 +359,7 @@ function renderSatisfactionQuestions(questions) {
                           q.field === 'CAREER' ? 'bg-warning' :
                           q.field === 'EMPLOYMENT' ? 'bg-success' : 'bg-primary';
         const fieldText = q.field === 'ALL' ? '공통' : getFieldName(q.field);
-        const typeText = q.type === 'RATING' ? '5점 척도' : 
+        const typeText = q.type === 'RATING' ? '5점척도' : 
                         q.type === 'MULTIPLE_CHOICE' ? '객관식' : '주관식';
         const isSystem = q.isSystemDefault;
         const buttons = isSystem ? 

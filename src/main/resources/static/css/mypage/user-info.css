@@ -1,4 +1,4 @@
- <!-- 통합 CSS (user-info.css 내용) -->
+ <!-- 통합 CSS (user-info.css 적용) -->
     <style>
         /* static/css/mypage/user-info.css */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
@@ -12,7 +12,7 @@
 
         /* ===== 마이페이지 레이아웃 공통 스타일 추가 ===== */
         .sidebar {
-            /* md 이상에서 보일 때 너비와 높이 설정 */
+            /* md 이상에서 보일 사이드바 너비 설정 */
             min-height: 100vh;
             background-color: #ffffff; /* 사이드바 배경색 */
         }
@@ -35,7 +35,7 @@
             width: 250px;
         }
         .offcanvas-body .active {
-            /* 모바일 메뉴에서도 활성화 스타일 적용 */
+            /* 모바일 메뉴에서의 활성화 스타일 적용 */
             background-color: var(--bs-primary-bg-subtle, #cfe2ff);
             font-weight: 600;
         }
@@ -56,7 +56,7 @@
             }
         }
 
-        /* ===== 기존 사용자 정보 폼 스타일 유지 및 Bootstrap 클래스 적용 ===== */
+        /* ===== 기존 사용자 정보 페이지 스타일 및 Bootstrap 클래스 적용 ===== */
         .user-info-container {
             max-width: 600px;
             margin: 2rem auto;

@@ -1,4 +1,4 @@
-// 상담분류 선택 시 상담사 목록 업데이트
+// 상담분야 선택 시 상담사 목록 업데이트
 document.getElementById('fieldSelect').addEventListener('change', async function() {
     const counselorSelect = document.getElementById('counselorSelect');
     const selectedField = this.value;
@@ -33,13 +33,13 @@ document.getElementById('fieldSelect').addEventListener('change', async function
     }
 });
 
-// 상담사 선택 시 일정 섹션 표시
+// 상담사 선택 시 일정 옵션 표시
 document.getElementById('loadSchedule').addEventListener('click', function() {
     const fieldSelect = document.getElementById('fieldSelect');
     const counselorSelect = document.getElementById('counselorSelect');
     
     if (!fieldSelect.value) {
-        alert('상담분류를 선택해주세요.');
+        alert('상담분야를 선택해주세요.');
         return;
     }
     if (!counselorSelect.value) {
@@ -101,11 +101,11 @@ async function loadOffRequests(counselorId) {
                 const statusBadge = req.status === 'PENDING' ? 'bg-warning' : 
                                    req.status === 'APPROVED' ? 'bg-success' : 'bg-danger';
                 const statusText = req.status === 'PENDING' ? '대기중' : 
-                                  req.status === 'APPROVED' ? '승인됨' : '거부됨';
+                                  req.status === 'APPROVED' ? '승인됨' : '거절됨';
                 
                 const buttons = req.status === 'PENDING' ? 
                     `<button class="btn btn-sm btn-success" onclick="approveOffRequest(${req.id})">승인</button>
-                     <button class="btn btn-sm btn-danger" onclick="rejectOffRequest(${req.id})">거부</button>` :
+                     <button class="btn btn-sm btn-danger" onclick="rejectOffRequest(${req.id})">거절</button>` :
                     `<button class="btn btn-sm btn-outline-info" onclick="viewOffRequest(${req.id})">상세</button>`;
                 
                 return `
@@ -206,7 +206,7 @@ document.getElementById('confirmApprove').addEventListener('click', async functi
     }
 });
 
-// 휴무 신청 거부
+// 휴무 신청 거절
 function rejectOffRequest(requestId) {
     currentRequestId = requestId;
     const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
@@ -214,13 +214,13 @@ function rejectOffRequest(requestId) {
     modal.show();
 }
 
-// 거부 확인 버튼
+// 거절 확인 버튼
 document.getElementById('confirmReject').addEventListener('click', async function() {
     if (!currentRequestId) return;
     
     const reason = document.querySelector('#rejectModal textarea').value;
     if (!reason.trim()) {
-        alert('거부 사유를 입력해주세요.');
+        alert('거절 사유를 입력해주세요.');
         return;
     }
     
@@ -236,16 +236,16 @@ document.getElementById('confirmReject').addEventListener('click', async functio
         });
         
         if (response.ok) {
-            alert('거부되었습니다.');
+            alert('거절되었습니다.');
             bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
             loadOffRequests(document.getElementById('counselorSelect').value);
             currentRequestId = null;
         } else {
-            alert('거부에 실패했습니다.');
+            alert('거절에 실패했습니다.');
         }
     } catch (error) {
-        console.error('거부 실패:', error);
-        alert('거부 중 오류가 발생했습니다.');
+        console.error('거절 실패:', error);
+        alert('거절 중 오류가 발생했습니다.');
     }
 });
 

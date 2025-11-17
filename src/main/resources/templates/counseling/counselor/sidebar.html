@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        :root {
+            --sidebar-accent: #094081;
+            --sidebar-accent-soft: #e3f2fd;
+            --sidebar-text: #333;
+            --sidebar-text-muted: #666;
+            --sidebar-hover: #f8f9fa;
+            --sidebar-border: #dee2e6;
+        }
+        
+        .counselor-sidebar {
+            background: white;
+            border-right: 1px solid var(--sidebar-border);
+            min-height: 100vh;
+            width: 280px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .counselor-sidebar .sidebar-header {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            background: var(--sidebar-accent-soft);
+        }
+        
+        .counselor-sidebar .sidebar-title {
+            color: var(--sidebar-accent);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .counselor-sidebar .nav-section {
+            padding: 1rem 0;
+        }
+        
+        .counselor-sidebar .nav-section-title {
+            padding: 0 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidebar-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .counselor-sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border: none;
+            background: none;
+            transition: all 0.2s ease;
+        }
+        
+        .counselor-sidebar .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: var(--sidebar-accent);
+        }
+        
+        .counselor-sidebar .nav-link.active {
+            background: var(--sidebar-accent);
+            color: white;
+            border-left: 4px solid var(--sidebar-accent);
+        }
+        
+        .counselor-sidebar .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+        
+        .main-content-shifted {
+            margin-left: 280px;
+        }
+        
+        @media (max-width: 768px) {
+            .counselor-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .counselor-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content-shifted {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<nav th:fragment="sidebar" class="counselor-sidebar">
+    <div class="sidebar-header">
+        <h5 class="sidebar-title">
+            <i class="fas fa-user-tie me-2"></i>
+            상담사 메뉴
+        </h5>
+    </div>
+    
+    <div class="nav-section">
+        <div class="nav-section-title">대시보드</div>
+        <a href="/counseling/counselor" class="nav-link" th:classappend="${#request.requestURI == '/counseling/counselor' ? 'active' : ''}">
+            <i class="fas fa-tachometer-alt"></i>
+            메인 대시보드
+        </a>
+    </div>
+    
+    <div class="nav-section">
+        <div class="nav-section-title">일정 관리</div>
+        <a href="/counseling/counselor/schedule" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/schedule') ? 'active' : ''}">
+            <i class="fas fa-calendar-alt"></i>
+            일정 관리
+        </a>
+        <a href="/counseling/counselor/reservations" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/reservations') ? 'active' : ''}">
+            <i class="fas fa-check-circle"></i>
+            예약 승인
+        </a>
+    </div>
+    
+    <div class="nav-section">
+        <div class="nav-section-title">상담 관리</div>
+        <a href="/counseling/counselor/records" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/records') ? 'active' : ''}">
+            <i class="fas fa-file-alt"></i>
+            상담일지
+        </a>
+        <a href="/counseling/counselor/history" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/history') ? 'active' : ''}">
+            <i class="fas fa-history"></i>
+            상담 이력
+        </a>
+        <a href="/counseling/counselor/satisfaction" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/satisfaction') ? 'active' : ''}">
+            <i class="fas fa-star"></i>
+            만족도 결과
+        </a>
+    </div>
+</nav>
+</html>

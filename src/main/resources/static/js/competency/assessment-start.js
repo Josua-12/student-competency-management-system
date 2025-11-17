@@ -11,20 +11,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitBtn = document.getElementById('submitButton');
     const draftBtn = document.getElementById('draftButton');
 
-    // 폼 내부의 모든 라디오 버튼에 이벤트 리스너 추가
+    // 폼에서 모든 라디오 버튼의 이벤트 리스너 추가
     form.addEventListener('change', updateProgress);
 
     function updateProgress() {
-        // 응답이 완료된 질문의 개수를 셉니다.
+        // 응답이 완료된 질문의 개수를 센다
         let answeredQuestions = 0;
         questions.forEach((question, index) => {
-            // 해당 질문 카드 내부에 체크된 라디오 버튼이 있는지 확인
+            // 해당 질문 카드 안에서 체크된 라디오 버튼이 있는지 확인
             if (question.querySelector('input[type="radio"]:checked')) {
                 answeredQuestions++;
             }
         });
 
-        // 진행도 업데이트
+        // 진행률 업데이트
         const progressPercentage = (answeredQuestions / totalQuestions) * 100;
         const roundedPercentage = Math.round(progressPercentage);
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         answeredCountEl.textContent = answeredQuestions;
 
-        // (선택) 모든 문항에 응답하면 '최종제출' 버튼 활성화
+        // (선택) 모든 문항에 응답하면 '최종 제출' 버튼 활성화
         if (answeredQuestions === totalQuestions) {
             document.getElementById('submitButton').disabled = false;
         } else {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 페이지 로드 시 한 번 실행 (임시저장된 값 반영)
+    // 페이지 로드 시 최초 실행 (기존에 저장된 값 반영)
     updateProgress();
 
     /**
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 1. JWT 토큰 가져오기
         const token = localStorage.getItem('accessToken');
         if (!token) {
-            alert('로그인 정보가 없습니다. 다시 로그인해주세요.');
+            alert('로그인 정보가 없습니다. 다시 로그인해주세요');
             window.location.href = '/login';
             return;
         }
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 // 성공 시 메시지 출력 후 이동
-                alert(data.message || (actionType === 'submit' ? '제출되었습니다.' : '저장되었습니다.'));
+                alert(data.message || (actionType === 'submit' ? '제출되었습니다' : '저장되었습니다.'));
                 if (data.redirectUrl) {
                     window.location.href = data.redirectUrl;
                 } else {
@@ -147,9 +147,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const spinner = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ';
 
         if (disabled) {
-            if (submitBtn) submitBtn.innerHTML = spinner + '처리중...';
+            if (submitBtn) submitBtn.innerHTML = spinner + '처리중..';
         } else {
-            if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> 최종제출';
+            if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i> 최종 제출';
         }
     }
 
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 최종제출 버튼
+    // 최종 제출 버튼
     if (submitBtn) {
         submitBtn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -172,11 +172,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const answeredCount = document.querySelectorAll('input[type="radio"]:checked').length;
 
             if (answeredCount < totalQuestions) {
-                if (!confirm(`총 ${totalQuestions}문항 중 ${answeredCount}문항만 응답했습니다.\n그래도 제출하시겠습니까? (미응답 문항은 점수에 반영되지 않을 수 있습니다.)`)) {
+                if (!confirm(`총 ${totalQuestions}문항 중 ${answeredCount}문항만 응답했습니다.\\n그래도 제출하시겠습니까? (미응답 문항은 점수에 반영되지 않을 수 있습니다.)`)) {
                     return;
                 }
             } else {
-                if (!confirm('정말 최종 제출하시겠습니까?\n제출 후에는 수정할 수 없습니다.')) {
+                if (!confirm('정말 최종 제출하시겠습니까?\\n제출 후에는 수정할 수 없습니다.')) {
                     return;
                 }
             }

@@ -1,0 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP DATABASE IF EXISTS student_competency;
+CREATE DATABASE student_competency;
+SET FOREIGN_KEY_CHECKS = 1;

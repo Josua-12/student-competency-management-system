@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('submitSatisfaction').style.display = 'none';
     }
 
-    // 평점형 입력 생성
+    // 평점 입력 생성
     function createRatingInput(question, defaultValue) {
         const container = document.createElement('div');
         container.className = 'd-flex justify-content-between align-items-center';
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.ok) {
-                alert('상담 예약이 취소되었습니다.');
+                alert('상담 예약을 취소했습니다');
                 bootstrap.Modal.getInstance(document.getElementById('cancelModal')).hide();
                 loadReservations();
             } else {
@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.ok) {
-                alert(satisfactionId ? '만족도가 수정되었습니다.' : '만족도 조사가 제출되었습니다.');
+                alert(satisfactionId ? '만족도를 수정했습니다' : '만족도 조사가 제출되었습니다');
                 bootstrap.Modal.getInstance(document.getElementById('satisfactionModal')).hide();
                 loadReservations();
             } else {
@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 총 개수 업데이트
+    // 총개수 업데이트
     function updateTotalCount(total) {
         document.querySelector('.total_count strong').textContent = total;
     }

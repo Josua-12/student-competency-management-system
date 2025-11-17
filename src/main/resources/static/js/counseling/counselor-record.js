@@ -47,7 +47,7 @@ async function loadRecords() {
             renderRecordTable(list);
         }
     } catch (error) {
-        console.error('상담일지 목록 로드 실패:', error);
+        console.error('상담기록 목록 로드 실패:', error);
     }
 }
 
@@ -55,7 +55,7 @@ function renderRecordTable(list) {
     const tbody = document.getElementById('recordTableBody');
     
     if (list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">상담일지가 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">상담기록이 없습니다.</td></tr>';
         return;
     }
     
@@ -126,5 +126,3 @@ async function loadRecordForEdit(recordId) {
         console.error('수정 데이터 로드 실패:', error);
     }
 }
-
-

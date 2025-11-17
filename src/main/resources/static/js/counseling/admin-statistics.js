@@ -116,12 +116,12 @@ function renderCharts(data) {
     window.statusChart = toastui.Chart.pieChart({
         el: document.getElementById('statusChart'),
         data: {
-            categories: ['완료', '진행중', '취소', '거부'],
+            categories: ['완료', '진행중', '취소', '거절'],
             series: [
                 { name: '완료', data: data.completedCounseling || 0 },
                 { name: '진행중', data: data.ongoingCount || 0 },
                 { name: '취소', data: data.cancelledCount || 0 },
-                { name: '거부', data: data.rejectedCount || 0 }
+                { name: '거절', data: data.rejectedCount || 0 }
             ]
         },
         options: { chart: { width: 400, height: 200 } }

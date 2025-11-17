@@ -237,7 +237,7 @@ async function assignAndApprove(reservationId, counselorId, confirmedDate, confi
         });
         
         if (response.ok) {
-            alert('상담사가 배정되고 예약이 승인되었습니다.');
+            alert('상담사를 배정하고 예약을 승인했습니다');
             bootstrap.Modal.getInstance(document.getElementById('assignModal')).hide();
             await loadApprovals();
         } else {
@@ -259,7 +259,7 @@ async function rejectReservation(reservationId, rejectReason) {
         });
         
         if (response.ok) {
-            alert('예약이 거부되었습니다.');
+            alert('예약을 거부했습니다');
             bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
             await loadApprovals();
         } else {

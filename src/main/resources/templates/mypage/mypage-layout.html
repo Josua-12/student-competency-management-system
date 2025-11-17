@@ -26,31 +26,10 @@
         <div class="container-fluid">
             <div class="row">
                 <!-- 마이페이지 사이드바 -->
-                <div class="col-md-3 col-lg-2 bg-light sidebar">
-                    <div class="p-4">
-                        <h5 class="fw-bold mb-4">마이페이지</h5>
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <a href="/student/mypage" class="d-block p-2 text-decoration-none text-dark rounded">
-                                    <i class="fas fa-chart-line me-2"></i> 대시보드
-                                </a>
-                            </li>
-                            <li class="mb-2">
-                                <a href="/student/mypage/info" class="d-block p-2 text-decoration-none text-dark rounded">
-                                    <i class="fas fa-user-edit me-2"></i> 사용자 정보 수정
-                                </a>
-                            </li>
-                            <li class="mb-2">
-                                <a href="/student/mypage/password" class="d-block p-2 text-decoration-none text-dark rounded">
-                                    <i class="fas fa-key me-2"></i> 비밀번호 변경
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <div th:replace="~{mypage/sidebar :: sidebar}"></div>
                 
                 <!-- 메인 콘텐츠 -->
-                <div class="col-md-9 col-lg-10">
+                <div class="main-content-shifted">
                     <div class="p-4" th:replace="${content}"></div>
                 </div>
             </div>
