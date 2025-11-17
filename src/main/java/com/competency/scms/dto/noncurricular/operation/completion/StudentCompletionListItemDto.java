@@ -24,7 +24,7 @@ public class StudentCompletionListItemDto {
 
     private Long programId;
     private String programTitle;
-
+    private String programTermLabel;
     private String departmentName;
     private String parentDepartmentName;
 
@@ -36,12 +36,15 @@ public class StudentCompletionListItemDto {
 
     private CompletionStatus completionStatus;
     private Integer point;              // 프로그램 마일리지(기본값)
+    private boolean pointPlanned;
+
 
     /** 핵심역량 이름 리스트 (문자열 join해서 보여주기 용도) */
     private List<String> competencyNames;
 
     /** 만족도 상태 텍스트 (예: "미제출", "제출완료" 등) */
     private String satisfactionStatusText;
+    private boolean certificateAvailable;
 
     // ==========================
     //   팩토리 메서드

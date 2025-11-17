@@ -1,6 +1,7 @@
 package com.competency.scms.domain.noncurricular.operation;
 
 import com.competency.scms.domain.BaseEntity;
+import com.competency.scms.domain.noncurricular.program.CompletionStatus;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramSchedule;
 import com.competency.scms.domain.user.User;
@@ -62,6 +63,20 @@ public class ProgramApplication extends BaseEntity {
 
     @Column(nullable=false)
     private boolean fromWaitlist = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "completion_status", length = 20)
+    private CompletionStatus completionStatus;
+
+    @Column(name = "completion_date")
+    private LocalDateTime completionDate;
+
+    @Column(name = "earned_point")
+    private Integer earnedPoint = 0;
+
+    @Column(name = "satisfaction_submitted")
+    private boolean satisfactionSubmitted = false;
+
 
 }
 

@@ -22,6 +22,6 @@ public class StudentCompletionSummaryDto {
     private long thisYearPoint;
 
     /** 기준 연도 (예: 2025) */
-    private int year;
+    private String year;
 }
 

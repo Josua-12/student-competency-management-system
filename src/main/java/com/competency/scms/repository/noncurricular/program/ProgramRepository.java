@@ -192,4 +192,30 @@ public interface ProgramRepository extends JpaRepository<Program, Long>, JpaSpec
     List<Program> findAllByOrganizerUserId(Long operatorId); // ProgramRepository
 
 
+    @Query("""
+        select p
+        from Program p
+            left join fetch p.category c
+            left join fetch p.department d
+        where (:title is null or p.title like concat('%', :title, '%'))
+          and (:deptId is null or d.deptId = :deptId)
+          and (:catgId is null or c.catgId = :catgId)
+          and (:status is null or p.status = :status)
+          and (:requestFrom is null or p.updatedAt >= :requestFrom)
+          and (:requestTo is null or p.updatedAt <= :requestTo)
+          and (:appStartFrom is null or p.appStart >= :appStartFrom)
+          and (:appEndTo is null or p.appEnd <= :appEndTo)
+    """)
+    Page<Program> searchProgramsForApproval(
+            @Param("title") String title,
+            @Param("deptId") Long departmentId,
+            @Param("catgId") Long categoryId,
+            @Param("status") ProgramStatus status,
+            @Param("requestFrom") LocalDateTime requestDateFrom,
+            @Param("requestTo") LocalDateTime requestDateTo,
+            @Param("appStartFrom") LocalDateTime appStartFrom,
+            @Param("appEndTo") LocalDateTime appEndTo,
+            Pageable pageable
+    );
+
 }

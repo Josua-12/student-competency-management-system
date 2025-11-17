@@ -113,7 +113,7 @@ public class NoncurricularStudentViewController {
     @GetMapping("/satisfaction")
     public String satisfaction(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 만족도 설문");
-        setView(model, "noncurricular/operation/RegisterSatisfactionQuestion");
+        setView(model, "noncurricular/operation/ResponseSatisfactionSurvey");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
