@@ -1,146 +1,212 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
+<aside class="sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+       th:fragment="sidebar">
+
     <style>
-        :root {
-            --sidebar-accent: #094081;
-            --sidebar-accent-soft: #e3f2fd;
-            --sidebar-text: #333;
-            --sidebar-text-muted: #666;
-            --sidebar-hover: #f8f9fa;
-            --sidebar-border: #dee2e6;
+        .main-wrapper {
+            display: flex;
+            flex-direction: row;
+            min-height: calc(100vh - 56px);
         }
         
-        .counselor-sidebar {
-            background: white;
-            border-right: 1px solid var(--sidebar-border);
-            min-height: 100vh;
-            width: 280px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 1000;
+        .sidebar {
+            width: 20%;
+            min-width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 16px;
             overflow-y: auto;
         }
         
-        .counselor-sidebar .sidebar-header {
-            padding: 1.5rem 1rem;
-            border-bottom: 1px solid var(--sidebar-border);
-            background: var(--sidebar-accent-soft);
+        .main-content {
+            width: 80%;
+            overflow-y: auto;
+            padding: 1.5rem 0;
         }
         
-        .counselor-sidebar .sidebar-title {
-            color: var(--sidebar-accent);
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0;
+        .content-wrapper {
+            padding: 30px 20px;
         }
         
-        .counselor-sidebar .nav-section {
-            padding: 1rem 0;
+        .sidebar-header{
+            padding: 0 8px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
         }
         
-        .counselor-sidebar .nav-section-title {
-            padding: 0 1rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--sidebar-text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
         }
         
-        .counselor-sidebar .nav-link {
+        .sidebar-sub {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .menu-section {
+            margin-bottom: 12px;
+        }
+        
+        .menu-section-toggle {
+            width: 100%;
             display: flex;
             align-items: center;
-            padding: 0.75rem 1rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
+            justify-content: space-between;
+            padding: 8px 10px;
             border: none;
-            background: none;
-            transition: all 0.2s ease;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.15s;
         }
         
-        .counselor-sidebar .nav-link:hover {
-            background: var(--sidebar-hover);
-            color: var(--sidebar-accent);
+        .menu-section-toggle:hover {
+            background: #e3f2fd;
         }
         
-        .counselor-sidebar .nav-link.active {
-            background: var(--sidebar-accent);
-            color: white;
-            border-left: 4px solid var(--sidebar-accent);
+        .menu-section-toggle .caret {
+            font-size: 11px;
+            color: #6b7280;
+            transition: transform 0.15s;
         }
         
-        .counselor-sidebar .nav-link i {
-            width: 20px;
-            margin-right: 0.75rem;
-            text-align: center;
+        .menu-section.open .menu-section-toggle .caret {
+            transform: rotate(90deg);
         }
         
-        .main-content-shifted {
-            margin-left: 280px;
+        .menu-list {
+            list-style: none;
+            margin-top: 4px;
+            margin-left: 8px;
+            padding-left: 6px;
+            border-left: 1px solid #e5e7eb;
+            display: none;
         }
         
-        @media (max-width: 768px) {
-            .counselor-sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .counselor-sidebar.show {
-                transform: translateX(0);
-            }
-            
-            .main-content-shifted {
-                margin-left: 0;
-            }
+        .menu-section.open .menu-list {
+            display: block;
+        }
+
+        .menu-link {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #6b7280;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            text-decoration: none;
+        }
+        
+        .menu-link:hover {
+            background: #e3f2fd;
+            color: #094081;
+        }
+        
+        .menu-link.active {
+            background: #094081;
+            color: #fff;
         }
     </style>
-</head>
 
-<nav th:fragment="sidebar" class="counselor-sidebar">
     <div class="sidebar-header">
-        <h5 class="sidebar-title">
-            <i class="fas fa-user-tie me-2"></i>
-            상담사 메뉴
-        </h5>
+        <div class="sidebar-title">상담사</div>
+        <div class="sidebar-sub">Counselor</div>
     </div>
-    
-    <div class="nav-section">
-        <div class="nav-section-title">대시보드</div>
-        <a href="/counseling/counselor" class="nav-link" th:classappend="${#request.requestURI == '/counseling/counselor' ? 'active' : ''}">
-            <i class="fas fa-tachometer-alt"></i>
-            메인 대시보드
-        </a>
-    </div>
-    
-    <div class="nav-section">
-        <div class="nav-section-title">일정 관리</div>
-        <a href="/counseling/counselor/schedule" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/schedule') ? 'active' : ''}">
-            <i class="fas fa-calendar-alt"></i>
-            일정 관리
-        </a>
-        <a href="/counseling/counselor/reservations" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/reservations') ? 'active' : ''}">
-            <i class="fas fa-check-circle"></i>
-            예약 승인
-        </a>
-    </div>
-    
-    <div class="nav-section">
-        <div class="nav-section-title">상담 관리</div>
-        <a href="/counseling/counselor/records" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/records') ? 'active' : ''}">
-            <i class="fas fa-file-alt"></i>
-            상담일지
-        </a>
-        <a href="/counseling/counselor/history" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/history') ? 'active' : ''}">
-            <i class="fas fa-history"></i>
-            상담 이력
-        </a>
-        <a href="/counseling/counselor/satisfaction" class="nav-link" th:classappend="${#strings.contains(#request.requestURI, '/satisfaction') ? 'active' : ''}">
-            <i class="fas fa-star"></i>
-            만족도 결과
-        </a>
-    </div>
-</nav>
-</html>
+
+    <section class="menu-section open">
+        <button class="menu-section-toggle" type="button">
+            <span>대시보드</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor}">상담사 대시보드</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>일정 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/schedule}">일정 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/reservations}">예약 승인</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section">
+        <button class="menu-section-toggle" type="button">
+            <span>상담 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/records}">상담일지</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/history}">상담 이력</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/satisfaction}">만족도 결과</a>
+            </li>
+        </ul>
+    </section>
+
+    <script th:fragment="counselorSidebarScript">
+        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.closest('.menu-section');
+                section.classList.toggle('open');
+            });
+        });
+
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.menu-link')
+                    .forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        (function setActiveByLocation() {
+            const current = window.location.pathname;
+            const links = document.querySelectorAll('.menu-link');
+            let matched = null;
+
+            links.forEach(l => {
+                const href = l.getAttribute('href');
+                if (!href) return;
+
+                const path = href.startsWith('http')
+                    ? new URL(href, window.location.origin).pathname
+                    : href;
+
+                if (current.startsWith(path)) {
+                    if (!matched || path.length > (matched.getAttribute('href') || '').length) {
+                        matched = l;
+                    }
+                }
+            });
+
+            if (matched) {
+                matched.classList.add('active');
+                const section = matched.closest('.menu-section');
+                if (section) section.classList.add('open');
+            }
+        })();
+    </script>
+</aside>

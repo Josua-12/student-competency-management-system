@@ -75,7 +75,7 @@
         </button>
         <ul class="menu-list">
             <li sec:authorize="hasRole('STUDENT')">
-                <a class="menu-link" th:href="@{/student/assessment}">개인 대시보드</a>
+                <a class="menu-link" th:href="@{/student/assessment/history}">진단 이력 조회</a>
             </li>
             <li sec:authorize="hasRole('COMPETENCY_ADMIN')">
                 <a class="menu-link" th:href="@{/competency/admin/dashboard}">관리자 대시보드</a>
@@ -90,9 +90,6 @@
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/student/assessment}">역량진단 실시</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/student/assessment/history}">진단 이력 조회</a>
             </li>
         </ul>
     </section>

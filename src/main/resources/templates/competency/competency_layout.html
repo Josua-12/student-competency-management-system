@@ -47,7 +47,7 @@
 <div class="main-wrapper flex-grow-1 d-flex">
 
     <aside th:if="${hideSidebar == null or !hideSidebar}"
-           th:replace="~{competency/admin/sidebar :: sidebar}"></aside>
+           th:replace="~{competency/sidebar :: sidebar}"></aside>
 
     <main class="main-content">
         <div class="content-wrapper" th:replace="${content}"></div>

@@ -7,10 +7,18 @@
     <th:block th:fragment="css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+        <style>
+            .main-content-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 30px 20px;
+            }
+        </style>
     </th:block>
 </head>
 <body>
     <th:block th:fragment="content">
+        <div class="main-content-wrapper">
         <!-- 페이지 헤더 -->
         <div class="page-header d-flex justify-content-between align-items-center mb-4">
             <h2 class="page-title">심리상담</h2>
@@ -81,6 +89,7 @@
                             </div>
                         </div>
                     </div>
+        </div>
         </div>
 
         <!-- 예약 신청 모달 -->
