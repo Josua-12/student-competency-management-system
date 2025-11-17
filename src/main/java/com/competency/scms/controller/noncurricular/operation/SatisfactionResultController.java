@@ -1,6 +1,8 @@
 package com.competency.scms.controller.noncurricular.operation;
 
-import com.competency.scms.dto.noncurricular.operation.*;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionDetailDto;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionPageResponseDto;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionSearchConditionDto;
 import com.competency.scms.service.noncurricular.operation.SatisfactionResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

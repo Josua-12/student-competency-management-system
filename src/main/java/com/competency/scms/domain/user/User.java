@@ -49,7 +49,7 @@ public class User {
     private Integer grade;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", length = 30, nullable = false)
+    @Column(name = "role", length = 50, nullable = false)
     @Builder.Default
     private UserRole role = UserRole.STUDENT;
 

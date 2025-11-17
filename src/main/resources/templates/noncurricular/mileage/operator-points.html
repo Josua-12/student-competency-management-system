@@ -237,7 +237,8 @@
         </section>
     </div>
 </div>
-<div th:fragment="contentScript">
+<div xmlns:th="http://www.thymeleaf.org"
+     th:fragment="contentScript">
 <script th:inline="javascript">
     const OPERATOR_POINTS_API = {
         stats: '/api/noncurricular-operator/mileages/stats',
@@ -342,6 +343,17 @@
         
         let filteredStudents = currentData.students || [];
         
+        // 프로그램 필터 - 프로그램 ID로 필터링
+        if (filters.program) {
+            const programId = filters.program;
+            filteredStudents = filteredStudents.filter(student => {
+                const activities = student.activities || [];
+                return activities.some(activity => 
+                    activity.programId && activity.programId.toString() === programId
+                );
+            });
+        }
+        
         // 학번/이름 필터
         if (filters.student) {
             filteredStudents = filteredStudents.filter(student => 
@@ -367,20 +379,60 @@
 
     function viewStudentDetail(studentNo) {
         const student = currentData.students.find(s => s.studentNo === studentNo);
-        if (student) {
-            const detail = `
-학번: ${student.studentNo}
-이름: ${student.name}
-학과: ${student.department}
-학년: ${student.grade}학년
-총 적립: ${student.totalEarned}
-총 사용: ${student.totalUsed}
-현재 보유: ${student.currentPoints}
-최근 활동: ${student.lastActivity}
-            `;
-            alert(detail);
+        if (!student) return;
+        
+        const activities = student.activities || [];
+        
+        let detailHTML = `
+            <div class="student-detail-section" style="background:#f9fafb;border-radius:12px;padding:24px;margin-top:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 style="margin:0;">${student.name} (${student.studentNo}) 활동 내역</h3>
+                    <button class="btn" onclick="closeDetail()" style="padding:6px 12px;">닫기</button>
+                </div>
+                <div class="student-info" style="background:white;padding:16px;border-radius:8px;margin-bottom:20px;">
+                    <p style="margin:4px 0;"><strong>학과:</strong> ${student.department}</p>
+                    <p style="margin:4px 0;"><strong>학년:</strong> ${student.grade}학년</p>
+                    <p style="margin:4px 0;"><strong>총 적립:</strong> ${student.totalEarned}</p>
+                    <p style="margin:4px 0;"><strong>총 사용:</strong> ${student.totalUsed}</p>
+                    <p style="margin:4px 0;"><strong>현재 보유:</strong> ${student.currentPoints}</p>
+                </div>
+                <h4 style="margin-bottom:12px;">모든 활동 (최신순)</h4>
+                <div class="activities-list" style="background:white;border-radius:8px;overflow:hidden;">
+        `;
+        
+        if (activities.length === 0) {
+            detailHTML += '<p style="text-align:center;color:#6b7280;padding:20px;">활동 내역이 없습니다.</p>';
+        } else {
+            activities.forEach(activity => {
+                const pointColor = activity.points > 0 ? '#059669' : '#dc2626';
+                detailHTML += `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #e5e7eb;">
+                        <span style="color:#6b7280;font-size:14px;min-width:100px;">${activity.date}</span>
+                        <span style="flex:1;margin:0 16px;">${activity.program}</span>
+                        <span style="color:${pointColor};font-weight:600;min-width:60px;text-align:right;">${activity.points > 0 ? '+' : ''}${activity.points}</span>
+                    </div>
+                `;
+            });
         }
+        
+        detailHTML += `
+                </div>
+            </div>
+        `;
+        
+        const existingDetail = document.querySelector('.student-detail-section');
+        if (existingDetail) existingDetail.remove();
+        
+        const tableContainer = document.querySelector('.table-container').parentElement;
+        tableContainer.insertAdjacentHTML('afterend', detailHTML);
     }
+    
+    function closeDetail() {
+        const detail = document.querySelector('.student-detail-section');
+        if (detail) detail.remove();
+    }
+    
+    window.closeDetail = closeDetail;
 
     function exportToExcel() {
         alert('엑셀 파일을 다운로드합니다.');

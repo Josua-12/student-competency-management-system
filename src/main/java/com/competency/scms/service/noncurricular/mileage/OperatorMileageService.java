@@ -58,6 +58,7 @@ public class OperatorMileageService {
         
         return allRecords.stream()
                 .map(MileageRecord::getStudent)
+                .filter(student -> "STUDENT".equals(student.getRole().name()))
                 .distinct()
                 .map(student -> {
                     List<MileageRecord> records = mileageRecordRepository.findByStudentOrderByCreatedAtDesc(student);
@@ -75,6 +76,18 @@ public class OperatorMileageService {
                     String lastActivity = records.isEmpty() ? "-" : 
                             records.get(0).getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                     
+                    List<Map<String, Object>> activities = records.stream()
+                            .map(r -> {
+                                Map<String, Object> activity = new HashMap<>();
+                                activity.put("date", r.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                                activity.put("program", r.getProgram() != null ? r.getProgram().getTitle() : "직접지급");
+                                activity.put("programId", r.getProgram() != null ? r.getProgram().getProgramId() : null);
+                                activity.put("points", r.getPoints());
+                                activity.put("type", r.getType().name());
+                                return activity;
+                            })
+                            .collect(Collectors.toList());
+                    
                     Map<String, Object> map = new HashMap<>();
                     map.put("studentNo", student.getUserNum().toString());
                     map.put("name", student.getName());
@@ -84,6 +97,7 @@ public class OperatorMileageService {
                     map.put("totalUsed", totalUsed);
                     map.put("currentPoints", totalEarned - totalUsed);
                     map.put("lastActivity", lastActivity);
+                    map.put("activities", activities);
                     
                     return map;
                 })
@@ -105,6 +119,7 @@ public class OperatorMileageService {
 
     public List<Map<String, Object>> getDepartmentsList() {
         return departmentRepository.findAll().stream()
+                .filter(dept -> !dept.getName().contains("관리자") && !dept.getName().contains("운영자") && !dept.getName().contains("시스템") && !dept.getName().contains("상담센터"))
                 .map(dept -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("code", dept.getCode());
@@ -115,17 +130,51 @@ public class OperatorMileageService {
     }
 
     public List<Map<String, Object>> getEligibleStudents(Long programId) {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getRole().name().equals("STUDENT"))
-                .map(student -> {
+        var program = programRepository.findById(programId);
+        if (program.isEmpty()) {
+            return List.of();
+        }
+        
+        var applications = program.get().getProgramApplications();
+        if (applications == null || applications.isEmpty()) {
+            return List.of();
+        }
+        
+        return applications.stream()
+                .map(app -> {
+                    User student = app.getStudent();
                     Map<String, Object> map = new HashMap<>();
                     map.put("studentNo", student.getUserNum().toString());
                     map.put("name", student.getName());
                     map.put("dept", student.getDepartment() != null ? student.getDepartment().getName() : "");
                     map.put("grade", student.getGrade());
-                    map.put("completionStatus", "이수완료");
+                    map.put("completionStatus", app.getStatus().name());
                     return map;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void commitMileagePoints(Long programId, List<Map<String, Object>> students) {
+        var program = programRepository.findById(programId).orElseThrow();
+        
+        students.forEach(studentData -> {
+            String studentNo = studentData.get("studentNo").toString();
+            int points = Integer.parseInt(studentData.get("points").toString());
+            String remarks = studentData.get("remarks") != null ? studentData.get("remarks").toString() : "";
+            
+            User student = userRepository.findByUserNum(Integer.parseInt(studentNo)).orElseThrow();
+            
+            MileageRecord record = MileageRecord.builder()
+                    .student(student)
+                    .program(program)
+                    .type(com.competency.scms.domain.noncurricular.mileage.MileageType.EARN)
+                    .reason(com.competency.scms.domain.noncurricular.mileage.MileageReason.PROGRAM_COMPLETION)
+                    .points(points)
+                    .remarks(remarks)
+                    .build();
+            
+            mileageRecordRepository.save(record);
+        });
     }
 }

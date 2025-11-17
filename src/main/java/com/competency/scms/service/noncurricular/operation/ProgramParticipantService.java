@@ -1,8 +1,8 @@
 package com.competency.scms.service.noncurricular.operation;
 
 import com.competency.scms.dto.noncurricular.operation.NotifyRequestDto;
-import com.competency.scms.dto.noncurricular.operation.ParticipantPageResponseDto;
-import com.competency.scms.dto.noncurricular.operation.ParticipantSearchConditionDto;
+import com.competency.scms.dto.noncurricular.operation.participant.ParticipantPageResponseDto;
+import com.competency.scms.dto.noncurricular.operation.participant.ParticipantSearchConditionDto;
 import org.springframework.data.domain.Pageable;
 
 

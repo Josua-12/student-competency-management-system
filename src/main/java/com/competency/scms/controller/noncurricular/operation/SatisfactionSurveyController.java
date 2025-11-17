@@ -1,8 +1,8 @@
 package com.competency.scms.controller.noncurricular.operation;
 
 import com.competency.scms.domain.noncurricular.operation.SurveyStatus;
-import com.competency.scms.dto.noncurricular.operation.SatisfactionSurveyResponse;
-import com.competency.scms.dto.noncurricular.operation.SatisfactionSurveySaveRequest;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionSurveyResponse;
+import com.competency.scms.dto.noncurricular.operation.satisfaction.SatisfactionSurveySaveRequest;
 import com.competency.scms.service.noncurricular.operation.SatisfactionSurveyCommandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

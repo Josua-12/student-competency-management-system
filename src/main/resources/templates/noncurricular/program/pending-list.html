@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>비교과 프로그램 승인대기 목록</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- 스타일 -->
+    <style>
+        :root{
+            --bg:#f7f8fa;
+            --card:#ffffff;
+            --text:#1b1f24;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --pri:#2563eb;
+            --pri-dark:#1d4ed8;
+            --danger:#e11d48;
+            --radius:12px;
+        }
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--text);
+            font:14px/1.5 "Noto Sans KR", sans-serif;
+        }
+        .wrap{
+            max-width:1300px;
+            margin:24px auto;
+            padding:0 20px;
+        }
+        h1{
+            font-size:22px;
+            margin-bottom:20px;
+        }
+
+        /* 카드(검색/목록) */
+        .card{
+            background:var(--card);
+            border:1px solid var(--line);
+            border-radius:var(--radius);
+            padding:20px;
+            margin-bottom:20px;
+        }
+
+        /* 검색영역 */
+        .search-grid{
+            display:grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap:16px;
+        }
+        .form-group{
+            display:flex;
+            flex-direction:column;
+        }
+        label{
+            font-weight:600;
+            margin-bottom:6px;
+        }
+        input, select{
+            padding:8px 10px;
+            border:1px solid var(--line);
+            border-radius:8px;
+        }
+        .search-buttons{
+            margin-top:16px;
+            display:flex;
+            gap:10px;
+        }
+        button{
+            padding:8px 14px;
+            border-radius:8px;
+            border:none;
+            cursor:pointer;
+            font-weight:600;
+        }
+        .btn-primary{background:var(--pri);color:white;}
+        .btn-primary:hover{background:var(--pri-dark);}
+        .btn-reset{background:#e5e7eb;}
+        .btn-excel{background:#059669;color:white;}
+
+        /* 목록 테이블 */
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+        th, td{
+            padding:10px;
+            border-bottom:1px solid var(--line);
+            font-size:13px;
+        }
+        th{
+            background:#f3f4f6;
+            text-align:left;
+        }
+        tr:hover{
+            background:#f9fafb;
+        }
+
+        /* 상태 뱃지 */
+        .badge{
+            display:inline-block;
+            padding:4px 8px;
+            border-radius:6px;
+            font-size:12px;
+            font-weight:600;
+        }
+        .badge-pending{background:#fef3c7;color:#92400e;}
+        .badge-approved{background:#d1fae5;color:#065f46;}
+        .badge-rejected{background:#fee2e2;color:#991b1b;}
+
+        /* 일괄처리 버튼 */
+        .bulk-actions{
+            margin-bottom:12px;
+            display:flex;
+            gap:10px;
+        }
+        .btn-danger{background:var(--danger);color:white;}
+
+        /* 페이징 */
+        .pagination{
+            margin-top:20px;
+            display:flex;
+            gap:8px;
+        }
+        .pagination button{
+            background:#e5e7eb;
+        }
+
+        /* 반려 팝업 */
+        .modal{
+            display:none;
+            position:fixed;
+            top:0;left:0;right:0;bottom:0;
+            background:rgba(0,0,0,0.3);
+            justify-content:center;
+            align-items:center;
+        }
+        .modal-content{
+            background:white;
+            width:380px;
+            padding:20px;
+            border-radius:12px;
+        }
+        textarea{
+            width:100%;
+            height:100px;
+            border:1px solid var(--line);
+            border-radius:8px;
+            padding:8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+    <h1>비교과 프로그램 승인대기 목록</h1>
+
+    <!-- 검색 영역 -->
+    <div class="card">
+        <div class="search-grid">
+
+            <div class="form-group">
+                <label>프로그램명</label>
+                <input type="text" id="searchTitle">
+            </div>
+
+            <div class="form-group">
+                <label>운영부서</label>
+                <select id="searchDept">
+                    <option value="">전체</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>카테고리</label>
+                <select id="searchCategory">
+                    <option value="">전체</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>승인상태</label>
+                <select id="searchStatus">
+                    <option value="PENDING">대기</option>
+                    <option value="APPROVED">승인</option>
+                    <option value="REJECTED">반려</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="search-buttons">
+            <button class="btn-primary" onclick="loadList()">조회</button>
+            <button class="btn-reset" onclick="resetSearch()">초기화</button>
+            <button class="btn-excel" onclick="downloadExcel()">엑셀 다운로드</button>
+        </div>
+    </div>
+
+    <!-- 일괄 처리 버튼 -->
+    <div class="card">
+        <div class="bulk-actions">
+            <button class="btn-primary" onclick="approveSelected()">선택 승인</button>
+            <button class="btn-danger" onclick="rejectSelected()">선택 반려</button>
+        </div>
+
+        <!-- 목록 테이블 -->
+        <table id="pendingTable">
+            <thead>
+            <tr>
+                <th><input type="checkbox" onclick="toggleAll(this)"></th>
+                <th>No</th>
+                <th>프로그램명</th>
+                <th>카테고리</th>
+                <th>운영부서</th>
+                <th>승인상태</th>
+                <th>승인요청일</th>
+                <th>모집기간</th>
+                <th>정원/신청</th>
+                <th>단건 처리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- JS 로드 -->
+            </tbody>
+        </table>
+
+        <!-- 페이징 -->
+        <div class="pagination">
+            <button><</button>
+            <button class="btn-primary">1</button>
+            <button>></button>
+        </div>
+    </div>
+</div>
+
+<!-- 반려 팝업 -->
+<div class="modal" id="rejectModal">
+    <div class="modal-content">
+        <h3>반려 사유 입력</h3>
+        <textarea id="rejectReason"></textarea>
+        <br><br>
+        <button class="btn-danger" onclick="submitReject()">반려 처리</button>
+        <button class="btn-reset" onclick="closeRejectModal()">닫기</button>
+    </div>
+</div>
+
+<script>
+    /* -------------------------
+       1) Mock 데이터 (백엔드 붙이기 전)
+    ------------------------- */
+    const mockData = [
+        {
+            progId: 1,
+            title: "진로 탐색 캠프",
+            category: "진로",
+            department: "사회과학부",
+            status: "PENDING",
+            requestDate: "2025-11-11",
+            appPeriod: "2025-11-15 ~ 2025-12-01",
+            capacity: "50 / 20"
+        },
+        {
+            progId: 2,
+            title: "리더십 역량 강화",
+            category: "리더십",
+            department: "경영학부",
+            status: "PENDING",
+            requestDate: "2025-11-12",
+            appPeriod: "2025-11-18 ~ 2025-12-05",
+            capacity: "30 / 28"
+        }
+    ];
+
+
+    /* -------------------------
+       2) 목록 로드
+    ------------------------- */
+    function loadList() {
+        const tbody = document.querySelector("#pendingTable tbody");
+        tbody.innerHTML = "";
+
+        mockData.forEach((item, index) => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td><input type="checkbox" class="row-check" value="${item.progId}"></td>
+                <td>${index + 1}</td>
+                <td><a href="/noncurricular/admin/programs/${item.progId}/approval">${item.title}</a></td>
+                <td>${item.category}</td>
+                <td>${item.department}</td>
+                <td><span class="badge badge-pending">대기</span></td>
+                <td>${item.requestDate}</td>
+                <td>${item.appPeriod}</td>
+                <td>${item.capacity}</td>
+                <td>
+                    <button class="btn-primary" onclick="approveSingle(${item.progId})">승인</button>
+                    <button class="btn-danger" onclick="openRejectModal(${item.progId})">반려</button>
+                </td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    /* 모든 체크박스 Toggle */
+    function toggleAll(master){
+        document.querySelectorAll(".row-check")
+            .forEach(ch => ch.checked = master.checked);
+    }
+
+    /* -------------------------
+       3) 단건 승인 / 반려
+    ------------------------- */
+    function approveSingle(id){
+        fetch(`/api/noncurricular/admin/programs/${id}/approve`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(res => {
+            if(res.ok){
+                alert("승인 처리되었습니다.");
+                loadList(); // TODO: 실제로는 서버에서 목록 재조회
+            }else{
+                alert("승인 중 오류가 발생했습니다.");
+            }
+        });
+    }
+
+    let rejectTarget = null;
+    function openRejectModal(id){
+        rejectTarget = id;
+        document.getElementById("rejectModal").style.display = "flex";
+    }
+    function closeRejectModal(){
+        rejectTarget = null;
+        document.getElementById("rejectModal").style.display = "none";
+    }
+    function submitReject(){
+        const reason = document.getElementById("rejectReason").value;
+        alert("단건 반려 API 호출: POST /api/noncurricular/admin/programs/" + rejectTarget + "/reject\n사유: " + reason);
+        closeRejectModal();
+    }
+
+    /* -------------------------
+       4) 일괄 승인 / 반려
+    ------------------------- */
+    function approveSelected(){
+        const ids = getSelected();
+        if(ids.length === 0) return alert("선택된 항목이 없습니다.");
+        alert("일괄 승인 API 호출:\nPOST /api/noncurricular/admin/programs/approve-batch\nIDs: " + ids);
+    }
+
+    function rejectSelected(){
+        const ids = getSelected();
+        if(ids.length === 0) return alert("선택된 항목이 없습니다.");
+        rejectTarget = ids;
+        document.getElementById("rejectModal").style.display = "flex";
+    }
+
+    function getSelected(){
+        return [...document.querySelectorAll(".row-check:checked")].map(ch => ch.value);
+    }
+
+    /* -------------------------
+       초기화 / 엑셀 다운로드
+    ------------------------- */
+    function resetSearch(){
+        document.getElementById("searchTitle").value = "";
+        document.getElementById("searchDept").value = "";
+        document.getElementById("searchCategory").value = "";
+        document.getElementById("searchStatus").value = "PENDING";
+    }
+
+    function downloadExcel(){
+        alert("GET /noncurricular/admin/programs/pending/export (엑셀 생성)");
+    }
+
+    /* 초기 실행 */
+    loadList();
+</script>
+
+</body>
+</html>

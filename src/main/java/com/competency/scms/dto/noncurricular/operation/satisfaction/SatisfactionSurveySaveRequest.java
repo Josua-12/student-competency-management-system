@@ -1,4 +1,4 @@
-package com.competency.scms.dto.noncurricular.operation;
+package com.competency.scms.dto.noncurricular.operation.satisfaction;
 
 import com.competency.scms.domain.noncurricular.operation.QuestionType;
 import com.competency.scms.domain.noncurricular.operation.SurveyStatus;

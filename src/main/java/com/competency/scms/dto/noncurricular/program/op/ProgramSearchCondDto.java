@@ -1,6 +1,7 @@
 package com.competency.scms.dto.noncurricular.program.op;
 
 import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
+import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.dto.noncurricular.program.ProgramSort;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,7 +18,7 @@ public class ProgramSearchCondDto {
 
     private String keyword;        // 제목 like
 
-    private Long categoryId;       // 카테고리 필터
+    private ProgramCategoryType category;       // 카테고리 필터
     private ApprovalStatus status; // DRAFT / PENDING / APPROVED / ONGOING / COMPLETED / REJECTED
     private LocalDate from;        // 시작일(운영시작일 >=)
     private LocalDate to;          // 종료일(운영종료일 <=)

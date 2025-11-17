@@ -69,9 +69,9 @@ th:fragment="contentFragment">
 
     <!-- 상단 툴바 -->
     <div class="toolbar">
-        <button class="btn primary" id="btnNew">신규 등록</button>
-        <button class="btn" id="btnBulkApprove" disabled>일괄 승인요청</button>
-        <button class="btn" id="btnBulkDelete" disabled>일괄 삭제</button>
+        <button type="button" class="btn primary" id="btnNew" onclick="goToUrl('/noncurricular/admin/program/open')">신규 등록</button>
+        <button type="button" class="btn" id="btnBulkApprove" disabled>일괄 승인요청</button>
+        <button type="button" class="btn" id="btnBulkDelete" disabled>일괄 삭제</button>
         <span class="muted" id="selCount">선택 0건</span>
     </div>
 
@@ -472,10 +472,11 @@ th:fragment="contentScript">
             toast('일괄 삭제 완료');
         }
     });
-    $('#btnNew').addEventListener('click', ()=>{
-        // 실제 연결 예: /noncurricular-operator/programs/new
-        toast('신규 등록: /noncurricular-operator/programs/new');
-    });
+
+    // 페이지 이동 공용 함수
+    function goToUrl(url) {
+        window.location.href = url;
+    }
 
     // 초기 렌더
     applyFilters();

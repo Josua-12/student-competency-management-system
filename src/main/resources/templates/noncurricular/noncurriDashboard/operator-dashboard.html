@@ -209,6 +209,7 @@ th:fragment="contentStyles">
 
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentFragment">
+
     <div class="layout">
         <header>
             <div>
@@ -225,7 +226,11 @@ th:fragment="contentFragment">
                 <div class="kpi-value" id="kpi-pendingApproval">0</div>
                 <div class="kpi-label">승인 요청 상태(DRAFT → PENDING)</div>
                 <div class="btn-row">
-                    <button class="btn-primary btn" onclick="goToUrl('/operator/program/approval')">승인관리 바로가기</button>
+                    <button type="button"
+                            class="btn-primary btn"
+                            onclick="goToUrl('/noncurricular/admin/pending/list')">
+                        승인관리 바로가기
+                    </button>
                 </div>
             </div>
             <div class="card">
@@ -233,7 +238,7 @@ th:fragment="contentFragment">
                 <div class="kpi-value" id="kpi-todayAttendance">0</div>
                 <div class="kpi-label">오늘 출석 체크 해야 할 일정 수</div>
                 <div class="btn-row">
-                    <button class="btn btn" onclick="goToUrl('/operator/attendance?today=true')">출석관리</button>
+                    <button class="btn-primary btn" onclick="goToUrl('/noncurricular/admin/participants?today=true')">출석관리</button>
                 </div>
             </div>
             <div class="card">
@@ -360,9 +365,8 @@ th:fragment="contentScript">
         }
     }
 
-    function goToUrl(url){
-        // 실제 적용 시: location.href = url;
-        console.log('goToUrl:', url);
+    function goToUrl(url) {
+        window.location.href = url;
     }
 
     function renderKpi(data){
