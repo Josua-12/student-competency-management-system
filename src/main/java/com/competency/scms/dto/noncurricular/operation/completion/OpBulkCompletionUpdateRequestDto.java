@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.List;
 
+@Getter
+@Setter
 public class OpBulkCompletionUpdateRequestDto {
     private List<Long> applicationIds;
 

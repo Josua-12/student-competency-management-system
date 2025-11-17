@@ -135,6 +135,17 @@ public class Program extends BaseEntity {
     private Long createdBy;
 
     public void requestApproval() {
+        // 종료/취소 상태는 승인요청 불가
+        if (this.status == ProgramStatus.CLOSED || this.status == ProgramStatus.CANCELED) {
+            throw new IllegalStateException("종료/취소된 프로그램은 승인요청할 수 없습니다.");
+        }
+
+        // 임시저장(DRAFT) 또는 반려(REJECTED) 상태라면 승인요청(PENDING)으로 변경
+        if (this.status == ProgramStatus.DRAFT || this.status == ProgramStatus.REJECTED) {
+            this.status = ProgramStatus.PENDING;
+        }
+
+        // 승인상태를 요청으로 변경
         this.approvalStatus = ApprovalStatus.REQ;
     }
 

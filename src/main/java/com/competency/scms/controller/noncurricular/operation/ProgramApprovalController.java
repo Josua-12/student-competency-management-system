@@ -1,13 +1,23 @@
 package com.competency.scms.controller.noncurricular.operation;
 
+import com.competency.scms.service.noncurricular.operation.ProgramApprovalService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Controller
+@RequestMapping
+@RequiredArgsConstructor
 public class ProgramApprovalController {
+
+    private final ProgramApprovalService programApprovalService;
+
     @PostMapping("/noncurricular/operator/programs/bulk-approve")
     public String bulkApprove(
             @RequestParam("ids") String ids,

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -72,28 +73,31 @@ public class CompletionStatusService {
      * 단건 이수 상태 수정
      */
     @Transactional
-    public void updateCompletionStatus(Long applicationId, OpCompletionUpdateRequestDto request, Long operatorUserId) {
+    public void updateCompletionStatus(Long applicationId,
+                                       OpCompletionUpdateRequestDto request,
+                                       Long operatorUserId) {
+
         ProgramApplication app = programApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("신청 정보가 존재하지 않습니다. id=" + applicationId));
 
-        // TODO: operatorUserId 기준으로 이 신청을 수정할 권한이 있는지 체크
-
         CompletionStatus status = request.getCompletionStatus();
-        LocalDate completionDate = request.getCompletionDate();
+        LocalDate completionDate = request.getCompletionDate(); // DTO는 LocalDate
 
+        // 1) 상태가 COMPLETE 인데 날짜가 없으면 오늘 날짜로 기본 세팅
         if (status == CompletionStatus.COMPLETED && completionDate == null) {
             completionDate = LocalDate.now();
         }
 
-        app.setCompletionStatus(status);
-        app.setCompletionDate(completionDate);
-        // app.setCompletionRemark(request.getRemark()); // 비고 필드 있으면 사용
-
-        if (status == CompletionStatus.COMPLETED) {
-            app.setCertificateIssued(Boolean.TRUE);
-        } else {
-            app.setCertificateIssued(Boolean.FALSE);
+        // 2) LocalDate -> LocalDateTime 변환
+        LocalDateTime completionDateTime = null;
+        if (completionDate != null) {
+            // 하루의 시작 시각으로 세팅 (00:00:00)
+            completionDateTime = completionDate.atStartOfDay();
         }
+
+        // 3) 엔티티 세팅
+        app.setCompletionStatus(status);
+        app.setCompletionDate(completionDateTime);
     }
 
     /**
@@ -101,18 +105,49 @@ public class CompletionStatusService {
      */
     @Transactional
     public void bulkUpdateCompletionStatus(OpBulkCompletionUpdateRequestDto request, Long operatorUserId) {
-        if (request.getApplicationIds() == null || request.getApplicationIds().isEmpty()) {
+
+        // 방어코드
+        if (request == null || request.getApplicationIds() == null || request.getApplicationIds().isEmpty()) {
             return;
         }
 
-        for (Long id : request.getApplicationIds()) {
-            CompletionUpdateRequestDto single = new CompletionUpdateRequestDto();
-            single.setCompletionStatus(request.getCompletionStatus());
-            single.setCompletionDate(request.getCompletionDate());
-            single.setRemark(request.getRemark());
+        // 요청에서 공통으로 쓸 값 꺼내기
+        CompletionStatus status = request.getCompletionStatus();
+        LocalDate completionDate = request.getCompletionDate();
+        String remark = request.getRemark();
 
-            updateCompletionStatus(id, single, operatorUserId);
+        // 상태가 COMPLETE(또는 COMPLETED)인데 날짜가 없으면 오늘 날짜로
+        if ((status == CompletionStatus.COMPLETED /* 또는 COMPLETED */) && completionDate == null) {
+            completionDate = LocalDate.now();
+        }
+
+        // LocalDate -> LocalDateTime 변환 (엔티티 필드 타입이 LocalDateTime 이라서)
+        LocalDateTime completionDateTime = null;
+        if (completionDate != null) {
+            completionDateTime = completionDate.atStartOfDay();
+        }
+
+        // 선택된 신청건들 반복 처리
+        for (Long applicationId : request.getApplicationIds()) {
+
+            ProgramApplication app = programApplicationRepository.findById(applicationId)
+                    .orElseThrow(() -> new IllegalArgumentException("신청 정보가 존재하지 않습니다. id=" + applicationId));
+
+            // TODO: operatorUserId 기준 권한 체크 필요하면 여기에서
+
+            app.setCompletionStatus(status);
+            app.setCompletionDate(completionDateTime);
+            // app.setCompletionRemark(remark); // 비고 필드가 있으면 사용
+
+            // 이수증 여부 필드가 있으면 여기서 같이 조정
+            // if (status == CompletionStatus.COMPLETE /* 또는 COMPLETED */) {
+            //     app.setCertificateIssued(Boolean.TRUE);
+            // } else {
+            //     app.setCertificateIssued(Boolean.FALSE);
+            // }
         }
     }
+
+
 }
 
