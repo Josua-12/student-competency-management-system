@@ -1,4 +1,4 @@
-<!-- src/main/resources/templates/common/header.html (수정) -->
+<!-- src/main/resources/templates/common/header-student.html -->
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -39,16 +39,12 @@
                     <a class="nav-link" th:href="@{/dashboard}">홈</a>
                 </li>
 
-                <li class="nav-item" sec:authorize="hasRole('STUDENT')">
+                <li class="nav-item">
                     <a class="nav-link" th:href="@{/student/assessment}">역량진단</a>
                 </li>
 
-                <li class="nav-item" sec:authorize="hasAnyRole('SUPER_ADMIN', 'COMPETENCY_ADMIN')">
-                    <a class="nav-link" th:href="@{/competency-admin/competency}">역량진단</a>
-                </li>
-
-                <!-- 상담 드롭다운 (학생) -->
-                <li class="nav-item dropdown" sec:authorize="hasAuthority('ROLE_STUDENT')">
+                <!-- 상담 드롭다운 -->
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" th:href="@{/counseling/student}">
                         상담
                     </a>
@@ -58,24 +54,12 @@
                     </ul>
                 </li>
 
-                <!-- 상담사 메뉴 -->
-                <li class="nav-item" sec:authorize="hasAuthority('ROLE_COUNSELOR')">
-                    <a class="nav-link" th:href="@{/counseling/counselor}">상담 관리</a>
-                </li>
-
-                <!-- 관리자 상담 메뉴 -->
-                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
-                    <a class="nav-link" th:href="@{/counseling/admin}">상담 관리</a>
-                </li>
-
-
-
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/noncurricular/dashboard}">비교과 프로그램</a>
                 </li>
 
                 <!-- 사용자 정보 드롭다운 -->
-                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <span sec:authentication="principal.user.name">사용자</span>님
                     </a>
@@ -91,19 +75,11 @@
 </header>
 <th:block th:fragment="headerScript">
     <script>
-        // 전역 로그아웃 함수
         window.logout = function() {
-            console.log('로그아웃 함수 호출');
             if (confirm('로그아웃 하시겠습니까?')) {
-                console.log('/logout 엔드포인트로 이동');
                 window.location.href = '/logout';
             }
         };
-
-        // DOM 로드 후 실행
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('로그아웃 함수 등록 완료');
-        });
     </script>
-    </th:block>
+</th:block>
 </html>
