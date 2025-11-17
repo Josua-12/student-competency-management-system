@@ -40,6 +40,10 @@
             right: 0;
             z-index: 1030;
         }
+        
+        .content-wrapper {
+            padding: 30px;
+        }
     </style>
     
     <th:block th:replace="${css}"></th:block>
@@ -51,10 +55,14 @@
 <div class="main-wrapper flex-grow-1 d-flex">
 
     <aside th:if="${hideSidebar == null or !hideSidebar}"
-           th:replace="~{counseling/admin/sidebar :: sidebar}"></aside>
+           th:replace="~{counseling/student/sidebar :: sidebar}" sec:authorize="hasRole('STUDENT')"></aside>
+    <aside th:if="${hideSidebar == null or !hideSidebar}"
+           th:replace="~{counseling/counselor/sidebar :: sidebar}" sec:authorize="hasRole('COUNSELOR')"></aside>
+    <aside th:if="${hideSidebar == null or !hideSidebar}"
+           th:replace="~{counseling/admin/sidebar :: sidebar}" sec:authorize="hasRole('COUNSELING_ADMIN')"></aside>
 
     <main class="main-content">
-        <div class="content-wrapper" th:replace="${content}"></div>
+        <div class="content-wrapper" th:insert="${content}"></div>
     </main>
 
 </div>

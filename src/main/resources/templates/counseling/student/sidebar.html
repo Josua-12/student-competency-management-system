@@ -14,19 +14,31 @@
             --accent-soft:#e3f2fd;
             --radius:12px;
         }
-        .sidebar {
-            position: sticky;
+        .main-wrapper {
+            display: flex;
+            position: fixed;
+            top: 56px;
             left: 0;
-            top: 0;
-            width: 20vw;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .sidebar {
+            width: 20%;
             background: #ffffff;
             border-right: 1px solid var(--line);
             padding: 20px 16px;
             overflow-y: auto;
-            z-index: 1000;
         }
         
-        .main-content-shifted {
+        .main-content {
+            width: 80%;
+            overflow-y: auto;
+        }
+        
+        .content-wrapper {
             padding: 30px 20px;
         }
         .sidebar-header{
