@@ -105,7 +105,6 @@ public class NoncurricularStudentViewController {
     }
 
 
-
     /**
      * 만족도 설문
      * GET /noncurricular/student/satisfaction
@@ -116,6 +115,20 @@ public class NoncurricularStudentViewController {
         setView(model, "noncurricular/operation/RegisterSatisfactionQuestion");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
+
+
+    /**
+     * 비교과 포인트 조회
+     * GET /noncurricular/student/points
+     * (일단 학생 대시보드 화면 재사용)
+     */
+    @GetMapping("/points")
+    public String points(Model model) {
+        model.addAttribute("pageTitle", "비교과 프로그램 - 포인트 조회");
+        setView(model, "noncurricular/mileage/student-points");
+        return "noncurricular/fix-screen/noncurricular-layout";
+    }
+
 
     /**
      * 결과보고서 등록
@@ -135,24 +148,9 @@ public class NoncurricularStudentViewController {
     @GetMapping("/completions")
     public String completions(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 이수내역 조회");
-        setView(model, "noncurricular/operation/ResultSatisfaction");
+        setView(model, "noncurricular/operation/ResultCompletionHistory");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
-
-<<<<<<< HEAD
-    /**
-     * 비교과 포인트 조회
-     * GET /noncurricular/student/points
-     * (일단 학생 대시보드 화면 재사용)
-     */
-    @GetMapping("/points")
-    public String points(Model model) {
-        model.addAttribute("pageTitle", "비교과 프로그램 - 포인트 조회");
-        setView(model, "noncurricular/noncurriDashboard/student-dashboard");
-        return "noncurricular/fix-screen/noncurricular-layout";
-    }
-=======
->>>>>>> 3227c32c3d1a2dded3fe4e1dc1d5d33df959b0c0
 }
 
