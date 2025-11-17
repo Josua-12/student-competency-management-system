@@ -79,12 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnBar = document.getElementById('btnShowBarChart');
 
     // 4.  HTML의 <script th:inline>에서 선언된 '데이터를 가져와서 사용!
-    // (competencyLabels, historyData 변수는 HTML을 통해 전역 변수로 생성됨)
-    if (typeof competencyLabels === 'undefined' || typeof historyData === 'undefined') {
-        console.error("Thymeleaf 데이터(competencyLabels, historyData)가 로드되지 않았습니다.");
-        return;
+    const competencyLabels = window.competencyLabels || [];
+    const historyData = window.historyData || [];
+    
+    console.log('competencyLabels:', competencyLabels);
+    console.log('historyData:', historyData);
+    
+    if (!competencyLabels.length && !historyData.length) {
+        console.warn("데이터가 비어있습니다.");
     }
-
 
     // 6. 초기 차트 로드 (진짜 데이터로 꺾은선 차트 그리기)
     createChart('line', competencyLabels, historyData);

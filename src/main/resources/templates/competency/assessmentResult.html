@@ -105,9 +105,12 @@
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
 
     <script th:inline="javascript">
-        /*<![CDATA[*/
-
-        // 3. HTML/CSS가 모두 준비되면(DOMContentLoaded) 그림 그리기 시작!
+        window.assessmentResultData = {
+            radarChartData: /*[[${assessmentResultData.radarChartData}]]*/ null
+        };
+    </script>
+    <script th:src="@{/js/competency/assessment-result.js}"></script>
+    <script style="display:none" th:remove="all">
         document.addEventListener('DOMContentLoaded', () => {
 
             // 4. 서버 데이터 가져오기 (DTO 필드명: labels, scores, deptScores, univScores)
@@ -168,8 +171,6 @@
                 el.innerText = "차트를 로드하는 중 오류가 발생했습니다.";
             }
         });
-
-        /*]]>*/
     </script>
 </th:block>
 </html>
