@@ -97,7 +97,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/assessment-section", "/admin/assessment-section/**").hasAnyRole("COMPETENCY_ADMIN", "SUPER_ADMIN")
 
                         // 최고 관리자 전용
-                        .requestMatchers("/admin/**").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/admin/**", "/super-admin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("SUPER_ADMIN")
 
                         // 나머지는 인증 필요
