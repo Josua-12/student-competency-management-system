@@ -63,5 +63,20 @@ public class AdminController {
         }
     }
 
+    // 사용자 목록 페이지
+    @GetMapping("/admin/users")
+    public String userList(Model model) {
+        log.info("[AdminController] 사용자 목록 요청");
+        try {
+            model.addAttribute("users", userRepository.findAll());
+            return "admin/user-list";
+        } catch (Exception e) {
+            log.error("[AdminController] 사용자 목록 로드 실패", e);
+            model.addAttribute("errorMessage", "사용자 목록을 불러올 수 없습니다.");
+            return "error";
+        }
+    }
+
+
 
 }

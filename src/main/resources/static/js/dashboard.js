@@ -70,7 +70,7 @@ async function loadCompetency() {
         const chartData = {
             labels: res.labels,
             datasets: [{
-                label: '역량 점수',
+                label: '나의 점수',
                 data: res.scores
             }]
         };
@@ -103,7 +103,7 @@ async function loadConsultations() {
     if (!wrap) return;
     
     if (!res || res.length === 0) {
-        wrap.innerHTML = '<div class="empty-message">상담 내역이 없습니다.</div>';
+        wrap.innerHTML = '<div class="empty-message">상담 이력이 없습니다.</div>';
         return;
     }
     
@@ -147,9 +147,9 @@ function renderCompetencyChart(canvasId, data) {
             datasets: (data.datasets || []).map(ds => ({
                 label: ds.label,
                 data: ds.data,
-                backgroundColor: 'rgba(102,126,234,0.2)',
-                borderColor: '#667eea',
-                pointBackgroundColor: '#667eea'
+                backgroundColor: 'rgba(9,64,129,0.2)',
+                borderColor: '#094081',
+                pointBackgroundColor: '#094081'
             }))
         },
         options: {
@@ -210,13 +210,13 @@ function toProgramCard(p) {
         <div class="program-participants">참여자: ${participants}</div>
         <span class="program-status">${status}</span>
       </div>
-      <a href="${link}" class="program-link">상세보기 →</a>
+      <a href="${link}" class="program-link">자세보기 →</a>
     </div>
   `;
 }
 
 function escapeHtml(s) {
-    return (s ?? '').replace(/[&<>"']/g, m => ({
+    return (s ?? '').replace(/[&<>\"']/g, m => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',

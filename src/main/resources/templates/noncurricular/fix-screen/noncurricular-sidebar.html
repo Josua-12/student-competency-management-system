@@ -4,69 +4,124 @@
        th:fragment="noncurricularSidebar">
 
     <style>
-        :root{
-            --bg:#f9fafb;
-            --fg:#111827;
-            --muted:#6b7280;
-            --line:#e5e7eb;
-            --card:#ffffff;
-            --accent:#2563eb;
-            --accent-soft:#e5edff;
-            --radius:12px;
-            --header-height: 40px;
-            --footer-height: 300px;
+        .main-wrapper {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: row;
         }
-        .navbar.sticky-top {
-            z-index: 1040;
-        }
-        /* 사이드바 레이아웃 */
+        
         .sidebar {
-            position: static;
-            width: 100%;
-            max-width: 260px;
+            width: 20%;
+            min-width: 250px;
             background: #ffffff;
-            border-right: 1px solid var(--line);
+            border-right: 1px solid #e5e7eb;
             padding: 20px 16px;
-        }
-        .sidebar-header{
-            padding:0 8px 16px;
-            border-bottom:1px solid var(--line);
-            margin-bottom:16px;
-        }
-        .sidebar-col {
-            background-color: #ffffff;
-        }
-        .sidebar-col > * {
+            overflow-y: auto;
             height: 100%;
         }
-        .sidebar-title{font-size:18px;font-weight:700;}
-        .sidebar-sub{font-size:12px;color:var(--muted);margin-top:4px;}
-
-        .menu-section{margin-bottom:12px;}
-        .menu-section-toggle{
-            width:100%;display:flex;align-items:center;justify-content:space-between;
-            padding:8px 10px;border:none;background:transparent;
-            font-size:14px;font-weight:600;cursor:pointer;
-            border-radius:var(--radius);transition:background .15s;
+        
+        .main-content {
+            width: 80%;
+            overflow-y: auto;
+            height: 100%;
         }
-        .menu-section-toggle:hover{background:var(--accent-soft);}
-        .menu-section-toggle .caret{font-size:11px;color:var(--muted);transition:transform .15s;}
-        .menu-section.open .menu-section-toggle .caret{transform:rotate(90deg);}
-        .menu-list{
-            list-style:none;margin-top:4px;margin-left:8px;padding-left:6px;
-            border-left:1px solid var(--line);display:none;
+        
+        .content-wrapper {
+            padding: 30px 20px;
         }
-        .menu-section.open .menu-list{display:block;}
+        
+        .sidebar-header{
+            padding: 0 8px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .sidebar-sub {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
 
-        .menu-link{
-            display:block;width:100%;text-align:left;
-            padding:6px 10px;font-size:13px;color:var(--muted);
-            border-radius:var(--radius);border:none;background:transparent;
-            cursor:pointer;transition:background .15s,color .15s;
+        .menu-section {
+            margin-bottom: 12px;
+        }
+        
+        .menu-section-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.15s;
+        }
+        
+        .menu-section-toggle:hover {
+            background: #e3f2fd;
+        }
+        
+        .menu-section-toggle .caret {
+            font-size: 11px;
+            color: #6b7280;
+            transition: transform 0.15s;
+        }
+        
+        .menu-section.open .menu-section-toggle .caret {
+            transform: rotate(90deg);
+        }
+        
+        .menu-list {
+            list-style: none;
+            margin-top: 4px;
+            margin-left: 8px;
+            padding-left: 6px;
+            border-left: 1px solid #e5e7eb;
+            display: none;
+        }
+        
+        .menu-section.open .menu-list {
+            display: block;
+        }
+
+        .menu-link {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #6b7280;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
             text-decoration: none;
         }
-        .menu-link:hover{background:var(--accent-soft);color:var(--accent);}
-        .menu-link.active{background:var(--accent);color:#fff;}
+        
+        .menu-link:hover {
+            background: #e3f2fd;
+            color: #094081;
+        }
+        
+        .menu-link.active {
+            background: #094081;
+            color: #fff;
+        }
     </style>
 
     <!-- ========= 실제 사이드바 ========== -->

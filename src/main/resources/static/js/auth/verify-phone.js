@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.verified) {
-                showAlert('인증이 완료되었습니다.', 'success');
+                showAlert('인증이 완료되었습니다', 'success');
                 // 인증 완료 후 비밀번호 변경 페이지로 이동
                 setTimeout(() => {
                     window.location.href = `/auth/reset-password?token=${data.token}`;
                 }, 1500);
             } else {
-                showAlert('인증 대기 중입니다. 인증 메시지를 확인해주세요.', 'info');
+                showAlert('인증 대기중입니다. 인증 메시지를 확인해주세요.', 'info');
             }
         } catch (error) {
             console.error('인증 상태 조회 실패:', error);
@@ -45,4 +45,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // 인증 상태 주기적 폴링 시작
     setInterval(checkVerificationStatus, POLL_INTERVAL);
 
-// 인증 요청버튼(있으면) 클릭
+// 인증 요청버튼(필요시) 클릭
+});

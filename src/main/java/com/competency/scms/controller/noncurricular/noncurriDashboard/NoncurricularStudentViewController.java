@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/noncurricular/student")
+@RequestMapping("/noncurricular/student/view")
 public class NoncurricularStudentViewController {
 
-    private ProgramApplicationService programApplicationService;
-    private StudentApplicationQueryService studentApplicationQueryService;
+    private final ProgramApplicationService programApplicationService;
+
+    public NoncurricularStudentViewController(ProgramApplicationService programApplicationService) {
+        this.programApplicationService = programApplicationService;
+    }
 
     // 이 컨트롤러의 모든 요청에서 model에 "search"를 기본으로 깔아줌
     @ModelAttribute("search")
@@ -75,35 +78,7 @@ public class NoncurricularStudentViewController {
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
-    /**
-     * 신청 이력 조회
-     * GET /noncurricular/student/applications/list
-     */
-    @GetMapping("/applications/list")
-    public String applicationList(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @ModelAttribute("search") StudentApplicationSearchConditionDto search,
-            @PageableDefault(size = 10) Pageable pageable,
-            Model model) {
 
-        // 1) 로그인한 학생 ID 가져오기
-        Long studentId = userDetails.getUser().getId();      // 또는 getUserNum() 등 프로젝트 정의에 맞게
-
-        // 2) 서비스 호출
-        StudentApplicationListResultDto result =
-                studentApplicationQueryService.getStudentApplications(studentId, search, pageable);
-
-        // 3) 모델 바인딩
-        model.addAttribute("search", search);
-        model.addAttribute("summary", result.getSummary());
-        model.addAttribute("applications", result.getApplications());
-        model.addAttribute("page", result.getApplications());
-        model.addAttribute("pageTitle", "비교과 프로그램 - 신청 이력 조회");
-
-        setView(model, "noncurricular/operation/ResultApplicationHistory");
-
-        return "noncurricular/application/application-list_student";
-    }
 
 
     /**
@@ -157,5 +132,17 @@ public class NoncurricularStudentViewController {
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 
+
+    /**
+     * 비교과 포인트 조회
+     * GET /noncurricular/student/points
+     * (일단 학생 대시보드 화면 재사용)
+     */
+    @GetMapping("/points")
+    public String points(Model model) {
+        model.addAttribute("pageTitle", "비교과 프로그램 - 포인트 조회");
+        setView(model, "noncurricular/noncurriDashboard/student-dashboard");
+        return "noncurricular/fix-screen/noncurricular-layout";
+    }
 }
 

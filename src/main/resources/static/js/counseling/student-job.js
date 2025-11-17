@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 if (schedules.length > displayCount) {
-                    html += `<small class="d-block text-primary fw-bold">더보기+${schedules.length - displayCount}</small>`;
+                    html += `<small class="d-block text-primary fw-bold">외 ${schedules.length - displayCount}건</small>`;
                 }
                 
                 cell.innerHTML = html;
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="badge bg-${statusClass}">${statusText}</span>
                         <span class="fw-bold">${schedule.startTime}</span>
                     </div>
-                    <p class="mb-1 small">컨설팅유형: ${schedule.subfieldName}</p>
+                    <p class="mb-1 small">컨설팅 유형: ${schedule.subfieldName}</p>
                     <p class="mb-2 small">컨설턴트: ${schedule.counselorName}</p>
                     ${isAvailable ? `<button class="btn btn-warning btn-sm w-100" onclick="applySchedule('${dateStr}', '${schedule.startTime}', ${schedule.counselorId}, ${schedule.subfieldId}, '${schedule.subfieldName}')">신청하기</button>` : ''}
                 </div>

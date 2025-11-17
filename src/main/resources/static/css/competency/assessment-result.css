@@ -76,17 +76,17 @@
 
 .score-bar {
     height: 100%;
-    background-color: var(--primary-color, #667eea);
+    background-color: var(--primary-color, var(--primary-color));
     border-radius: 4px;
     transition: width 0.5s ease;
-    /* (width는 인라인 스타일로 0-100% 설정) */
+    /* (width는 스타일로 0-100% 설정) */
 }
 
 .child-score-item .child-score {
     flex-basis: 50px;
     text-align: right;
     font-weight: 700;
-    color: var(--primary-color, #667eea);
+    color: var(--primary-color, var(--primary-color));
 }
 
 
@@ -97,11 +97,11 @@
     height: 100%;
 }
 .feedback-box.strength {
-    background-color: #f0f8ff; /* (예: 연한 파랑) */
+    background-color: #f0f8ff; /* (약간 연한 파랑) */
     border: 1px solid #bde0ff;
 }
 .feedback-box.weakness {
-    background-color: #fff8f8; /* (예: 연한 빨강) */
+    background-color: #fff8f8; /* (약간 연한 빨강) */
     border: 1px solid #ffdbe0;
 }
 
@@ -111,8 +111,8 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #ddd;
 }
-.feedback-box.strength .feedback-title { color: #007bff; }
-.feedback-box.weakness .feedback-title { color: #dc3545; }
+.feedback-box.strength .feedback-title { color: var(--primary-color); }
+.feedback-box.weakness .feedback-title { color: #e74c3c; }
 
 .feedback-list {
     padding-left: 20px;
@@ -138,7 +138,7 @@
 }
 
 /* ============================================
-   [차트 흔들림 방지] "콘크리트 고정" 스타일
+   [차트 툴팁 방지] "콘크리트 고정" 스타일
    ============================================ */
 
 .chart-container {
@@ -151,13 +151,13 @@
 }
 
 /* =========================================================
-   🚨 [긴급 수정] 차트 툴팁(점수판) 공중부양 처리
-   이 코드가 없으면 툴팁이 나올 때 차트를 아래로 밀어버립니다.
+   ⚠ [긴급 수정] 차트 툴팁(마우스 오버) 공중부유 처리
+   툴팁 코드가 있으면 툴팁이 올 때 차트를 아래로 밀어버립니다
    ========================================================= */
 
 /* 1. 툴팁을 감싸는 컨테이너를 '유령'으로 만듭니다 (공간 차지 X) */
 .toastui-chart-tooltip-container {
-    position: absolute !important; /* 무조건 공중부양 */
+    position: absolute !important; /* 무조건 공중부유 */
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
@@ -166,45 +166,45 @@
     pointer-events: none !important; /* 마우스가 툴팁에 걸리지 않게 통과시킴 */
 }
 
-/* 2. 실제 툴팁 박스 디자인 (이건 보여야 함) */
+/* 2. 실제 툴팁 박스 자체도 (이건 보여줘야 함) */
 .toastui-chart-tooltip {
     position: absolute !important;
     z-index: 10000 !important;
     pointer-events: none !important;
-    /* 툴팁이 차트 영역 밖으로 나가도 잘리지 않게 */
+    /* 툴팁이 차트 영역 밖으로 나가지 않게 */
     white-space: nowrap;
 }
 
-/* 3. 차트 내부 캔버스 고정 (한번 더 확실하게) */
+/* 3. 차트 실제 캔버스 고정 (한번 더 확실하게) */
 .toastui-chart-canvas-area {
     position: relative !important;
     z-index: 1 !important;
 }
 
 /* ============================================
-   [수정] 핵심역량별 막대그래프 및 "제목" 색상 구분
+   [수정] 역량별 막대그래프의 "제목" 색상 구분
    ============================================ */
 
-/* 1번째 핵심역량 (파랑) */
+/* 1번째 역량군 (파랑) */
 .color-group-0 .score-bar { background-color: #0d6efd; }
-.color-group-0 .parent-title { color: #0d6efd; } /* 👈 제목 색상 추가 */
+.color-group-0 .parent-title { color: #0d6efd; } /* 그 제목 색상 추가 */
 
-/* 2번째 핵심역량 (초록) */
+/* 2번째 역량군 (초록) */
 .color-group-1 .score-bar { background-color: #198754; }
-.color-group-1 .parent-title { color: #198754; } /* 👈 제목 색상 추가 */
+.color-group-1 .parent-title { color: #198754; } /* 그 제목 색상 추가 */
 
-/* 3번째 핵심역량 (노랑) - (글씨가 안보일까봐 어두운 노랑으로) */
-.color-group-2 .score-bar { background-color: #ffc107; }
-.color-group-2 .parent-title { color: #b8860b; } /* 👈 제목 색상 추가 */
+/* 3번째 역량군 (노랑) - (글자가 안보일까봐 어두운 노랑으로) */
+.color-group-2 .score-bar { background-color: var(--accent-color); }
+.color-group-2 .parent-title { color: #b8860b; } /* 그 제목 색상 추가 */
 
-/* 4번째 핵심역량 (빨강) */
-.color-group-3 .score-bar { background-color: #dc3545; }
-.color-group-3 .parent-title { color: #dc3545; } /* 👈 제목 색상 추가 */
+/* 4번째 역량군 (빨강) */
+.color-group-3 .score-bar { background-color: #e74c3c; }
+.color-group-3 .parent-title { color: #e74c3c; } /* 그 제목 색상 추가 */
 
-/* 5번째 핵심역량 (보라) */
-.color-group-4 .score-bar { background-color: #6f42c1; }
-.color-group-4 .parent-title { color: #6f42c1; } /* 👈 제목 색상 추가 */
+/* 5번째 역량군 (보라) */
+.color-group-4 .score-bar { background-color: var(--primary-color); }
+.color-group-4 .parent-title { color: var(--primary-color); } /* 그 제목 색상 추가 */
 
-/* 6번째 핵심역량 (청록) */
-.color-group-5 .score-bar { background-color: #20c997; }
-.color-group-5 .parent-title { color: #20c997; } /* 👈 제목 색상 추가 */
+/* 6번째 역량군 (청록) */
+.color-group-5 .score-bar { background-color: var(--primary-light); }
+.color-group-5 .parent-title { color: var(--primary-light); } /* 그 제목 색상 추가 */

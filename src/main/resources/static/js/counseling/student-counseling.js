@@ -239,6 +239,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 cell.style.fontWeight = 'bold';
                 cell.style.cursor = 'pointer';
                 cell.classList.add('has-counselors');
+            } else {
+                cell.style.backgroundColor = '#ffffff';
+                cell.style.color = '#6c757d';
+                cell.textContent = '상담불가능';
+                cell.style.cursor = 'default';
+                cell.classList.remove('has-counselors');
             }
         });
     }

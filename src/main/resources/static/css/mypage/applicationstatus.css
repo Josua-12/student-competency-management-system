@@ -3,7 +3,7 @@
 
 body {
     font-family: 'Noto Sans KR', 'Inter', sans-serif;
-    background-color: #f1f5f9; /* Tailwind gray-100 / 기존 f7f9fb 보다 통일성 */
+    background-color: #f1f5f9; /* Tailwind gray-100 / 기존 f7f9fb 보다 통일감 */
 }
 
 /* 차트 컨테이너 높이 설정 (applicationstatus.css) */
@@ -30,7 +30,7 @@ body {
     white-space: nowrap;
 }
 
-/* 아래 내용은 applicationstatus.js 에 있던 CSS 규칙들입니다.
+/* 아래 내용은 applicationstatus.js 에서 사용던 CSS 규칙입니다.
 */
 
 /* 1. 사이드바 스타일 정의 */
@@ -41,16 +41,16 @@ body {
     top: 64px; /* 헤더 높이만큼 아래에 위치 */
     height: calc(100vh - 64px); /* 헤더를 제외한 높이 */
     overflow-y: auto; /* 내용이 많아지면 스크롤 가능 */
-    z-index: 50; /* 헤더보다 낮게 */
+    z-index: 50; /* 헤더보다 아래 */
 }
 
 /* 2. 활성 링크 스타일 정의 */
 /* .sidebar a.active (applicationstatus.css) 와 .active-link (applicationstatus.js) 를 통합 */
 .active-link, .sidebar a.active {
     background-color: #4f46e5 !important; /* Tailwind Indigo-600 */
-    color: white !important; /* 활성 링크 텍스트를 흰색으로 */
+    color: white !important; /* 활성 링크 텍스트는 흰색으로 */
     font-weight: 600;
-    /* applicationstatus.css의 border-left는 제거 (디자인 통일) */
+    /* applicationstatus.css의 border-left를 제거 (통합을 위해) */
 }
 
 /* 3. 호버 및 전환 효과 정의 */
@@ -68,7 +68,7 @@ body {
     color: #4f46e5 !important; /* Custom indigo color */
 }
 
-/* 테이블 디자인 개선 */
+/* 테이블 글자 개선 */
 .application-table th {
     letter-spacing: 0.05em;
     color: #64748b; /* Tailwind slate-500 */
@@ -85,7 +85,7 @@ body {
     font-weight: 600;
 }
 
-/* 모바일 뷰에서 사이드바 숨김 (HTML에서 .d-md-block으로 제어) */
+/* 모바일 뷰에서 사이드바 숨김 (HTML에서 .d-md-block으로 처리) */
 /*
 @media (max-width: 767px) {
     .sidebar {
@@ -116,11 +116,11 @@ body {
 
 /* 메인 콘텐츠 영역: 헤더 높이만큼 여백 */
 .main-container {
-    /* HTML에서 이미 .main-container에 적용됨. CSS에서는 제거 */
+    /* HTML에서 이미 .main-container를 사용했 CSS에서는 제거 */
     /* padding-top: 64px; */
 }
 
-/* 커스텀 모달 스타일: alert() 대신 사용 */
+/* 커스텀 모달 스타일 alert() 대신 사용 */
 #custom-modal {
     position: fixed;
     top: 0;

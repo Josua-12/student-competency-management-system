@@ -31,7 +31,7 @@
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #667eea;
+    border: 3px solid var(--primary-color);
 }
 
 .user-text h2 {
@@ -66,7 +66,7 @@
     display: block;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #667eea;
+    color: var(--primary-color);
 }
 
 .stat-divider {
@@ -88,7 +88,7 @@
     object-fit: cover;
 }
 
-/* ===== 3. 세 섹션 컨테이너 ===== */
+/* ===== 3. 섹션 컨테이너 ===== */
 .sections-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -127,22 +127,22 @@
 }
 
 .section-title i {
-    color: #667eea;
+    color: var(--primary-color);
     font-size: 1.3rem;
 }
 
 .section-link {
-    color: #667eea;
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
 .section-link:hover {
-    color: #764ba2;
+    color: var(--primary-dark);
 }
 
-/* ===== 핵심역량 섹션 ===== */
+/* ===== 역량진단 섹션 ===== */
 .competency-chart {
     margin-bottom: 30px;
     height: 250px;
@@ -185,7 +185,7 @@
     min-width: 40px;
     text-align: right;
     font-size: 0.9rem;
-    color: #667eea;
+    color: var(--primary-color);
     font-weight: 600;
 }
 
@@ -202,7 +202,7 @@
     margin-bottom: 10px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--primary-color);
 }
 
 .history-title {
@@ -221,7 +221,7 @@
 
 .history-meta .badge {
     padding: 2px 8px;
-    background: #667eea;
+    background: var(--primary-color);
     color: white;
     border-radius: 12px;
     font-size: 0.75rem;
@@ -251,12 +251,12 @@
 }
 
 .primary-btn {
-    background: #667eea;
+    background: var(--primary-color);
     color: white;
 }
 
 .primary-btn:hover {
-    background: #5568d3;
+    background: var(--primary-dark);
 }
 
 .secondary-btn {
@@ -278,7 +278,7 @@
     margin-bottom: 10px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--primary-color);
 }
 
 .history-header {
@@ -354,7 +354,7 @@
 
 .program-category {
     padding: 4px 12px;
-    background: #667eea;
+    background: var(--primary-color);
     color: white;
     border-radius: 12px;
     font-size: 0.75rem;
@@ -377,7 +377,7 @@
 .program-status {
     display: inline-block;
     padding: 4px 10px;
-    background: #28a745;
+    background: var(--accent-color);
     color: white;
     border-radius: 4px;
     font-size: 0.8rem;
@@ -385,7 +385,7 @@
 }
 
 .program-link {
-    color: #667eea;
+    color: var(--primary-color);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
@@ -393,7 +393,7 @@
 }
 
 .program-link:hover {
-    color: #5568d3;
+    color: var(--primary-dark);
 }
 
 .program-item {
@@ -443,7 +443,7 @@
     font-weight: 600;
 }
 
-.program-status.status-진행중 {
+.program-status.status-진행중{
     background: #4caf50;
     color: white;
 }
@@ -489,7 +489,7 @@
 }
 
 .program-meta i {
-    color: #667eea;
+    color: var(--primary-color);
 }
 
 /* ===== 반응형 ===== */

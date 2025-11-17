@@ -1,57 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{counseling/counseling_layout :: layout('상담 이력 관리', ~{::content}, ~{::css}, ~{::scripts}, false)}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상담 이력 관리</title>
-    <th:block th:fragment="css"></th:block>
+    <th:block th:fragment="css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    </th:block>
 </head>
 <body>
     <th:block th:fragment="content">
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>상담사 메뉴</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/counselor}">
-                                <i class="bi bi-house-door"></i> 메인 대시보드
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/counselor/schedule}">
-                                <i class="bi bi-calendar3"></i> 일정 관리
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/counselor/reservations}">
-                                <i class="bi bi-check-circle"></i> 예약 승인
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/counselor/records}">
-                                <i class="bi bi-journal-text"></i> 상담일지
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/counseling/counselor/history}">
-                                <i class="bi bi-clock-history"></i> 상담 이력
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/counselor/satisfaction}">
-                                <i class="bi bi-star"></i> 만족도 결과
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="main-content-wrapper">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">상담 이력 관리</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
@@ -221,9 +181,7 @@
                         </nav>
                     </div>
                 </div>
-            </main>
         </div>
-    </div>
     </th:block>
 
     <th:block th:fragment="scripts">

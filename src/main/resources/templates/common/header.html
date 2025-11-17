@@ -15,7 +15,7 @@
     </th:block>
 </head>
 
-<header th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+<header th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark" style="position: sticky; top: 0; left: 0; right: 0; z-index: 1030;">
     <div class="container">
         <!-- 로고/웹사이트명 -->
         <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
@@ -74,12 +74,16 @@
                     <a class="nav-link" th:href="@{/noncurricular/dashboard}">비교과 프로그램</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout" onclick="return confirm('로그아웃 하시겠습니까?')">로그아웃</a>
+                <!-- 사용자 정보 드롭다운 -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <span sec:authentication="principal.user.name">사용자</span>님
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/mypage}">마이페이지</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout" onclick="return confirm('로그아웃 하시겠습니까?')">로그아웃</a></li>
+                    </ul>
                 </li>
             </ul>
         </div>

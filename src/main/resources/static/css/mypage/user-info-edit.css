@@ -1,4 +1,4 @@
- <!-- 통합된 CSS 스타일 (user-info-edit.css 내용) -->
+ <!-- 통합된 CSS 스타일 (user-info-edit.css 적용) -->
         /* ===== 마이페이지 레이아웃 공통 스타일 추가 (반응형 사이드바) ===== */
         body {
             display: flex;
@@ -7,7 +7,7 @@
         }
 
         .sidebar {
-            /* md 이상에서 보일 때 너비와 높이 설정 */
+            /* md 이상에서 보일 사이드바 너비 설정 */
             min-height: 100vh;
         }
         .sidebar .transition {
@@ -29,7 +29,7 @@
             width: 250px;
         }
         .offcanvas-body .active {
-            /* 모바일 메뉴에서도 활성화 스타일 적용 */
+            /* 모바일 메뉴에서의 활성화 스타일 적용 */
             background-color: var(--bs-primary-bg-subtle, #cfe2ff);
             font-weight: 600;
         }
@@ -52,7 +52,7 @@
         }
 
 
-        /* ===== 기존 사용자 정보 폼 스타일 유지 ===== */
+        /* ===== 기존 사용자 정보 페이지 스타일 ===== */
         .user-info-container {
             max-width: 600px;
             margin: 2rem auto;
@@ -77,12 +77,12 @@
         }
 
         .error-message {
-            color: #dc3545;
+            color: #e74c3c;
             font-size: 0.875em;
             margin-top: 0.25rem;
         }
 
-        /* 푸터 링크 호버 효과 추가 (footer.html 내용) */
+        /* 푸터 링크 호버 효과 추가 (footer.html 적용) */
         footer a:hover {
             color: #ccc !important;
             text-decoration: underline !important;
