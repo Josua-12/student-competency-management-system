@@ -13,14 +13,20 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/student/mileage")
+@RequestMapping("/api/student")
 public class StudentMileageController {
 
     private final StudentMileageService studentMileageService;
     private final UserRepository userRepository;
 
-    @GetMapping("/history")
+    @GetMapping("/mileage/history")
     public Map<String, Object> getHistory() {
+        User student = getCurrentUser();
+        return studentMileageService.getStudentMileageHistory(student);
+    }
+
+    @GetMapping("/dashboard")
+    public Map<String, Object> getDashboard() {
         User student = getCurrentUser();
         return studentMileageService.getStudentMileageHistory(student);
     }
