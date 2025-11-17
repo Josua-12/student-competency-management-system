@@ -20,20 +20,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function initializeCalendar() {
+        const today = new Date();
+        const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
         document.getElementById('prevMonth').addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-            loadMonthSchedules();
+            const prevMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+            if (prevMonthDate >= thisMonth) {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+                loadMonthSchedules();
+                updateNavigationButtons();
+            }
         });
 
         document.getElementById('nextMonth').addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-            loadMonthSchedules();
+            const nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+            if (nextMonthDate <= nextMonth) {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+                loadMonthSchedules();
+                updateNavigationButtons();
+            }
         });
 
         renderCalendar();
         loadMonthSchedules();
+        updateNavigationButtons();
+    }
+
+    function updateNavigationButtons() {
+        const today = new Date();
+        const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        const currentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+        const prevBtn = document.getElementById('prevMonth');
+        const nextBtn = document.getElementById('nextMonth');
+
+        prevBtn.disabled = currentMonth.getTime() === thisMonth.getTime();
+        nextBtn.disabled = currentMonth.getTime() === nextMonth.getTime();
     }
 
     function renderCalendar() {
@@ -70,14 +96,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     cell.classList.add('text-muted');
                 } else {
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                    const cellDate = new Date(year, month, date);
+                    const now = new Date();
+                    const cutoffTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 0, 0);
+                    const isPast = (cellDate < now.setHours(0,0,0,0)) || (cellDate.getTime() === now.setHours(0,0,0,0) && new Date() >= cutoffTime);
+                    
                     cell.innerHTML = `<div class="fw-bold">${date}</div>`;
                     cell.dataset.date = dateStr;
                     
-                    cell.addEventListener('click', function() {
-                        if (!this.classList.contains('text-muted')) {
-                            showScheduleList(this.dataset.date);
-                        }
-                    });
+                    if (isPast) {
+                        cell.classList.add('text-muted');
+                        cell.style.backgroundColor = '#e9ecef';
+                        cell.style.cursor = 'not-allowed';
+                    } else {
+                        cell.addEventListener('click', function() {
+                            if (!this.classList.contains('text-muted')) {
+                                showScheduleList(this.dataset.date);
+                            }
+                        });
+                    }
                     
                     date++;
                 }
@@ -107,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
             params.append('subfieldId', selectedSubfield);
         }
         
-        fetch(`/api/counseling/schedule/monthly?${params}`)
+        fetch(`/api/counseling/schedules/monthly?${params}`)
             .then(response => response.json())
             .then(schedules => {
                 const now = new Date();
