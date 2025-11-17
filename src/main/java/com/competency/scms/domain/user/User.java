@@ -49,11 +49,8 @@ public class User {
     private Integer grade;
 
     @Enumerated(EnumType.STRING)
-<<<<<<< HEAD
     @Column(name = "role", length = 50, nullable = false)
-=======
-    @Column(name = "role", length = 30, nullable = false)
->>>>>>> e2842f546cd1696fe76423b0deb2af07101902c8
+
     @Builder.Default
     private UserRole role = UserRole.STUDENT;
 

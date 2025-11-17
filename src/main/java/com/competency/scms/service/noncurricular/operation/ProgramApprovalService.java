@@ -1,4 +1,5 @@
 package com.competency.scms.service.noncurricular.operation;
+import com.competency.scms.domain.counseling.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import com.competency.scms.dto.noncurricular.operation.pending.ProgramBatchActionResultDto;
@@ -135,5 +136,56 @@ public class ProgramApprovalService {
                 .failCount(fail)
                 .build();
     }
+
+
+
+
+        /**
+         * 일괄 승인요청
+         * - 선택된 프로그램들을 승인요청 상태로 변경
+         * - 이미 종료(CLOSED)나 취소(CANCELED)된 건은 스킵
+         */
+        @Transactional
+        public void requestBulkApproval(List<Long> programIds) {
+
+            if (programIds == null || programIds.isEmpty()) {
+                return;
+            }
+
+            // 1. id 목록으로 프로그램 조회
+            List<Program> programs = programRepository.findAllById(programIds);
+
+            if (programs.size() != programIds.size()) {
+                // 일부 ID가 존재하지 않는 경우(선택 중 삭제된 경우 등)
+                // 필요하면 로그만 찍고 넘어가도 됨
+                // throw new IllegalArgumentException("일부 프로그램을 찾을 수 없습니다.");
+            }
+
+            // 2. 승인상태/프로그램상태 변경
+            for (Program program : programs) {
+
+                // 이미 종료/취소된 프로그램은 승인요청 불가 → 스킵
+                if (program.getStatus() == ProgramStatus.CLOSED
+                        || program.getStatus() == ProgramStatus.CANCELED) {
+                    continue;
+                }
+
+                // 이미 승인요청 상태인 경우도 건너뛰기 (선택)
+                if (program.getApprovalStatus() == ApprovalStatus.PENDING) {
+                    continue;
+                }
+
+                // 임시저장(DRAFT)이면 승인요청 상태로 변경
+                if (program.getStatus() == ProgramStatus.DRAFT) {
+                    program.setStatus(ProgramStatus.PENDING);   // 프로그램 자체 상태
+                }
+
+                // 승인상태를 승인요청(PENDING)으로 설정
+                program.setApprovalStatus(ApprovalStatus.PENDING);
+            }
+
+            // 3. 저장 (JPA 영속 상태면 변경 감지로 자동 flush 되지만, 명시적으로 saveAll 해도 됨)
+            // programRepository.saveAll(programs);
+        }
 }
 
