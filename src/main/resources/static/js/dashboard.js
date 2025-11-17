@@ -4,6 +4,16 @@
 window.DashboardApi = window.DashboardApi || {
     async getJson(url) {
         try {
+            // 쿠키에서 토큰 가져오기
+            const token = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('accessToken='))
+                ?.split('=')[1];
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
