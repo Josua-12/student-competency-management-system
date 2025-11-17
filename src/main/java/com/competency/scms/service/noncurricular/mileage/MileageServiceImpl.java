@@ -71,9 +71,14 @@ public class MileageServiceImpl implements MileageService {
     private void commitInternal(MileageAssignRequestDto request, User operatorId, boolean validate) {
         // 필요하면 validate = true 일 때 중복/포인트 한도 체크
         for (MileageAssignItemDto item : request.getItems()) {
+            // student가 null인지 확인
+            if (item.getStudent() == null) {
+                throw new IllegalArgumentException("Student cannot be null for mileage record");
+            }
+            
             MileageRecord record = new MileageRecord();
-            record.setProgram(request.getProgramId());
-            record.setStudent(item.getStudent());
+            record.setProgram(request.getProgramId()); // 이미 Program 엔티티임
+            record.setStudent(item.getStudent()); // User 엔티티 설정
             record.setPoints(item.getPoints());
             record.setType(item.getType() != null ? item.getType() : MileageType.EARN);
             record.setRemarks(item.getDescription());
