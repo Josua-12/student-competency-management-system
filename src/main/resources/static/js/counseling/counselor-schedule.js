@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadBaseSchedule() {
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/counseling/schedule/my-schedule', {
+        const response = await fetch('/api/counseling/schedules/my-schedule', {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
@@ -31,8 +31,12 @@ function renderBaseSchedule(schedules) {
         {label: '09:00-10:00', key: 'slot0910'},
         {label: '10:00-11:00', key: 'slot1011'},
         {label: '11:00-12:00', key: 'slot1112'},
+        {label: '12:00-13:00', key: 'slot1213'},
+        {label: '13:00-14:00', key: 'slot1314'},
         {label: '14:00-15:00', key: 'slot1415'},
-        {label: '15:00-16:00', key: 'slot1516'}
+        {label: '15:00-16:00', key: 'slot1516'},
+        {label: '16:00-17:00', key: 'slot1617'},
+        {label: '17:00-18:00', key: 'slot1718'}
     ];
     
     const dayMap = {0: 'mon', 1: 'tue', 2: 'wed', 3: 'thu', 4: 'fri'};
@@ -56,21 +60,22 @@ function renderBaseSchedule(schedules) {
     }).join('');
 }
 
-// 휴무 신청 내역 로드
+// 휴무 신청 내역 로드 (API 미구현)
 async function loadOffRequests() {
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/counseling/schedules/my-off-requests', {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            const requests = await response.json();
-            renderOffRequests(requests);
-        }
-    } catch (error) {
-        console.error('휴무 신청 내역 로드 실패:', error);
-    }
+    renderOffRequests([]);
+    // TODO: API 구현 후 활성화
+    // try {
+    //     const token = localStorage.getItem('accessToken');
+    //     const response = await fetch('/api/counseling/schedules/my-off-requests', {
+    //         headers: {'Authorization': `Bearer ${token}`}
+    //     });
+    //     if (response.ok) {
+    //         const requests = await response.json();
+    //         renderOffRequests(requests);
+    //     }
+    // } catch (error) {
+    //     console.error('휴무 신청 내역 로드 실패:', error);
+    // }
 }
 
 function renderOffRequests(requests) {
@@ -113,19 +118,20 @@ async function loadWeeklySchedule() {
     document.getElementById('currentWeek').textContent = 
         `${weekStart.getFullYear()}년 ${weekStart.getMonth() + 1}월 ${weekStart.getDate()}일 - ${weekEnd.getMonth() + 1}월 ${weekEnd.getDate()}일`;
     
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/schedules/weekly?startDate=${formatDateParam(weekStart)}`, {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            renderWeeklySchedule(data, weekStart);
-        }
-    } catch (error) {
-        console.error('주간 일정 로드 실패:', error);
-    }
+    // TODO: weekly API 미구현 - 빈 데이터로 렌더링
+    renderWeeklySchedule([], weekStart);
+    // try {
+    //     const token = localStorage.getItem('accessToken');
+    //     const response = await fetch(`/api/counseling/schedules/weekly?startDate=${formatDateParam(weekStart)}`, {
+    //         headers: {'Authorization': `Bearer ${token}`}
+    //     });
+    //     if (response.ok) {
+    //         const data = await response.json();
+    //         renderWeeklySchedule(data, weekStart);
+    //     }
+    // } catch (error) {
+    //     console.error('주간 일정 로드 실패:', error);
+    // }
 }
 
 function renderWeeklySchedule(data, weekStart) {
@@ -177,75 +183,15 @@ document.getElementById('nextWeek')?.addEventListener('click', function() {
     loadWeeklySchedule();
 });
 
-// 휴무 신청
-document.getElementById('submitOffRequest').addEventListener('click', async function() {
-    const modal = document.getElementById('offScheduleModal');
-    const reason = modal.querySelector('select').value;
-    const startDate = modal.querySelectorAll('input[type="date"]')[0].value;
-    const endDate = modal.querySelectorAll('input[type="date"]')[1].value;
-    const detailReason = modal.querySelector('textarea').value;
-    
-    if (!reason || !startDate || !endDate) {
-        alert('필수 항목을 모두 입력해주세요.');
-        return;
-    }
-    
-    if (new Date(startDate) > new Date(endDate)) {
-        alert('종료일은 시작일보다 빠를 수 없습니다.');
-        return;
-    }
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/counseling/schedules/off-requests', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({reason, startDate, endDate, detailReason})
-        });
-        
-        if (response.ok) {
-            alert('휴무 신청이 완료되었습니다.');
-            bootstrap.Modal.getInstance(modal).hide();
-            modal.querySelector('select').value = '';
-            modal.querySelectorAll('input[type="date"]').forEach(input => input.value = '');
-            modal.querySelector('textarea').value = '';
-            loadOffRequests();
-            loadWeeklySchedule();
-        } else {
-            const error = await response.json();
-            alert(error.message || '휴무 신청에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('휴무 신청 실패:', error);
-        alert('휴무 신청 중 오류가 발생했습니다.');
-    }
+// 휴무 신청 (API 미구현)
+document.getElementById('submitOffRequest')?.addEventListener('click', async function() {
+    alert('휴무 신청 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 구현 후 활성화
 });
 
 async function cancelOffRequest(id) {
-    if (!confirm('휴무 신청을 취소하시겠습니까?')) return;
-    
-    try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch(`/api/counseling/schedules/off-requests/${id}`, {
-            method: 'DELETE',
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            alert('취소되었습니다.');
-            loadOffRequests();
-            loadWeeklySchedule();
-        } else {
-            const error = await response.json();
-            alert(error.message || '취소에 실패했습니다.');
-        }
-    } catch (error) {
-        console.error('취소 실패:', error);
-        alert('취소 중 오류가 발생했습니다.');
-    }
+    alert('휴무 신청 취소 기능은 API 구현 후 사용 가능합니다.');
+    // TODO: API 구현 후 활성화
 }
 
 function editOffRequest(id) {
