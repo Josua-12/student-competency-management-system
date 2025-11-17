@@ -4,25 +4,7 @@
     <title>나의 활동 대시보드</title>
     <th:block th:fragment="css">
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-        <style>
-            .card-shadow { 
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
-            }
-            .card-dashboard { 
-                border-radius: 12px; 
-                border: none; 
-            }
-            .upcoming { 
-                background-color: #E0F2F1; 
-                border-left: 5px solid #00BFA5; 
-            }
-            .counsel-header { 
-                color: #1E3A8A; 
-            }
-            #mainChartCanvas { 
-                max-height: 250px; 
-            }
-        </style>
+        <link rel="stylesheet" th:href="@{/css/mypage/dashboard.css}">
     </th:block>
 </head>
 <body>
@@ -142,61 +124,7 @@
     </div>
 
     <th:block th:fragment="scripts">
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // 최신 역량 진단 결과를 기반으로 Chart.js 레이더 차트 생성
-                function renderMainRadarChart() {
-                    const competencyLabels = ['문제해결', '협업능력', '창의적사고', '리더십'];
-                    const latestScores = [4.8, 4.2, 4.6, 3.7]; // 최신 데이터
-                    
-                    const ctx = document.getElementById('mainChartCanvas').getContext('2d');
-
-                    new Chart(ctx, {
-                        type: 'radar',
-                        data: {
-                            labels: competencyLabels,
-                            datasets: [{
-                                label: '2025년 1차 진단',
-                                data: latestScores,
-                                backgroundColor: 'rgba(13, 110, 253, 0.2)',
-                                borderColor: 'rgba(13, 110, 253, 1)',
-                                borderWidth: 2,
-                                pointBackgroundColor: 'rgba(13, 110, 253, 1)',
-                                pointBorderColor: '#fff',
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                r: {
-                                    angleLines: { display: true },
-                                    suggestedMin: 0,
-                                    suggestedMax: 5,
-                                    pointLabels: { font: { size: 12 } },
-                                    ticks: { display: false }
-                                }
-                            },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: { 
-                                    callbacks: { 
-                                        label: (context) => `${context.label}: ${context.parsed.r.toFixed(1)}점` 
-                                    } 
-                                }
-                            }
-                        }
-                    });
-                }
-
-
-
-
-
-                // 차트 초기화
-                renderMainRadarChart();
-            });
-        </script>
+        <script th:src="@{/js/mypage/dashboard.js}"></script>
     </th:block>
 </body>
 </html>
