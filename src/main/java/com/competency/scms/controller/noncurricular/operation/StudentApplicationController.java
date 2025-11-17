@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/noncurricular/student")
+@RequestMapping("/noncurricular/student-app")
 public class StudentApplicationController {
 
     private final StudentApplicationQueryService studentApplicationQueryService;
