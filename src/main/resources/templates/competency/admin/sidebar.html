@@ -4,57 +4,124 @@
        th:fragment="sidebar">
 
     <style>
-        :root{
-            --bg:#f9fafb;
-            --fg:#111827;
-            --muted:#6b7280;
-            --line:#e5e7eb;
-            --card:#ffffff;
-            --accent:#094081;
-            --accent-soft:#e3f2fd;
-            --radius:12px;
+        .main-wrapper {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: row;
         }
+        
         .sidebar {
-            position: static;
-            width: 100%;
-            max-width: 260px;
+            width: 20%;
+            min-width: 250px;
             background: #ffffff;
-            border-right: 1px solid var(--line);
+            border-right: 1px solid #e5e7eb;
             padding: 20px 16px;
+            overflow-y: auto;
+            height: 100%;
         }
+        
+        .main-content {
+            width: 80%;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        .content-wrapper {
+            padding: 30px 20px;
+        }
+        
         .sidebar-header{
-            padding:0 8px 16px;
-            border-bottom:1px solid var(--line);
-            margin-bottom:16px;
+            padding: 0 8px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
         }
-        .sidebar-title{font-size:18px;font-weight:700;}
-        .sidebar-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .sidebar-sub {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
 
-        .menu-section{margin-bottom:12px;}
-        .menu-section-toggle{
-            width:100%;display:flex;align-items:center;justify-content:space-between;
-            padding:8px 10px;border:none;background:transparent;
-            font-size:14px;font-weight:600;cursor:pointer;
-            border-radius:var(--radius);transition:background .15s;
+        .menu-section {
+            margin-bottom: 12px;
         }
-        .menu-section-toggle:hover{background:var(--accent-soft);}
-        .menu-section-toggle .caret{font-size:11px;color:var(--muted);transition:transform .15s;}
-        .menu-section.open .menu-section-toggle .caret{transform:rotate(90deg);}
-        .menu-list{
-            list-style:none;margin-top:4px;margin-left:8px;padding-left:6px;
-            border-left:1px solid var(--line);display:none;
+        
+        .menu-section-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.15s;
         }
-        .menu-section.open .menu-list{display:block;}
+        
+        .menu-section-toggle:hover {
+            background: #e3f2fd;
+        }
+        
+        .menu-section-toggle .caret {
+            font-size: 11px;
+            color: #6b7280;
+            transition: transform 0.15s;
+        }
+        
+        .menu-section.open .menu-section-toggle .caret {
+            transform: rotate(90deg);
+        }
+        
+        .menu-list {
+            list-style: none;
+            margin-top: 4px;
+            margin-left: 8px;
+            padding-left: 6px;
+            border-left: 1px solid #e5e7eb;
+            display: none;
+        }
+        
+        .menu-section.open .menu-list {
+            display: block;
+        }
 
-        .menu-link{
-            display:block;width:100%;text-align:left;
-            padding:6px 10px;font-size:13px;color:var(--muted);
-            border-radius:var(--radius);border:none;background:transparent;
-            cursor:pointer;transition:background .15s,color .15s;
+        .menu-link {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #6b7280;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
             text-decoration: none;
         }
-        .menu-link:hover{background:var(--accent-soft);color:var(--accent);}
-        .menu-link.active{background:var(--accent);color:#fff;}
+        
+        .menu-link:hover {
+            background: #e3f2fd;
+            color: #094081;
+        }
+        
+        .menu-link.active {
+            background: #094081;
+            color: #fff;
+        }
     </style>
 
     <div class="sidebar-header">
@@ -75,102 +142,11 @@
 
     <section class="menu-section">
         <button class="menu-section-toggle" type="button">
-            <span>진단 관리</span><span class="caret">▶</span>
+            <span>역량 관리</span><span class="caret">▶</span>
         </button>
         <ul class="menu-list">
             <li>
-                <a class="menu-link" th:href="@{/competency/admin/assessments}">진단 목록</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/assessments/create}">진단 생성</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/assessments/settings}">진단 설정</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>문항 관리</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/questions}">문항 목록</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/questions/create}">문항 생성</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/questions/import}">문항 일괄등록</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>영역 관리</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/sections}">영역 목록</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/sections/create}">영역 생성</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/sections/mapping}">문항-영역 매핑</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>결과 관리</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/results}">진단 결과 조회</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/results/export}">결과 내보내기</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/results/analysis}">결과 분석</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>통계</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/statistics/overview}">전체 통계</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/statistics/department}">학과별 통계</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/statistics/trend}">추이 분석</a>
-            </li>
-        </ul>
-    </section>
-
-    <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>설정</span><span class="caret">▶</span>
-        </button>
-        <ul class="menu-list">
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/settings/general}">일반 설정</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/settings/scoring}">채점 설정</a>
-            </li>
-            <li>
-                <a class="menu-link" th:href="@{/competency/admin/settings/notifications}">알림 설정</a>
+                <a class="menu-link" th:href="@{/competency-admin/competency}">역량 관리</a>
             </li>
         </ul>
     </section>

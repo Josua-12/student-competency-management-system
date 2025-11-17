@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{counseling/counseling_layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts}, false)}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,42 +10,17 @@
     <th:block th:fragment="css"></th:block>
 
     <th:block th:fragment="content">
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>관리자 메뉴</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/admin}">
-                                <i class="bi bi-house-door"></i> 메인 대시보드
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/counseling/admin/approvals}">
-                                <i class="bi bi-check-circle"></i> 상담 승인 관리
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/admin/statistics}">
-                                <i class="bi bi-bar-chart"></i> 상담 통계
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/admin/settings}">
-                                <i class="bi bi-gear"></i> 기초 관리
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">상담 승인 관리</h1>
-                </div>
+        <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">승인 관리</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">상담관리</li>
+                    <li class="breadcrumb-item active" aria-current="page">승인 관리</li>
+                </ol>
+            </nav>
+        </div>
 
                 <!-- 필터 및 검색 -->
                 <div class="card mb-4">
@@ -146,9 +121,7 @@
                         </nav>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
+
     </th:block>
 
     <th:block th:fragment="scripts">

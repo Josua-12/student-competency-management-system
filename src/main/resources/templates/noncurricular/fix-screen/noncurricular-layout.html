@@ -7,7 +7,36 @@
     <title th:text="${pageTitle} ?: '비교과 프로그램'">비교과 프로그램</title>
 
     <!-- 공통 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/noncurricular/noncurricular.css}">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 56px;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+    </style>
+    
     <th:block th:replace="common/header :: headerStyles"></th:block>
     <th:block th:replace="common/footer :: footerStyles"></th:block>
 </head>
@@ -17,21 +46,18 @@
 <!-- 상단 헤더 -->
 <div th:replace="common/header :: header"></div>
 
-<div class="container-fluid">
-    <div class="row">
+<div class="main-wrapper flex-grow-1 d-flex">
 
-        <!-- 좌측 사이드바 -->
-        <aside class="col-12 col-md-3 col-lg-2 p-0 sidebar-col">
-            <div th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></div>
-        </aside>
+    <aside th:replace="noncurricular/fix-screen/noncurricular-sidebar :: noncurricularSidebar"></aside>
 
-        <!-- 메인 컨텐츠 -->
-        <main class="col-12 col-md-9 col-lg-10 py-4">
+    <main class="main-content">
+        <div class="content-wrapper">
             <!-- 페이지 전용 본문 -->
             <div th:if="${content != null}"
                  th:replace="~{${content}}"></div>
-        </main>
-    </div>
+        </div>
+    </main>
+
 </div>
 
 <!-- 푸터 -->

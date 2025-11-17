@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{counseling/counseling_layout :: layout(~{::title}, ~{::content}, ~{::css}, ~{::scripts}, false)}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,42 +10,17 @@
     <th:block th:fragment="css"></th:block>
 
     <th:block th:fragment="content">
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>관리자 메뉴</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/admin}">
-                                <i class="bi bi-house-door"></i> 메인 대시보드
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/admin/approvals}">
-                                <i class="bi bi-check-circle"></i> 상담 승인 관리
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/counseling/admin/statistics}">
-                                <i class="bi bi-bar-chart"></i> 상담 통계
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" th:href="@{/counseling/admin/settings}">
-                                <i class="bi bi-gear"></i> 기초 관리
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">기초 관리</h1>
-                </div>
+        <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">기초 설정</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">상담관리</li>
+                    <li class="breadcrumb-item active" aria-current="page">기초 설정</li>
+                </ol>
+            </nav>
+        </div>
 
                 <!-- 탭 네비게이션 -->
                 <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
@@ -100,22 +75,6 @@
                                     <div class="card-body">
                                         <div class="list-group list-group-flush" id="careerList">
                                             <div class="text-center p-3">로딩 중...</div>
-                                                <div>
-                                                    <div class="form-check form-switch d-inline-block me-2">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
-                                                </div>
-                                            </div>
-                                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>진로 계획</span>
-                                                <div>
-                                                    <div class="form-check form-switch d-inline-block me-2">
-                                                        <input class="form-check-input" type="checkbox">
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -133,22 +92,6 @@
                                     <div class="card-body">
                                         <div class="list-group list-group-flush" id="employmentList">
                                             <div class="text-center p-3">로딩 중...</div>
-                                                <div>
-                                                    <div class="form-check form-switch d-inline-block me-2">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
-                                                </div>
-                                            </div>
-                                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>면접 준비</span>
-                                                <div>
-                                                    <div class="form-check form-switch d-inline-block me-2">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -166,22 +109,6 @@
                                     <div class="card-body">
                                         <div class="list-group list-group-flush" id="learningList">
                                             <div class="text-center p-3">로딩 중...</div>
-                                                <div>
-                                                    <div class="form-check form-switch d-inline-block me-2">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
-                                                </div>
-                                            </div>
-                                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span>시간 관리</span>
-                                                <div>
-                                                    <div class="form-check form-switch d-inline-block me-2">
-                                                        <input class="form-check-input" type="checkbox" checked>
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-primary">수정</button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -293,9 +220,7 @@
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
-    </div>
+
     </th:block>
 
     <th:block th:fragment="scripts">
@@ -462,9 +387,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            await loadCounselors();
             await loadSubFields();
+            await loadCounselors();
             await loadSatisfactionQuestions();
+            
+            // 탭 전환 시 데이터 로드
+            document.getElementById('counselors-tab').addEventListener('shown.bs.tab', function() {
+                loadCounselors();
+            });
+            
+            document.getElementById('satisfaction-tab').addEventListener('shown.bs.tab', function() {
+                loadSatisfactionQuestions();
+            });
         });
 
         async function loadSatisfactionQuestions() {
@@ -482,14 +416,16 @@
                 if (response.ok) {
                     const questions = await response.json();
                     renderSatisfactionQuestions(questions);
+                } else if (response.status === 404 || response.status === 405) {
+                    document.getElementById('satisfactionQuestions').innerHTML = 
+                        '<tr><td colspan="7" class="text-center">등록된 문항이 없습니다.</td></tr>';
                 } else {
                     document.getElementById('satisfactionQuestions').innerHTML = 
                         '<tr><td colspan="7" class="text-center">등록된 문항이 없습니다.</td></tr>';
                 }
             } catch (error) {
-                console.error('만족도 문항 로드 실패:', error);
                 document.getElementById('satisfactionQuestions').innerHTML = 
-                    '<tr><td colspan="7" class="text-center text-danger">로드 중 오류가 발생했습니다.</td></tr>';
+                    '<tr><td colspan="7" class="text-center">등록된 문항이 없습니다.</td></tr>';
             }
         }
 
@@ -559,15 +495,18 @@
                 if (response.ok) {
                     const data = await response.json();
                     renderSubFields(data);
+                } else if (response.status === 404 || response.status === 405) {
+                    ['psychologicalList', 'careerList', 'employmentList', 'learningList'].forEach(id => {
+                        document.getElementById(id).innerHTML = '<div class="text-center p-3">등록된 세부분류가 없습니다.</div>';
+                    });
                 } else {
                     ['psychologicalList', 'careerList', 'employmentList', 'learningList'].forEach(id => {
                         document.getElementById(id).innerHTML = '<div class="text-center p-3">등록된 세부분류가 없습니다.</div>';
                     });
                 }
             } catch (error) {
-                console.error('세부분류 로드 실패:', error);
                 ['psychologicalList', 'careerList', 'employmentList', 'learningList'].forEach(id => {
-                    document.getElementById(id).innerHTML = '<div class="text-center p-3 text-danger">로드 실패</div>';
+                    document.getElementById(id).innerHTML = '<div class="text-center p-3">등록된 세부분류가 없습니다.</div>';
                 });
             }
         }
@@ -659,9 +598,15 @@
                     const data = await response.json();
                     const counselors = data.content || data;
                     renderCounselorTable(counselors);
+                } else {
+                    console.error('상담원 목록 로드 실패:', response.status);
+                    document.querySelector('#counselorTable tbody').innerHTML = 
+                        '<tr><td colspan="7" class="text-center">등록된 상담원이 없습니다.</td></tr>';
                 }
             } catch (error) {
                 console.error('상담원 목록 로드 실패:', error);
+                document.querySelector('#counselorTable tbody').innerHTML = 
+                    '<tr><td colspan="7" class="text-center text-danger">로드 중 오류가 발생했습니다.</td></tr>';
             }
         }
 
@@ -922,6 +867,24 @@
         document.getElementById('fieldFilter').addEventListener('change', function() {
             loadSatisfactionQuestions();
         });
+
+        // URL 해시에 따른 탭 활성화
+        function activateTabFromHash() {
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                const tabButton = document.getElementById(hash + '-tab');
+                if (tabButton) {
+                    const tab = new bootstrap.Tab(tabButton);
+                    tab.show();
+                }
+            }
+        }
+        
+        // 페이지 로드 시 탭 활성화
+        activateTabFromHash();
+        
+        // 해시 변경 시 탭 활성화
+        window.addEventListener('hashchange', activateTabFromHash);
 
         // window 객체에 함수 등록
         window.deleteQuestion = deleteQuestion;
