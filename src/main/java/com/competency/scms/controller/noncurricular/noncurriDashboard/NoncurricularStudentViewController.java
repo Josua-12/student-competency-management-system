@@ -131,5 +131,7 @@ public class NoncurricularStudentViewController {
         setView(model, "noncurricular/operation/ResultCompletionHistory");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
+
+
 }
 

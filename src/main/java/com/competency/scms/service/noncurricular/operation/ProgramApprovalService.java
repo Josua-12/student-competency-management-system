@@ -1,4 +1,5 @@
 package com.competency.scms.service.noncurricular.operation;
+import com.competency.scms.domain.counseling.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.program.Program;
 import com.competency.scms.domain.noncurricular.program.ProgramStatus;
 import com.competency.scms.dto.noncurricular.operation.pending.ProgramBatchActionResultDto;
@@ -135,5 +136,33 @@ public class ProgramApprovalService {
                 .failCount(fail)
                 .build();
     }
+
+
+
+
+        /**
+         * 일괄 승인요청
+         * - 선택된 프로그램들을 승인요청 상태로 변경
+         * - 이미 종료(CLOSED)나 취소(CANCELED)된 건은 스킵
+         */
+        @Transactional
+        public void requestBulkApproval(List<Long> programIds) {
+            if (programIds == null || programIds.isEmpty()) {
+                return;
+            }
+
+            // 1. id 목록으로 프로그램 조회
+            List<Program> programs = programRepository.findAllById(programIds);
+
+            // (선택) 일부 ID가 존재하지 않는 경우를 체크하고 싶으면 여기서 검증 가능
+            // if (programs.size() != programIds.size()) { ... }
+
+            // 2. 도메인 메서드를 이용해서 승인요청 상태로 변경
+            for (Program program : programs) {
+                program.requestApproval();   // Program 엔티티의 메서드 호출
+            }
+            // 3. @Transactional + JPA 변경감지로 자동 flush 되므로 saveAll() 생략해도 됨
+            // programRepository.saveAll(programs);
+        }
 }
 

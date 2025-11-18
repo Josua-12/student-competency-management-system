@@ -59,7 +59,7 @@ public class NoncurricularOperatorViewController {
     public String operatorProgramList(Model model) {
         model.addAttribute("pageTitle", "비교과 프로그램 - 프로그램 목록(운영/부서)");
         // templates/noncurricular/program/list_Op.html
-        setView(model, "noncurricular/program/list");
+        setView(model, "noncurricular/program/list_Op");
         return "noncurricular/fix-screen/noncurricular-layout";
     }
 

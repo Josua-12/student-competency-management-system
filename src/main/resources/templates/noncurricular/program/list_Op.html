@@ -65,7 +65,7 @@ th:fragment="contentStyles">
 <div xmlns:th="http://www.thymeleaf.org"
 th:fragment="contentFragment">
 <div class="wrap">
-    <h1>비교과 프로그램 조회 <span class="muted">(운영자)</span></h1>
+    <h1>비교과 프로그램 조회 <span class="danger">(운영자)</span></h1>
 
     <!-- 상단 툴바 -->
     <div class="toolbar">
@@ -196,6 +196,12 @@ th:fragment="contentFragment">
 
     <div class="pagination" id="pagination"></div>
 </div>
+
+    <form id="bulkApproveForm"
+          th:action="@{/noncurricular/operator/programs/bulk-approve}"
+          method="post">
+        <input type="hidden" name="ids" id="bulkIds">
+    </form>
 
 <!-- 토스트 -->
 <div class="toast" id="toast"></div>
@@ -456,8 +462,12 @@ th:fragment="contentScript">
         render();
     });
     $('#btnBulkApprove').addEventListener('click', ()=>{
-        if(state.selected.size===0) return;
-        toast(`선택 ${state.selected.size}건 승인요청 처리`);
+        if (state.selected.size === 0) return;
+
+        const ids = Array.from(state.selected); // 선택된 프로그램 id들
+        document.getElementById('bulkIds').value = ids.join(',');
+
+        document.getElementById('bulkApproveForm').submit();
     });
     $('#btnBulkDelete').addEventListener('click', ()=>{
         if(state.selected.size===0) return;
