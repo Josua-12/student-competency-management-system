@@ -1,0 +1,17 @@
+.card-shadow { 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
+}
+.card-dashboard { 
+    border-radius: 12px; 
+    border: none; 
+}
+.upcoming { 
+    background-color: #E0F2F1; 
+    border-left: 5px solid #00BFA5; 
+}
+.counsel-header { 
+    color: #1E3A8A; 
+}
+#mainChartCanvas { 
+    max-height: 250px; 
+}

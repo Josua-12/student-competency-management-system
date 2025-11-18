@@ -11,7 +11,7 @@ public class MileageViewController {
 
     @GetMapping("/operator/mileage")
     public String operatorPoints(Model model) {
-        model.addAttribute("pageTitle", "비교과 포인트 조회 (운영자)");
+        model.addAttribute("pageTitle", "비교과 포인트 조회");
         model.addAttribute("content", "noncurricular/mileage/operator-points");
         return "noncurricular/fix-screen/noncurricular-layout";
     }

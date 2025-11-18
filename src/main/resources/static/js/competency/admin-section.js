@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. DOM 요소 및 변수
+    // 1. DOM 요소 전역변수
     const sectionListBody = document.getElementById('sectionListBody');
     const sectionModalEl = document.getElementById('sectionModal');
     const sectionModal = new bootstrap.Modal(sectionModalEl);
@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSave = document.getElementById('btnSaveSection');
     const modalTitle = document.getElementById('sectionModalLabel');
 
-    // JWT 토큰 가져오기 (예: localStorage에 'accessToken'이라는 키로 저장된 경우)
+    // JWT 토큰 가져오기(예: localStorage에 'accessToken'이라는 키로 저장된 경우)
     function getJwtToken() {
-        return localStorage.getItem('accessToken'); // 저장 위치에 따라 수정 필요
+        return localStorage.getItem('accessToken'); // 실제 위치에 따라 수정 필요
     }
 
 
@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         openModal(); // Create Mode
     });
 
-    // [저장] 모달 내 저장 버튼
+    // [저장] 모달 내부의 저장 버튼
     btnSave.addEventListener('click', saveSection);
 
-    // [수정/삭제] 테이블 내 버튼 (이벤트 위임)
+    // [수정/삭제] 테이블의 버튼 (이벤트 위임)
     sectionListBody.addEventListener('click', (e) => {
         const target = e.target;
         const btn = target.closest('button');
@@ -63,10 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ================= Functions ================= */
 
     /**
-     * API: 진단 목록 조회 및 렌더링 (GET 요청)
+     * API: 진단 목록 조회 및 렌더링(GET 요청)
      */
     function loadSections() {
-        // [수정됨] GET 요청은 CSRF가 필요 없으므로 헤더를 안 보냅니다.
+        // [수정됨] GET 요청은 CSRF가 필요 없으므로 헤더만 보냅니다.
         fetch('/competency-admin/assessment-section/api/sections')
             .then(res => {
                 if (!res.ok) throw new Error('목록 로딩 실패');
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(err => {
                 console.error(err);
-                sectionListBody.innerHTML = `<tr><td colspan="6" class="text-danger">데이터를 불러오지 못했습니다. (오류: ${err.message})</td></tr>`;
+                sectionListBody.innerHTML = `<tr><td colspan="6" class="text-danger">데이터를 불러올 수 없습니다. (오류: ${err.message})</td></tr>`;
             });
     }
 
@@ -86,14 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function renderTable(sections) {
         if (!sections || sections.length === 0) {
-            sectionListBody.innerHTML = `<tr><td colspan="6" class="text-center py-4">등록된 진단 회차가 없습니다.</td></tr>`;
+            sectionListBody.innerHTML = `<tr><td colspan="6" class="text-center py-4">등록된 진단 절차가 없습니다.</td></tr>`;
             return;
         }
 
         sectionListBody.innerHTML = sections.map(section => {
             const start = formatDate(section.startDate);
             const end = formatDate(section.endDate);
-            // [수정됨] DTO 필드명을 isActive -> active 로 변경 (DTO 확인 필요)
+            // [수정됨] DTO 필드명을 isActive -> active 로 변경(DTO 확인 필요)
             const isActive = section.active;
 
             const now = new Date();
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <i class="fas fa-edit"></i> 수정
                         </button>
                         <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${section.id}">
-                            <i class="fas fa-trash"></i> 삭제
+                            <i class="fas fa-trash"></i> 비활성
                         </button>
                     </td>
                 </tr>
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * API: 저장 및 수정 (POST 요청)
+     * API: 저장/수정 (POST 요청)
      */
     function saveSection() {
         if (!sectionForm.checkValidity()) {
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnSave.disabled = true;
         const originalBtnText = btnSave.innerHTML;
-        btnSave.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 저장 중...';
+        btnSave.innerHTML = '<span class="spinner-border spinner-border-sm"></span> 저장중..';
 
         const formData = {
             id: document.getElementById('sectionId').value || null,
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * API: 삭제 (DELETE 요청)
      */
     function deleteSection(id) {
-        if(!confirm('정말 이 진단 회차를 삭제하시겠습니까?\n(이미 진행된 진단 결과가 있다면 문제가 될 수 있습니다.)')) return;
+        if(!confirm('정말 해당 진단 절차를 삭제하시겠습니까?\\n(이미 진행된 진단 결과가 있다면 문제가 발생할 수 있습니다.)')) return;
 
         fetch(`/competency-admin/assessment-section/api/sections/${id}`, {
             method: 'DELETE',

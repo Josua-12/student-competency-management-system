@@ -1,7 +1,7 @@
 // static/js/common/error-handler.js
 class ErrorHandler {
     static init() {
-        // 전역 에러 핸들러 설정
+        // 전역 오류 핸들러 설정
         window.addEventListener('unhandledrejection', (event) => {
             this.handleGlobalError(event.reason);
         });

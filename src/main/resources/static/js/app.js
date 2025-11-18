@@ -20,10 +20,10 @@ const Api = (() => {
 
         const resp = await fetch(input, { ...init, headers, credentials: 'same-origin' });
 
-        // 401 외 상태는 그대로 반환
+        // 401 상태가 아니면 그대로 반환
         if (resp.status !== 401) return resp;
 
-        // 재시도 불가 또는 리프레시 없음
+        // 재시도 불가능하거나 리프레시 없음
         if (!retry || !getRefresh()) return resp;
 
         // 액세스 토큰 갱신 시도
@@ -84,7 +84,7 @@ const Api = (() => {
         }
     }
 
-    // 에러 객체 표준화
+    // 에러 객체 생성
     async function buildError(resp) {
         let payload = null;
         try { payload = await resp.json(); } catch (_) {}
@@ -111,4 +111,3 @@ window.fetch = function(url, options = {}) {
     }
     return originalFetch(url, options);
 };
-

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -35,7 +36,7 @@ public class MainController {
                 .orElse("ROLE_STUDENT");
 
         return switch (role) {
-            case "ROLE_SUPER_ADMIN" -> "redirect:/super-admin/dashboard";
+            case "ROLE_SUPER_ADMIN" -> "redirect:/admin/dashboard";
             case "ROLE_COUNSELING_ADMIN" -> "redirect:/counseling-admin/dashboard";
             case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular/admin/dashboard";
             case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular/operator/dashboard";
@@ -91,8 +92,38 @@ public class MainController {
     }
 
     @GetMapping("/super-admin/dashboard")
-    public String superAdminDashboard() {
+    public String superAdminDashboard(Model model) {
         log.info("최고 관리자 대시보드 페이지 접근");
+        try {
+            // 템플릿에서 필요한 데이터 추가
+            java.util.Map<String, Object> studentStats = new java.util.HashMap<>();
+            studentStats.put("total", 0);
+            studentStats.put("male", 0);
+            studentStats.put("female", 0);
+            studentStats.put("grade1", 0);
+            studentStats.put("grade2", 0);
+            studentStats.put("grade3", 0);
+            studentStats.put("grade4", 0);
+            studentStats.put("liberalArts", 0);
+            studentStats.put("naturalSciences", 0);
+            studentStats.put("engineering", 0);
+            studentStats.put("socialSciences", 0);
+            model.addAttribute("studentStats", studentStats);
+            
+            model.addAttribute("dashboardStats", java.util.Map.of(
+                "diagnosis", 0,
+                "program", 0,
+                "mileage", 0,
+                "counseling", 0
+            ));
+            model.addAttribute("notices", java.util.List.of());
+            model.addAttribute("todos", java.util.List.of());
+            model.addAttribute("title", "최고관리자 페이지");
+
+        } catch (Exception e) {
+            log.error("최고 관리자 대시보드 데이터 로드 실패", e);
+            model.addAttribute("errorMessage", "대시보드 데이터를 불러올 수 없습니다.");
+        }
         return "admin/dashboard";
     }
 

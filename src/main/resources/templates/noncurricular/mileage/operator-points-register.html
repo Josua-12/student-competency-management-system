@@ -208,7 +208,10 @@
                 </div>
                 <div class="form-item">
                     <label>기본 포인트</label>
-                    <input type="number" id="defaultPoints" value="10" min="0" max="100">
+                    <div style="display:flex;gap:8px;">
+                        <input type="number" id="defaultPoints" value="10" min="0" max="100" style="flex:1;">
+                        <button class="btn" onclick="updateDefaultPoints()">수정</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -276,9 +279,19 @@
                 </div>
             </div>
 
+            <div class="form-row">
+                <div class="form-item">
+                    <label>일괄 등록 포인트</label>
+                    <input type="number" id="batchPoints" placeholder="체크된 학생에게 일괄적용할 포인트" min="0" max="100">
+                </div>
+                <div class="form-item" style="justify-content:end;">
+                    <button class="btn btn-primary" onclick="applyBatchPoints()">일괄 적용</button>
+                </div>
+            </div>
+
             <div class="btn-row">
                 <button class="btn btn-warning" onclick="saveDraft()">임시저장</button>
-                <button class="btn btn-success" onclick="commitPoints()">포인트 일괄 등록</button>
+                <button class="btn btn-success" onclick="commitPoints()">최종 등록</button>
             </div>
         </section>
 
@@ -360,6 +373,20 @@
             
             filteredStudents = [...currentStudents];
             renderStudentsTable(filteredStudents);
+            
+            // 학과 필터 업데이트
+            const deptFilter = document.getElementById('deptFilter');
+            const departments = new Set();
+            currentStudents.forEach(s => {
+                if (s.department) departments.add(s.department);
+            });
+            deptFilter.innerHTML = '<option value="">전체 학과</option>';
+            Array.from(departments).sort().forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept;
+                option.textContent = dept;
+                deptFilter.appendChild(option);
+            });
             
             if (currentStudents.length > 0) {
                 showAlert(`${currentStudents.length}명의 대상 학생을 불러왔습니다.`, 'success');
@@ -492,8 +519,21 @@
             return;
         }
         
-        console.log('임시저장:', { programId, students: selectedStudents });
-        showAlert(`${selectedStudents.length}명의 학생 포인트가 임시저장되었습니다.`, 'success');
+        try {
+            const res = await fetch(REGISTER_API.draft, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ programId, students: selectedStudents })
+            });
+            
+            if (!res.ok) throw new Error('API error');
+            const result = await res.json();
+            
+            showAlert(result.message || `${selectedStudents.length}명의 학생 포인트가 임시저장되었습니다.`, 'success');
+        } catch (e) {
+            console.error('임시저장 실패', e);
+            showAlert('임시저장에 실패했습니다.', 'danger');
+        }
     }
 
     async function commitPoints() {
@@ -514,18 +554,17 @@
         }
         
         try {
-            console.log('포인트 등록:', { programId, students: selectedStudents });
+            const res = await fetch(REGISTER_API.commit, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ programId, students: selectedStudents })
+            });
             
-            // API 호출 (현재는 더미)
-            // const res = await fetch(REGISTER_API.commit, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ programId, students: selectedStudents })
-            // });
+            if (!res.ok) throw new Error('API error');
+            const result = await res.json();
             
-            showAlert(`${selectedStudents.length}명의 학생에게 포인트가 성공적으로 등록되었습니다.`, 'success');
+            showAlert(result.message || `${selectedStudents.length}명의 학생에게 포인트가 성공적으로 등록되었습니다.`, 'success');
             
-            // 체크박스 초기화
             document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('selectAllCheckbox').checked = false;
             
@@ -542,6 +581,74 @@
             return filteredStudents[index];
         });
     }
+
+    function applyBatchPoints() {
+        const batchPoints = document.getElementById('batchPoints').value;
+        if (!batchPoints || batchPoints <= 0) {
+            showAlert('일괄 등록할 포인트를 입력해주세요.', 'warning');
+            return;
+        }
+        
+        const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+        if (checkboxes.length === 0) {
+            showAlert('포인트를 적용할 학생을 선택해주세요.', 'warning');
+            return;
+        }
+        
+        checkboxes.forEach(cb => {
+            const index = parseInt(cb.dataset.index);
+            const row = cb.closest('tr');
+            const pointsInput = row.querySelector('.points-input');
+            if (pointsInput) {
+                pointsInput.value = batchPoints;
+                filteredStudents[index].points = parseInt(batchPoints);
+            }
+        });
+        
+        showAlert(`${checkboxes.length}명의 학생에게 ${batchPoints}포인트가 일괄 적용되었습니다.`, 'success');
+    }
+    
+    window.applyBatchPoints = applyBatchPoints;
+
+    async function updateDefaultPoints() {
+        const programId = document.getElementById('programSelect').value;
+        if (!programId) {
+            showAlert('프로그램을 먼저 선택해주세요.', 'warning');
+            return;
+        }
+        
+        const points = document.getElementById('defaultPoints').value;
+        if (!points || points < 0) {
+            showAlert('유효한 포인트를 입력해주세요.', 'warning');
+            return;
+        }
+        
+        const applyToExisting = confirm('기존 학생들에게도 이 포인트를 적용하시겠습니까?');
+        
+        try {
+            const res = await fetch(`/api/noncurricular-operator/programs/${programId}/default-points`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ points: parseInt(points), applyToExisting })
+            });
+            
+            if (!res.ok) throw new Error('API error');
+            const result = await res.json();
+            
+            showAlert(result.message || '기본 포인트가 수정되었습니다.', 'success');
+            
+            if (applyToExisting && currentStudents.length > 0) {
+                currentStudents.forEach(s => s.points = parseInt(points));
+                filteredStudents.forEach(s => s.points = parseInt(points));
+                renderStudentsTable(filteredStudents);
+            }
+        } catch (e) {
+            console.error('기본 포인트 수정 실패', e);
+            showAlert('기본 포인트 수정에 실패했습니다.', 'danger');
+        }
+    }
+    
+    window.updateDefaultPoints = updateDefaultPoints;
 
     function showAlert(message, type) {
         const container = document.getElementById('alertContainer');

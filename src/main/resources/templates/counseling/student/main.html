@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout('일반상담·컨설팅', ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{counseling/counseling_layout :: layout('상담신청', ~{::content}, ~{::css}, ~{::scripts}, false)}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <th:block th:fragment="css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-        <style>
-            a, a:hover {
-                text-decoration: none;
-            }
-        </style>
+        <link rel="stylesheet" th:href="@{/css/counseling/student-main.css}">
     </th:block>
 </head>
 <body>
     <th:block th:fragment="content">
-        <div class="container-fluid">
-            <div class="container">
+        <div class="main-content-wrapper">
+        <!-- 페이지 헤더 -->
+        <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">상담신청</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">상담신청</li>
+                </ol>
+            </nav>
+        </div>
 
-                <!-- 페이지 상단 영역 -->
-                <div th:replace="~{counseling/student/sidebar :: sidebar(selectedTab=${selectedTab})}"></div>
-
-                <!-- 메인 콘텐츠 -->
-                <div class="row">
+                    <div class="row">
                     <div class="col-12">
                         <!-- 상담신청 소개 -->
                         <div class="bg-light p-4 rounded mb-5">
@@ -156,25 +157,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-
-            <!-- 퀵 메뉴 -->
-            <div class="position-fixed bottom-0 end-0 p-3">
-                <div class="d-flex flex-column gap-2">
-                    <button class="btn btn-secondary btn-sm" title="매뉴얼 다운로드">
-                        <i class="bi bi-download"></i> 매뉴얼
-                    </button>
-                    <button class="btn btn-primary btn-sm" title="메인화면으로 이동">
-                        <i class="bi bi-house"></i> 메인화면
-                    </button>
-                    <button class="btn btn-light btn-sm" title="페이지 상단으로 이동" onclick="window.scrollTo(0,0)">
-                        <i class="bi bi-arrow-up"></i>
-                    </button>
-                </div>
-            </div>
         </div>
+
     </th:block>
     <th:block th:fragment="scripts">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

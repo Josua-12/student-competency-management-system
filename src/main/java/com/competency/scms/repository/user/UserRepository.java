@@ -61,4 +61,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 역할별 사용자 수 조회
     long countByRole(com.competency.scms.domain.user.UserRole role);
+
+
 }

@@ -25,7 +25,7 @@
     text-decoration: none;
 }
 .breadcrumb .breadcrumb-item a:hover {
-    color: var(--primary-color, #007bff);
+    color: var(--primary-color, var(--primary-color));
 }
 .breadcrumb .breadcrumb-item.active {
     color: #495057;
@@ -53,12 +53,12 @@
 }
 
 .tab-button.active {
-    color: var(--primary-color, #667eea);
+    color: var(--primary-color, var(--primary-color));
     background-color: #fff;
     border-color: #ddd;
-    border-bottom-color: #fff; /* 활성화 탭 아래만 흰색으로 */
+    border-bottom-color: #fff; /* 활성 탭의 아래쪽 색상으로 */
     position: relative;
-    z-index: 1; /* 활성화 탭이 밑줄 위로 오도록 */
+    z-index: 1; /* 활성 탭이 밑줄 위로 오도록 */
 }
 
 .tab-button:not(.active):hover {
@@ -89,7 +89,7 @@
 .assessment-table {
     width: 100%;
     margin-bottom: 0; /* Bootstrap 기본 마진 제거 */
-    border-collapse: collapse; /* 셀 경계선 겹치지 않게 */
+    border-collapse: collapse; /* 셀 경계선이 겹치지 않게 */
 }
 
 .assessment-table thead th {
@@ -111,7 +111,7 @@
 }
 
 .assessment-table tbody tr:last-child td {
-    border-bottom: none; /* 마지막 행 하단 border 제거 */
+    border-bottom: none; /* 마지막 행의 하단 border 제거 */
 }
 
 .assessment-table tbody tr:hover {
@@ -119,7 +119,7 @@
 }
 
 .assessment-table tbody td a {
-    color: var(--primary-color, #007bff);
+    color: var(--primary-color, var(--primary-color));
     text-decoration: none;
 }
 
@@ -135,9 +135,9 @@
 /* 페이징 */
 .pagination {
     --bs-pagination-color: #6c757d;
-    --bs-pagination-active-bg: var(--primary-color, #667eea);
-    --bs-pagination-active-border-color: var(--primary-color, #667eea);
-    --bs-pagination-hover-color: var(--primary-color, #667eea);
+    --bs-pagination-active-bg: var(--primary-color, var(--primary-color));
+    --bs-pagination-active-border-color: var(--primary-color, var(--primary-color));
+    --bs-pagination-hover-color: var(--primary-color, var(--primary-color));
     --bs-pagination-focus-bg: #e9ecef;
     --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
 
@@ -168,7 +168,7 @@
         border-top-right-radius: 8px;
     }
     .tab-button.active {
-        border-bottom-color: #ddd; /* 모바일에서는 활성 탭 아래에도 border 유지 */
+        border-bottom-color: #ddd; /* 모바일에서는 활성 탭의 아래쪽도 border 유지 */
     }
     .tab-content-wrapper {
         border-top-left-radius: 0;
@@ -204,12 +204,12 @@
     .assessment-table td:nth-of-type(1)::before { content: "번호"; }
     .assessment-table td:nth-of-type(2)::before { content: "진단명"; }
     .assessment-table td:nth-of-type(3)::before { content: "진단기간"; }
-    .assessment-table td:nth-of-type(4)::before { content: "진단하기"; }
+    .assessment-table td:nth-of-type(4)::before { content: "진단일기"; }
 }
 
 
 .assessment-table .btn-primary {
-    background-color: #0d6efd; /* Bootstrap 기본 파란색 (진함) */
+    background-color: #0d6efd; /* Bootstrap 기본 파란색(진함) */
     border-color: #0d6efd;
     color: #ffffff !important; /* 글자색 흰색 강제 */
 }

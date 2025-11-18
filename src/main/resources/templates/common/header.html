@@ -1,105 +1,43 @@
-<!-- src/main/resources/templates/common/header.html (수정) -->
 <!DOCTYPE html>
-<meta charset="UTF-8">
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <th:block th:fragment="headerStyles">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <style>
-            .navbar-brand img {
-                object-fit: contain;
-            }
-        </style>
-    </th:block>
 </head>
-
-<header th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
-        <!-- 로고/웹사이트명 -->
-        <a class="navbar-brand d-flex align-items-center" th:href="@{/dashboard}">
-            <img th:src="@{/images/scms-logo.png}"
-                 alt="scms 로고"
-                 class="me-2"
-                 style="height: 30px;">
-            <span class="fw-bold">푸름대학교 학생역량관리시스템</span>
+<body>
+<header th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <i class="fas fa-graduation-cap me-2"></i>
+            학생역량관리시스템
         </a>
-
-        <!-- 햄버거 토글 버튼 (모바일) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <!-- 네비게이션 메뉴 -->
+        
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/dashboard}">홈</a>
-                </li>
-
-                <li class="nav-item" sec:authorize="hasRole('STUDENT')">
-                    <a class="nav-link" th:href="@{/student/assessment}">역량진단</a>
-                </li>
-
-                <li class="nav-item" sec:authorize="hasAnyRole('SUPER_ADMIN', 'COMPETENCY_ADMIN')">
-                    <a class="nav-link" th:href="@{/competency-admin/competency}">역량진단</a>
-                </li>
-
-                <!-- 상담 드롭다운 (학생) -->
-                <li class="nav-item dropdown" sec:authorize="hasAuthority('ROLE_STUDENT')">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" th:href="@{/counseling/student}">
-                        상담
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" href="/mypage">
+                        <i class="fas fa-user me-1"></i>
+                        마이페이지
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/counseling/student}">상담 예약</a></li>
-                        <li><a class="dropdown-item" th:href="@{/counseling/student/status}">내 예약 조회</a></li>
-                    </ul>
                 </li>
-
-                <!-- 상담사 메뉴 -->
-                <li class="nav-item" sec:authorize="hasAuthority('ROLE_COUNSELOR')">
-                    <a class="nav-link" th:href="@{/counseling/counselor}">상담 관리</a>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt me-1"></i>
+                        로그아웃
+                    </a>
                 </li>
-
-                <!-- 관리자 상담 메뉴 -->
-                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
-                    <a class="nav-link" th:href="@{/counseling/admin}">상담 관리</a>
-                </li>
-
-
-
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/noncurricular/dashboard}">비교과 프로그램</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/mypage}">마이페이지</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout" onclick="return confirm('로그아웃 하시겠습니까?')">로그아웃</a>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" href="/auth/login">
+                        <i class="fas fa-sign-in-alt me-1"></i>
+                        로그인
+                    </a>
                 </li>
             </ul>
         </div>
     </div>
 </header>
-<th:block th:fragment="headerScript">
-    <script>
-        // 전역 로그아웃 함수
-        window.logout = function() {
-            console.log('로그아웃 함수 호출');
-            if (confirm('로그아웃 하시겠습니까?')) {
-                console.log('/logout 엔드포인트로 이동');
-                window.location.href = '/logout';
-            }
-        };
-
-        // DOM 로드 후 실행
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('로그아웃 함수 등록 완료');
-        });
-    </script>
-    </th:block>
+</body>
 </html>

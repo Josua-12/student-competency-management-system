@@ -26,16 +26,16 @@ body {
 }
 
 .pagination-wrap .pagination .page-link {
-    color: #007bff;
+    color: var(--primary-color);
 }
 
 .pagination-wrap .pagination .active .page-link {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
     color: #fff;
 }
 
-/* 반응형 카드 */
+/* 반응??카드 */
 @media (max-width: 768px) {
     .search-filter form {
         flex-direction: column;

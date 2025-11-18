@@ -1,3 +1,4 @@
+// 상담분야 선택 시 상담사 목록 업데이트
 const FIELD_NAMES = {
     'PSYCHOLOGICAL': '심리상담',
     'CAREER': '진로상담',
@@ -71,7 +72,7 @@ document.getElementById('fieldSelect').addEventListener('change', async function
     }
 });
 
-// 상담사 선택 시 일정 섹션 표시
+// 상담사 선택 시 일정 옵션 표시
 document.getElementById('loadSchedule').addEventListener('click', function() {
     const fieldSelect = document.getElementById('fieldSelect');
     const counselorSelect = document.getElementById('counselorSelect');

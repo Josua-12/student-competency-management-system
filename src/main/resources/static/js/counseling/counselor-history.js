@@ -166,7 +166,7 @@ function renderHistoryDetail(detail) {
     const reasonSection = document.getElementById('detailReasonSection');
     if (detail.status === 'CANCELLED' || detail.status === 'REJECTED') {
         document.getElementById('detailReasonLabel').textContent = detail.status === 'CANCELLED' ? '취소 사유:' : '거절 사유:';
-        document.getElementById('detailReason').textContent = detail.cancelReason || detail.rejectReason || '사유가 기록되지 않았습니다.';
+        document.getElementById('detailReason').textContent = detail.cancelReason || detail.rejectReason || '사유가 기록되지 않았습니다';
         reasonSection.style.display = 'flex';
     } else {
         reasonSection.style.display = 'none';
@@ -176,10 +176,10 @@ function renderHistoryDetail(detail) {
 function getStatusText(status) {
     const statusMap = {
         'PENDING': '대기중',
-        'CONFIRMED': '승인됨',
+        'CONFIRMED': '확인됨',
         'COMPLETED': '완료',
         'CANCELLED': '취소',
-        'REJECTED': '거부'
+        'REJECTED': '거절'
     };
     return statusMap[status] || status;
 }
@@ -214,7 +214,7 @@ async function saveRecord(reservationId, content, notes) {
         });
         
         if (response.ok) {
-            alert('상담일지가 저장되었습니다.');
+            alert('상담기록이 저장되었습니다.');
             bootstrap.Modal.getInstance(document.getElementById('recordModal')).hide();
             await loadHistoryData();
         } else {
@@ -247,7 +247,7 @@ async function viewRecord(reservationId) {
             }
         }
     } catch (error) {
-        console.error('일지 조회 실패:', error);
+        console.error('기록 조회 실패:', error);
     }
 }
 

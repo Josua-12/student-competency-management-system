@@ -148,7 +148,7 @@ function initRealTimeValidation() {
     FormValidator.setupRealTimeValidation(
         'newPassword',
         FormValidator.validatePassword,
-        '8자 이상, 대문자, 소문자, 숫자를 포함해야 합니다.'
+        '8자 이상, 영문자, 숫자 및 특수문자를 포함해야 합니다'
     );
 }
 

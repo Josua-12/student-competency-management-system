@@ -132,7 +132,7 @@ public class AssessmentController {
                 response.put("redirectUrl", "/student/assessment/result/" + submitDto.getResultId());
             } else {
                 response.put("message", "답변이 임시저장되었습니다.");
-                response.put("redirectUrl", "/student/assessment/page/" + submitDto.getResultId());
+                response.put("redirectUrl", "/student/assessment");
             }
 
             return ResponseEntity.ok(response);

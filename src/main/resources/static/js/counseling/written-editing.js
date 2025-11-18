@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('attachmentFile');
         
         if (!privacyAgree || !sensitiveAgree) {
-            alert('개인정보 활용에 동의해주세요.');
+            alert('개인정보 이용에 동의해주세요.');
             return false;
         }
         

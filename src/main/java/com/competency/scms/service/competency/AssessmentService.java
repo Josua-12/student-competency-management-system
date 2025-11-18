@@ -8,6 +8,7 @@ import com.competency.scms.exception.UserNotFoundException;
 import com.competency.scms.repository.competency.*;
 import com.competency.scms.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -350,6 +352,7 @@ public class AssessmentService {
         // --- DTO 조립 ---
 
         AssessmentResultData data = new AssessmentResultData();
+        data.setResultId(result.getId());
         data.setAssessmentTitle(result.getAssessmentSection().getTitle());
         data.setUserName(result.getUser().getName());
         data.setSubmittedAt(result.getSubmittedAt());
@@ -430,6 +433,8 @@ public class AssessmentService {
 
         List<Map.Entry<Competency, Double>> sortedChildScores =
                 new ArrayList<>(childAvgScores.entrySet());
+
+        sortedChildScores.sort(Comparator.comparingDouble(Map.Entry::getValue));
 
         // 7-1. 약점 (가장 낮은 2개의 하위 역량)
         List<Map.Entry<Competency, Double>> bottom2 = sortedChildScores.stream()
@@ -551,6 +556,36 @@ public class AssessmentService {
         return new AssessmentHistoryPageDto(competencyLabels, historyData);
     }
 
+    /**
+     * 특정 사용자의 '가장 최근에 완료된' 진단 결과 조회
+     */
+    @Transactional(readOnly = true)
+    public Optional<AssessmentResultData> getLatestCompletedAssessmentData(Long userId) {
+        // 1. 가장 최근에 'COMPLETED'된 진단(Result)을 1개 찾음
+        Optional<AssessmentResult> latestResult = assessmentResultRepository
+                .findFirstByUserIdAndStatusOrderBySubmittedAtDesc(userId, AssessmentResultStatus.COMPLETED);
+
+        // 2. 조회 후 존재한다면
+        if (latestResult.isPresent()) {
+            try {
+                AssessmentResultData resultData = this.getAssessmentResultData(
+                        latestResult.get().getId(),
+                        userId
+                );
+                return Optional.of(resultData);
+            } catch (Exception e) {
+                log.error("최신 진단 결과 DTO를 생성하는 중 오류 발생", e);
+                return Optional.empty();
+            }
+        }
+
+        // 4. 완료된 진단이 없으면 빈 Optional 반환
+        return Optional.empty();
+    }
+
+
+
+
     // --- DTO 변환 헬퍼 메서드들 ---
 
     /**
@@ -575,6 +610,7 @@ public class AssessmentService {
 
         return dto;
     }
+
 
     /**
      * 하위역량 Entity -> DTO 변환

@@ -32,7 +32,7 @@
 /* 차트 컨테이너 */
 .chart-container-wrapper {
     position: relative;
-    height: 350px; /* JS 옵션과 동일하게 고정 */
+    height: 350px; /* JS 옵션과 일치게 고정 */
     padding: 20px 10px;
 }
 
@@ -62,7 +62,7 @@
     padding: 15px;
     font-weight: 500;
 }
-/* 첫 번째 컬럼(진단명)만 왼쪽 정렬 */
+/* 첫번째 컬럼(진단명)만 왼쪽 정렬 */
 .history-table tbody td:first-child {
     text-align: left;
     font-weight: 600;

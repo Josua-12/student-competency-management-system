@@ -90,11 +90,11 @@ function renderQuestionResults(questions) {
         <tr>
             <td>${q.questionText}</td>
             <td><strong>${q.avgScore || 0}</strong></td>
-            <td>${q.score5Count || 0}건 (${q.score5Percent || 0}%)</td>
-            <td>${q.score4Count || 0}건 (${q.score4Percent || 0}%)</td>
-            <td>${q.score3Count || 0}건 (${q.score3Percent || 0}%)</td>
-            <td>${q.score2Count || 0}건 (${q.score2Percent || 0}%)</td>
-            <td>${q.score1Count || 0}건 (${q.score1Percent || 0}%)</td>
+            <td>${q.score5Count || 0}건(${q.score5Percent || 0}%)</td>
+            <td>${q.score4Count || 0}건(${q.score4Percent || 0}%)</td>
+            <td>${q.score3Count || 0}건(${q.score3Percent || 0}%)</td>
+            <td>${q.score2Count || 0}건(${q.score2Percent || 0}%)</td>
+            <td>${q.score1Count || 0}건(${q.score1Percent || 0}%)</td>
             <td>${q.responseCount || 0}/${q.totalCount || 0} (${q.responseRate || 0}%)</td>
         </tr>
     `).join('');

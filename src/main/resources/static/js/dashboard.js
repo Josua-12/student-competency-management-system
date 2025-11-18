@@ -70,10 +70,18 @@ async function loadCompetency() {
         const chartData = {
             labels: res.labels,
             datasets: [{
-                label: '역량 점수',
-                data: res.scores
+                label: '나의 역량 점수',
+                data: res.scores,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // 파란색 배경 (투명도)
+                borderColor: 'rgba(54, 162, 235, 1)',     // 파란색 테두리
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(54, 162, 235, 1)',
+                fill: true // 채우기 활성화
             }]
         };
+
         renderCompetencyChart('competencyChart', chartData);
         
         const listData = res.labels.map((label, index) => ({
@@ -103,7 +111,7 @@ async function loadConsultations() {
     if (!wrap) return;
     
     if (!res || res.length === 0) {
-        wrap.innerHTML = '<div class="empty-message">상담 내역이 없습니다.</div>';
+        wrap.innerHTML = '<div class="empty-message">상담 이력이 없습니다.</div>';
         return;
     }
     
@@ -136,27 +144,50 @@ function setInitial(sel, name) {
 }
 
 function renderCompetencyChart(canvasId, data) {
-    if (!data) return;
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    
-    new Chart(ctx, {
+
+    // 기존 차트가 있으면 파괴 (중복 생성 방지)
+    if (window.myCompetencyChart) {
+        window.myCompetencyChart.destroy();
+    }
+
+    window.myCompetencyChart = new Chart(ctx, {
         type: 'radar',
-        data: {
-            labels: data.labels || [],
-            datasets: (data.datasets || []).map(ds => ({
-                label: ds.label,
-                data: ds.data,
-                backgroundColor: 'rgba(102,126,234,0.2)',
-                borderColor: '#667eea',
-                pointBackgroundColor: '#667eea'
-            }))
-        },
+        data: data,
         options: {
-            scales: { r: { beginAtZero: true, suggestedMax: 5 } },
-            plugins: { legend: { display: false } },
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 5, // 5점 만점 고정
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        showLabelBackdrop: false, // 숫자 배경 제거
+                        font: { size: 10 }
+                    },
+                    pointLabels: {
+                        font: { size: 12, weight: 'bold' }
+                    },
+                    angleLines: {
+                        display: true,
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }, // 범례 숨김
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + Number(context.raw).toFixed(2) + '점';
+                        }
+                    }
+                }
+            }
         }
     });
 }
@@ -210,13 +241,13 @@ function toProgramCard(p) {
         <div class="program-participants">참여자: ${participants}</div>
         <span class="program-status">${status}</span>
       </div>
-      <a href="${link}" class="program-link">상세보기 →</a>
+      <a href="${link}" class="program-link">자세보기 →</a>
     </div>
   `;
 }
 
 function escapeHtml(s) {
-    return (s ?? '').replace(/[&<>"']/g, m => ({
+    return (s ?? '').replace(/[&<>\"']/g, m => ({
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',

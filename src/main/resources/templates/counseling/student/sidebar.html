@@ -1,37 +1,280 @@
-<!-- 페이지 상단 영역 -->
-<div th:fragment="sidebar (selectedTab)" xmlns:th="http://www.w3.org/1999/xhtml">
-    <div class="row mt-4 mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold mb-4">일반상담·컨설팅</h2>
+<aside class="sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+       th:fragment="sidebar">
 
-            <!-- 라디오 탭 -->
-            <div class="d-flex flex-wrap gap-3 mb-4">
-                <div class="form-check">
-                    <input type="radio" class="btn-check" name="counselingType" id="radio1" value="state" autocomplete="off" th:checked="${selectedTab == 'state'}">
-                    <label class="btn btn-primary" for="radio1">신청현황</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" class="btn-check" name="counselingType" id="radio2" value="GeneralCnsl" autocomplete="off" th:checked="${selectedTab == 'GeneralCnsl'}">
-                    <label class="btn btn-primary" for="radio2">일반상담·컨설팅 안내</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" class="btn-check" name="counselingType" id="radio3" value="psycho" autocomplete="off" th:checked="${selectedTab == 'psycho'}">
-                    <label class="btn btn-primary" for="radio3">심리상담</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" class="btn-check" name="counselingType" id="radio4" value="career" autocomplete="off" th:checked="${selectedTab == 'career'}">
-                    <label class="btn btn-primary" for="radio4">진로상담</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" class="btn-check" name="counselingType" id="radio5" value="job" autocomplete="off" th:checked="${selectedTab == 'job'}">
-                    <label class="btn btn-primary" for="radio5">취업상담</label>
-                </div>
-                <div class="form-check">
-                    <input type="radio" class="btn-check" name="counselingType" id="radio6" value="learning" autocomplete="off" th:checked="${selectedTab == 'learning'}">
-                    <label class="btn btn-primary" for="radio6">학습상담</label>
-                </div>
-            </div>
-        </div>
+    <style>
+        .main-wrapper {
+            display: flex;
+            flex-direction: row;
+            min-height: calc(100vh - 56px);
+        }
+        
+        .sidebar {
+            width: 20%;
+            min-width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 16px;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            width: 80%;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+        
+        .content-wrapper {
+            padding: 30px 20px;
+        }
+        
+        .sidebar-header{
+            padding: 0 8px 16px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .sidebar-sub {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .menu-section {
+            margin-bottom: 12px;
+        }
+        
+        .menu-section-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: background 0.15s;
+        }
+        
+        .menu-section-toggle:hover {
+            background: #e3f2fd;
+        }
+        
+        .menu-section-toggle .caret {
+            font-size: 11px;
+            color: #6b7280;
+            transition: transform 0.15s;
+        }
+        
+        .menu-section.open .menu-section-toggle .caret {
+            transform: rotate(90deg);
+        }
+        
+        .menu-list {
+            list-style: none;
+            margin-top: 4px;
+            margin-left: 8px;
+            padding-left: 6px;
+            border-left: 1px solid #e5e7eb;
+            display: none;
+        }
+        
+        .menu-section.open .menu-list {
+            display: block;
+        }
+
+        .menu-link {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 6px 10px;
+            font-size: 13px;
+            color: #6b7280;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            text-decoration: none;
+        }
+        
+        .menu-link:hover {
+            background: #e3f2fd;
+            color: #094081;
+        }
+        
+        .menu-link.active {
+            background: #094081;
+            color: #fff;
+        }
+    </style>
+
+    <div class="sidebar-header">
+        <div class="sidebar-title">상담</div>
+        <div class="sidebar-sub">Counseling</div>
     </div>
-</div>
 
+    <section class="menu-section open">
+        <button class="menu-section-toggle" type="button">
+            <span>대시보드</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li sec:authorize="hasRole('STUDENT')">
+                <a class="menu-link" th:href="@{/counseling/student}">개인 대시보드</a>
+            </li>
+            <li sec:authorize="hasRole('COUNSELOR')">
+                <a class="menu-link" th:href="@{/counseling/counselor/dashboard}">상담사 대시보드</a>
+            </li>
+            <li sec:authorize="hasRole('COUNSELING_ADMIN')">
+                <a class="menu-link" th:href="@{/counseling/admin/dashboard}">관리자 대시보드</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+        <button class="menu-section-toggle" type="button">
+            <span>상담 신청</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/student/psycho}">심리상담</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/student/career}">진로상담</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/student/learning}">학습상담</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/student/job}">취업상담</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('STUDENT')">
+        <button class="menu-section-toggle" type="button">
+            <span>상담 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/student/status}">신청 현황</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('COUNSELOR')">
+        <button class="menu-section-toggle" type="button">
+            <span>상담 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/reservations}">예약 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/schedule}">일정 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/history}">상담 이력</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/records}">상담 기록</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('COUNSELOR')">
+        <button class="menu-section-toggle" type="button">
+            <span>통계</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/counselor/satisfaction}">만족도 결과</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('COUNSELING_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>상담사 관리</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/counselors}">상담사 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/schedule}">일정 관리</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/settings}">설정 관리</a>
+            </li>
+        </ul>
+    </section>
+
+    <section class="menu-section" sec:authorize="hasRole('COUNSELING_ADMIN')">
+        <button class="menu-section-toggle" type="button">
+            <span>통계</span><span class="caret">▶</span>
+        </button>
+        <ul class="menu-list">
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/statistics}">상담 통계</a>
+            </li>
+            <li>
+                <a class="menu-link" th:href="@{/counseling/admin/reports}">결과 분석</a>
+            </li>
+        </ul>
+    </section>
+
+    <script th:fragment="counselingSidebarScript">
+        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.closest('.menu-section');
+                section.classList.toggle('open');
+            });
+        });
+
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.menu-link')
+                    .forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        (function setActiveByLocation() {
+            const current = window.location.pathname;
+            const links = document.querySelectorAll('.menu-link');
+            let matched = null;
+
+            links.forEach(l => {
+                const href = l.getAttribute('href');
+                if (!href) return;
+
+                const path = href.startsWith('http')
+                    ? new URL(href, window.location.origin).pathname
+                    : href;
+
+                if (current.startsWith(path)) {
+                    if (!matched || path.length > (matched.getAttribute('href') || '').length) {
+                        matched = l;
+                    }
+                }
+            });
+
+            if (matched) {
+                matched.classList.add('active');
+                const section = matched.closest('.menu-section');
+                if (section) section.classList.add('open');
+            }
+        })();
+    </script>
+</aside>

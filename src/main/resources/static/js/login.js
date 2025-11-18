@@ -15,8 +15,6 @@ async function handleLogin(e) {
     e.preventDefault();
 
     const studentNum = document.getElementById('studentNum').value.trim();
-
-
     const password = document.getElementById('password').value;
 
     if (!studentNum || !password) {
@@ -32,7 +30,6 @@ async function handleLogin(e) {
                 userNum: parseInt(studentNum),
                 password: String(password)
             })
-
         });
 
         const data = await safeJson(response);
@@ -61,7 +58,7 @@ async function safeJson(resp) {
  * 토큰 저장
  */
 function persistTokens(data) {
-    console.log('토큰 저장:', data);
+    console.log('토큰 저장', data);
     if (data?.accessToken) {
         localStorage.setItem('accessToken', data.accessToken);
         document.cookie = `accessToken=${data.accessToken}; path=/; samesite=strict`;
@@ -70,7 +67,6 @@ function persistTokens(data) {
         localStorage.setItem('refreshToken', data.refreshToken);
     }
 }
-
 
 /**
  * 로그인 에러 처리
