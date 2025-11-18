@@ -118,20 +118,21 @@ async function loadWeeklySchedule() {
     document.getElementById('currentWeek').textContent = 
         `${weekStart.getFullYear()}년 ${weekStart.getMonth() + 1}월 ${weekStart.getDate()}일 - ${weekEnd.getMonth() + 1}월 ${weekEnd.getDate()}일`;
     
-    // TODO: weekly API 미구현 - 빈 데이터로 렌더링
-    renderWeeklySchedule([], weekStart);
-    // try {
-    //     const token = localStorage.getItem('accessToken');
-    //     const response = await fetch(`/api/counseling/schedules/weekly?startDate=${formatDateParam(weekStart)}`, {
-    //         headers: {'Authorization': `Bearer ${token}`}
-    //     });
-    //     if (response.ok) {
-    //         const data = await response.json();
-    //         renderWeeklySchedule(data, weekStart);
-    //     }
-    // } catch (error) {
-    //     console.error('주간 일정 로드 실패:', error);
-    // }
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`/api/counseling/schedules/weekly?startDate=${formatDateParam(weekStart)}`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        if (response.ok) {
+            const data = await response.json();
+            renderWeeklySchedule(data, weekStart);
+        } else {
+            renderWeeklySchedule([], weekStart);
+        }
+    } catch (error) {
+        console.error('주간 일정 로드 실패:', error);
+        renderWeeklySchedule([], weekStart);
+    }
 }
 
 function renderWeeklySchedule(data, weekStart) {
@@ -254,7 +255,7 @@ function renderConfirmedReservations(reservations) {
         
         const button = isPast ? 
             `<button class="btn btn-sm btn-primary" onclick="openCompleteModal(${res.id})"><i class="bi bi-check-circle"></i> 완료처리</button>` :
-            `<button class="btn btn-sm btn-outline-info" onclick="viewReservation(${res.id})"><i class="bi bi-eye"></i> 상세</button>`;
+            `<button class="btn btn-sm btn-outline-primary" onclick="viewReservation(${res.id})">상세</button>`;
         
         return `
             <tr>

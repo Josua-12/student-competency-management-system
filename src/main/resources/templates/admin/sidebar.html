@@ -3,126 +3,7 @@
        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
        th:fragment="sidebar">
 
-    <style>
-        .main-wrapper {
-            position: fixed;
-            top: 56px;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: row;
-        }
-        
-        .sidebar {
-            width: 20%;
-            min-width: 250px;
-            background: #ffffff;
-            border-right: 1px solid #e5e7eb;
-            padding: 20px 16px;
-            overflow-y: auto;
-            height: 100%;
-        }
-        
-        .main-content {
-            width: 80%;
-            overflow-y: auto;
-            height: 100%;
-        }
-        
-        .content-wrapper {
-            padding: 30px 20px;
-        }
-        
-        .sidebar-header{
-            padding: 0 8px 16px;
-            border-bottom: 1px solid #e5e7eb;
-            margin-bottom: 16px;
-        }
-        
-        .sidebar-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-        }
-        
-        .sidebar-sub {
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        .menu-section {
-            margin-bottom: 12px;
-        }
-        
-        .menu-section-toggle {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 10px;
-            border: none;
-            background: transparent;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: background 0.15s;
-        }
-        
-        .menu-section-toggle:hover {
-            background: #e3f2fd;
-        }
-        
-        .menu-section-toggle .caret {
-            font-size: 11px;
-            color: #6b7280;
-            transition: transform 0.15s;
-        }
-        
-        .menu-section.open .menu-section-toggle .caret {
-            transform: rotate(90deg);
-        }
-        
-        .menu-list {
-            list-style: none;
-            margin-top: 4px;
-            margin-left: 8px;
-            padding-left: 6px;
-            border-left: 1px solid #e5e7eb;
-            display: none;
-        }
-        
-        .menu-section.open .menu-list {
-            display: block;
-        }
-
-        .menu-link {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 6px 10px;
-            font-size: 13px;
-            color: #6b7280;
-            border-radius: 12px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s;
-            text-decoration: none;
-        }
-        
-        .menu-link:hover {
-            background: #e3f2fd;
-            color: #094081;
-        }
-        
-        .menu-link.active {
-            background: #094081;
-            color: #fff;
-        }
-    </style>
+    <link th:href="@{/css/sidebar.css}" rel="stylesheet">
 
     <div class="sidebar-header">
         <div class="sidebar-title">시스템 관리</div>
@@ -130,9 +11,9 @@
     </div>
 
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/super-admin/dashboard}">관리자 대시보드</a>
@@ -142,7 +23,7 @@
 
     <section class="menu-section">
         <button class="menu-section-toggle" type="button">
-            <span>사용자 관리</span><span class="caret">▶</span>
+            <span>사용자 관리</span>
         </button>
         <ul class="menu-list">
             <li>
@@ -152,9 +33,9 @@
     </section>
 
     <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>모듈 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>모듈 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/competency/admin/dashboard}">역량진단 관리</a>
@@ -168,47 +49,6 @@
         </ul>
     </section>
 
-    <script th:fragment="adminSidebarScript">
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
+    <script th:src="@{/js/sidebar.js}"></script>
 
-        document.querySelectorAll('.menu-link').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelectorAll('.menu-link')
-                    .forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
-
-        (function setActiveByLocation() {
-            const current = window.location.pathname;
-            const links = document.querySelectorAll('.menu-link');
-            let matched = null;
-
-            links.forEach(l => {
-                const href = l.getAttribute('href');
-                if (!href) return;
-
-                const path = href.startsWith('http')
-                    ? new URL(href, window.location.origin).pathname
-                    : href;
-
-                if (current.startsWith(path)) {
-                    if (!matched || path.length > (matched.getAttribute('href') || '').length) {
-                        matched = l;
-                    }
-                }
-            });
-
-            if (matched) {
-                matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
-            }
-        })();
-    </script>
 </aside>

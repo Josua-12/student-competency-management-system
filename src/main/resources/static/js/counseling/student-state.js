@@ -15,24 +15,39 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadReservations() {
         const searchCondition = getSearchCondition();
         
-        fetch(`/api/counseling/reservations?${new URLSearchParams(searchCondition)}`)
-            .then(response => response.json())
+        const token = localStorage.getItem('accessToken');
+        console.log('Loading reservations with params:', searchCondition);
+        
+        fetch(`/api/counseling/reservations?${new URLSearchParams(searchCondition)}`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                renderReservationTable(data.content);
+                console.log('Received data:', data);
+                renderReservationTable(data.content || []);
                 renderPagination(data);
-                updateTotalCount(data.totalElements);
+                updateTotalCount(data.totalElements || 0);
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('데이터를 불러오는 중 오류가 발생했습니다.');
+                console.error('Error loading reservations:', error);
+                // 에러 시 빈 테이블 표시
+                renderReservationTable([]);
+                updateTotalCount(0);
+                alert('데이터를 불러오는 중 오류가 발생했습니다: ' + error.message);
             });
     }
 
     // 검색 조건 수집
     function getSearchCondition() {
         const dateTypeEl = document.querySelector('input[name="dateTypeRadio"]:checked');
-        const dateType = dateTypeEl ? dateTypeEl.value : 'reservation';
-        const dateInputs = document.querySelectorAll('input[type="text"]');
+        const dateType = dateTypeEl ? dateTypeEl.value : 'regDate';
+        const dateInputs = document.querySelectorAll('input[type="date"]');
         const startDate = dateInputs[0] ? dateInputs[0].value : '';
         const endDate = dateInputs[1] ? dateInputs[1].value : '';
         const statusEl = document.querySelector('select');
@@ -62,7 +77,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // 테이블 렌더링
     function renderReservationTable(reservations) {
         const tbody = document.querySelector('tbody');
+        if (!tbody) {
+            console.error('Table tbody not found');
+            return;
+        }
+        
         tbody.innerHTML = '';
+        
+        if (!reservations || reservations.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center">신청 내역이 없습니다.</td></tr>';
+            return;
+        }
 
         reservations.forEach(reservation => {
             const row = document.createElement('tr');
@@ -98,7 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 상세 모달 표시
     window.showDetailModal = function(reservationId) {
-        fetch(`/api/counseling/reservations/${reservationId}`)
+        const token = localStorage.getItem('accessToken');
+        fetch(`/api/counseling/reservations/${reservationId}`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        })
             .then(response => response.json())
             .then(reservation => {
                 document.getElementById('detailReservationId').textContent = `CNSL-${reservation.id}`;
@@ -161,34 +189,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 만족도 설문 로드
     function loadSatisfactionSurvey(reservationId, isEdit) {
-        fetch(`/api/counseling/satisfaction/survey/${reservationId}`)
+        const token = localStorage.getItem('accessToken');
+
+        fetch(`/api/counseling/satisfaction/survey/${reservationId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
             .then(response => response.json())
             .then(survey => {
-                if (isEdit) {
-                    fetch(`/api/counseling/satisfaction/result/${reservationId}`)
-                        .then(res => res.json())
-                        .then(result => {
-                            renderSatisfactionForm(survey, result);
-                            document.getElementById('submitSatisfaction').textContent = '만족도 수정';
-                            document.getElementById('submitSatisfaction').dataset.satisfactionId = result.satisfactionId;
-                            new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
-                        });
-                } else {
-                    renderSatisfactionForm(survey);
-                    document.getElementById('submitSatisfaction').textContent = '만족도 제출';
-                    delete document.getElementById('submitSatisfaction').dataset.satisfactionId;
+            if (isEdit) {
+                fetch(`/api/counseling/satisfaction/result/${reservationId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                    .then(res => res.json())
+                    .then(result => {
+                    renderSatisfactionForm(survey, result);
+                    document.getElementById('submitSatisfaction').textContent = '만족도 수정';
+                    document.getElementById('submitSatisfaction').dataset.satisfactionId = result.satisfactionId;
+
                     new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
-                }
-            })
+                });
+            } else {
+                renderSatisfactionForm(survey);
+                document.getElementById('submitSatisfaction').textContent = '만족도 제출';
+                delete document.getElementById('submitSatisfaction').dataset.satisfactionId;
+
+                new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
+            }
+        })
             .catch(error => {
-                console.error('Error:', error);
-                alert('만족도 설문을 불러오는 중 오류가 발생했습니다.');
-            });
+            console.error('Error:', error);
+            alert('만족도 설문을 불러오는 중 오류가 발생했습니다.');
+        });
     }
+
 
     // 만족도 결과 조회
     function loadSatisfactionResult(reservationId) {
-        fetch(`/api/counseling/satisfaction/result/${reservationId}`)
+        const token = localStorage.getItem('accessToken');
+        fetch(`/api/counseling/satisfaction/result/${reservationId}`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        })
             .then(response => response.json())
             .then(result => {
                 renderSatisfactionResult(result);
@@ -204,29 +244,37 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderSatisfactionForm(survey, existingResult) {
         const form = document.getElementById('satisfactionForm');
         form.innerHTML = '';
-        
+
+        const answerMap = {};
+        if (existingResult && Array.isArray(existingResult.answers)) {
+            existingResult.answers.forEach(a => {
+                answerMap[a.questionId] = a;
+            });
+        }
+
         survey.questions.forEach((question, index) => {
             const questionDiv = document.createElement('div');
             questionDiv.className = 'mb-4';
-            
+
             const label = document.createElement('label');
             label.className = 'form-label';
             label.innerHTML = `<strong>${index + 1}. ${question.questionText}${question.isRequired ? ' <span class="text-danger">*</span>' : ''}</strong>`;
             questionDiv.appendChild(label);
-            
-            const existingAnswer = existingResult?.answers.find(a => a.questionId === question.questionId);
-            
+
+            const existingAnswer = answerMap[question.questionId] || {};
+
             if (question.questionType === 'RATING') {
-                questionDiv.appendChild(createRatingInput(question, existingAnswer?.ratingValue));
+                questionDiv.appendChild(createRatingInput(question, existingAnswer.ratingValue ?? null));
             } else if (question.questionType === 'TEXT') {
-                questionDiv.appendChild(createTextInput(question, existingAnswer?.answerText));
+                questionDiv.appendChild(createTextInput(question, existingAnswer.answerText ?? ''));
             } else if (question.questionType === 'MULTIPLE_CHOICE') {
-                questionDiv.appendChild(createMultipleChoiceInput(question, existingAnswer?.selectedOptionId));
+                questionDiv.appendChild(createMultipleChoiceInput(question, existingAnswer.selectedOptionId ?? null));
             }
-            
+
             form.appendChild(questionDiv);
         });
     }
+
 
     // 만족도 결과 표시
     function renderSatisfactionResult(result) {
@@ -273,16 +321,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // 평점 입력 생성
     function createRatingInput(question, defaultValue) {
         const container = document.createElement('div');
-        container.className = 'd-flex justify-content-between align-items-center';
-        
-        const btnGroup = document.createElement('div');
-        btnGroup.className = 'btn-group';
-        btnGroup.setAttribute('role', 'group');
+        container.className = 'd-flex gap-2 align-items-center';
         
         for (let i = 1; i <= 5; i++) {
+            const div = document.createElement('div');
+            div.className = 'form-check';
+            
             const input = document.createElement('input');
             input.type = 'radio';
-            input.className = 'btn-check';
+            input.className = 'form-check-input';
             input.name = `question_${question.questionId}`;
             input.id = `q${question.questionId}_${i}`;
             input.value = i;
@@ -292,15 +339,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (defaultValue && defaultValue === i) input.checked = true;
             
             const label = document.createElement('label');
-            label.className = 'btn btn-outline-primary';
+            label.className = 'form-check-label';
             label.setAttribute('for', `q${question.questionId}_${i}`);
             label.textContent = i;
             
-            btnGroup.appendChild(input);
-            btnGroup.appendChild(label);
+            div.appendChild(input);
+            div.appendChild(label);
+            container.appendChild(div);
         }
         
-        container.appendChild(btnGroup);
         return container;
     }
 
@@ -357,9 +404,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        const token = localStorage.getItem('accessToken');
         fetch(`/api/counseling/reservations/${currentReservation}/cancel`, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ cancelReason: cancelReason })
@@ -417,9 +466,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = satisfactionId ? `/api/counseling/satisfaction/${satisfactionId}` : '/api/counseling/satisfaction';
         const method = satisfactionId ? 'PUT' : 'POST';
 
+        const token = localStorage.getItem('accessToken');
         fetch(url, {
             method: method,
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(submitData)
@@ -483,7 +534,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 총개수 업데이트
     function updateTotalCount(total) {
-        document.querySelector('.total_count strong').textContent = total;
+        const totalElement = document.querySelector('.total_count strong');
+        if (totalElement) {
+            totalElement.textContent = total || 0;
+        }
     }
 
     // 유틸리티 함수들
@@ -544,7 +598,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function loadAttachmentsForDetail(reservationId) {
-        fetch(`/api/counseling/reservations/${reservationId}/attachments`)
+        const token = localStorage.getItem('accessToken');
+        fetch(`/api/counseling/reservations/${reservationId}/attachments`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        })
             .then(response => response.json())
             .then(attachments => {
                 const section = document.getElementById('detailAttachmentsSection');

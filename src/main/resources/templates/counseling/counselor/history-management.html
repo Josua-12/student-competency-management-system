@@ -223,6 +223,21 @@
                         <div class="col-sm-3"><strong id="detailReasonLabel">사유:</strong></div>
                         <div class="col-sm-9"><div class="alert alert-warning mb-0" id="detailReason">-</div></div>
                     </div>
+                    <div class="row mb-3" id="detailCompleteSection" style="display: none;">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-info-circle"></i> 상담 완료 처리</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">첨부파일 (선택사항 / 최대 10MB)</label>
+                                    <input type="file" class="form-control" id="completeFiles" multiple accept=".pdf,.doc,.docx,.hwp,.txt">
+                                    <small class="text-muted">상담 결과 자료나 참고 문서를 첨부할 수 있습니다.</small>
+                                </div>
+                                <button type="button" class="btn btn-success" id="completeReservationBtn">
+                                    <i class="bi bi-check-circle"></i> 상담 완료
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -279,6 +294,27 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <button type="button" class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 만족도 조사 모달 -->
+    <div class="modal fade" id="satisfactionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">상담 만족도 조사 결과</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="satisfactionForm">
+                        <!-- 동적으로 생성됨 -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" id="submitSatisfaction" style="display: none;">만족도 제출</button>
                 </div>
             </div>
         </div>

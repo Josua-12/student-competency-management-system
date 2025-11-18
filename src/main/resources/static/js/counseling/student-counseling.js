@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 cell.style.backgroundColor = '#ffffff';
                 cell.style.color = '#6c757d';
-                cell.textContent = '상담불가능';
+                cell.textContent = '예약 불가 (0명)';
                 cell.style.cursor = 'default';
                 cell.classList.remove('has-counselors');
             }

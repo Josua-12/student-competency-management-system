@@ -152,8 +152,9 @@ public class CounselingReservationApiController {
             @RequestParam(required = false) String endDate,
             Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+        // 상담사의 모든 예약을 조회하고 필터링은 프론트엔드에서 처리
         Page<CounselingReservationDto.ListResponse> reservations = 
-                reservationService.getCounselorPendingReservations(userDetails.getUser(), pageable);
+                reservationService.getCounselorAllReservations(userDetails.getUser(), pageable);
         return ResponseEntity.ok(reservations);
     }
     

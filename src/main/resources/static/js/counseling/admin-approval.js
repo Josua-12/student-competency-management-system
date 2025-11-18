@@ -1,147 +1,298 @@
-document.addEventListener('DOMContentLoaded', async function() {
-    await loadCounselors();
-    await loadApprovals();
-    
-    document.querySelector('.card .btn-primary')?.addEventListener('click', function() {
-        loadApprovals();
-    });
-    
-    let currentReservationId = null;
-    document.getElementById('assignModal').addEventListener('show.bs.modal', async function(event) {
-        const button = event.relatedTarget;
-        currentReservationId = button.getAttribute('data-id');
-        if (currentReservationId) {
-            await loadReservationForAssign(currentReservationId);
-        }
-    });
-    
-    document.querySelector('#assignModal .btn-success').addEventListener('click', async function() {
-        if (!currentReservationId) return;
-        
-        const counselorId = document.getElementById('assignCounselorSelect').value;
-        const confirmedDate = document.querySelector('#assignModal input[name="confirmedDate"]').value;
-        const confirmedStartTime = document.querySelector('#assignModal input[name="confirmedStartTime"]').value;
-        const confirmedEndTime = document.querySelector('#assignModal input[name="confirmedEndTime"]').value;
-        const memo = document.querySelector('#assignModal textarea').value;
-        
-        if (!counselorId || !confirmedDate || !confirmedStartTime || !confirmedEndTime) {
-            alert(MESSAGES.REQUIRED_FIELDS);
-            return;
-        }
-        
-        await assignAndApprove(currentReservationId, counselorId, confirmedDate, confirmedStartTime, confirmedEndTime, memo);
-    });
-    
-    let rejectReservationId = null;
-    document.getElementById('rejectModal').addEventListener('show.bs.modal', function(event) {
-        const button = event.relatedTarget;
-        rejectReservationId = button.getAttribute('data-id');
-        document.querySelector('#rejectModal textarea').value = '';
-    });
-    
-    document.querySelector('#rejectModal .btn-danger').addEventListener('click', async function() {
-        if (!rejectReservationId) return;
-        
-        const rejectReason = document.querySelector('#rejectModal textarea').value;
-        
-        if (!rejectReason.trim()) {
-            alert(MESSAGES.REQUIRED_REASON);
-            return;
-        }
-        
-        await rejectReservation(rejectReservationId, rejectReason);
-    });
-    
-    document.getElementById('detailModal').addEventListener('show.bs.modal', async function(event) {
-        const button = event.relatedTarget;
-        const reservationId = button.getAttribute('data-id');
-        if (reservationId) {
-            await loadReservationDetail(reservationId);
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    loadApprovals();
+    loadCounselors();
+    setupEventListeners();
 });
+
+let currentReservationId = null;
 
 async function loadApprovals() {
     const token = localStorage.getItem('accessToken');
+    
+    // 검색 조건 수집
     const status = document.getElementById('statusFilter')?.value || '';
-    const field = document.getElementById('fieldFilter')?.value || '';
-    const counselor = document.getElementById('counselorFilter')?.value || '';
-    const startDate = document.querySelectorAll('.card input[type="date"]')[0]?.value || '';
-    const endDate = document.querySelectorAll('.card input[type="date"]')[1]?.value || '';
-    const searchText = document.querySelector('.card input[type="text"]')?.value || '';
+    const counselingType = document.getElementById('typeFilter')?.value || '';
+    const counselorId = document.getElementById('counselorFilter')?.value || '';
+    const startDate = document.getElementById('startDate')?.value || '';
+    const endDate = document.getElementById('endDate')?.value || '';
+    
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (counselingType) params.append('field', counselingType);
+    if (counselorId) params.append('counselorId', counselorId);
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
     
     try {
-        const response = await fetch('/api/counseling/reservations', {
+        const url = `/api/counseling/admin/approvals${params.toString() ? '?' + params.toString() : ''}`;
+        const response = await fetch(url, {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
         if (response.ok) {
             const data = await response.json();
-            let list = data.content || [];
-            
-            if (status) list = list.filter(item => item.status === status);
-            if (field) list = list.filter(item => item.counselingField === field);
-            if (counselor) list = list.filter(item => item.counselorId == counselor);
-            if (startDate) list = list.filter(item => new Date(item.reservationDate) >= new Date(startDate));
-            if (endDate) list = list.filter(item => new Date(item.reservationDate) <= new Date(endDate));
-            if (searchText) list = list.filter(item => 
-                item.studentName?.includes(searchText) || item.id?.toString().includes(searchText)
-            );
-            
-            document.getElementById('totalCount').textContent = `${list.length}${UNIT_COUNT}`;
-            renderApprovalTable(list);
+            displayApprovals(data.content || []);
+            document.getElementById('totalCount').textContent = `${data.totalElements || 0}건`;
         }
     } catch (error) {
-        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
+        console.error('승인 목록 로드 실패:', error);
     }
 }
 
-function renderApprovalTable(list) {
+function displayApprovals(approvals) {
     const tbody = document.getElementById('approvalTableBody');
-    if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center">${MESSAGES.NO_RESERVATION}</td></tr>`;
+    
+    if (approvals.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center">승인 대기 내역이 없습니다.</td></tr>';
         return;
     }
     
-    tbody.innerHTML = list.map(item => {
-        const statusBadge = STATUS_BADGE[item.status] || STATUS_BADGE.REJECTED;
-        const statusText = STATUS_TEXT[item.status] || item.status;
-        
-        let buttons = '';
-        if (item.status === 'PENDING') {
-            buttons = `
-                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#assignModal" data-id="${item.id}">배정</button>
-                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-id="${item.id}">거부</button>
-            `;
-        }
-        buttons += `<button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detailModal" data-id="${item.id}">상세</button>`;
-        
-        const requestedDateTime = item.reservationDate && item.startTime ? 
-            `${item.reservationDate}T${item.startTime}` : null;
-        const confirmedDateTime = item.confirmedDate && item.confirmedStartTime ? 
-            `${item.confirmedDate}T${item.confirmedStartTime}` : null;
-        
-        return `
-            <tr>
-                <td><input type="checkbox" class="row-checkbox" value="${item.id}"></td>
-                <td>${item.id || '-'}</td>
-                <td>${item.studentName}</td>
-                <td>${getFieldName(item.counselingField)}</td>
-                <td>${formatDateTime(requestedDateTime)}</td>
-                <td>${formatDateTime(confirmedDateTime) || '-'}</td>
-                <td>${formatDate(item.createdAt)}</td>
-                <td>${item.counselorName || '-'}</td>
-                <td><span class="badge ${statusBadge}">${statusText}</span></td>
-                <td>${buttons}</td>
-            </tr>
-        `;
-    }).join('');
+    tbody.innerHTML = approvals.map(approval => `
+        <tr>
+            <td><input type="checkbox" value="${approval.id}"></td>
+            <td>${approval.id}</td>
+            <td>${approval.studentName}(${approval.studentId})</td>
+            <td>${approval.counselingType}</td>
+            <td>${formatDateTime(approval.requestedDateTime)}</td>
+            <td>${approval.confirmedDateTime ? formatDateTime(approval.confirmedDateTime) : '-'}</td>
+            <td>${formatDate(approval.createdAt)}</td>
+            <td>${approval.counselorName || '-'}</td>
+            <td><span class="badge ${getStatusBadgeClass(approval.status)}">${getStatusText(approval.status)}</span></td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-info" onclick="viewDetail(${approval.id})">상세</button>
+                    ${approval.status === 'PENDING' ? `
+                        <button class="btn btn-sm btn-success" onclick="showApprovalModal(${approval.id})">승인</button>
+                        <button class="btn btn-sm btn-danger" onclick="showRejectModal(${approval.id})">거부</button>
+                    ` : ''}
+                </div>
+            </td>
+        </tr>
+    `).join('');
 }
 
-function formatDateTime(dateStr) {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return date.toLocaleString('ko-KR', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'});
+async function loadCounselors() {
+    const token = localStorage.getItem('accessToken');
+    
+    try {
+        const response = await fetch('/api/counseling/admin/counselors', {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (response.ok) {
+            const counselors = await response.json();
+            const select = document.getElementById('assignCounselorSelect');
+            const filterSelect = document.getElementById('counselorFilter');
+            
+            select.innerHTML = '<option value="">상담사를 선택하세요</option>';
+            filterSelect.innerHTML = '<option value="">전체</option>';
+            
+            counselors.forEach(counselor => {
+                select.innerHTML += `<option value="${counselor.id}">${counselor.name}(${counselor.field})</option>`;
+                filterSelect.innerHTML += `<option value="${counselor.id}">${counselor.name}</option>`;
+            });
+        }
+    } catch (error) {
+        console.error('상담사 목록 로드 실패:', error);
+    }
+}
+
+function setupEventListeners() {
+    // 전체 선택 체크박스
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('#approvalTableBody input[type="checkbox"]');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkButtons();
+    });
+    
+    // 체크박스 상태 변경 감지
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox' && e.target.closest('#approvalTableBody')) {
+            updateBulkButtons();
+        }
+    });
+    
+    // 검색 버튼
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        loadApprovals();
+    });
+    
+    // 일괄 승인 버튼
+    document.getElementById('bulkApprove').addEventListener('click', bulkApprove);
+    
+    // 일괄 거부 버튼
+    document.getElementById('bulkReject').addEventListener('click', bulkReject);
+    
+    // 승인 모달 제출
+    document.querySelector('#assignModal .btn-success').addEventListener('click', submitApproval);
+    
+    // 거부 모달 제출
+    document.querySelector('#rejectModal .btn-danger').addEventListener('click', submitReject);
+}
+
+function showApprovalModal(reservationId) {
+    currentReservationId = reservationId;
+    const modal = new bootstrap.Modal(document.getElementById('assignModal'));
+    
+    // 기본값 설정
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelector('input[name="confirmedDate"]').value = today;
+    document.querySelector('input[name="confirmedStartTime"]').value = '09:00';
+    document.querySelector('input[name="confirmedEndTime"]').value = '09:40';
+    
+    modal.show();
+}
+
+function showRejectModal(reservationId) {
+    currentReservationId = reservationId;
+    const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+    modal.show();
+}
+
+async function submitApproval() {
+    const token = localStorage.getItem('accessToken');
+    const counselorId = document.getElementById('assignCounselorSelect').value;
+    const confirmedDate = document.querySelector('input[name="confirmedDate"]').value;
+    const confirmedStartTime = document.querySelector('input[name="confirmedStartTime"]').value;
+    const confirmedEndTime = document.querySelector('input[name="confirmedEndTime"]').value;
+    const memo = document.querySelector('#assignModal textarea').value;
+    
+    if (!counselorId || !confirmedDate || !confirmedStartTime || !confirmedEndTime) {
+        alert('모든 필수 항목을 입력해주세요.');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/counseling/admin/approvals/${currentReservationId}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                counselorId: parseInt(counselorId),
+                confirmedDate: confirmedDate,
+                confirmedStartTime: confirmedStartTime,
+                confirmedEndTime: confirmedEndTime,
+                memo: memo
+            })
+        });
+        
+        if (response.ok) {
+            alert('승인이 완료되었습니다.');
+            bootstrap.Modal.getInstance(document.getElementById('assignModal')).hide();
+            loadApprovals();
+        } else {
+            alert('승인 처리 중 오류가 발생했습니다.');
+        }
+    } catch (error) {
+        console.error('승인 처리 실패:', error);
+        alert('승인 처리 중 오류가 발생했습니다.');
+    }
+}
+
+async function submitReject() {
+    const token = localStorage.getItem('accessToken');
+    const rejectReason = document.querySelector('#rejectModal textarea').value;
+    
+    if (!rejectReason.trim()) {
+        alert('거부 사유를 입력해주세요.');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/counseling/admin/approvals/${currentReservationId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                rejectReason: rejectReason
+            })
+        });
+        
+        if (response.ok) {
+            alert('거부가 완료되었습니다.');
+            bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+            loadApprovals();
+        } else {
+            alert('거부 처리 중 오류가 발생했습니다.');
+        }
+    } catch (error) {
+        console.error('거부 처리 실패:', error);
+        alert('거부 처리 중 오류가 발생했습니다.');
+    }
+}
+
+async function viewDetail(reservationId) {
+    const token = localStorage.getItem('accessToken');
+    
+    try {
+        const response = await fetch(`/api/counseling/reservations/${reservationId}`, {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            showDetailModal(data);
+        } else {
+            alert('상세 정보를 불러오는데 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('상세 조회 실패:', error);
+        alert('상세 정보를 불러오는데 오류가 발생했습니다.');
+    }
+}
+
+function showDetailModal(data) {
+    // 상세 모달에 데이터 채우기
+    const modal = document.getElementById('detailModal');
+    const rows = modal.querySelectorAll('.row');
+    
+    if (rows.length >= 7) {
+        rows[0].querySelector('.col-sm-9').textContent = data.id || '-';
+        rows[1].querySelector('.col-sm-9').textContent = `${data.studentName || '-'}`;
+        rows[2].querySelector('.col-sm-9').textContent = data.subFieldName || data.counselingType || '-';
+        rows[3].querySelector('.col-sm-9').textContent = formatDateTime(data.requestedDateTime) || '-';
+        rows[4].querySelector('.col-sm-9').textContent = data.confirmedDateTime ? formatDateTime(data.confirmedDateTime) : '-';
+        rows[5].querySelector('.col-sm-9').textContent = data.requestContent || '-';
+        rows[6].querySelector('.col-sm-9').textContent = formatDate(data.createdAt) || '-';
+        
+        // 거부 사유 표시
+        const rejectRow = document.getElementById('rejectReasonRow');
+        const rejectText = document.getElementById('rejectReasonText');
+        if (data.status === 'REJECTED' && data.rejectReason) {
+            rejectRow.style.display = 'flex';
+            rejectText.textContent = data.rejectReason;
+        } else {
+            rejectRow.style.display = 'none';
+        }
+    }
+    
+    new bootstrap.Modal(modal).show();
+}
+
+function getStatusBadgeClass(status) {
+    const classes = {
+        'PENDING': 'bg-warning',
+        'CONFIRMED': 'bg-success',
+        'REJECTED': 'bg-danger',
+        'COMPLETED': 'bg-primary',
+        'CANCELLED': 'bg-secondary'
+    };
+    return classes[status] || 'bg-secondary';
+}
+
+function getStatusText(status) {
+    const texts = {
+        'PENDING': '대기중',
+        'CONFIRMED': '확정됨',
+        'REJECTED': '거부됨',
+        'COMPLETED': '완료됨',
+        'CANCELLED': '취소됨'
+    };
+    return texts[status] || status;
 }
 
 function formatDate(dateStr) {
@@ -149,189 +300,154 @@ function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString('ko-KR');
 }
 
-async function loadCounselors() {
+function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return '-';
+    return new Date(dateTimeStr).toLocaleString('ko-KR');
+}
+
+function updateBulkButtons() {
+    const checkedBoxes = document.querySelectorAll('#approvalTableBody input[type="checkbox"]:checked');
+    const bulkApproveBtn = document.getElementById('bulkApprove');
+    const bulkRejectBtn = document.getElementById('bulkReject');
+    
+    if (checkedBoxes.length > 0) {
+        bulkApproveBtn.disabled = false;
+        bulkRejectBtn.disabled = false;
+    } else {
+        bulkApproveBtn.disabled = true;
+        bulkRejectBtn.disabled = true;
+    }
+}
+
+function getSelectedIds() {
+    const checkedBoxes = document.querySelectorAll('#approvalTableBody input[type="checkbox"]:checked');
+    return Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+}
+
+async function bulkApprove() {
+    const selectedIds = getSelectedIds();
+    if (selectedIds.length === 0) {
+        alert('승인할 항목을 선택해주세요.');
+        return;
+    }
+    
+    // 선택된 예약들의 상담사 배정 여부 확인
+    const selectedRows = document.querySelectorAll('#approvalTableBody input[type="checkbox"]:checked');
+    const hasUnassignedCounselor = Array.from(selectedRows).some(checkbox => {
+        const row = checkbox.closest('tr');
+        const counselorCell = row.cells[7]; // 상담사 열
+        return counselorCell.textContent.trim() === '-';
+    });
+    
+    if (hasUnassignedCounselor) {
+        alert('상담사가 배정되지 않은 예약이 있어 일괄 승인을 할 수 없습니다.\n개별로 상담사를 배정하고 승인해주세요.');
+        return;
+    }
+    
+    const memo = prompt(`선택된 ${selectedIds.length}건의 예약을 승인하시겠습니까?\n승인 메시지를 입력해주세요:`);
+    
+    if (memo === null) return; // 취소
+    if (!memo.trim()) {
+        alert('승인 메시지를 입력해주세요.');
+        return;
+    }
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const id of selectedIds) {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await fetch(`/api/counseling/admin/approvals/${id}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    counselorId: await getAssignedCounselorId(id),
+                    confirmedDate: new Date().toISOString().split('T')[0],
+                    confirmedStartTime: '09:00',
+                    confirmedEndTime: '09:40',
+                    memo: memo
+                })
+            });
+            
+            if (response.ok) {
+                successCount++;
+            } else {
+                errorCount++;
+            }
+        } catch (error) {
+            console.error(`예약 ${id} 승인 실패:`, error);
+            errorCount++;
+        }
+    }
+    
+    alert(`일괄 승인 완료: 성공 ${successCount}건, 실패 ${errorCount}건`);
+    loadApprovals();
+}
+
+async function bulkReject() {
+    const selectedIds = getSelectedIds();
+    if (selectedIds.length === 0) {
+        alert('거부할 항목을 선택해주세요.');
+        return;
+    }
+    
+    const reason = prompt(`선택된 ${selectedIds.length}건의 예약을 거부하시겠습니까?\n거부 사유를 입력해주세요:`);
+    
+    if (reason === null) return; // 취소
+    if (!reason.trim()) {
+        alert('거부 사유를 입력해주세요.');
+        return;
+    }
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const id of selectedIds) {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await fetch(`/api/counseling/admin/approvals/${id}/reject`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    rejectReason: reason
+                })
+            });
+            
+            if (response.ok) {
+                successCount++;
+            } else {
+                errorCount++;
+            }
+        } catch (error) {
+            console.error(`예약 ${id} 거부 실패:`, error);
+            errorCount++;
+        }
+    }
+    
+    alert(`일괄 거부 완료: 성공 ${successCount}건, 실패 ${errorCount}건`);
+    loadApprovals();
+}
+
+async function getAssignedCounselorId(reservationId) {
+    const token = localStorage.getItem('accessToken');
     try {
-        const token = localStorage.getItem('accessToken');
-        const response = await fetch('/api/counseling/management/counselors', {
+        const response = await fetch(`/api/counseling/reservations/${reservationId}`, {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
         if (response.ok) {
             const data = await response.json();
-            const counselors = data.content || data;
-            
-            const counselorFilter = document.getElementById('counselorFilter');
-            const assignCounselorSelect = document.getElementById('assignCounselorSelect');
-            
-            counselors.forEach(counselor => {
-                const filterOption = document.createElement('option');
-                filterOption.value = counselor.userId;
-                filterOption.textContent = counselor.name;
-                counselorFilter.appendChild(filterOption);
-                
-                const assignOption = document.createElement('option');
-                assignOption.value = counselor.userId;
-                const SPECIALIST_SUFFIX = '전문';
-                assignOption.textContent = `${counselor.name} (${getFieldName(counselor.counselingField)} ${SPECIALIST_SUFFIX})`;
-                assignCounselorSelect.appendChild(assignOption);
-            });
+            return data.counselorId || 1; // 기본 상담사 ID
         }
     } catch (error) {
-        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
+        console.error('상담사 ID 조회 실패:', error);
     }
-}
-
-const FIELD_NAMES = {
-    'PSYCHOLOGICAL': '심리상담',
-    'CAREER': '진로상담',
-    'EMPLOYMENT': '취업상담',
-    'LEARNING': '학습상담'
-};
-
-const STATUS_BADGE = {
-    'PENDING': 'bg-warning',
-    'CONFIRMED': 'bg-success',
-    'REJECTED': 'bg-danger'
-};
-
-const STATUS_TEXT = {
-    'PENDING': '대기중',
-    'CONFIRMED': '승인됨',
-    'REJECTED': '거부됨'
-};
-
-const MESSAGES = {
-    NO_RESERVATION: '예약 내역이 없습니다.',
-    REQUIRED_FIELDS: '모든 필수 항목을 입력해주세요.',
-    REQUIRED_REASON: '거부 사유를 입력해주세요.',
-    ASSIGN_SUCCESS: '상담사가 배정되고 예약이 승인되었습니다.',
-    REJECT_SUCCESS: '예약이 거부되었습니다.',
-    PROCESS_ERROR: '처리 중 오류가 발생했습니다.',
-    REJECT_ERROR: '거부 처리 중 오류가 발생했습니다.',
-    LOAD_ERROR: '로드 실패'
-};
-
-const UNIT_COUNT = '건';
-
-function getFieldName(field) {
-    return FIELD_NAMES[field] || field;
-}
-
-async function loadReservationForAssign(reservationId) {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-        const response = await fetch(`/api/counseling/reservations/${reservationId}`, {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            const detail = await response.json();
-            document.querySelector('#assignModal input[name="confirmedDate"]').value = detail.reservationDate || '';
-            document.querySelector('#assignModal input[name="confirmedStartTime"]').value = detail.startTime || '';
-            document.querySelector('#assignModal input[name="confirmedEndTime"]').value = detail.endTime || '';
-            document.querySelector('#assignModal textarea').value = '';
-            
-            if (detail.counselorId) {
-                document.getElementById('assignCounselorSelect').value = detail.counselorId;
-            }
-        }
-    } catch (error) {
-        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
-    }
-}
-
-async function assignAndApprove(reservationId, counselorId, confirmedDate, confirmedStartTime, confirmedEndTime, memo) {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-        const response = await fetch(`/api/counseling/reservations/${reservationId}/approve`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                reservationId: parseInt(reservationId),
-                counselorId: parseInt(counselorId),
-                confirmedDate,
-                confirmedStartTime,
-                confirmedEndTime,
-                memo
-            })
-        });
-        
-        if (response.ok) {
-            alert(MESSAGES.ASSIGN_SUCCESS);
-            bootstrap.Modal.getInstance(document.getElementById('assignModal')).hide();
-            await loadApprovals();
-        } else {
-            alert(MESSAGES.PROCESS_ERROR);
-        }
-    } catch (error) {
-        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
-        alert(MESSAGES.PROCESS_ERROR);
-    }
-}
-
-async function rejectReservation(reservationId, rejectReason) {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-        const response = await fetch(`/api/counseling/reservations/${reservationId}/reject?rejectReason=${encodeURIComponent(rejectReason)}`, {
-            method: 'POST',
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            alert(MESSAGES.REJECT_SUCCESS);
-            bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
-            await loadApprovals();
-        } else {
-            alert(MESSAGES.REJECT_ERROR);
-        }
-    } catch (error) {
-        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
-        alert(MESSAGES.REJECT_ERROR);
-    }
-}
-
-async function loadReservationDetail(reservationId) {
-    const token = localStorage.getItem('accessToken');
-    
-    try {
-        const response = await fetch(`/api/counseling/reservations/${reservationId}`, {
-            headers: {'Authorization': `Bearer ${token}`}
-        });
-        
-        if (response.ok) {
-            const detail = await response.json();
-            renderReservationDetail(detail);
-        }
-    } catch (error) {
-        console.error(`${MESSAGES.LOAD_ERROR}:`, error);
-    }
-}
-
-function renderReservationDetail(detail) {
-    const modal = document.getElementById('detailModal');
-    const rows = modal.querySelectorAll('.row');
-    
-    const ID_PREFIX = 'CNSL-';
-    rows[0].querySelector('.col-sm-9').textContent = `${ID_PREFIX}${detail.id}`;
-    rows[1].querySelector('.col-sm-9').textContent = `${detail.studentName} (${detail.studentNumber || '-'}) / ${detail.department || '-'}`;
-    rows[2].querySelector('.col-sm-9').textContent = getFieldName(detail.counselingField);
-    rows[3].querySelector('.col-sm-9').textContent = detail.reservationDate && detail.startTime ? 
-        formatDateTime(`${detail.reservationDate}T${detail.startTime}`) : '-';
-    rows[4].querySelector('.col-sm-9').textContent = detail.confirmedDate && detail.confirmedStartTime ? 
-        formatDateTime(`${detail.confirmedDate}T${detail.confirmedStartTime}`) : '-';
-    rows[5].querySelector('.col-sm-9').textContent = detail.requestContent || '-';
-    rows[6].querySelector('.col-sm-9').textContent = formatDate(detail.createdAt);
-    
-    if (detail.rejectReason) {
-        document.getElementById('rejectReasonRow').style.display = 'flex';
-        document.getElementById('rejectReasonText').textContent = detail.rejectReason;
-    } else {
-        document.getElementById('rejectReasonRow').style.display = 'none';
-    }
+    return 1; // 기본값
 }

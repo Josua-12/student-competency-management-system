@@ -6,7 +6,7 @@ async function loadDashboardData() {
     const token = localStorage.getItem('accessToken');
     
     try {
-        const response = await fetch('/api/counseling/statistics/overview', {
+        const response = await fetch('/api/counseling/admin/dashboard', {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
@@ -33,7 +33,7 @@ async function loadPendingList() {
     const token = localStorage.getItem('accessToken');
     
     try {
-        const response = await fetch('/api/counseling/reservations?status=PENDING&size=5', {
+        const response = await fetch('/api/counseling/admin/approvals?status=PENDING&size=5', {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
@@ -48,7 +48,7 @@ async function loadPendingList() {
                 tbody.innerHTML = list.map(item => `
                     <tr>
                         <td>${item.studentName}</td>
-                        <td>${getFieldName(item.counselingField)}</td>
+                        <td>${item.counselingType}</td>
                         <td>${formatDate(item.createdAt)}</td>
                         <td><a href="/counseling/admin/approvals" class="btn btn-sm btn-primary">관리</a></td>
                     </tr>
@@ -64,13 +64,13 @@ async function loadCounselorList() {
     const token = localStorage.getItem('accessToken');
     
     try {
-        const response = await fetch('/api/counseling/statistics/counselors', {
+        const response = await fetch('/api/counseling/admin/counselors', {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
         if (response.ok) {
             const data = await response.json();
-            const list = data.content || [];
+            const list = data || [];
             const tbody = document.getElementById('counselorList');
             
             if (list.length === 0) {
@@ -79,9 +79,9 @@ async function loadCounselorList() {
                 tbody.innerHTML = list.map(item => `
                     <tr>
                         <td>${item.name}</td>
-                        <td>${getFieldName(item.counselingField)}</td>
-                        <td>${item.monthlyCount || 0}${UNIT_COUNT}</td>
-                        <td>${item.avgSatisfaction || 0}/${RATING_MAX}</td>
+                        <td>${item.field}</td>
+                        <td>0건</td>
+                        <td>0/5.0</td>
                     </tr>
                 `).join('');
             }

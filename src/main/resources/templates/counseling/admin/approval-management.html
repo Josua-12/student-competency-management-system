@@ -28,19 +28,19 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <label class="form-label">상태</label>
-                                <select class="form-select">
+                                <select class="form-select" id="statusFilter">
                                     <option value="">전체</option>
                                     <option value="PENDING">대기중</option>
-                                    <option value="APPROVED">승인됨</option>
+                                    <option value="CONFIRMED">확정됨</option>
                                     <option value="REJECTED">거부됨</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">상담 유형</label>
-                                <select class="form-select">
+                                <select class="form-select" id="typeFilter">
                                     <option value="">전체</option>
                                     <option value="CAREER">진로상담</option>
-                                    <option value="ACADEMIC">학업상담</option>
+                                    <option value="LEARNING">학습상담</option>
                                     <option value="PSYCHOLOGICAL">심리상담</option>
                                     <option value="EMPLOYMENT">취업상담</option>
                                 </select>
@@ -54,13 +54,13 @@
                             <div class="col-md-4">
                                 <label class="form-label">기간</label>
                                 <div class="input-group">
-                                    <input type="date" class="form-control">
+                                    <input type="date" class="form-control" id="startDate">
                                     <span class="input-group-text">~</span>
-                                    <input type="date" class="form-control">
+                                    <input type="date" class="form-control" id="endDate">
                                 </div>
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
-                                <button class="btn btn-primary w-100">검색</button>
+                                <button class="btn btn-primary w-100" id="searchBtn">검색</button>
                             </div>
                         </div>
                     </div>
@@ -68,8 +68,8 @@
 
                 <!-- 일괄 처리 버튼 -->
                 <div class="mb-3">
-                    <button class="btn btn-success me-2" id="bulkApprove" disabled>전체항목 승인</button>
-                    <button class="btn btn-danger" id="bulkReject">선택 항목 거부</button>
+                    <button class="btn btn-success me-2" id="bulkApprove" disabled>선택 항목 승인</button>
+                    <button class="btn btn-danger" id="bulkReject" disabled>선택 항목 거부</button>
                 </div>
 
                 <!-- 예약 목록 -->

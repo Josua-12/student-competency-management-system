@@ -3,66 +3,7 @@
        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
        th:fragment="sidebar">
 
-    <style>
-        :root{
-            --bg:#f9fafb;
-            --fg:#111827;
-            --muted:#6b7280;
-            --line:#e5e7eb;
-            --card:#ffffff;
-            --accent:#094081;
-            --accent-soft:#e3f2fd;
-            --radius:12px;
-        }
-        .sidebar {
-            position: sticky;
-            left: 0;
-            top: 0;
-            width: 20vw;
-            background: #ffffff;
-            border-right: 1px solid var(--line);
-            padding: 20px 16px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        
-        .main-content-shifted {
-            padding: 20px 15px;
-        }
-        .sidebar-header{
-            padding:0 8px 16px;
-            border-bottom:1px solid var(--line);
-            margin-bottom:16px;
-        }
-        .sidebar-title{font-size:18px;font-weight:700;}
-        .sidebar-sub{font-size:12px;color:var(--muted);margin-top:4px;}
-
-        .menu-section{margin-bottom:12px;}
-        .menu-section-toggle{
-            width:100%;display:flex;align-items:center;justify-content:space-between;
-            padding:8px 10px;border:none;background:transparent;
-            font-size:14px;font-weight:600;cursor:pointer;
-            border-radius:var(--radius);transition:background .15s;
-        }
-        .menu-section-toggle:hover{background:var(--accent-soft);}
-        .menu-section-toggle .caret{font-size:11px;color:var(--muted);transition:transform .15s;}
-        .menu-section.open .menu-section-toggle .caret{transform:rotate(90deg);}
-        .menu-list{
-            list-style:none;margin-top:4px;margin-left:8px;padding-left:6px;
-            border-left:1px solid var(--line);display:none;
-        }
-        .menu-section.open .menu-list{display:block;}
-
-        .menu-link{
-            display:block;width:100%;text-align:left;
-            padding:6px 10px;font-size:13px;color:var(--muted);
-            border-radius:var(--radius);border:none;background:transparent;
-            cursor:pointer;transition:background .15s,color .15s;
-            text-decoration: none;
-        }
-        .menu-link:hover{background:var(--accent-soft);color:var(--accent);}
-        .menu-link.active{background:var(--accent);color:#fff;}
-    </style>
+    <link th:href="@{/css/sidebar.css}" rel="stylesheet">
 
     <div class="sidebar-header">
         <div class="sidebar-title">역량진단</div>
@@ -70,9 +11,9 @@
     </div>
 
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link" th:href="@{/student/assessment/history}">진단 이력 조회</a>
@@ -84,9 +25,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('COMPETENCY_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>진단 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>진단 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/competency-admin/competency}">역량/문항 관리</a>
@@ -95,9 +36,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>진단</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>진단</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/student/assessment}">역량진단 실시</a>
@@ -105,49 +46,5 @@
         </ul>
     </section>
 
-
-
-    <script th:fragment="competencySidebarScript">
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
-
-        document.querySelectorAll('.menu-link').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelectorAll('.menu-link')
-                    .forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
-
-        (function setActiveByLocation() {
-            const current = window.location.pathname;
-            const links = document.querySelectorAll('.menu-link');
-            let matched = null;
-
-            links.forEach(l => {
-                const href = l.getAttribute('href');
-                if (!href) return;
-
-                const path = href.startsWith('http')
-                    ? new URL(href, window.location.origin).pathname
-                    : href;
-
-                if (current.startsWith(path)) {
-                    if (!matched || path.length > (matched.getAttribute('href') || '').length) {
-                        matched = l;
-                    }
-                }
-            });
-
-            if (matched) {
-                matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
-            }
-        })();
-    </script>
+    <script th:src="@{/js/sidebar.js}"></script>
 </aside>

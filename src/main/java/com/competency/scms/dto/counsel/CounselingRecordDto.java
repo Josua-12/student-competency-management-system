@@ -34,7 +34,8 @@ public class CounselingRecordDto {
         private Long id;
         private String studentName;
         private String studentId;
-        private String subfieldName;
+        private String counselingField;
+        private String subFieldName;
         private LocalDateTime counselingDate;
         private Boolean isPublic;
         private LocalDateTime createdAt;
@@ -46,7 +47,8 @@ public class CounselingRecordDto {
         private Long id;
         private String studentName;
         private String studentId;
-        private String subfieldName;
+        private String counselingField;
+        private String subFieldName;
         private String recordContent;
         private String counselorMemo;
         private Boolean isPublic;

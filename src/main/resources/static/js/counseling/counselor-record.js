@@ -16,9 +16,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('recordModal').addEventListener('show.bs.modal', async function(event) {
         const button = event.relatedTarget;
         const recordId = button.getAttribute('data-id');
+        
+        // 모달 제목 변경 및 폼 초기화
+        const modalTitle = document.querySelector('#recordModal .modal-title');
+        const contentTextarea = document.querySelector('#recordModal textarea[placeholder="상담 내용을 입력하세요"]');
+        const memoTextarea = document.querySelector('#recordModal textarea[placeholder="추가 메모나 특이사항을 입력하세요"]');
+        
         if (recordId) {
+            modalTitle.textContent = '상담일지 수정';
+            document.getElementById('recordModal').setAttribute('data-record-id', recordId);
             await loadRecordForEdit(recordId);
+        } else {
+            modalTitle.textContent = '상담일지 작성';
+            document.getElementById('recordModal').removeAttribute('data-record-id');
+            contentTextarea.value = '';
+            memoTextarea.value = '';
         }
+    });
+    
+    // 저장 버튼 이벤트 추가
+    document.querySelector('#recordModal .btn-primary').addEventListener('click', async function() {
+        await saveRecord();
     });
 });
 
@@ -64,7 +82,7 @@ function renderRecordTable(list) {
             <td>${formatDate(item.counselingDate)}</td>
             <td>${item.studentName}</td>
             <td>${getFieldName(item.counselingField)}</td>
-            <td>${item.subject || '-'}</td>
+            <td>${item.subFieldName || '-'}</td>
             <td>${formatDate(item.createdAt)}</td>
             <td>
                 <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewRecordModal" data-id="${item.id}">상세</button>
@@ -119,10 +137,77 @@ async function loadRecordForEdit(recordId) {
         
         if (response.ok) {
             const record = await response.json();
-            document.querySelector('#recordModal textarea[placeholder*="상담 내용"]').value = record.recordContent || '';
-            document.querySelector('#recordModal textarea[placeholder*="비고"]').value = record.counselorMemo || '';
+            console.log('Edit record data:', record); // 디버깅용
+            
+            const contentTextarea = document.querySelector('#recordModal textarea[placeholder="상담 내용을 입력하세요"]');
+            const memoTextarea = document.querySelector('#recordModal textarea[placeholder="추가 메모나 특이사항을 입력하세요"]');
+            
+            console.log('Content textarea:', contentTextarea); // 디버깅용
+            console.log('Memo textarea:', memoTextarea); // 디버깅용
+            
+            if (contentTextarea) contentTextarea.value = record.recordContent || '';
+            if (memoTextarea) memoTextarea.value = record.counselorMemo || '';
+            
+            console.log('Set values - content:', record.recordContent, 'memo:', record.counselorMemo); // 디버깅용
         }
     } catch (error) {
         console.error('수정 데이터 로드 실패:', error);
+    }
+}
+
+async function saveRecord() {
+    const token = localStorage.getItem('accessToken');
+    const recordId = document.getElementById('recordModal').getAttribute('data-record-id');
+    const contentTextarea = document.querySelector('#recordModal textarea[placeholder="상담 내용을 입력하세요"]');
+    const memoTextarea = document.querySelector('#recordModal textarea[placeholder="추가 메모나 특이사항을 입력하세요"]');
+    
+    const recordContent = contentTextarea.value.trim();
+    const counselorMemo = memoTextarea.value.trim();
+    
+    if (!recordContent) {
+        alert('상담 내용을 입력해주세요.');
+        return;
+    }
+    
+    try {
+        const url = recordId ? `/api/counseling/records/${recordId}` : '/api/counseling/records';
+        const method = recordId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                recordContent: recordContent,
+                counselorMemo: counselorMemo
+            })
+        });
+        
+        if (response.ok) {
+            alert(recordId ? '상담일지가 수정되었습니다.' : '상담일지가 저장되었습니다.');
+            
+            // 모달 닫기
+            const modalElement = document.getElementById('recordModal');
+            const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modal.hide();
+            
+            // 모달이 완전히 닫힌 후 정리 작업
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.removeProperty('padding-right');
+                document.body.style.removeProperty('overflow');
+            }, { once: true });
+            
+            await loadRecords();
+        } else {
+            const error = await response.json();
+            alert(error.message || '저장에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('저장 실패:', error);
+        alert('저장 중 오류가 발생했습니다.');
     }
 }

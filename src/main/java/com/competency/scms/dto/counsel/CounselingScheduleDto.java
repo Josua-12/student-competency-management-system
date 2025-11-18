@@ -129,4 +129,18 @@ public class CounselingScheduleDto {
         private String endTime;
         private Boolean isBaseSchedule;
     }
+
+    // 주간 실제 근무 일정용
+    @Data
+    public static class WeeklySchedule {
+        private String date;
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime startTime;
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime endTime;
+        private Boolean isOff;
+        private Boolean isReserved;
+        private String studentName;
+        private String offReason;
+    }
 }

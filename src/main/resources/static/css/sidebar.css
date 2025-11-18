@@ -1,0 +1,134 @@
+/* 공통 사이드바 스타일 */
+:root {
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #e5e7eb;
+    --sidebar-text: #6b7280;
+    --sidebar-text-dark: #111827;
+    --sidebar-accent: #094081;
+    --sidebar-accent-soft: #e3f2fd;
+    --sidebar-radius: 12px;
+    --sidebar-transition: 0.15s;
+}
+
+.main-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.main-wrapper.relative {
+    position: relative;
+    min-height: calc(100vh - 56px);
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+}
+
+.sidebar {
+    width: 20%;
+    min-width: 250px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    padding: 20px 16px;
+    z-index: 1000;
+}
+
+.sidebar.sticky {
+    position: sticky;
+    left: 0;
+    top: 0;
+    width: 20vw;
+    height: auto;
+}
+
+.main-content {
+    width: 80%;
+}
+
+.main-content.with-padding {
+    padding: 1.5rem 0;
+}
+
+.main-content-shifted {
+    padding: 20px 15px;
+}
+
+.content-wrapper {
+    padding: 30px 20px;
+}
+
+.sidebar-header {
+    padding: 0 8px 16px;
+    border-bottom: 1px solid var(--sidebar-border);
+    margin-bottom: 16px;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--sidebar-text-dark);
+}
+
+.sidebar-sub {
+    font-size: 12px;
+    color: var(--sidebar-text);
+    margin-top: 4px;
+}
+
+.menu-section {
+    margin-bottom: 12px;
+}
+
+.menu-section-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--sidebar-radius);
+    transition: background var(--sidebar-transition);
+    color: var(--sidebar-text-dark);
+}
+
+.menu-section-toggle:hover {
+    background: var(--sidebar-accent-soft);
+}
+
+.menu-list {
+    list-style: none;
+    margin-top: 4px;
+    margin-left: 8px;
+    padding-left: 6px;
+    border-left: 1px solid var(--sidebar-border);
+    display: block;
+}
+
+.menu-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--sidebar-text);
+    border-radius: var(--sidebar-radius);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: background var(--sidebar-transition), color var(--sidebar-transition);
+    text-decoration: none;
+}
+
+.menu-link:hover {
+    background: var(--sidebar-accent-soft);
+    color: var(--sidebar-accent);
+}
+
+.menu-link.active {
+    background: var(--sidebar-accent) !important;
+    color: #fff !important;
+}

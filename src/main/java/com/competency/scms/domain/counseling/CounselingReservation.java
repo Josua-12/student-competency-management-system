@@ -139,4 +139,29 @@ public class CounselingReservation {
         return LocalDateTime.now().isBefore(cancelDeadline);
 
     }
+    
+    // 상담사 배정
+    public void assignCounselor(User counselor) {
+        this.counselor = counselor;
+    }
+    
+    // 예약 승인
+    public void approve() {
+        this.status = ReservationStatus.CONFIRMED;
+        this.confirmedAt = LocalDateTime.now();
+    }
+    
+    // 예약 거부
+    public void reject(String reason) {
+        this.status = ReservationStatus.REJECTED;
+        this.rejectReason = reason;
+        this.rejectedAt = LocalDateTime.now();
+    }
+    
+    // 확정 일시 설정
+    public void setConfirmedDateTime(LocalDateTime dateTime) {
+        this.confirmedDate = dateTime.toLocalDate();
+        this.confirmedStartTime = dateTime.toLocalTime();
+        this.confirmedEndTime = dateTime.toLocalTime().plusMinutes(40); // 40분 상담
+    }
 }

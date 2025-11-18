@@ -149,4 +149,24 @@ public class CounselingReservationDto {
         @NotBlank(message = "거절 사유는 필수입니다")
         private String rejectReason;
     }
+    
+    // 관리자용 예약 목록 조회용
+    @Data
+    @lombok.Builder
+    @lombok.NoArgsConstructor
+    @lombok.AllArgsConstructor
+    public static class AdminListResponse {
+        private Long id;
+        private String studentName;
+        private String studentId;
+        private String counselingType;
+        private String subFieldName;
+        private java.time.LocalDateTime requestedDateTime;
+        private java.time.LocalDateTime confirmedDateTime;
+        private java.time.LocalDateTime createdAt;
+        private String counselorName;
+        private ReservationStatus status;
+        private String requestContent;
+        private String rejectReason;
+    }
 }

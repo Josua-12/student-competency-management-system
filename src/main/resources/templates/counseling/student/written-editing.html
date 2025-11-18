@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout('서면첨삭', ~{::content}, ~{::css}, ~{::scripts})}">
+      th:replace="~{counseling/counseling_layout :: layout('서면첨삭', ~{::content}, ~{::css}, ~{::scripts}, false)}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +11,20 @@
 </head>
 <body>
     <th:block th:fragment="content">
-        <div class="container-fluid">
-            <div class="container">
-                <div th:replace="~{counseling/student/sidebar :: sidebar(selectedTab=${selectedTab})}"></div>
-
-                <div class="row">
+        <div class="main-content-wrapper">
+        <!-- 페이지 헤더 -->
+        <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">서면첨삭</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="/counseling/student">상담신청</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">서면첨삭</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="row">
                     <div class="col-12">
                         <div class="bg-light p-4 rounded mb-4">
                             <h3 class="fw-bold mb-3">서면첨삭이란?</h3>
@@ -124,8 +133,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+        </div>
+        </div>
 
+            <!-- 퀵 메뉴 -->
             <div class="position-fixed bottom-0 end-0 p-3">
                 <div class="d-flex flex-column gap-2">
                     <button class="btn btn-secondary btn-sm" title="매뉴얼 다운로드">

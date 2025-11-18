@@ -70,7 +70,7 @@ async function loadReservations() {
     const params = getSearchParams();
     
     try {
-        const response = await fetch(`/api/counseling/reservations/assigned?${params}`, {
+        const response = await fetch(`/api/counseling/reservations/counselor?${params}`, {
             headers: {'Authorization': `Bearer ${token}`}
         });
         
@@ -339,8 +339,19 @@ async function approveReservation(reservationId, confirmedDate, confirmedStartTi
         
         if (response.ok) {
             alert('예약이 승인되었습니다.');
-            bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('approveModal'));
+            if (modal) modal.hide();
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop')?.remove();
             await loadReservations();
+            
+            // 상담사 메인 페이지 업데이트
+            if (window.loadTodaySchedule) {
+                await window.loadTodaySchedule();
+            }
+            if (window.loadDashboardData) {
+                await window.loadDashboardData();
+            }
         } else {
             const errorData = await response.json().catch(() => ({}));
             alert(errorData.message || '승인 처리 중 오류가 발생했습니다.');
@@ -362,7 +373,10 @@ async function rejectReservation(reservationId, rejectReason) {
         
         if (response.ok) {
             alert('예약이 거절되었습니다.');
-            bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('rejectModal'));
+            if (modal) modal.hide();
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop')?.remove();
             await loadReservations();
         } else {
             alert('거절 처리 중 오류가 발생했습니다.');

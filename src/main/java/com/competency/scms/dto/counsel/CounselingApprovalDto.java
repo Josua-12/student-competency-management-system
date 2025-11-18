@@ -84,4 +84,18 @@ public class CounselingApprovalDto {
         private ReservationStatus status;
         private String requestContent;
     }
+    
+    // 관리자용 승인 요청
+    @Data
+    public static class AdminApprovalRequest {
+        @NotNull(message = "상담사 정보는 필수입니다")
+        private Long counselorId;
+        @NotNull(message = "확정 날짜는 필수입니다")
+        private LocalDate confirmedDate;
+        @NotNull(message = "시작 시간은 필수입니다")
+        private LocalTime confirmedStartTime;
+        @NotNull(message = "종료 시간은 필수입니다")
+        private LocalTime confirmedEndTime;
+        private String memo;
+    }
 }
