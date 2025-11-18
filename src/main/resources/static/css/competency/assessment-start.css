@@ -190,3 +190,10 @@
     background-color: #0d6efd; /* (기본 파란색 또는 변경가능) */
     transition: width 0.4s ease; /* 부드럽게 차오르는 애니메이션 */
 }
+/* 미응답 문항 하이라이트 효과 */
+.question-card.unanswered-highlight {
+    border: 2px solid #dc3545; /* 부트스트랩 danger 색상 */
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    transition: all 0.3s ease-in-out;
+    border-radius: var(--bs-card-inner-border-radius, 0.375rem); /* 기존 카드 radius 유지 */
+}

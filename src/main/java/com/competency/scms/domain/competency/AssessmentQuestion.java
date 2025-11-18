@@ -113,7 +113,6 @@ public class AssessmentQuestion extends CompetencyBaseEntity {
                 .questionText(dto.getQuestionText())
                 .questionType(dto.getQuestionType())
                 .displayOrder(dto.getDisplayOrder())
-                .isActive(dto.isActive())
                 .build();
 
         competency.addQuestion(question);

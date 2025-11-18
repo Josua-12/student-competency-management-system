@@ -431,6 +431,8 @@ public class AssessmentService {
         List<Map.Entry<Competency, Double>> sortedChildScores =
                 new ArrayList<>(childAvgScores.entrySet());
 
+        sortedChildScores.sort(Comparator.comparingDouble(Map.Entry::getValue));
+
         // 7-1. 약점 (가장 낮은 2개의 하위 역량)
         List<Map.Entry<Competency, Double>> bottom2 = sortedChildScores.stream()
                 .limit(2)

@@ -38,12 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         answeredCountEl.textContent = answeredQuestions;
 
-        // (선택) 모든 문항에 응답하면 '최종 제출' 버튼 활성화
+        // 모든 문항에 응답하면 '최종 제출' 버튼 활성화
         if (answeredQuestions === totalQuestions) {
             document.getElementById('submitButton').disabled = false;
         } else {
-            // (참고: 초기에는 disabled로 설정해둬야 함)
-            // document.getElementById('submitButton').disabled = true;
+
         }
     }
 
@@ -171,17 +170,42 @@ document.addEventListener('DOMContentLoaded', function() {
             // 미응답 문항 확인
             const answeredCount = document.querySelectorAll('input[type="radio"]:checked').length;
 
+            // 2. [실패] 미응답 항목이 있는 경우
             if (answeredCount < totalQuestions) {
-                if (!confirm(`총 ${totalQuestions}문항 중 ${answeredCount}문항만 응답했습니다.\\n그래도 제출하시겠습니까? (미응답 문항은 점수에 반영되지 않을 수 있습니다.)`)) {
-                    return;
-                }
-            } else {
-                if (!confirm('정말 최종 제출하시겠습니까?\\n제출 후에는 수정할 수 없습니다.')) {
-                    return;
-                }
-            }
 
-            sendAssessment('submit');
+                alert(`총 ${totalQuestions}개의 모든 문항에 답변해야 최종 제출이 가능합니다.\n(현재 ${answeredCount}개 응답)`);
+
+                // 3.첫 번째 미응답 문항으로 스크롤
+                let firstUnanswered = null;
+                for (const questionCard of questions) {
+                    // 카드(.question-card) 내부에 체크된 라디오가 없으면
+                    if (!questionCard.querySelector('input[type="radio"]:checked')) {
+                        firstUnanswered = questionCard;
+                        break; // 첫 번째 하나만 찾으면 됨
+                    }
+                }
+
+                if (firstUnanswered) {
+                    firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    firstUnanswered.classList.add('unanswered-highlight');
+                    setTimeout(() => {
+                        firstUnanswered.classList.remove('unanswered-highlight');
+                    }, 2000); // 2초 뒤 하이라이트 제거
+                }
+
+                return; // 제출 중단
+
+            } else {
+                // 4. [성공] 모든 항목에 응답한 경우
+                // 제출 전 최종 확인
+                if (!confirm('모든 항목에 답변했습니다.\n정말 최종 제출하시겠습니까? (제출 후에는 수정할 수 없습니다.)')) {
+                    return; // 사용자가 '취소' 누름
+                }
+
+                // 5. 서버로 전송
+                sendAssessment('submit');
+            }
         });
     }
 });

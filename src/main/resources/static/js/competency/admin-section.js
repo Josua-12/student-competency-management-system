@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <i class="fas fa-edit"></i> 수정
                         </button>
                         <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${section.id}">
-                            <i class="fas fa-trash"></i> 삭제
+                            <i class="fas fa-trash"></i> 비활성
                         </button>
                     </td>
                 </tr>
