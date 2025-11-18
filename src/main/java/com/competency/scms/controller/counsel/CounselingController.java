@@ -59,7 +59,7 @@ public class CounselingController {
     // 학생 서면첨삭 페이지
     @GetMapping("/student/written-editing")
     public String studentWrittenEditing(Model model) {
-        model.addAttribute("selectedTab", "written-editing");
+        model.addAttribute("selectedTab", "job");
         var subFields = subFieldRepository.findByCounselingFieldAndIsActiveTrueOrderBySubfieldNameAsc(
             CounselingField.EMPLOYMENT, Pageable.unpaged());
         model.addAttribute("subFields", subFields.getContent());

@@ -415,4 +415,72 @@ public class CounselingScheduleService {
         
         return schedules;
     }
+
+    // 주간 실제 근무 일정 조회
+    public List<CounselingScheduleDto.WeeklySchedule> getWeeklySchedule(LocalDate startDate) {
+        User currentUser = getCurrentUser();
+        List<CounselingScheduleDto.WeeklySchedule> weeklySchedules = new ArrayList<>();
+        
+        // 주간 5일간 순회 (Monday to Friday)
+        for (int i = 0; i < 5; i++) {
+            LocalDate date = startDate.plusDays(i);
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+            
+            // 기본 스케줄 조회
+            Optional<CounselingBaseSchedule> baseSchedule = scheduleRepository.findByCounselorAndDayOfWeek(currentUser, dayOfWeek);
+            
+            if (baseSchedule.isPresent()) {
+                CounselingBaseSchedule schedule = baseSchedule.get();
+                
+                // 각 시간대별로 체크
+                int[] hours = {9, 10, 11, 14, 15}; // 12-13시는 점심시간으로 제외
+                for (int hour : hours) {
+                    Boolean isBaseAvailable = schedule.getSlotAvailability(hour);
+                    if (isBaseAvailable == null || !isBaseAvailable) continue;
+                    
+                    LocalTime startTime = LocalTime.of(hour, 0);
+                    LocalTime endTime = LocalTime.of(hour + 1, 0);
+                    
+                    // 예약 여부 확인
+                    boolean isReserved = reservationRepository.existsByCounselorAndReservationDateAndStartTime(currentUser, date, startTime);
+                    String studentName = null;
+                    
+                    if (isReserved) {
+                        // 예약된 학생 이름 조회
+                        var reservation = reservationRepository.findByCounselorAndReservationDateAndStartTime(currentUser, date, startTime);
+                        if (reservation.isPresent()) {
+                            studentName = reservation.get().getStudent().getName();
+                        }
+                    }
+                    
+                    // 휴무 여부 확인 (Override Schedule)
+                    List<CounselingOverrideSchedule> overrides = scheduleRepository.findOverrideSchedules(currentUser, date);
+                    boolean isOff = false;
+                    String offReason = null;
+                    
+                    for (CounselingOverrideSchedule override : overrides) {
+                        Boolean overrideSlot = getOverrideSlotAvailability(override, hour);
+                        if (overrideSlot != null && !overrideSlot) {
+                            isOff = true;
+                            offReason = override.getReason() != null ? override.getReason().name() : "휴무";
+                            break;
+                        }
+                    }
+                    
+                    CounselingScheduleDto.WeeklySchedule weeklySchedule = new CounselingScheduleDto.WeeklySchedule();
+                    weeklySchedule.setDate(date.toString());
+                    weeklySchedule.setStartTime(startTime);
+                    weeklySchedule.setEndTime(endTime);
+                    weeklySchedule.setIsOff(isOff);
+                    weeklySchedule.setIsReserved(isReserved);
+                    weeklySchedule.setStudentName(studentName);
+                    weeklySchedule.setOffReason(offReason);
+                    
+                    weeklySchedules.add(weeklySchedule);
+                }
+            }
+        }
+        
+        return weeklySchedules;
+    }
 }

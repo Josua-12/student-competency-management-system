@@ -243,8 +243,15 @@ public class CounselingReservationService {
     
     // 상담사 예약 승인 관리 - 대기중인 예약 조회
     public Page<CounselingReservationDto.ListResponse> getCounselorPendingReservations(User counselor, Pageable pageable) {
+        // 상담사에게 배정된 PENDING 상태의 예약 조회
         Page<CounselingReservation> reservations = reservationRepository.findByCounselorAndStatusOrderByCreatedAtAsc(
                 counselor, ReservationStatus.PENDING, pageable);
+        return reservations.map(mapper::toListResponse);
+    }
+    
+    // 상담사별 모든 예약 조회 (상태 무관)
+    public Page<CounselingReservationDto.ListResponse> getCounselorAllReservations(User counselor, Pageable pageable) {
+        Page<CounselingReservation> reservations = reservationRepository.findByCounselorOrderByCreatedAtDesc(counselor, pageable);
         return reservations.map(mapper::toListResponse);
     }
 

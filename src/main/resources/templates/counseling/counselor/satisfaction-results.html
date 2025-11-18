@@ -318,40 +318,9 @@
     <link rel="stylesheet" href="https://uicdn.toast.com/chart/latest/toastui-chart.min.css">
     <script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
     <script>
-        // 만족도 분포 차트
-        const satisfactionChart = toastui.Chart.pieChart({
-            el: document.getElementById('satisfactionChart'),
-            data: {
-                categories: ['5점', '4점', '3점', '2점', '1점'],
-                series: [
-                    { name: '5점', data: 20 },
-                    { name: '4점', data: 12 },
-                    { name: '3점', data: 3 },
-                    { name: '2점', data: 1 },
-                    { name: '1점', data: 0 }
-                ]
-            },
-            options: {
-                chart: { width: 400, height: 300 }
-            }
-        });
+        // 차트는 JavaScript에서 동적으로 생성됨
 
-        // 월별 만족도 추이 차트
-        const monthlyChart = toastui.Chart.lineChart({
-            el: document.getElementById('monthlyChart'),
-            data: {
-                categories: ['10월', '11월', '12월', '1월'],
-                series: [{
-                    name: '평균 만족도',
-                    data: [4.2, 4.3, 4.4, 4.5]
-                }]
-            },
-            options: {
-                chart: { width: 400, height: 300 },
-                yAxis: { min: 3.5, max: 5 },
-                series: { spline: true }
-            }
-        });
+        // 월별 차트는 JavaScript에서 동적으로 생성됨
 
         // 상담 유형 변경 시 세부 분류 업데이트
         document.getElementById('counselingType').addEventListener('change', function() {

@@ -21,6 +21,9 @@ public interface CounselingSatisfactionRepository extends JpaRepository<Counseli
 
     // CNSL-020: 상담사별 만족도 결과 조회
     List<CounselingSatisfaction> findByCounselorOrderBySubmittedAtDesc(User counselor);
+    
+    // 상담사별 만족도 조회 (평균 계산용)
+    List<CounselingSatisfaction> findByCounselor(User counselor);
 
     // 기간별 만족도 조회
     @Query("SELECT cs FROM CounselingSatisfaction cs WHERE cs.submittedAt BETWEEN :startDate AND :endDate ORDER BY cs.submittedAt DESC")

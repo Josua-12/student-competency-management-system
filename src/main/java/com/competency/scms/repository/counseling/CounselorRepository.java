@@ -32,5 +32,8 @@ public interface CounselorRepository extends JpaRepository<Counselor, Long> {
 
     // 활성화 상태별 상담사 수 조회
     long countByIsActive(boolean isActive);
+    
+    // 활성화되고 삭제되지 않은 상담사 목록 조회
+    List<Counselor> findByIsActiveTrueAndDeletedAtIsNull();
 
 }

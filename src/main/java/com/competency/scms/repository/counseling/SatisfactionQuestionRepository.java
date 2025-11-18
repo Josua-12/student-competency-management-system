@@ -26,4 +26,8 @@ public interface SatisfactionQuestionRepository extends JpaRepository<Satisfacti
 
     // 시스템 기본 질문 조회
     List<SatisfactionQuestion> findByIsSystemDefaultTrueAndIsActiveTrueOrderByDisplayOrderAsc();
+    
+    // 시스템 기본 질문 + 특정 상담 분야 질문 조회
+    @org.springframework.data.jpa.repository.Query("SELECT q FROM SatisfactionQuestion q WHERE q.isActive = true AND (q.isSystemDefault = true OR q.counselingField = :counselingField) ORDER BY q.displayOrder ASC")
+    List<SatisfactionQuestion> findByIsActiveTrueAndCounselingFieldIsNullOrCounselingFieldOrderByDisplayOrderAsc(@org.springframework.data.repository.query.Param("counselingField") CounselingField counselingField);
 }

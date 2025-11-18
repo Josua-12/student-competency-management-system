@@ -61,6 +61,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 역할별 사용자 수 조회
     long countByRole(com.competency.scms.domain.user.UserRole role);
-
+    
+    // 상담사 조회용
+    java.util.List<User> findByRoleAndDeletedAtIsNull(com.competency.scms.domain.user.UserRole role);
+    long countByRoleAndDeletedAtIsNull(com.competency.scms.domain.user.UserRole role);
 
 }

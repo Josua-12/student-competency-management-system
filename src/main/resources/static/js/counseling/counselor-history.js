@@ -53,7 +53,7 @@ async function loadHistoryData() {
             document.getElementById('totalHistory').textContent = `${stats.totalCount || 0}건`;
             document.getElementById('completedHistory').textContent = `${stats.completedCount || 0}건`;
             document.getElementById('monthlyHistory').textContent = `${stats.pendingCount || 0}건`;
-            document.getElementById('avgSatisfaction').textContent = `0/5.0`;
+            document.getElementById('avgSatisfaction').textContent = `${stats.avgSatisfaction || 0.0}/5.0`;
         }
         
         const listResponse = await fetch('/api/counseling/history/counselor', {
@@ -90,9 +90,15 @@ function renderHistoryTable(list) {
     
     tbody.innerHTML = list.map(item => {
         const statusBadge = item.status === 'COMPLETED' ? 'bg-success' : 
-                           item.status === 'CANCELLED' ? 'bg-danger' : 'bg-secondary';
+                           item.status === 'CANCELLED' ? 'bg-secondary' : 
+                           item.status === 'REJECTED' ? 'bg-danger' : 
+                           item.status === 'PENDING' ? 'bg-warning' : 
+                           item.status === 'CONFIRMED' ? 'bg-info' : 'bg-secondary';
         const statusText = item.status === 'COMPLETED' ? '완료' : 
-                          item.status === 'CANCELLED' ? '취소' : '거절';
+                          item.status === 'CANCELLED' ? '취소' : 
+                          item.status === 'REJECTED' ? '거절' : 
+                          item.status === 'PENDING' ? '대기중' : 
+                          item.status === 'CONFIRMED' ? '확정' : item.status;
         
         let recordBadge = '-';
         if (item.status === 'COMPLETED') {
@@ -108,7 +114,9 @@ function renderHistoryTable(list) {
                 <td>${item.department || '-'}</td>
                 <td>${getFieldName(item.counselingField)}</td>
                 <td><span class="badge ${statusBadge}">${statusText}</span></td>
-                <td>${item.satisfaction ? `${item.satisfaction}/5.0` : '-'}</td>
+                <td>${item.hasSatisfaction ? 
+                    `<button class="btn btn-sm btn-outline-info" onclick="showSatisfactionResult(${item.id})">만족도 조회</button>` : 
+                    '-'}</td>
                 <td>${recordBadge}</td>
                 <td>
                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#historyDetailModal" data-id="${item.id}">상세</button>
@@ -163,6 +171,15 @@ function renderHistoryDetail(detail) {
     document.getElementById('detailStatus').className = `badge ${getStatusBadge(detail.status)}`;
     document.getElementById('detailContent').textContent = detail.requestContent || '-';
     
+    // 완료 버튼 표시
+    const completeSection = document.getElementById('detailCompleteSection');
+    if (detail.status === 'CONFIRMED') {
+        completeSection.style.display = 'block';
+        document.getElementById('completeReservationBtn').onclick = () => completeReservationFromDetail(detail.id);
+    } else {
+        completeSection.style.display = 'none';
+    }
+    
     const reasonSection = document.getElementById('detailReasonSection');
     if (detail.status === 'CANCELLED' || detail.status === 'REJECTED') {
         document.getElementById('detailReasonLabel').textContent = detail.status === 'CANCELLED' ? '취소 사유:' : '거절 사유:';
@@ -215,7 +232,10 @@ async function saveRecord(reservationId, content, notes) {
         
         if (response.ok) {
             alert('상담기록이 저장되었습니다.');
-            bootstrap.Modal.getInstance(document.getElementById('recordModal')).hide();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('recordModal'));
+            if (modal) modal.hide();
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop')?.remove();
             await loadHistoryData();
         } else {
             alert('저장 중 오류가 발생했습니다.');
@@ -259,4 +279,96 @@ function showRecordModal(record) {
     modal.show();
 }
 
+async function completeReservationFromDetail(reservationId) {
+    if (!confirm('상담을 완료 처리하시겠습니까?')) return;
+    
+    const token = localStorage.getItem('accessToken');
+    const fileInput = document.getElementById('completeFiles');
+    const formData = new FormData();
+    
+    if (fileInput.files.length > 0) {
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('files', fileInput.files[i]);
+        }
+    }
+    
+    try {
+        const response = await fetch(`/api/counseling/reservations/${reservationId}/complete`, {
+            method: 'POST',
+            headers: {'Authorization': `Bearer ${token}`},
+            body: formData
+        });
+        
+        if (response.ok) {
+            alert('상담이 완료 처리되었습니다.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('historyDetailModal'));
+            if (modal) modal.hide();
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop')?.remove();
+            await loadHistoryData();
+        } else {
+            alert('완료 처리 중 오류가 발생했습니다.');
+        }
+    } catch (error) {
+        console.error('완료 처리 실패:', error);
+        alert('완료 처리 중 오류가 발생했습니다.');
+    }
+}
+
+// 만족도 조회 모달 표시
+function showSatisfactionResult(reservationId) {
+    const token = localStorage.getItem('accessToken');
+    fetch(`/api/counseling/satisfaction/result/${reservationId}`, {
+        headers: {'Authorization': `Bearer ${token}`}
+    })
+        .then(response => response.json())
+        .then(result => {
+            renderSatisfactionResult(result);
+            new bootstrap.Modal(document.getElementById('satisfactionModal')).show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('만족도 결과를 불러오는 중 오류가 발생했습니다.');
+        });
+}
+
+// 만족도 결과 표시
+function renderSatisfactionResult(result) {
+    const form = document.getElementById('satisfactionForm');
+    form.innerHTML = '';
+    
+    if (!result.answers || !Array.isArray(result.answers)) {
+        form.innerHTML = '<div class="alert alert-warning">만족도 데이터가 없습니다.</div>';
+        return;
+    }
+    
+    result.answers.forEach((answer, index) => {
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'mb-4';
+        
+        const label = document.createElement('label');
+        label.className = 'form-label';
+        label.innerHTML = `<strong>${index + 1}. ${answer.questionText}</strong>`;
+        answerDiv.appendChild(label);
+        
+        const valueDiv = document.createElement('div');
+        valueDiv.className = 'p-3 bg-light rounded';
+        
+        if (answer.questionType === 'RATING') {
+            valueDiv.textContent = `${answer.ratingValue}점`;
+        } else if (answer.questionType === 'TEXT') {
+            valueDiv.textContent = answer.answerText || '-';
+        } else if (answer.questionType === 'MULTIPLE_CHOICE') {
+            valueDiv.textContent = answer.selectedOptionText || '-';
+        }
+        
+        answerDiv.appendChild(valueDiv);
+        form.appendChild(answerDiv);
+    });
+    
+    document.getElementById('submitSatisfaction').style.display = 'none';
+}
+
 window.viewRecord = viewRecord;
+window.completeReservationFromDetail = completeReservationFromDetail;
+window.showSatisfactionResult = showSatisfactionResult;

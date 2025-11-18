@@ -112,11 +112,12 @@
                                                     <th>학생</th>
                                                     <th>상담 유형</th>
                                                     <th>상태</th>
+                                                    <th>관리</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="scheduleTableBody">
                                                 <tr>
-                                                    <td colspan="4" class="text-center">로딩 중...</td>
+                                                    <td colspan="5" class="text-center">로딩 중...</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -129,6 +130,62 @@
     </th:block>
     <th:block th:fragment="scripts">
         <script th:src="@{/js/counseling/counselor-main.js}"></script>
+        
+        <!-- 일정 상세 보기 모달 -->
+        <div class="modal fade" id="scheduleDetailModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">상담 일정 상세 정보</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>학생명:</strong></div>
+                            <div class="col-sm-9" id="scheduleDetailStudentName">-</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>상담유형:</strong></div>
+                            <div class="col-sm-9" id="scheduleDetailField">-</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>세부분류:</strong></div>
+                            <div class="col-sm-9" id="scheduleDetailCategory">-</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>상담일시:</strong></div>
+                            <div class="col-sm-9" id="scheduleDetailDateTime">-</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>상태:</strong></div>
+                            <div class="col-sm-9"><span class="badge" id="scheduleDetailStatus">-</span></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>상담내용:</strong></div>
+                            <div class="col-sm-9" id="scheduleDetailContent">-</div>
+                        </div>
+                        <div class="row mb-3" id="scheduleCompleteSection" style="display: none;">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-info-circle"></i> 상담 완료 처리</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label">첨부파일 (선택사항 / 최대 10MB)</label>
+                                        <input type="file" class="form-control" id="scheduleCompleteFiles" multiple accept=".pdf,.doc,.docx,.hwp,.txt">
+                                        <small class="text-muted">상담 결과 자료나 참고 문서를 첨부할 수 있습니다.</small>
+                                    </div>
+                                    <button type="button" class="btn btn-success" id="scheduleCompleteBtn">
+                                        <i class="bi bi-check-circle"></i> 상담 완료
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </th:block>
 </body>
 </html>

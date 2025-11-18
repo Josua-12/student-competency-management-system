@@ -25,6 +25,29 @@ async function loadSatisfactionData() {
             document.getElementById('reusageRate').textContent = `${data.reusageRate || 0}%`;
         }
         
+        // 만족도 분포 데이터 로드
+        const distributionResponse = await fetch('/api/counseling/satisfaction/counselor/distribution', {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (distributionResponse.ok) {
+            const distributionData = await distributionResponse.json();
+            console.log('Distribution data received:', distributionData);
+            updateSatisfactionChart(distributionData);
+        } else {
+            console.error('Distribution API error:', distributionResponse.status);
+        }
+        
+        // 월별 만족도 추이 데이터 로드
+        const monthlyResponse = await fetch('/api/counseling/satisfaction/counselor/monthly', {
+            headers: {'Authorization': `Bearer ${token}`}
+        });
+        
+        if (monthlyResponse.ok) {
+            const monthlyData = await monthlyResponse.json();
+            updateMonthlyChart(monthlyData);
+        }
+        
         const listResponse = await fetch('/api/counseling/satisfaction/counselor/list', {
             headers: {'Authorization': `Bearer ${token}`}
         });
@@ -178,4 +201,75 @@ function getRatingBadge(rating) {
     return 'bg-danger';
 }
 
+function updateSatisfactionChart(data) {
+    console.log('Chart data:', data);
+    
+    const chartElement = document.getElementById('satisfactionChart');
+    if (!chartElement) {
+        console.error('Chart element not found');
+        return;
+    }
+    
+    // 기존 차트 제거
+    chartElement.innerHTML = '';
+    
+    const seriesData = [
+        { name: '5점', data: data.score5Count || 0 },
+        { name: '4점', data: data.score4Count || 0 },
+        { name: '3점', data: data.score3Count || 0 },
+        { name: '2점', data: data.score2Count || 0 },
+        { name: '1점', data: data.score1Count || 0 }
+    ];
+    
+    try {
+        window.satisfactionChart = toastui.Chart.pieChart({
+            el: chartElement,
+            data: {
+                categories: ['만족도'],
+                series: seriesData
+            },
+            options: {
+                chart: { width: 400, height: 300 },
+                legend: {
+                    visible: true
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Chart creation error:', error);
+    }
+}
+
+function updateMonthlyChart(data) {
+    const chartElement = document.getElementById('monthlyChart');
+    if (!chartElement) {
+        console.error('Monthly chart element not found');
+        return;
+    }
+    
+    chartElement.innerHTML = '';
+    
+    try {
+        window.monthlyChart = toastui.Chart.lineChart({
+            el: chartElement,
+            data: {
+                categories: data.months || [],
+                series: [{
+                    name: '평균 만족도',
+                    data: data.avgSatisfactions || []
+                }]
+            },
+            options: {
+                chart: { width: 400, height: 300 },
+                yAxis: { min: 0, max: 5 },
+                series: { spline: true }
+            }
+        });
+    } catch (error) {
+        console.error('Monthly chart creation error:', error);
+    }
+}
+
 window.viewSatisfactionDetail = viewSatisfactionDetail;
+window.updateSatisfactionChart = updateSatisfactionChart;
+window.updateMonthlyChart = updateMonthlyChart;

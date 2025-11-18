@@ -71,5 +71,17 @@ public interface CounselingReservationRepository extends JpaRepository<Counselin
 
     // 중복 예약 방지용 쿼리 메서드 추가
     boolean existsByCounselorAndReservationDateAndStartTime(User counselor, LocalDate reservationDate, LocalTime startTime);
+    
+    // 특정 상담사의 특정 날짜/시간 예약 조회
+    java.util.Optional<CounselingReservation> findByCounselorAndReservationDateAndStartTime(User counselor, LocalDate reservationDate, LocalTime startTime);
+    
+    // 관리자용 - 전체 예약 조회
+    Page<CounselingReservation> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    
+    // 상태별 예약 수 조회
+    long countByStatus(ReservationStatus status);
+    
+    // 상담사별 상태별 예약 수 조회
+    long countByCounselorAndStatus(User counselor, ReservationStatus status);
 
 }

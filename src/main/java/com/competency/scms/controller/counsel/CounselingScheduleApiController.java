@@ -78,4 +78,12 @@ public class CounselingScheduleApiController {
         scheduleService.saveCounselorBaseSchedule(counselorId, schedules);
         return ResponseEntity.ok().build();
     }
+
+    // 상담사: 주간 실제 근무 일정 조회
+    @GetMapping("/weekly")
+    public ResponseEntity<List<CounselingScheduleDto.WeeklySchedule>> getWeeklySchedule(
+            @RequestParam LocalDate startDate) {
+        List<CounselingScheduleDto.WeeklySchedule> schedules = scheduleService.getWeeklySchedule(startDate);
+        return ResponseEntity.ok(schedules);
+    }
 }

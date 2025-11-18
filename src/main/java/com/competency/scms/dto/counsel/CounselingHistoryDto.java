@@ -16,6 +16,8 @@ public class CounselingHistoryDto {
         private Long id;
         private String studentName;
         private String studentId;
+        private String studentNumber;
+        private String department;
         private String counselorName;
         private CounselingField counselingField;
         private String subFieldName;
@@ -24,6 +26,8 @@ public class CounselingHistoryDto {
         private LocalDateTime createdAt;
         private LocalDateTime completedAt;
         private Boolean hasRecord;
+        private Boolean hasSatisfaction;
+        private Double satisfaction;
     }
     
     // 상담 현황 조회용
@@ -34,6 +38,7 @@ public class CounselingHistoryDto {
         private Long completedCount;
         private Long pendingCount;
         private Long cancelledCount;
+        private Double avgSatisfaction;
     }
     
     // 검색 조건

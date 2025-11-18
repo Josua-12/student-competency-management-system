@@ -74,4 +74,35 @@ public class CounselingSatisfactionDto {
             private String selectedOptionText;
         }
     }
+    
+    // 상담사 만족도 요약
+    @Data
+    public static class SummaryResponse {
+        private Double avgSatisfaction;
+        private Double responseRate;
+        private Long totalResponses;
+        private Double reusageRate;
+    }
+    
+    // 상담사 만족도 분포
+    @Data
+    public static class DistributionResponse {
+        private Long score5Count;
+        private Long score4Count;
+        private Long score3Count;
+        private Long score2Count;
+        private Long score1Count;
+        private Double score5Percent;
+        private Double score4Percent;
+        private Double score3Percent;
+        private Double score2Percent;
+        private Double score1Percent;
+    }
+    
+    // 상담사 월별 만족도 추이
+    @Data
+    public static class MonthlyResponse {
+        private java.util.List<String> months;
+        private java.util.List<Double> avgSatisfactions;
+    }
 }

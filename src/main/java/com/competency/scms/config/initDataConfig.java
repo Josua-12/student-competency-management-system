@@ -422,6 +422,10 @@ public class initDataConfig implements CommandLineRunner {
 
         log.info("✅ 상담 예약 초기 데이터 3건이 생성되었습니다.");
 
+        // 상담 만족도 조사 질문 생성
+        createSatisfactionQuestions();
+        log.info("✅ 상담 만족도 조사 질문이 생성되었습니다.");
+
         User operator = getUser(140001);
         Program prog1 = programRepository.save(Program.builder().owner(operator).code("PROG-2025-001").title("진로 및 취업캠프").summary("진로 및 취업 준비 캠프")
                 .category(ProgramCategoryType.CAREER).organizerUserId(operator.getId()).status(ProgramStatus.PUBLISHED)
@@ -653,6 +657,95 @@ public class initDataConfig implements CommandLineRunner {
                 .name("자원·정보·기술 활용 역량").compCode("C06").displayOrder(6).isActive(true).build());
 
         log.info("✅ Competency 초기 데이터 6건이 생성되었습니다.");
+    }
+
+    private void createSatisfactionQuestions() {
+        // 1. 전체 상담 공통 질문
+        SatisfactionQuestion q1 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("상담사의 전문성에 대해 어떻게 평가하십니까?")
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(1)
+                .isRequired(true)
+                .isSystemDefault(true)
+                .isActive(true)
+                .build());
+
+        SatisfactionQuestion q2 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("상담 시간은 충분했습니까?")
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(2)
+                .isRequired(true)
+                .isSystemDefault(true)
+                .isActive(true)
+                .build());
+
+        SatisfactionQuestion q3 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("상담 내용이 도움이 되었습니까?")
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(3)
+                .isRequired(true)
+                .isSystemDefault(true)
+                .isActive(true)
+                .build());
+
+        SatisfactionQuestion q4 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("전반적인 상담 만족도는 어떠셨습니까?")
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(4)
+                .isRequired(true)
+                .isSystemDefault(true)
+                .isActive(true)
+                .build());
+
+        SatisfactionQuestion q5 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("추가 의견이나 개선사항이 있으시면 자유롭게 작성해 주세요.")
+                .questionType(SatisfactionQuestion.QuestionType.TEXT)
+                .displayOrder(5)
+                .isRequired(false)
+                .isSystemDefault(true)
+                .isActive(true)
+                .build());
+
+        // 2. 심리상담 전용 질문
+        satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("심리적 부담감이 완화되었습니까?")
+                .counselingField(CounselingField.PSYCHOLOGICAL)
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(6)
+                .isRequired(true)
+                .isActive(true)
+                .build());
+
+        // 3. 진로상담 전용 질문
+        satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("진로 방향 설정에 도움이 되었습니까?")
+                .counselingField(CounselingField.CAREER)
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(6)
+                .isRequired(true)
+                .isActive(true)
+                .build());
+
+        // 4. 취업상담 전용 질문
+        SatisfactionQuestion empQ1 = satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("취업 준비에 실질적인 도움이 되었습니까?")
+                .counselingField(CounselingField.EMPLOYMENT)
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(6)
+                .isRequired(true)
+                .isActive(true)
+                .build());
+
+
+        // 5. 학업상담 전용 질문
+        satisfactionQuestionRepository.save(SatisfactionQuestion.builder()
+                .questionText("학습 방법 개선에 도움이 되었습니까?")
+                .counselingField(CounselingField.ACADEMIC)
+                .questionType(SatisfactionQuestion.QuestionType.RATING)
+                .displayOrder(6)
+                .isRequired(true)
+                .isActive(true)
+                .build());
     }
 
     private Department ensureDept(String code, String name) {
