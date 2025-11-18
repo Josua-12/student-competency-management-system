@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class AssessmentResultData {
     // 1. 헤더용
+    private Long resultId;
     private String assessmentTitle;
     private String userName;
     private LocalDateTime submittedAt;
