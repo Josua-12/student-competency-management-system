@@ -1,7 +1,7 @@
 package com.competency.scms.controller;
 
 import com.competency.scms.domain.user.User;
-import com.competency.scms.dto.dashboard.SuperAdminDashboardDto;
+
 import com.competency.scms.repository.counseling.CounselorRepository;
 import com.competency.scms.repository.user.UserRepository;
 import com.competency.scms.repository.competency.CompetencyRepository;
@@ -22,25 +22,20 @@ public class AdminController {
     private final CompetencyRepository competencyRepository;
     private final CounselorRepository counselorRepository;
 
-    @GetMapping("/admin/dashboard-admin")
-    public String superAdminDashboard(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        log.info("[AdminController] 최고 관리자 대시보드 요청");
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model model) {
+        log.info("[AdminController] 관리자 대시보드 요청");
         try {
-            // 사용자 검증
-            User user = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자"));
-
-            SuperAdminDashboardDto dashboardDto = SuperAdminDashboardDto.builder()
-                    .totalUsers(userRepository.count())
-                    .totalCompetencyAssessments(competencyRepository.count())
-                    .totalCounselors(counselorRepository.count())
-                    .activeCounselors(counselorRepository.countByIsActive(true))
-                    .build();
-
-            model.addAttribute("dashboardDto", dashboardDto);
-            return "admin/dashboard-admin";
+            model.addAttribute("totalUsers", userRepository.count());
+            model.addAttribute("activeUsers", userRepository.count());
+            model.addAttribute("lockedUsers", 0L);
+            model.addAttribute("competencyCount", competencyRepository.count());
+            model.addAttribute("counselorCount", counselorRepository.count());
+            model.addAttribute("notices", java.util.List.of());
+            model.addAttribute("todos", java.util.List.of());
+            return "admin/dashboard";
         } catch (Exception e) {
-            log.error("[AdminController] 최고 관리자 대시보드 로드 실패", e);
+            log.error("[AdminController] 관리자 대시보드 로드 실패", e);
             model.addAttribute("errorMessage", "대시보드를 불러올 수 없습니다.");
             return "error";
         }
@@ -101,7 +96,6 @@ public class AdminController {
             return "error";
         }
     }
-
 
 
 }
