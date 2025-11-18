@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const links = document.querySelectorAll('.menu-link');
         let matched = null;
 
+        // written-editing 페이지는 취업상담으로 처리
+        if (current.includes('/written-editing')) {
+            const jobLink = document.querySelector('a[href*="/job"]');
+            if (jobLink) {
+                jobLink.classList.add('active');
+                return;
+            }
+        }
+
         links.forEach(link => {
             const href = link.getAttribute('href');
             if (!href) return;
