@@ -34,6 +34,8 @@ public interface AssessmentResultRepository extends JpaRepository<AssessmentResu
             AssessmentSection section, String departmentName
     );
 
+    Optional<AssessmentResult> findFirstByUserIdAndStatusOrderBySubmittedAtDesc(Long userId, AssessmentResultStatus status);
+
     /**
      * (N+1 문제 해결용)
      * 특정 사용자의 '완료된' 모든 진단 결과를

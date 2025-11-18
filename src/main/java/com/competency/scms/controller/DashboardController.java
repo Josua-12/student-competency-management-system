@@ -1,8 +1,10 @@
 package com.competency.scms.controller;
 
 import com.competency.scms.domain.user.User;
+import com.competency.scms.dto.competency.AssessmentResultData;
 import com.competency.scms.repository.user.UserRepository;
 import com.competency.scms.security.CustomUserDetails;
+import com.competency.scms.service.competency.AssessmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -21,6 +24,7 @@ import java.util.Map;
 public class DashboardController {
 
     private final UserRepository userRepository;
+    private final AssessmentService assessmentService;
 
     @GetMapping("/user")
     public ResponseEntity<Map<String, Object>> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -36,20 +40,19 @@ public class DashboardController {
     @GetMapping("/competency")
     public ResponseEntity<Map<String, Object>> getCompetency(@AuthenticationPrincipal CustomUserDetails userDetails) {
         User user = userDetails.getUser();
-        
-        // 실제 역량 진단 결과 조회 (임시 데이터)
-        // TODO: 실제 AssessmentResult 엔티티에서 조회
-        // 예시: 진단 결과가 없는 경우
-        boolean hasAssessmentResult = false; // 실제로는 DB에서 조회
-        
-        if (hasAssessmentResult) {
+
+        Optional<AssessmentResultData> latestData = assessmentService.getLatestCompletedAssessmentData(user.getId());
+
+        if (latestData.isPresent()) {
+            AssessmentResultData data = latestData.get();
             return ResponseEntity.ok(Map.of(
                     "hasResult", true,
-                    "labels", List.of("소통역량", "학습역량", "문제해결역량", "팀워크역량"),
-                    "scores", List.of(4.2, 3.8, 4.0, 3.5),
-                    "lastAssessmentDate", "2025-11-01"
+                    "labels", data.getRadarChartData().getLabels(),
+                    "scores", data.getRadarChartData().getScores(),
+                    "lastAssessmentDate", data.getSubmittedAt() //완료 날짜
             ));
         } else {
+            // 진단 결과가 없는 경우
             return ResponseEntity.ok(Map.of(
                     "hasResult", false
             ));

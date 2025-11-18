@@ -70,10 +70,18 @@ async function loadCompetency() {
         const chartData = {
             labels: res.labels,
             datasets: [{
-                label: '나의 점수',
-                data: res.scores
+                label: '나의 역량 점수',
+                data: res.scores,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // 파란색 배경 (투명도)
+                borderColor: 'rgba(54, 162, 235, 1)',     // 파란색 테두리
+                pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(54, 162, 235, 1)',
+                fill: true // 채우기 활성화
             }]
         };
+
         renderCompetencyChart('competencyChart', chartData);
         
         const listData = res.labels.map((label, index) => ({
@@ -136,27 +144,50 @@ function setInitial(sel, name) {
 }
 
 function renderCompetencyChart(canvasId, data) {
-    if (!data) return;
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    
-    new Chart(ctx, {
+
+    // 기존 차트가 있으면 파괴 (중복 생성 방지)
+    if (window.myCompetencyChart) {
+        window.myCompetencyChart.destroy();
+    }
+
+    window.myCompetencyChart = new Chart(ctx, {
         type: 'radar',
-        data: {
-            labels: data.labels || [],
-            datasets: (data.datasets || []).map(ds => ({
-                label: ds.label,
-                data: ds.data,
-                backgroundColor: 'rgba(9,64,129,0.2)',
-                borderColor: '#094081',
-                pointBackgroundColor: '#094081'
-            }))
-        },
+        data: data,
         options: {
-            scales: { r: { beginAtZero: true, suggestedMax: 5 } },
-            plugins: { legend: { display: false } },
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 5, // 5점 만점 고정
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        showLabelBackdrop: false, // 숫자 배경 제거
+                        font: { size: 10 }
+                    },
+                    pointLabels: {
+                        font: { size: 12, weight: 'bold' }
+                    },
+                    angleLines: {
+                        display: true,
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: false }, // 범례 숨김
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + Number(context.raw).toFixed(2) + '점';
+                        }
+                    }
+                }
+            }
         }
     });
 }
