@@ -10,6 +10,11 @@
             .navbar-brand img {
                 object-fit: contain;
             }
+
+            .navbar-username {
+                color: #F9D923 !important;
+                font-weight: bold;
+            }
         </style>
     </th:block>
 </head>
@@ -37,7 +42,7 @@
                 <!-- 사용자 정보 드롭다운 -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <span sec:authentication="principal.user.name">슈퍼관리자</span>님
+                        <span class="navbar-username" sec:authentication="principal.user.name">슈퍼관리자</span>님
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="/logout" onclick="return confirm('로그아웃 하시겠습니까?')">로그아웃</a></li>

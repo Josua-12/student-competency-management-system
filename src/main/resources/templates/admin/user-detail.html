@@ -6,9 +6,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- CSRF 토큰 메타 태그(Spring Security) -->
-  <meta name="_csrf" th:content="${_csrf.token}" >
-  <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title th:text="${title} + ' - 학생역량관리시스템'">학생역량관리시스템</title>
 
   <!--Bootstrap CSS-->
@@ -17,15 +14,16 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <!--Custom CSS-->
   <link th:href="@{/css/style.css}" rel="stylesheet">
+  <link th:href="@{/css/mypage/user-info.css}" rel="stylesheet">
 
-  <!--페이지별 추가 css-->
-  <th:block th:replace="${css}"></th:block>
+  <!-- 추가 CSS 삽입용 블록 -->
+  <!-- <th:block th:replace="${css}"></th:block> -->
 </head>
 <body>
 <div class="container my-4">
   <h2>사용자 상세 정보</h2>
   <form method="post" th:action="@{/admin/user/{id}/edit(id=${user.id})}">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <!-- CSRF 히든필드도 제거 -->
     <div class="mb-3">
       <label class="form-label">이름</label>
       <input type="text" class="form-control" name="name" th:value="${user.name}" readonly>
@@ -36,7 +34,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label">학번</label>
-      <input type="text" class="form-control" name="studentNum" th:value="${user.studentNum}" readonly>
+      <input type="text" class="form-control" name="userNum" th:value="${user.userNum}" readonly>
     </div>
     <div class="mb-3">
       <label class="form-label">계정 상태</label>

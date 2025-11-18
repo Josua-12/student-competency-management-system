@@ -5,13 +5,18 @@ import com.competency.scms.domain.user.User;
 import com.competency.scms.repository.counseling.CounselorRepository;
 import com.competency.scms.repository.user.UserRepository;
 import com.competency.scms.repository.competency.CompetencyRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -97,5 +102,38 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/admin/user/{id}")
+    public String userDetail(@PathVariable Long id, Model model, HttpServletRequest request) {
+        log.info("[AdminController] 사용자 상세 정보 요청: {}", id);
+        try {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+            model.addAttribute("user", user);
 
+            CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
+            model.addAttribute("_csrf", csrfToken);
+
+            return "admin/user-detail";
+        } catch (Exception e) {
+            log.error("[AdminController] 사용자 상세 정보 로드 실패", e);
+            model.addAttribute("errorMessage", "사용자 정보를 불러올 수 없습니다.");
+            return "error";
+        }
+    }
+
+    @PostMapping("/admin/user/{id}/edit")
+    public String updateUserStatus(@PathVariable Long id,
+                                   @RequestParam("locked") String locked,
+                                   Model model) {
+        // 1. User 찾기
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+
+        // 2. locked 값 변환 및 저장
+        user.setLocked(Boolean.parseBoolean(locked)); // "true"→true, "false"→false
+        userRepository.save(user);
+
+        // 3. 리다이렉트 또는 결과 페이지로 이동
+        return "redirect:/admin/users";
+    }
 }

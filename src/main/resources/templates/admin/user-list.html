@@ -28,7 +28,11 @@
                         <tr th:each="user : ${users}">
                             <td th:text="${user.id}">1</td>
                             <td th:text="${user.userNum}">20240001</td>
-                            <td th:text="${user.name}">홍길동</td>
+                            <td>
+                                <a th:href="@{/admin/user/{id}(id=${user.id})}" style="color:inherit; text-decoration:none;">
+                                    <span th:text="${user.name}"></span>
+                                </a>
+                            </td>
                             <td th:text="${user.email}">test@example.com</td>
                             <td>
                                 <span class="badge bg-primary" th:text="${user.role.description}">학생</span>
