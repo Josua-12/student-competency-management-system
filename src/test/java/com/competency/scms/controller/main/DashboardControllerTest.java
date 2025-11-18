@@ -4,6 +4,7 @@ import com.competency.scms.controller.DashboardController;
 import com.competency.scms.domain.user.User;
 import com.competency.scms.domain.user.UserRole;
 import com.competency.scms.repository.user.UserRepository;
+import com.competency.scms.security.CustomUserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,8 @@ class DashboardControllerTest {
     private UserRepository userRepository;
     @Mock
     private Authentication authentication;
+    @Mock
+    private CustomUserDetails userDetails;
 
     @InjectMocks
     private DashboardController dashboardController;
@@ -40,6 +43,9 @@ class DashboardControllerTest {
                 .email("test@example.com")
                 .role(UserRole.STUDENT)
                 .build();
+
+        // getUserInfo 테스트 오류 수정 - 홍종학
+        when(userDetails.getUser()).thenReturn(testUser);
     }
 
     @Test
@@ -49,7 +55,7 @@ class DashboardControllerTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
         // when
-        ResponseEntity<Map<String, Object>> response = dashboardController.getUserInfo(authentication);
+        ResponseEntity<Map<String, Object>> response = dashboardController.getUserInfo(userDetails);
 
         // then
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -64,7 +70,7 @@ class DashboardControllerTest {
         when(userRepository.findByUserNum(20240001)).thenReturn(Optional.of(testUser));
 
         // when
-        ResponseEntity<Map<String, Object>> response = dashboardController.getUserInfo(authentication);
+        ResponseEntity<Map<String, Object>> response = dashboardController.getUserInfo(userDetails);
 
         // then
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -78,7 +84,7 @@ class DashboardControllerTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> dashboardController.getUserInfo(authentication))
+        assertThatThrownBy(() -> dashboardController.getUserInfo(userDetails))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("사용자를 찾을 수 없습니다: test@example.com");
     }
