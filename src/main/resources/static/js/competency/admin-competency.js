@@ -511,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
             questionCode: document.getElementById('modalQuestionCode').value,
             questionType: document.getElementById('modalQuestionType').value,
             displayOrder: parseInt(document.getElementById('modalQuestionOrder').value, 10),
-            isActive: document.getElementById('modalQuestionActive').checked,
+            active: document.getElementById('modalQuestionActive').checked,
             options: options //  1번에서 수집한 '보기' 목록
         };
 

@@ -1,7 +1,9 @@
 package com.competency.scms.controller.mypage;
 
+import com.competency.scms.dto.competency.AssessmentResultData;
 import com.competency.scms.dto.noncurricular.mypage.ApplicationStatusDto;
 import com.competency.scms.security.CustomUserDetails;
+import com.competency.scms.service.competency.AssessmentService;
 import com.competency.scms.service.competency.mypage.AssessmentHistoryService;
 import com.competency.scms.service.noncurricular.mypage.ApplicationStatusService;
 import com.competency.scms.service.user.UserInfoService;
@@ -13,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/student/mypage")
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class MypageController {
     private final UserInfoService userInfoService;
     private final AssessmentHistoryService assessmentHistoryService;
     private final ApplicationStatusService applicationStatusService;
+    private final AssessmentService assessmentService;
 
 
     @GetMapping
@@ -33,6 +38,10 @@ public class MypageController {
         model.addAttribute("userEmail", userInfo.email());
         model.addAttribute("userNum", userInfo.userNum());
         model.addAttribute("department", userInfo.department());
+
+        Optional<AssessmentResultData> latestData = assessmentService.getLatestCompletedAssessmentData(userDetails.getId());
+
+        model.addAttribute("latestResultData", latestData.orElse(null));
 
         return "mypage/mypageDashBoard";
     }

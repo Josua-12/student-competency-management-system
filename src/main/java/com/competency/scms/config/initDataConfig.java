@@ -269,8 +269,17 @@ public class initDataConfig implements CommandLineRunner {
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2024, 5, 15)).department(ensureDept("CHINESE_LANG", "중국어학과")).grade(2).build());
         userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20210150).name("노태경").email("20210150@school.edu").phone("010-7441-6833")
                 .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2023, 7, 1)).department(ensureDept("ARCHITECTURE", "건축학과")).grade(3).build());
+        // ⭐️ [여기부터 2명 추가]
+        // 51. 국어국문학과 학생 (추가 1)
+        userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213902).name("최지우").email("20213902@school.edu").phone("010-1212-3434")
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2004, 11, 10)).department(ensureDept("KOREAN_LANG", "국어국문학과")).grade(2).build());
 
-        log.info("✅ User 초기 데이터 60건이 생성되었습니다.");
+        // 52. 국어국문학과 학생 (추가 2)
+        userRepository.save(User.builder().role(UserRole.STUDENT).userNum(20213903).name("강민준").email("20213903@school.edu").phone("010-5656-7878")
+                .password(passwordEncoder.encode(("student123"))).birthDate(LocalDate.of(2003, 5, 20)).department(ensureDept("KOREAN_LANG", "국어국문학과")).grade(3).build());
+        // ⭐️ [여기까지 추가]
+
+        log.info("✅ User 초기 데이터 62건이 생성되었습니다.");
 
         // 상담사 엔티티 생성
         Counselor counselorEntity1 = counselorRepository.save(Counselor.builder()
@@ -565,30 +574,30 @@ public class initDataConfig implements CommandLineRunner {
 
         log.info("✅ MileageRecord 초기 데이터 6건이 생성되었습니다.");
 
-        // 역량 검사 섹션 생성
-        LocalDateTime assessmentStart = LocalDateTime.of(2025, 1, 1, 0, 0);
-        LocalDateTime assessmentEnd = LocalDateTime.of(2025, 12, 31, 23, 59);
-        
-        AssessmentSection section1 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("자기관리 역량 검사").description("자기관리 능력 평가")
-                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
-        AssessmentSection section2 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("의사소통 역량 검사").description("의사소통 능력 평가")
-                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
-        AssessmentSection section3 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("글로벌 역량 검사").description("글로벌 능력 평가")
-                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
-        AssessmentSection section4 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("대인관계 역량 검사").description("대인관계 능력 평가")
-                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
-        AssessmentSection section5 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("종합적 사고력 검사").description("종합적 사고력 평가")
-                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
-        AssessmentSection section6 = assessmentSectionRepository.save(AssessmentSection.builder()
-                .title("자원·정보·기술 활용 역량 검사").description("자원·정보·기술 활용 능력 평가")
-                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
-
-        log.info("✅ AssessmentSection 초기 데이터 6건이 생성되었습니다.");
+//        // 역량 검사 섹션 생성
+//        LocalDateTime assessmentStart = LocalDateTime.of(2025, 1, 1, 0, 0);
+//        LocalDateTime assessmentEnd = LocalDateTime.of(2025, 12, 31, 23, 59);
+//
+//        AssessmentSection section1 = assessmentSectionRepository.save(AssessmentSection.builder()
+//                .title("자기관리 역량 검사").description("자기관리 능력 평가")
+//                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
+//        AssessmentSection section2 = assessmentSectionRepository.save(AssessmentSection.builder()
+//                .title("의사소통 역량 검사").description("의사소통 능력 평가")
+//                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
+//        AssessmentSection section3 = assessmentSectionRepository.save(AssessmentSection.builder()
+//                .title("글로벌 역량 검사").description("글로벌 능력 평가")
+//                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
+//        AssessmentSection section4 = assessmentSectionRepository.save(AssessmentSection.builder()
+//                .title("대인관계 역량 검사").description("대인관계 능력 평가")
+//                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
+//        AssessmentSection section5 = assessmentSectionRepository.save(AssessmentSection.builder()
+//                .title("종합적 사고력 검사").description("종합적 사고력 평가")
+//                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
+//        AssessmentSection section6 = assessmentSectionRepository.save(AssessmentSection.builder()
+//                .title("자원·정보·기술 활용 역량 검사").description("자원·정보·기술 활용 능력 평가")
+//                .startDate(assessmentStart).endDate(assessmentEnd).isActive(true).build());
+//
+//        log.info("✅ AssessmentSection 초기 데이터 6건이 생성되었습니다.");
 
         // 프로그램 신청 데이터 추가
         programApplicationRepository.save(ProgramApplication.builder()
@@ -622,42 +631,42 @@ public class initDataConfig implements CommandLineRunner {
         log.info("✅ ProgramApplication 초기 데이터 6건이 생성되었습니다.");
 
         // 역량 데이터 추가
-        createCompetencyData();
+//        createCompetencyData();
     }
 
-    private void createCompetencyData() {
-        // 자기관리 역량 (C01)
-        com.competency.scms.domain.competency.Competency c01 = competencyRepository.save(
-            com.competency.scms.domain.competency.Competency.builder()
-                .name("자기관리 역량").compCode("C01").displayOrder(1).isActive(true).build());
-        
-        // 의사소통 역량 (C02)
-        com.competency.scms.domain.competency.Competency c02 = competencyRepository.save(
-            com.competency.scms.domain.competency.Competency.builder()
-                .name("의사소통 역량").compCode("C02").displayOrder(2).isActive(true).build());
-        
-        // 글로벌 역량 (C03)
-        com.competency.scms.domain.competency.Competency c03 = competencyRepository.save(
-            com.competency.scms.domain.competency.Competency.builder()
-                .name("글로벌 역량").compCode("C03").displayOrder(3).isActive(true).build());
-        
-        // 대인관계 역량 (C04)
-        com.competency.scms.domain.competency.Competency c04 = competencyRepository.save(
-            com.competency.scms.domain.competency.Competency.builder()
-                .name("대인관계 역량").compCode("C04").displayOrder(4).isActive(true).build());
-        
-        // 종합적 사고력 (C05)
-        com.competency.scms.domain.competency.Competency c05 = competencyRepository.save(
-            com.competency.scms.domain.competency.Competency.builder()
-                .name("종합적 사고력").compCode("C05").displayOrder(5).isActive(true).build());
-        
-        // 자원·정보·기술 활용 역량 (C06)
-        com.competency.scms.domain.competency.Competency c06 = competencyRepository.save(
-            com.competency.scms.domain.competency.Competency.builder()
-                .name("자원·정보·기술 활용 역량").compCode("C06").displayOrder(6).isActive(true).build());
-
-        log.info("✅ Competency 초기 데이터 6건이 생성되었습니다.");
-    }
+//    private void createCompetencyData() {
+//        // 자기관리 역량 (C01)
+//        com.competency.scms.domain.competency.Competency c01 = competencyRepository.save(
+//            com.competency.scms.domain.competency.Competency.builder()
+//                .name("자기관리 역량").compCode("C01").displayOrder(1).isActive(true).build());
+//
+//        // 의사소통 역량 (C02)
+//        com.competency.scms.domain.competency.Competency c02 = competencyRepository.save(
+//            com.competency.scms.domain.competency.Competency.builder()
+//                .name("의사소통 역량").compCode("C02").displayOrder(2).isActive(true).build());
+//
+//        // 글로벌 역량 (C03)
+//        com.competency.scms.domain.competency.Competency c03 = competencyRepository.save(
+//            com.competency.scms.domain.competency.Competency.builder()
+//                .name("글로벌 역량").compCode("C03").displayOrder(3).isActive(true).build());
+//
+//        // 대인관계 역량 (C04)
+//        com.competency.scms.domain.competency.Competency c04 = competencyRepository.save(
+//            com.competency.scms.domain.competency.Competency.builder()
+//                .name("대인관계 역량").compCode("C04").displayOrder(4).isActive(true).build());
+//
+//        // 종합적 사고력 (C05)
+//        com.competency.scms.domain.competency.Competency c05 = competencyRepository.save(
+//            com.competency.scms.domain.competency.Competency.builder()
+//                .name("종합적 사고력").compCode("C05").displayOrder(5).isActive(true).build());
+//
+//        // 자원·정보·기술 활용 역량 (C06)
+//        com.competency.scms.domain.competency.Competency c06 = competencyRepository.save(
+//            com.competency.scms.domain.competency.Competency.builder()
+//                .name("자원·정보·기술 활용 역량").compCode("C06").displayOrder(6).isActive(true).build());
+//
+//        log.info("✅ Competency 초기 데이터 6건이 생성되었습니다.");
+//    }
 
     private void createSatisfactionQuestions() {
         // 1. 전체 상담 공통 질문

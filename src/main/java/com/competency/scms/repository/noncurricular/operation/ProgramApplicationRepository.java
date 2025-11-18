@@ -4,11 +4,13 @@ package com.competency.scms.repository.noncurricular.operation;
 import com.competency.scms.domain.noncurricular.operation.ApprovalStatus;
 import com.competency.scms.domain.noncurricular.operation.ProgramApplication;
 import com.competency.scms.domain.noncurricular.operation.ApplicationStatus;
+import com.competency.scms.domain.noncurricular.program.CompletionStatus;
 import com.competency.scms.domain.noncurricular.program.ProgramCategoryType;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.op.OperatorApprovalRequestDto;
 import com.competency.scms.dto.noncurricular.noncurriDashboard.student.StudentLatestApplicationDto;
 import com.competency.scms.dto.noncurricular.operation.application.StudentApplicationListDto;
 import com.competency.scms.dto.noncurricular.operation.application.StudentApplicationSearchConditionDto;
+import com.competency.scms.dto.noncurricular.operation.completion.OpCompletionStatusListItemDto;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.*;
@@ -244,6 +246,32 @@ public interface ProgramApplicationRepository
     int sumCompletedPointByStudentAndYear(@Param("studentId") Long studentId,
                                           @Param("year") int year,
                                           @Param("completionStatus") com.competency.scms.domain.noncurricular.program.CompletionStatus completionStatus);
+
+
+    /**
+     * 이수현황 목록 조회 (JPQL + DTO 생성자)
+     *
+     * ⚠ 아래 JPQL에 나오는 필드명은
+     * ProgramApplication / Program / ProgramSchedule / User 엔티티에
+     * 맞게 이름만 바꿔줘야 해요.
+     */
+    @Query("""
+    select pa
+    from ProgramApplication pa
+        join fetch pa.program p
+        join fetch pa.student u
+    where (:keyword is null or p.title like concat('%', :keyword, '%'))
+      and (:studentNum is null or cast(u.userNum as string) like concat('%', :studentNum, '%'))
+      and (:status is null or pa.completionStatus = :status)
+      and (:operatorId is null or p.owner.id = :operatorId)
+    """)
+    Page<ProgramApplication> searchCompletionStatusList(
+            @Param("keyword") String keyword,
+            @Param("studentNum") String studentNum,
+            @Param("status") CompletionStatus status,
+            @Param("operatorId") Long operatorId,
+            Pageable pageable
+    );
 
 }
 

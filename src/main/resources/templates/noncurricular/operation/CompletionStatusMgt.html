@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>비교과 프로그램 - 이수현황 관리</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- (프로젝트에서 이미 Bootstrap/폰트 사용 중이면 중복 제거 가능) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg:#f7f8fa;
+            --card:#ffffff;
+            --fg:#111827;
+            --muted:#6b7280;
+            --line:#e5e7eb;
+            --pri:#2563eb;
+            --pri-600:#1d4ed8;
+            --pri-soft:#e5edff;
+            --ok:#16a34a;
+            --warn:#d97706;
+            --err:#dc2626;
+            --radius:14px;
+            --shadow:0 10px 25px rgba(15,23,42,.08);
+        }
+
+        *{box-sizing:border-box;}
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--fg);
+            font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;
+        }
+
+        .nc-wrap{
+            max-width:1200px;
+            margin:24px auto;
+            padding:0 16px 40px;
+        }
+
+        .nc-page-title{
+            font-size:22px;
+            font-weight:700;
+            margin-bottom:8px;
+        }
+        .nc-page-sub{
+            font-size:13px;
+            color:var(--muted);
+            margin-bottom:20px;
+        }
+
+        /* 검색 영역 */
+        .nc-search{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:16px 18px 8px;
+            box-shadow:var(--shadow);
+            border:1px solid var(--line);
+            margin-bottom:18px;
+        }
+        .nc-search-row{
+            display:flex;
+            flex-wrap:wrap;
+            gap:12px 18px;
+            margin-bottom:8px;
+        }
+        .nc-field{
+            display:flex;
+            flex-direction:column;
+            min-width:160px;
+            flex:1 1 200px;
+        }
+        .nc-field-label{
+            font-size:12px;
+            font-weight:600;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+        .nc-field input,
+        .nc-field select{
+            border-radius:8px;
+            border:1px solid var(--line);
+            padding:6px 10px;
+            font-size:13px;
+        }
+        .nc-field input:focus,
+        .nc-field select:focus{
+            outline:none;
+            border-color:var(--pri-600);
+            box-shadow:0 0 0 1px var(--pri-soft);
+        }
+
+        .nc-search-actions{
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:8px;
+        }
+        .nc-btn{
+            border-radius:999px;
+            padding:6px 14px;
+            font-size:13px;
+            border:1px solid transparent;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+            white-space:nowrap;
+        }
+        .nc-btn-primary{
+            background:var(--pri);
+            color:#fff;
+        }
+        .nc-btn-primary:hover{
+            background:var(--pri-600);
+        }
+        .nc-btn-outline{
+            background:#fff;
+            color:var(--muted);
+            border-color:var(--line);
+        }
+        .nc-btn-outline:hover{
+            border-color:var(--pri);
+            color:var(--pri-600);
+        }
+
+        /* 요약 카드 */
+        .nc-summary{
+            margin-bottom:18px;
+        }
+        .nc-summary-grid{
+            display:grid;
+            grid-template-columns:repeat(4, minmax(0,1fr));
+            gap:10px;
+        }
+        @media (max-width:900px){
+            .nc-summary-grid{
+                grid-template-columns:repeat(2, minmax(0,1fr));
+            }
+        }
+        @media (max-width:600px){
+            .nc-summary-grid{
+                grid-template-columns:repeat(1, minmax(0,1fr));
+            }
+        }
+        .nc-card{
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:12px 14px;
+            box-shadow:var(--shadow);
+            border:1px solid var(--line);
+        }
+        .nc-card-title{
+            font-size:12px;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+        .nc-card-value{
+            font-size:18px;
+            font-weight:700;
+        }
+        .nc-card-chip{
+            margin-top:4px;
+            font-size:11px;
+            padding:2px 8px;
+            border-radius:999px;
+            display:inline-block;
+        }
+        .nc-chip-ok{
+            background:rgba(22,163,74,.08);
+            color:var(--ok);
+        }
+        .nc-chip-warn{
+            background:rgba(217,119,6,.08);
+            color:var(--warn);
+        }
+
+        /* 목록 영역 */
+        .nc-list-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:8px;
+        }
+        .nc-list-title{
+            font-size:15px;
+            font-weight:600;
+        }
+        .nc-list-sub{
+            font-size:12px;
+            color:var(--muted);
+        }
+
+        .nc-table-wrap{
+            background:var(--card);
+            border-radius:var(--radius);
+            box-shadow:var(--shadow);
+            border:1px solid var(--line);
+            overflow:hidden;
+        }
+
+        .nc-table{
+            width:100%;
+            border-collapse:collapse;
+            font-size:13px;
+        }
+        .nc-table thead{
+            background:#f3f4f6;
+        }
+        .nc-table th,
+        .nc-table td{
+            padding:8px 10px;
+            border-bottom:1px solid var(--line);
+            vertical-align:middle;
+        }
+        .nc-table th{
+            font-weight:600;
+            color:#4b5563;
+            white-space:nowrap;
+        }
+        .nc-table td{
+            color:#111827;
+        }
+        .nc-table tbody tr:hover{
+            background:#f9fafb;
+        }
+        .nc-badge-status{
+            padding:2px 8px;
+            border-radius:999px;
+            font-size:11px;
+        }
+        .nc-status-complete{
+            background:rgba(22,163,74,.08);
+            color:var(--ok);
+        }
+        .nc-status-incomplete{
+            background:rgba(220,38,38,.06);
+            color:var(--err);
+        }
+        .nc-status-fail{
+            background:rgba(220,38,38,.12);
+            color:var(--err);
+        }
+        .nc-badge-tag{
+            font-size:11px;
+            padding:2px 6px;
+            border-radius:999px;
+            background:#f3f4f6;
+            color:var(--muted);
+            display:inline-block;
+        }
+        .nc-link{
+            color:var(--pri);
+            text-decoration:none;
+        }
+        .nc-link:hover{
+            text-decoration:underline;
+        }
+
+        .nc-btn-xs{
+            border-radius:999px;
+            padding:4px 10px;
+            font-size:11px;
+        }
+
+        /* 페이징 + 하단 버튼 */
+        .nc-footer-bar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-top:12px;
+            flex-wrap:wrap;
+        }
+        .nc-pagination{
+            display:flex;
+            gap:4px;
+            align-items:center;
+            flex-wrap:wrap;
+        }
+        .nc-page-btn{
+            min-width:28px;
+            height:28px;
+            border-radius:999px;
+            border:1px solid var(--line);
+            background:#fff;
+            font-size:12px;
+            cursor:pointer;
+        }
+        .nc-page-btn.active{
+            background:var(--pri);
+            border-color:var(--pri);
+            color:#fff;
+        }
+
+        /* 모달 */
+        .nc-modal-backdrop{
+            position:fixed;
+            inset:0;
+            background:rgba(15,23,42,.35);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:2000;
+        }
+        .nc-modal{
+            background:#fff;
+            border-radius:18px;
+            max-width:520px;
+            width:100%;
+            padding:18px 20px 16px;
+            box-shadow:0 20px 60px rgba(15,23,42,.35);
+        }
+        .nc-modal-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:8px;
+        }
+        .nc-modal-title{
+            font-size:16px;
+            font-weight:600;
+        }
+        .nc-modal-close{
+            border:none;
+            background:transparent;
+            font-size:20px;
+            line-height:1;
+            cursor:pointer;
+            color:var(--muted);
+        }
+        .nc-modal-section-title{
+            font-size:13px;
+            font-weight:600;
+            margin-top:8px;
+            margin-bottom:4px;
+        }
+        .nc-modal-grid{
+            display:grid;
+            grid-template-columns:repeat(2, minmax(0,1fr));
+            gap:8px 12px;
+            font-size:12px;
+        }
+        .nc-modal-label{
+            color:var(--muted);
+            margin-right:4px;
+        }
+        .nc-modal-value{
+            font-weight:500;
+        }
+        .nc-modal-form{
+            margin-top:10px;
+            padding-top:8px;
+            border-top:1px dashed var(--line);
+        }
+        .nc-modal-form-row{
+            display:flex;
+            flex-direction:column;
+            margin-bottom:8px;
+            font-size:12px;
+        }
+        .nc-modal-form-row label{
+            font-weight:600;
+            margin-bottom:3px;
+        }
+        .nc-modal-form-row select,
+        .nc-modal-form-row input,
+        .nc-modal-form-row textarea{
+            border-radius:8px;
+            border:1px solid var(--line);
+            padding:6px 8px;
+            font-size:12px;
+        }
+        .nc-modal-form-row textarea{
+            resize:vertical;
+            min-height:60px;
+        }
+        .nc-modal-actions{
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:8px;
+        }
+
+        .hidden{display:none !important;}
+    </style>
+</head>
+<body>
+
+<div class="nc-wrap">
+    <h1 class="nc-page-title">이수현황 관리</h1>
+    <p class="nc-page-sub">검색 조건에 따른 비교과 프로그램 이수현황을 조회·관리할 수 있는 화면입니다.</p>
+
+    <!-- 검색 영역 -->
+    <section class="nc-search">
+        <form id="searchForm" method="get" action="/noncurricular/operator/completions">
+            <div class="nc-search-row">
+                <div class="nc-field">
+                    <span class="nc-field-label">기간구분</span>
+                    <select name="dateType" id="dateType">
+                        <option value="PROGRAM_END">프로그램 종료일</option>
+                        <option value="RUNNING">운영기간</option>
+                        <option value="APPLY">신청기간</option>
+                    </select>
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">시작일</span>
+                    <input type="date" name="startDate" id="startDate">
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">종료일</span>
+                    <input type="date" name="endDate" id="endDate">
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">프로그램명</span>
+                    <input type="text" name="programName" id="programName" placeholder="프로그램명을 입력하세요">
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">프로그램 ID</span>
+                    <input type="text" name="progId" id="progId" placeholder="예: PRG2025-001">
+                </div>
+            </div>
+
+            <div class="nc-search-row">
+                <div class="nc-field">
+                    <span class="nc-field-label">운영부서</span>
+                    <select name="dept" id="dept">
+                        <option value="">전체</option>
+                        <option value="CNSL">학생상담센터</option>
+                        <option value="CAREER">취업지원센터</option>
+                        <option value="GLOBAL">국제교류센터</option>
+                    </select>
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">이수상태</span>
+                    <select name="completionStatus" id="completionStatus">
+                        <option value="">전체</option>
+                        <option value="COMPLETE">이수</option>
+                        <option value="INCOMPLETE">미이수</option>
+                        <option value="FAIL">탈락</option>
+                    </select>
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">출석률</span>
+                    <select name="attendanceRange" id="attendanceRange">
+                        <option value="">전체</option>
+                        <option value="80">80% 이상</option>
+                        <option value="90">90% 이상</option>
+                    </select>
+                </div>
+                <div class="nc-field">
+                    <span class="nc-field-label">만족도 설문 제출</span>
+                    <select name="satisfactionSubmitted" id="satisfactionSubmitted">
+                        <option value="">전체</option>
+                        <option value="Y">제출</option>
+                        <option value="N">미제출</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="nc-search-actions">
+                <button type="button" class="nc-btn nc-btn-outline" id="btn-reset">초기화</button>
+                <button type="submit" class="nc-btn nc-btn-primary" id="btn-search">조회</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- 요약 통계 -->
+    <section class="nc-summary">
+        <div class="nc-summary-grid">
+            <article class="nc-card">
+                <div class="nc-card-title">총 참가자 수</div>
+                <div class="nc-card-value" id="stat-total">0명</div>
+            </article>
+            <article class="nc-card">
+                <div class="nc-card-title">이수 인원</div>
+                <div class="nc-card-value" id="stat-complete">0명</div>
+                <div class="nc-card-chip nc-chip-ok" id="stat-complete-rate">이수율 0%</div>
+            </article>
+            <article class="nc-card">
+                <div class="nc-card-title">미이수 / 탈락 인원</div>
+                <div class="nc-card-value" id="stat-incomplete">0명</div>
+                <div class="nc-card-chip nc-chip-warn" id="stat-fail-rate">비이수율 0%</div>
+            </article>
+            <article class="nc-card">
+                <div class="nc-card-title">평균 만족도</div>
+                <div class="nc-card-value" id="stat-satisfaction">-</div>
+                <div class="nc-card-chip" style="background:var(--pri-soft);color:var(--pri-600);">
+                    설문 제출 기준
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- 목록 영역 -->
+    <section>
+        <div class="nc-list-header">
+            <div>
+                <div class="nc-list-title">이수현황 목록</div>
+                <div class="nc-list-sub">
+                    검색 결과 <span id="result-count">0</span>건이 조회되었습니다.
+                </div>
+            </div>
+        </div>
+
+        <div class="nc-table-wrap">
+            <table class="nc-table">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="check-all"></th>
+                    <th>No</th>
+                    <th>프로그램명</th>
+                    <th>회차</th>
+                    <th>운영부서</th>
+                    <th>학번</th>
+                    <th>이름</th>
+                    <th>학과</th>
+                    <th>출석률</th>
+                    <th>만족도</th>
+                    <th>이수상태</th>
+                    <th>이수인정일</th>
+                    <th>이수증</th>
+                    <th>최종수정일</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody id="completion-tbody">
+                <!-- JS로 렌더링 -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="nc-footer-bar">
+            <div>
+                <button type="button" class="nc-btn nc-btn-outline nc-btn-xs" id="btn-bulk-complete">
+                    선택 이수처리
+                </button>
+                <button type="button" class="nc-btn nc-btn-outline nc-btn-xs" id="btn-bulk-fail">
+                    선택 미이수/탈락 처리
+                </button>
+                <button type="button" class="nc-btn nc-btn-outline nc-btn-xs" id="btn-export">
+                    엑셀 다운로드
+                </button>
+            </div>
+            <div class="nc-pagination" id="pagination">
+                <!-- JS로 페이지 버튼 생성 -->
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- 이수 상세 모달 -->
+<div id="completion-modal-wrapper" class="nc-modal-backdrop hidden">
+    <div class="nc-modal">
+        <div class="nc-modal-header">
+            <div class="nc-modal-title">이수 처리 상세</div>
+            <button type="button" class="nc-modal-close" id="modal-close-btn">&times;</button>
+        </div>
+
+        <div>
+            <div class="nc-modal-section-title">학생 정보</div>
+            <div class="nc-modal-grid">
+                <div><span class="nc-modal-label">학번</span><span class="nc-modal-value" id="modal-studentNo"></span></div>
+                <div><span class="nc-modal-label">이름</span><span class="nc-modal-value" id="modal-studentName"></span></div>
+                <div><span class="nc-modal-label">학과</span><span class="nc-modal-value" id="modal-deptName"></span></div>
+                <div><span class="nc-modal-label">학년</span><span class="nc-modal-value" id="modal-grade"></span></div>
+            </div>
+
+            <div class="nc-modal-section-title">프로그램 정보</div>
+            <div class="nc-modal-grid">
+                <div style="grid-column:1/3;">
+                    <span class="nc-modal-label">프로그램명</span>
+                    <span class="nc-modal-value" id="modal-programName"></span>
+                </div>
+                <div><span class="nc-modal-label">회차</span><span class="nc-modal-value" id="modal-session"></span></div>
+                <div><span class="nc-modal-label">운영부서</span><span class="nc-modal-value" id="modal-opDept"></span></div>
+                <div><span class="nc-modal-label">운영기간</span><span class="nc-modal-value" id="modal-period"></span></div>
+            </div>
+
+            <div class="nc-modal-section-title">참여 요약</div>
+            <div class="nc-modal-grid">
+                <div><span class="nc-modal-label">출석률</span><span class="nc-modal-value" id="modal-attendance"></span></div>
+                <div><span class="nc-modal-label">만족도</span><span class="nc-modal-value" id="modal-satisfaction"></span></div>
+            </div>
+        </div>
+
+        <div class="nc-modal-form">
+            <div class="nc-modal-form-row">
+                <label for="modal-completionStatus">이수상태</label>
+                <select id="modal-completionStatus">
+                    <option value="COMPLETE">이수</option>
+                    <option value="INCOMPLETE">미이수</option>
+                    <option value="FAIL">탈락</option>
+                </select>
+            </div>
+            <div class="nc-modal-form-row">
+                <label for="modal-completionDate">이수인정일</label>
+                <input type="date" id="modal-completionDate">
+            </div>
+            <div class="nc-modal-form-row">
+                <label for="modal-remark">비고</label>
+                <textarea id="modal-remark" placeholder="미이수/탈락 사유 등 입력"></textarea>
+            </div>
+        </div>
+
+        <div class="nc-modal-actions">
+            <button type="button" class="nc-btn nc-btn-outline nc-btn-xs" id="modal-cancel-btn">취소</button>
+            <button type="button" class="nc-btn nc-btn-primary nc-btn-xs" id="modal-save-btn">저장</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ======= 더미 데이터(백엔드 연동 전까지 테스트용) =======
+    const sampleData = [
+        {
+            applicationId: 1,
+            programId: 'PRG2025-001',
+            programName: '진로탐색 워크숍',
+            session: '1차(2025-03-10)',
+            opDept: '취업지원센터',
+            studentNo: '202012345',
+            studentName: '김학생',
+            deptName: '경영학과',
+            grade: '3학년',
+            attendanceRate: 92,
+            satisfactionScore: 4.5,
+            satisfactionSubmitted: true,
+            completionStatus: 'COMPLETE',
+            completionDate: '2025-03-20',
+            certificateAvailable: true,
+            lastModified: '2025-03-21 10:15'
+        },
+        {
+            applicationId: 2,
+            programId: 'PRG2025-002',
+            programName: '글로벌 역량 세미나',
+            session: '1차(2025-03-15)',
+            opDept: '국제교류센터',
+            studentNo: '202078901',
+            studentName: '이글로벌',
+            deptName: '무역학과',
+            grade: '2학년',
+            attendanceRate: 75,
+            satisfactionScore: null,
+            satisfactionSubmitted: false,
+            completionStatus: 'INCOMPLETE',
+            completionDate: null,
+            certificateAvailable: false,
+            lastModified: '2025-03-18 15:02'
+        },
+        {
+            applicationId: 3,
+            programId: 'PRG2025-003',
+            programName: '마음건강 집단상담',
+            session: '2차(2025-03-22)',
+            opDept: '학생상담센터',
+            studentNo: '202045678',
+            studentName: '박마음',
+            deptName: '심리학과',
+            grade: '1학년',
+            attendanceRate: 85,
+            satisfactionScore: 4.9,
+            satisfactionSubmitted: true,
+            completionStatus: 'FAIL',
+            completionDate: null,
+            certificateAvailable: false,
+            lastModified: '2025-03-23 09:40'
+        }
+    ];
+
+    const pageSize = 20;
+    let currentPage = 1;
+    let filteredData = [...sampleData];
+    let currentEditing = null; // 현재 모달에서 편집 중인 레코드
+
+    // ======= 헬퍼 함수 =======
+    function formatCompletionStatus(status){
+        switch(status){
+            case 'COMPLETE': return {text:'이수', cls:'nc-status-complete'};
+            case 'FAIL': return {text:'탈락', cls:'nc-status-fail'};
+            case 'INCOMPLETE':
+            default: return {text:'미이수', cls:'nc-status-incomplete'};
+        }
+    }
+
+    function renderTable(){
+        const tbody = document.getElementById('completion-tbody');
+        tbody.innerHTML = '';
+
+        const startIdx = (currentPage - 1) * pageSize;
+        const pageItems = filteredData.slice(startIdx, startIdx + pageSize);
+
+        pageItems.forEach((row, idx) => {
+            const tr = document.createElement('tr');
+            const statusInfo = formatCompletionStatus(row.completionStatus);
+
+            tr.innerHTML = `
+                <td><input type="checkbox" class="row-check" data-app-id="${row.applicationId}"></td>
+                <td>${startIdx + idx + 1}</td>
+                <td>
+                    <a href="/noncurricular/operator/programs/${row.programId}"
+                       class="nc-link"
+                       target="_blank">${row.programName}</a>
+                </td>
+                <td>${row.session}</td>
+                <td>${row.opDept}</td>
+                <td>${row.studentNo}</td>
+                <td>${row.studentName}</td>
+                <td>${row.deptName}</td>
+                <td>${row.attendanceRate}%</td>
+                <td>
+                    ${row.satisfactionSubmitted
+                        ? `<span class="nc-badge-tag">제출 (${row.satisfactionScore ?? '-'})</span>`
+                        : '<span class="nc-badge-tag">미제출</span>'}
+                </td>
+                <td><span class="nc-badge-status ${statusInfo.cls}">${statusInfo.text}</span></td>
+                <td>${row.completionDate ?? '-'}</td>
+                <td>${row.certificateAvailable ? '발급' : '미발급'}</td>
+                <td>${row.lastModified}</td>
+                <td>
+                    <button type="button"
+                            class="nc-btn nc-btn-outline nc-btn-xs btn-detail"
+                            data-app-id="${row.applicationId}">
+                        상세
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('result-count').textContent = filteredData.length.toString();
+        renderStats();
+        renderPagination();
+        document.getElementById('check-all').checked = false;
+    }
+
+    function renderStats(){
+        const total = filteredData.length;
+        const complete = filteredData.filter(r => r.completionStatus === 'COMPLETE').length;
+        const incomplete = total - complete;
+
+        const avgSatisfactionArr = filteredData
+            .filter(r => r.satisfactionSubmitted && r.satisfactionScore != null)
+            .map(r => r.satisfactionScore);
+
+        const avgSatisfaction = avgSatisfactionArr.length
+            ? (avgSatisfactionArr.reduce((a,b)=>a+b,0) / avgSatisfactionArr.length).toFixed(2)
+            : '-';
+
+        const completeRate = total ? Math.round((complete/total)*100) : 0;
+        const failRate = total ? Math.round((incomplete/total)*100) : 0;
+
+        document.getElementById('stat-total').textContent = total + '명';
+        document.getElementById('stat-complete').textContent = complete + '명';
+        document.getElementById('stat-incomplete').textContent = incomplete + '명';
+        document.getElementById('stat-complete-rate').textContent = '이수율 ' + completeRate + '%';
+        document.getElementById('stat-fail-rate').textContent = '비이수율 ' + failRate + '%';
+        document.getElementById('stat-satisfaction').textContent = avgSatisfaction;
+    }
+
+    function renderPagination(){
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+        const totalPage = Math.max(1, Math.ceil(filteredData.length / pageSize));
+
+        for(let p=1; p<=totalPage; p++){
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'nc-page-btn' + (p === currentPage ? ' active' : '');
+            btn.textContent = p;
+            btn.addEventListener('click', () => {
+                currentPage = p;
+                renderTable();
+            });
+            pagination.appendChild(btn);
+        }
+    }
+
+    function applySearch(){
+        // 실제 구현 시에는 form submit으로 서버 조회하는 방식 권장.
+        // 여기선 프론트 더미 필터만 구현.
+        const progName = document.getElementById('programName').value.trim();
+        const progId = document.getElementById('progId').value.trim();
+        const dept = document.getElementById('dept').value;
+        const status = document.getElementById('completionStatus').value;
+        const attRange = document.getElementById('attendanceRange').value;
+        const sat = document.getElementById('satisfactionSubmitted').value;
+
+        filteredData = sampleData.filter(row => {
+            if (progName && !row.programName.includes(progName)) return false;
+            if (progId && !row.programId.includes(progId)) return false;
+            if (dept && row.opDept.indexOf('센터') !== -1) {
+                // 여기 로직은 프로젝트 상황에 맞게 dept 코드/명 매핑해서 수정
+            }
+            if (status && row.completionStatus !== status) return false;
+            if (attRange && row.attendanceRate < Number(attRange)) return false;
+            if (sat === 'Y' && !row.satisfactionSubmitted) return false;
+            if (sat === 'N' && row.satisfactionSubmitted) return false;
+            return true;
+        });
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    function resetSearchForm(){
+        document.getElementById('searchForm').reset();
+        filteredData = [...sampleData];
+        currentPage = 1;
+        renderTable();
+    }
+
+    function getSelectedIds(){
+        const checks = document.querySelectorAll('.row-check:checked');
+        return Array.from(checks).map(c => Number(c.dataset.appId));
+    }
+
+    // ======= 모달 관련 =======
+    function openModal(applicationId){
+        const data = sampleData.find(r => r.applicationId === applicationId);
+        if(!data) return;
+        currentEditing = data;
+
+        document.getElementById('modal-studentNo').textContent = data.studentNo;
+        document.getElementById('modal-studentName').textContent = data.studentName;
+        document.getElementById('modal-deptName').textContent = data.deptName;
+        document.getElementById('modal-grade').textContent = data.grade;
+
+        document.getElementById('modal-programName').textContent = data.programName;
+        document.getElementById('modal-session').textContent = data.session;
+        document.getElementById('modal-opDept').textContent = data.opDept;
+        document.getElementById('modal-period').textContent = '(예시) 2025-03-10 ~ 2025-03-20';
+
+        document.getElementById('modal-attendance').textContent = data.attendanceRate + '%';
+        document.getElementById('modal-satisfaction').textContent =
+        data.satisfactionSubmitted
+            ? (data.satisfactionScore ?? '-') + '점 (제출)'
+            : '미제출';
+
+        document.getElementById('modal-completionStatus').value = data.completionStatus;
+        document.getElementById('modal-completionDate').value = data.completionDate ?? '';
+        document.getElementById('modal-remark').value = '';
+
+        document.getElementById('completion-modal-wrapper').classList.remove('hidden');
+    }
+
+    function closeModal(){
+        document.getElementById('completion-modal-wrapper').classList.add('hidden');
+        currentEditing = null;
+    }
+
+    function saveModal(){
+        if(!currentEditing) return;
+
+        const status = document.getElementById('modal-completionStatus').value;
+        const date = document.getElementById('modal-completionDate').value;
+        const remark = document.getElementById('modal-remark').value;
+
+        // TODO: 실제 구현 시 여기서 fetch/axios로 POST 호출
+        // POST /noncurricular/operator/completions/{applicationId}/complete
+        console.log('SAVE COMPLETION', {
+            applicationId: currentEditing.applicationId,
+            status,
+            date,
+            remark
+        });
+
+        // 더미 데이터 반영
+        currentEditing.completionStatus = status;
+        currentEditing.completionDate = date || null;
+        currentEditing.lastModified = '(로컬 수정)';
+
+        alert('이수 정보가 저장되었습니다. (더미 동작)');
+        closeModal();
+        renderTable();
+    }
+
+    // ======= 이벤트 바인딩 =======
+    document.addEventListener('DOMContentLoaded', () => {
+        // 초기 렌더링
+        filteredData = [...sampleData];
+        renderTable();
+
+        // 조회 버튼: 프론트 필터만 사용 (서버 submit 막기)
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            applySearch();
+        });
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            resetSearchForm();
+        });
+
+        // 전체 선택
+        document.getElementById('check-all').addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            document.querySelectorAll('.row-check').forEach(chk => {
+                chk.checked = checked;
+            });
+        });
+
+        // 상세 버튼 클릭 (이벤트 위임)
+        document.getElementById('completion-tbody').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-detail');
+            if(btn){
+                const appId = Number(btn.dataset.appId);
+                openModal(appId);
+            }
+        });
+
+        // 모달 버튼들
+        document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+        document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+        document.getElementById('modal-save-btn').addEventListener('click', saveModal);
+
+        // 일괄 처리 버튼
+        document.getElementById('btn-bulk-complete').addEventListener('click', () => {
+            const ids = getSelectedIds();
+            if(ids.length === 0){
+                alert('선택된 대상이 없습니다.');
+                return;
+            }
+            // TODO: 실제 구현 시 bulk-complete API 호출
+            console.log('BULK COMPLETE', ids);
+            alert('선택된 ' + ids.length + '건을 이수 처리합니다. (더미 동작)');
+        });
+
+        document.getElementById('btn-bulk-fail').addEventListener('click', () => {
+            const ids = getSelectedIds();
+            if(ids.length === 0){
+                alert('선택된 대상이 없습니다.');
+                return;
+            }
+            // TODO: 실제 구현 시 bulk-fail API 호출
+            console.log('BULK FAIL', ids);
+            alert('선택된 ' + ids.length + '건을 미이수/탈락 처리합니다. (더미 동작)');
+        });
+
+        document.getElementById('btn-export').addEventListener('click', () => {
+            // TODO: 실제 구현 시 GET /noncurricular/operator/completions/export 호출
+            alert('엑셀 다운로드 API를 연동해주세요. (지금은 더미)');
+        });
+    });
+</script>
+
+</body>
+</html>

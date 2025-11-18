@@ -24,12 +24,12 @@
                                 <canvas id="mainChartCanvas" role="img" aria-label="최신 역량 진단 레이더 차트"></canvas>
                             </div>
                             <div class="col-md-6 d-flex flex-column justify-content-center">
-                                <p class="fw-bold fs-3 text-center mb-1" id="latestAvgScore">4.4 / 5.0</p>
-                                <p class="text-center text-muted mb-4">평균 점수 (2025.01.20 진단)</p>
+                                <p class="fw-bold fs-3 text-center mb-1" id="latestAvgScore">-</p>
+                                <p class="text-center text-muted mb-4"></p>
 
                                 <div class="d-grid gap-2 d-md-block text-center">
-                                    <a href="/student/assessment" class="btn btn-outline-primary btn-sm rounded-pill">상세 결과 보기</a>
-                                    <a href="/student/assessment" class="btn btn-primary btn-sm rounded-pill">현황 전체 보기</a>
+                                    <a href="/student/assessment" id="btnDetailView" class="btn btn-outline-primary btn-sm rounded-pill">상세 결과 보기</a>
+                                    <a href="/student/assessment/history" class="btn btn-primary btn-sm rounded-pill">현황 전체 보기</a>
                                 </div>
                             </div>
                         </div>
@@ -124,6 +124,12 @@
     </div>
 
     <th:block th:fragment="scripts">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.latestResultData = /*[[${latestResultData}]]*/ null;
+            /*]]>*/
+        </script>
+
         <script th:src="@{/js/mypage/dashboard.js}"></script>
     </th:block>
 </body>
