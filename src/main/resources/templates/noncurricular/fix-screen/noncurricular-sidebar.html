@@ -5,47 +5,38 @@
 
     <style>
         .main-wrapper {
-            position: fixed;
-            top: 56px;
-            left: 0;
-            right: 0;
-            bottom: 0;
             display: flex;
             flex-direction: row;
         }
-        
+
         .sidebar {
             width: 20%;
             min-width: 250px;
             background: #ffffff;
             border-right: 1px solid #e5e7eb;
             padding: 20px 16px;
-            overflow-y: auto;
-            height: 100%;
         }
-        
+
         .main-content {
             width: 80%;
-            overflow-y: auto;
-            height: 100%;
         }
-        
+
         .content-wrapper {
             padding: 30px 20px;
         }
-        
+
         .sidebar-header{
             padding: 0 8px 16px;
             border-bottom: 1px solid #e5e7eb;
             margin-bottom: 16px;
         }
-        
+
         .sidebar-title {
             font-size: 18px;
             font-weight: 700;
             color: #111827;
         }
-        
+
         .sidebar-sub {
             font-size: 12px;
             color: #6b7280;
@@ -55,7 +46,7 @@
         .menu-section {
             margin-bottom: 12px;
         }
-        
+
         .menu-section-toggle {
             width: 100%;
             display: flex;
@@ -70,31 +61,23 @@
             border-radius: 12px;
             transition: background 0.15s;
         }
-        
+
         .menu-section-toggle:hover {
             background: #e3f2fd;
         }
-        
-        .menu-section-toggle .caret {
+
+        .menu-section-toggle{
             font-size: 11px;
             color: #6b7280;
             transition: transform 0.15s;
         }
-        
-        .menu-section.open .menu-section-toggle .caret {
-            transform: rotate(90deg);
-        }
-        
+
         .menu-list {
             list-style: none;
             margin-top: 4px;
             margin-left: 8px;
             padding-left: 6px;
             border-left: 1px solid #e5e7eb;
-            display: none;
-        }
-        
-        .menu-section.open .menu-list {
             display: block;
         }
 
@@ -112,12 +95,12 @@
             transition: background 0.15s, color 0.15s;
             text-decoration: none;
         }
-        
+
         .menu-link:hover {
             background: #e3f2fd;
             color: #094081;
         }
-        
+
         .menu-link.active {
             background: #094081;
             color: #fff;
@@ -133,9 +116,9 @@
 
     <!-- 대시보드 (공통) -->
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link"
@@ -145,21 +128,21 @@
                 <a class="menu-link"
                    th:href="@{/noncurricular/operator/dashboard}">운영자 대시보드</a>
             </li>
-<!--            <li sec:authorize="hasRole('NONCURRICULAR_ADMIN')">-->
-<!--                <a class="menu-link"-->
-<!--                   th:href="@{/noncurricular/admin/dashboard}">부서관리자 대시보드</a>-->
-<!--            </li>-->
+            <!--            <li sec:authorize="hasRole('NONCURRICULAR_ADMIN')">-->
+            <!--                <a class="menu-link"-->
+            <!--                   th:href="@{/noncurricular/admin/dashboard}">부서관리자 대시보드</a>-->
+            <!--            </li>-->
         </ul>
     </section>
 
     <!-- 목록 (학생/운영자 공통이라 가정) -->
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>목록</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>목록</span>
+        </div>
         <ul class="menu-list">
 
-                <!-- 학생 기준 프로그램 목록 -->
+            <!-- 학생 기준 프로그램 목록 -->
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link"
                    th:href="@{/noncurricular/student/program-list}">프로그램 조회</a>
@@ -172,14 +155,14 @@
 
     <!-- 신청 (학생만) -->
     <section class="menu-section open" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>신청</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>신청</span>
+        </div>
         <ul class="menu-list">
-<!--            <li>-->
-<!--                <a class="menu-link"-->
-<!--                   th:href="@{/noncurricular/student/applications}">프로그램 신청/ 취소</a>-->
-<!--            </li>-->
+            <!--            <li>-->
+            <!--                <a class="menu-link"-->
+            <!--                   th:href="@{/noncurricular/student/applications}">프로그램 신청/ 취소</a>-->
+            <!--            </li>-->
             <li>
                 <a class="menu-link"
                    th:href="@{/noncurricular/student/applications/history}">신청 이력 조회</a>
@@ -189,9 +172,9 @@
 
     <!-- 참여 (학생만) -->
     <section class="menu-section open" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>참여</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>참여</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -210,9 +193,9 @@
 
     <!-- 비교과 포인트 (학생만) -->
     <section class="menu-section open" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>비교과 포인트</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>비교과 포인트</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -223,9 +206,9 @@
 
     <!-- 과정/참여/포인트/관리/알림 (운영자 / 부서관리자) -->
     <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>과정 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>과정 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -239,9 +222,9 @@
     </section>
 
     <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>참여 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>참여 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -263,9 +246,9 @@
     </section>
 
     <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>비교과 포인트 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>비교과 포인트 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -279,9 +262,9 @@
     </section>
 
     <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -295,9 +278,9 @@
     </section>
 
     <section class="menu-section open" sec:authorize="hasAnyRole('NONCURRICULAR_OPERATOR','NONCURRICULAR_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>알림</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>알림</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link"
@@ -312,14 +295,6 @@
 
     <!-- ========= 스크립트 프래그먼트 ========== -->
     <script th:fragment="noncurricularSidebarScript">
-        // 섹션 접기/펼치기
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
-
         // 메뉴 클릭 시 active 표시 (이동은 a 태그 기본 동작 사용)
         document.querySelectorAll('.menu-link').forEach(link => {
             link.addEventListener('click', () => {
@@ -346,8 +321,8 @@
 
                 if (current.startsWith(path)) {
                     if (
-                        !matched ||
-                        path.length > (matched.getAttribute('href') || '').length
+                    !matched ||
+                    path.length > (matched.getAttribute('href') || '').length
                     ) {
                         matched = l;
                     }
@@ -356,8 +331,6 @@
 
             if (matched) {
                 matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
             }
         })();
     </script>

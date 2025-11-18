@@ -75,27 +75,18 @@
             background: #e3f2fd;
         }
         
-        .menu-section-toggle .caret {
+        .menu-section-toggle {
             font-size: 11px;
             color: #6b7280;
             transition: transform 0.15s;
         }
-        
-        .menu-section.open .menu-section-toggle .caret {
-            transform: rotate(90deg);
-        }
-        
+
         .menu-list {
             list-style: none;
             margin-top: 4px;
             margin-left: 8px;
             padding-left: 6px;
             border-left: 1px solid #e5e7eb;
-            display: none;
-        }
-        
-        .menu-section.open .menu-list {
-            display: block;
         }
 
         .menu-link {
@@ -130,9 +121,9 @@
     </div>
 
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/super-admin/dashboard}">관리자 대시보드</a>
@@ -142,7 +133,7 @@
 
     <section class="menu-section">
         <button class="menu-section-toggle" type="button">
-            <span>사용자 관리</span><span class="caret">▶</span>
+            <span>사용자 관리</span>
         </button>
         <ul class="menu-list">
             <li>
@@ -152,9 +143,9 @@
     </section>
 
     <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>모듈 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>모듈 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/competency/admin/dashboard}">역량진단 관리</a>
@@ -169,12 +160,6 @@
     </section>
 
     <script th:fragment="adminSidebarScript">
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
 
         document.querySelectorAll('.menu-link').forEach(link => {
             link.addEventListener('click', () => {
@@ -206,8 +191,6 @@
 
             if (matched) {
                 matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
             }
         })();
     </script>

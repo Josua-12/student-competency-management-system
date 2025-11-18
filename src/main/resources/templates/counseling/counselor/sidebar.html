@@ -70,26 +70,18 @@
             background: #e3f2fd;
         }
         
-        .menu-section-toggle .caret {
+        .menu-section-toggle {
             font-size: 11px;
             color: #6b7280;
             transition: transform 0.15s;
         }
-        
-        .menu-section.open .menu-section-toggle .caret {
-            transform: rotate(90deg);
-        }
-        
+  
         .menu-list {
             list-style: none;
             margin-top: 4px;
             margin-left: 8px;
             padding-left: 6px;
             border-left: 1px solid #e5e7eb;
-            display: none;
-        }
-        
-        .menu-section.open .menu-list {
             display: block;
         }
 
@@ -125,9 +117,9 @@
     </div>
 
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/counselor}">상담사 대시보드</a>
@@ -136,9 +128,9 @@
     </section>
 
     <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>일정 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>일정 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/counselor/schedule}">일정 관리</a>
@@ -150,9 +142,9 @@
     </section>
 
     <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>상담 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/counselor/records}">상담일지</a>
@@ -167,12 +159,6 @@
     </section>
 
     <script th:fragment="counselorSidebarScript">
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
 
         document.querySelectorAll('.menu-link').forEach(link => {
             link.addEventListener('click', () => {
@@ -204,8 +190,6 @@
 
             if (matched) {
                 matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
             }
         })();
     </script>

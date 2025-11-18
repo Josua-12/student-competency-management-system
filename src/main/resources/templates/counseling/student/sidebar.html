@@ -70,27 +70,18 @@
             background: #e3f2fd;
         }
         
-        .menu-section-toggle .caret {
+        .menu-section-toggle {
             font-size: 11px;
             color: #6b7280;
             transition: transform 0.15s;
         }
-        
-        .menu-section.open .menu-section-toggle .caret {
-            transform: rotate(90deg);
-        }
-        
+
         .menu-list {
             list-style: none;
             margin-top: 4px;
             margin-left: 8px;
             padding-left: 6px;
             border-left: 1px solid #e5e7eb;
-            display: none;
-        }
-        
-        .menu-section.open .menu-list {
-            display: block;
         }
 
         .menu-link {
@@ -125,9 +116,9 @@
     </div>
 
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li sec:authorize="hasRole('STUDENT')">
                 <a class="menu-link" th:href="@{/counseling/student}">개인 대시보드</a>
@@ -142,9 +133,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 신청</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>상담 신청</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/student/psycho}">심리상담</a>
@@ -162,9 +153,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('STUDENT')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>상담 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/student/status}">신청 현황</a>
@@ -173,9 +164,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('COUNSELOR')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>상담 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/counselor/reservations}">예약 관리</a>
@@ -193,9 +184,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('COUNSELOR')">
-        <button class="menu-section-toggle" type="button">
-            <span>통계</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>통계</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/counselor/satisfaction}">만족도 결과</a>
@@ -204,9 +195,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('COUNSELING_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>상담사 관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>상담사 관리</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/admin/counselors}">상담사 관리</a>
@@ -221,9 +212,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasRole('COUNSELING_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>통계</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>통계</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/counseling/admin/statistics}">상담 통계</a>
@@ -235,12 +226,6 @@
     </section>
 
     <script th:fragment="counselingSidebarScript">
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
 
         document.querySelectorAll('.menu-link').forEach(link => {
             link.addEventListener('click', () => {
@@ -272,8 +257,6 @@
 
             if (matched) {
                 matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
             }
         })();
     </script>

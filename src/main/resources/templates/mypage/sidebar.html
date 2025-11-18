@@ -46,22 +46,21 @@
         .sidebar-title{font-size:18px;font-weight:700;}
         .sidebar-sub{font-size:12px;color:var(--muted);margin-top:4px;}
 
-        .menu-section{margin-bottom:12px;}
-        .menu-section-toggle{
-            width:100%;display:flex;align-items:center;justify-content:space-between;
-            padding:8px 10px;border:none;background:transparent;
-            font-size:14px;font-weight:600;cursor:pointer;
-            border-radius:var(--radius);transition:background .15s;
+        .menu-section-toggle:hover {
+            background: #e3f2fd;
         }
-        .menu-section-toggle:hover{background:var(--accent-soft);}
-        .menu-section-toggle .caret{font-size:11px;color:var(--muted);transition:transform .15s;}
-        .menu-section.open .menu-section-toggle .caret{transform:rotate(90deg);}
+
+        .menu-section-toggle {
+            font-size: 11px;
+            color: #6b7280;
+            transition: transform 0.15s;
+        }
+
+        .menu-section{margin-bottom:12px;}
         .menu-list{
             list-style:none;margin-top:4px;margin-left:8px;padding-left:6px;
-            border-left:1px solid var(--line);display:none;
+            border-left:1px solid var(--line);display:block;
         }
-        .menu-section.open .menu-list{display:block;}
-
         .menu-link{
             display:block;width:100%;text-align:left;
             padding:6px 10px;font-size:13px;color:#6b7280;
@@ -79,9 +78,9 @@
     </div>
 
     <section class="menu-section open">
-        <button class="menu-section-toggle" type="button">
-            <span>대시보드</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>대시보드</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/student/mypage}">개인 대시보드</a>
@@ -90,9 +89,9 @@
     </section>
 
     <section class="menu-section">
-        <button class="menu-section-toggle" type="button">
-            <span>개인정보</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>개인정보</span>
+        </div>
         <ul class="menu-list">
             <li>
                 <a class="menu-link" th:href="@{/student/mypage/info}">개인정보 수정</a>
@@ -104,9 +103,9 @@
     </section>
 
     <section class="menu-section" sec:authorize="hasAnyRole('ADMIN','COUNSELING_ADMIN','COMPETENCY_ADMIN','NONCURRICULAR_ADMIN')">
-        <button class="menu-section-toggle" type="button">
-            <span>관리</span><span class="caret">▶</span>
-        </button>
+        <div class="menu-section-toggle">
+            <span>관리</span>
+        </div>
         <ul class="menu-list">
             <li sec:authorize="hasRole('ADMIN')">
                 <a class="menu-link" th:href="@{/mypage/user-management}">사용자 관리</a>
@@ -118,13 +117,6 @@
     </section>
 
     <script th:fragment="mypageSidebarScript">
-        document.querySelectorAll('.menu-section-toggle').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const section = btn.closest('.menu-section');
-                section.classList.toggle('open');
-            });
-        });
-
         document.querySelectorAll('.menu-link').forEach(link => {
             link.addEventListener('click', () => {
                 document.querySelectorAll('.menu-link')
@@ -155,8 +147,6 @@
 
             if (matched) {
                 matched.classList.add('active');
-                const section = matched.closest('.menu-section');
-                if (section) section.classList.add('open');
             }
         })();
     </script>
