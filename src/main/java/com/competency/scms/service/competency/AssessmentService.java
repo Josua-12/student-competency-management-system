@@ -444,7 +444,7 @@ public class AssessmentService {
         for (Map.Entry<Competency, Double> entry : bottom2) {
             Competency child = entry.getKey();
             String advice = child.getAdviceLow();
-            if (child.getAdviceLow() == null || advice.isBlank()) {
+            if (advice == null || advice.isBlank()) {
                 advice = "해당 역량에 대한 성장 가이드가 준비 중입니다.";
             }
             weaknesses.add(new ResultFeedbackDto(

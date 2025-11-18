@@ -87,15 +87,29 @@
             </div>
 
             <div class="advice-section" th:if="${!#lists.isEmpty(assessmentResultData.weaknesses)}">
-                <h6 class="advice-title">성장을 위한 맞춤 조언</h6>
-                <p>
-                    <strong th:text="'\'\'' + ${assessmentResultData.weaknesses[0].competencyName} + '\' 역량 향상을 위한 Tip!'">
-                        역량 향상을 위한 Tip!
-                    </strong>
-                </p>
-                <p class="advice-content" th:text="${assessmentResultData.weaknesses[0].advice}">
-                    해당 역량을 키우기 위해 관련 비교과 프로그램에 참여해보세요
-                </p>
+                <h6 class="advice-title mb-4">
+                    <i class="fas fa-seedling text-success me-2"></i>성장을 위한 맞춤 조언
+                </h6>
+
+                <div th:each="item, iterStat : ${assessmentResultData.weaknesses}">
+
+                    <div class="advice-item">
+                        <p class="mb-2 fw-bold text-dark">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            <span th:text="'\'' + ${item.competencyName} + '\' 역량 Level Up Tip'">역량 Tip</span>
+                        </p>
+
+                        <div class="p-3 bg-light rounded border-start border-4 border-warning">
+                            <p class="advice-content mb-0 text-secondary"
+                               style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"
+                               th:text="${item.advice}">
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 border-secondary opacity-25" th:unless="${iterStat.last}">
+
+                </div>
             </div>
 
         </div> </div>
