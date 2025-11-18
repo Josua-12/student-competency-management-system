@@ -36,7 +36,7 @@ public class MainController {
                 .orElse("ROLE_STUDENT");
 
         return switch (role) {
-            case "ROLE_SUPER_ADMIN" -> "redirect:/super-admin/dashboard";
+            case "ROLE_SUPER_ADMIN" -> "redirect:/admin/dashboard";
             case "ROLE_COUNSELING_ADMIN" -> "redirect:/counseling-admin/dashboard";
             case "ROLE_NONCURRICULAR_ADMIN" -> "redirect:/noncurricular/admin/dashboard";
             case "ROLE_NONCURRICULAR_OPERATOR" -> "redirect:/noncurricular/operator/dashboard";
