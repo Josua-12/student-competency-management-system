@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('saveButton');
     const deleteButton = document.getElementById('deleteButton');
 
+    const addChildButton = document.getElementById('addChildButton');
+    const questionsTabBtn = document.getElementById('questions-tab');
+    const infoTabBtn = document.getElementById('info-tab');
+
     // '문항 관리' 탭 테이블 body 캐시
     const questionListBody = document.getElementById('questionListBody');
 
@@ -91,9 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         //             alert('상세 정보 로딩 실패: ' + error.message);
         //         });
         // });
-// [수정된] 라이브러리 이벤트 대신 '수동 클릭 이벤트' 사용
-        // CSS 충돌로 해서 클릭이 먹통되는 현상을 해결하는 코드입니다.
-        // [수정된] 'tree.getNodeId' 오류 해결 버전
         treeContainer.addEventListener('click', (e) => {
             const target = e.target;
 
@@ -197,6 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1-8. '역량 저장' 버튼 (C/U)
     saveButton.addEventListener('click', (e) => {
+        // 폼 유효성 검사
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
         e.preventDefault();
 
         // 버튼 비활성화 및 로딩 표시
@@ -280,7 +287,22 @@ document.addEventListener('DOMContentLoaded', () => {
         questionListBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">역량을 선택하세요</td></tr>';
 
         if (competency) {
-            // (A) 기존 역량 수정
+            // (A) 기존 역량 수정 (수정 모드)
+
+            if (!competency.parentId) {
+                // 최상위 역량 선택 시
+                // 진단 문항 관리 탭 숨김
+                questionsTabBtn.style.display = 'none';
+                // 하위 역량 추가 버튼 표시
+                addChildButton.style.display = 'inline-block';
+            } else {
+                // 하위 역량 선택 시
+                // 진단 문항 관리 탭 표시
+                questionsTabBtn.style.display = 'inline-block';
+                // 하위 역량 추가 버튼 숨김
+                addChildButton.style.display = 'none';
+            }
+
             formTitle.textContent = '역량 정보 수정';
             document.getElementById('competencyId').value = competency.id;
             document.getElementById('parentId').value = competency.parentId || '';
@@ -295,14 +317,48 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('compCode').readOnly = true;
         } else {
             // (B) 새로운 등록
+
+            // 새 항목 작성 중에는 문항 탭 접근 불가
+            questionsTabBtn.style.display = 'none';
+            // 새 항목 작성 중에는 또 다른 하위 추가 불가
+            addChildButton.style.display = 'none';
+            if (!isChild) {
+                // 최상위 추가 버튼 클릭 시
+                formTitle.textContent = '최상위 역량 등록';
+                document.getElementById('parentId').value = '';
+            } else {
+                // 하위 역량 추가 버튼 클릭 시
+                formTitle.textContent = '하위 역량 등록';
+                document.getElementById('parentId').value = parentId;
+            }
             formTitle.textContent = isChild ? '하위 역량 등록' : '최상위 역량 등록';
             document.getElementById('competencyId').value = '';
-            document.getElementById('parentId').value = isChild ? parentId : '';
             document.getElementById('compActive').checked = true;
             document.getElementById('compCode').readOnly = false;
             deleteButton.style.display = 'none';
         }
     }
+
+    /* 이벤트 리스너: 탭 클릭 시 버튼 제어 */
+
+    // 진단 문항 관리 탭 클릭 시 -> 하위 역량 추가 버튼 숨김
+    questionsTabBtn.addEventListener('show.bs.tab', () => {
+        addChildButton.style.display = 'none';
+    });
+
+    // 기본 정보 탭 클릭 시 -> 역량 수준에 따라 버튼 복구
+    infoTabBtn.addEventListener('show.bs.tab', () => {
+        const currentId = document.getElementById('competencyId').value;
+        const currentParentId = document.getElementById('parentId').value;
+
+        // ID가 있고(수정), 부모 ID가 없으면(핵심 역량) -> 버튼 다시 표시
+        if (currentId && !currentParentId) {
+            addChildButton.style.display = 'inline-block';
+        } else {
+            // 하위 역량이거나 핵심 역량 신규 작성 -> 버튼 숨김 유지
+            addChildButton.style.display = 'none';
+        }
+    })
 
 
     /* ==================================================================
@@ -485,6 +541,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * 3-3. 모달(modal)의 '문항 저장' 버튼 클릭 시 (C/U)
      */
     saveQuestionButton.addEventListener('click', (e) => {
+        // 폼 유효성 검사
+        if (!questionForm.checkValidity()) {
+            questionForm.reportValidity();
+            return;
+        }
+
         e.preventDefault();
 
         saveQuestionButton.disabled = true;

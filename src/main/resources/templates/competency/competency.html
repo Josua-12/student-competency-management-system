@@ -93,7 +93,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label for="compOrder" class="form-label">표시 순서 <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="compOrder" name="displayOrder" value="1" required>
+                                    <input type="number" class="form-control" id="compOrder" name="displayOrder" value="1" min="1" required>
 
                                     <label class="form-label mt-3">활성 여부</label>
                                     <div class="form-check form-switch">
@@ -204,7 +204,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="modalQuestionOrder" class="form-label">표시 순서 <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="modalQuestionOrder" name="displayOrder" value="1" required>
+                                <input type="number" class="form-control" id="modalQuestionOrder" name="displayOrder" value="1" min="1" required>
                             </div>
                             <div class="col-12">
                                 <div class="form-check form-switch">
@@ -251,10 +251,10 @@
                 <input type="text" class="form-control" name="optionText" placeholder="항목 내용 (예: 매우 그렇다)" required>
             </div>
             <div class="col-md-2">
-                <input type="number" class="form-control" name="score" placeholder="점수" required>
+                <input type="number" class="form-control" name="score" placeholder="점수" min="1" max="5" required>
             </div>
             <div class="col-md-2">
-                <input type="number" class="form-control" name="displayOrder" placeholder="순서" required>
+                <input type="number" class="form-control" name="displayOrder" placeholder="순서" min="1" required>
             </div>
             <div class="col-md-2 d-grid">
                 <button type="button" class="btn btn-outline-danger btn-delete-option">삭제</button>
